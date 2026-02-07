@@ -96,17 +96,20 @@ export class QPDF {
       isLinearized: this.isLinearized(),
     };
 
-    // Add optional metadata fields
-    const title = this.wasmInstance!.getTitle();
+    // TODO: The typeof function check shouldn't exist
+    
+    // Metadata accessors are optional depending on the WASM bindings build.
+    const wasm = this.wasmInstance!;
+    const title = typeof wasm.getTitle === 'function' ? wasm.getTitle() : '';
     if (title) info.title = title;
 
-    const author = this.wasmInstance!.getAuthor();
+    const author = typeof wasm.getAuthor === 'function' ? wasm.getAuthor() : '';
     if (author) info.author = author;
 
-    const subject = this.wasmInstance!.getSubject();
+    const subject = typeof wasm.getSubject === 'function' ? wasm.getSubject() : '';
     if (subject) info.subject = subject;
 
-    const creator = this.wasmInstance!.getCreator();
+    const creator = typeof wasm.getCreator === 'function' ? wasm.getCreator() : '';
     if (creator) info.creator = creator;
 
     return info;

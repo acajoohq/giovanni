@@ -1,3 +1,5 @@
+// TODO: use modern web apis instead
+
 /**
  * Format bytes as human-readable string
  */
@@ -34,6 +36,8 @@ export function calculateSavings(original: number, compressed: number): {
  * Format percentage with sign
  */
 export function formatPercentage(value: number, decimals = 1): string {
-  const sign = value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(decimals)}%`;
+  const factor = 10 ** decimals;
+  const rounded = Math.round((value + Number.EPSILON) * factor) / factor;
+  const sign = rounded >= 0 ? '+' : '';
+  return `${sign}${rounded.toFixed(decimals)}%`;
 }

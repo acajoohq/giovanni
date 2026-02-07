@@ -110,7 +110,14 @@ export class QPDFWriter {
    */
   async setCompressPages(value: boolean): Promise<void> {
     await this.ensureInitialized();
-    this.wasmInstance!.setCompressPages(value);
+    // TODO: The typeof function check shouldn't exist
+    if (typeof this.wasmInstance!.setCompressPages === 'function') {
+      this.wasmInstance!.setCompressPages(value);
+      return;
+    }
+    throw new QpdfValidationError(
+      'setCompressPages is not available in this WASM build'
+    );
   }
 
   /**
@@ -118,7 +125,14 @@ export class QPDFWriter {
    */
   async setRemoveUnreferencedResources(value: boolean): Promise<void> {
     await this.ensureInitialized();
-    this.wasmInstance!.setRemoveUnreferencedResources(value);
+    // TODO: The typeof function check shouldn't exist
+    if (typeof this.wasmInstance!.setRemoveUnreferencedResources === 'function') {
+      this.wasmInstance!.setRemoveUnreferencedResources(value);
+      return;
+    }
+    throw new QpdfValidationError(
+      'setRemoveUnreferencedResources is not available in this WASM build'
+    );
   }
 
   /**

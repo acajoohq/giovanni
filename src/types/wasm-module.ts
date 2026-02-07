@@ -18,10 +18,11 @@ export interface WasmQPDFWrapper {
   getPDFVersion(): string;
   isEncrypted(): boolean;
   isLinearized(): boolean;
-  getTitle(): string;
-  getAuthor(): string;
-  getSubject(): string;
-  getCreator(): string;
+  // TODO: Why optional ?
+  getTitle?(): string;
+  getAuthor?(): string;
+  getSubject?(): string;
+  getCreator?(): string;
   delete(): void;
 }
 
@@ -30,8 +31,10 @@ export interface WasmQPDFWriter {
   setDecodeLevel(level: string): void;
   setRecompressFlate(value: boolean): void;
   setObjectStreamMode(mode: string): void;
-  setCompressPages(value: boolean): void;
-  setRemoveUnreferencedResources(value: boolean): void;
+  // TODO: Why optional ?
+  setCompressPages?(value: boolean): void;
+  // TODO: Why optional ?
+  setRemoveUnreferencedResources?(value: boolean): void;
   write(): void;
   getBuffer(): Uint8Array;
   delete(): void;
@@ -40,7 +43,9 @@ export interface WasmQPDFWriter {
 export interface QpdfWasmModule {
   compressPdf(data: Uint8Array, options: WasmCompressionOptions): Uint8Array;
   getVersion(): string;
+  getQpdfVersion?: () => string;
   QPDFWrapper: new () => WasmQPDFWrapper;
+  QPDF?: new () => WasmQPDFWrapper;
   QPDFWriter: new (qpdf: WasmQPDFWrapper) => WasmQPDFWriter;
 }
 

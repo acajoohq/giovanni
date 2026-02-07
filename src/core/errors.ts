@@ -6,8 +6,12 @@ export class QpdfError extends Error {
     super(message, options);
     this.name = 'QpdfError';
     // Maintain proper stack trace
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
+    // TODO: This is ugly
+    const errorWithCapture = Error as ErrorConstructor & {
+      captureStackTrace?: (targetObject: object, constructorOpt?: Function) => void;
+    };
+    if (errorWithCapture.captureStackTrace) {
+      errorWithCapture.captureStackTrace(this, this.constructor);
     }
     // Fix prototype chain for instanceof checks
     Object.setPrototypeOf(this, new.target.prototype);

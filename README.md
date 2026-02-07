@@ -1,5 +1,21 @@
 # @qpdf/wasm
 
+## Todo's
+
+- [ ] Move the `../qpdf` source to the `qpdf` directory
+- [ ] Choose the outputs of the lib
+- [ ] <https://tsdown.dev/options/lint>
+- [ ] Find a strategy for updates of the qpdf library
+- [ ] CI / CD
+- [ ] Review the code
+  - [ ] WASM build
+  - [ ] Library design
+  - [ ] Tests
+- [ ] Choose a package name
+- [ ] Make from scratch a demo with a simple vite app
+- [ ] Clean the bloat
+- [ ] Publish
+
 Modern WebAssembly build of [qpdf](https://github.com/qpdf/qpdf) for PDF compression and manipulation in the browser and Node.js.
 
 ## Features
@@ -85,12 +101,14 @@ qpdf.cleanup();
 Compress a PDF with the specified options.
 
 **Parameters:**
+
 - `input: Uint8Array | ArrayBuffer` - PDF file data
 - `options?: CompressionOptions` - Compression options (see below)
 
 **Returns:** `Promise<CompressionResult>`
 
 **Example:**
+
 ```typescript
 const result = await compressPdf(pdfBytes, {
   compressionLevel: 9,
@@ -113,6 +131,7 @@ Get the qpdf library version string.
 Represents a loaded PDF file.
 
 **Methods:**
+
 - `processMemoryFile(input: Uint8Array | ArrayBuffer, password?: string): Promise<void>` - Load a PDF
 - `getNumPages(): number` - Get number of pages
 - `getPDFVersion(): string` - Get PDF version (e.g., "1.7")
@@ -126,9 +145,11 @@ Represents a loaded PDF file.
 Write a PDF with compression settings.
 
 **Constructor:**
+
 - `new QPDFWriter(qpdf: QPDF)`
 
 **Methods:**
+
 - `setCompressionLevel(level: number): Promise<void>` - Set compression level (1-9)
 - `setDecodeLevel(level: DecodeLevel): Promise<void>` - Set decode level
 - `setRecompressFlate(value: boolean): Promise<void>` - Enable/disable flate recompression
@@ -193,6 +214,7 @@ downloadBuffer(compressedData, 'compressed.pdf');
 ### Prerequisites
 
 1. **Emscripten SDK** - Install and activate:
+
    ```bash
    git clone https://github.com/emscripten-core/emsdk.git
    cd emsdk
@@ -204,6 +226,7 @@ downloadBuffer(compressedData, 'compressed.pdf');
 2. **Node.js 18+** - For the build system
 
 3. **Parent qpdf source** - This project expects the qpdf source to be in a sibling directory:
+
    ```
    /path/to/
    ├── qpdf/          ← parent qpdf source
@@ -232,22 +255,27 @@ npm run build
 ### Build Output
 
 After building, the `dist/` directory will contain:
-- `index.js` - ESM bundle
+
+- `index.mjs` - ESM bundle
 - `index.cjs` - CommonJS bundle
-- `index.d.ts` - TypeScript definitions
+- `index.d.mts` - TypeScript definitions for ESM consumers
+- `index.d.cts` - TypeScript definitions for CommonJS consumers
 - `qpdf.wasm` - WebAssembly binary (~800KB)
 - `qpdf.js` - Emscripten glue code
 
 ### Troubleshooting
 
 **Error: "Emscripten not found"**
+
 - Make sure you've activated the Emscripten environment: `source /path/to/emsdk/emsdk_env.sh`
 
 **Error: "Parent qpdf source not found"**
+
 - Ensure the qpdf source is in `../qpdf/` relative to this project
 - The build script expects this directory structure
 
 **Build fails with missing dependencies**
+
 - The build uses Emscripten ports for zlib and libjpeg, which are downloaded automatically
 - Ensure you have an internet connection for the first build
 

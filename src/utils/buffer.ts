@@ -2,7 +2,9 @@
  * Convert Uint8Array to Blob
  */
 export function bufferToBlob(buffer: Uint8Array, type = 'application/pdf'): Blob {
-  return new Blob([buffer], { type });
+  const bytes = new Uint8Array(buffer.byteLength);
+  bytes.set(buffer);
+  return new Blob([bytes.buffer], { type });
 }
 
 /**

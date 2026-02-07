@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>qpdf WASM - PDF Compression Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      opacity: 0.9;
+      font-size: 1.1em;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .upload-area {
+      border: 2px dashed #667eea;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+      background: #f8f9ff;
+    }
+
+    .upload-area:hover, .upload-area.drag-over {
+      border-color: #764ba2;
+      background: #f0f2ff;
+    }
+
+    .upload-area svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 15px;
+      opacity: 0.6;
+    }
+
+    .options {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9ff;
+      border-radius: 12px;
+    }
+
+    .option-group {
+      margin-bottom: 20px;
+    }
+
+    .option-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .option-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .option-group input[type="range"] {
+      width: 100%;
+      margin: 8px 0;
+    }
+
+    .option-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .option-group input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      font-weight: normal;
+      margin-bottom: 8px;
+    }
+
+    .range-value {
+      display: inline-block;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .results {
+      margin-top: 30px;
+      padding: 20px;
+      background: #e8f5e9;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .results.show {
+      display: block;
+    }
+
+    .results h2 {
+      color: #2e7d32;
+      margin-bottom: 15px;
+    }
+
+    .savings {
+      font-size: 3em;
+      font-weight: bold;
+      color: #2e7d32;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .stat {
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+    }
+
+    .stat-label {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .button:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.info {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .status.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .status.error {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    footer {
+      margin-top: 30px;
+      padding: 20px;
+      text-align: center;
+      color: white;
+      font-size: 0.9em;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.5em;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .savings {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>qpdf WASM</h1>
+      <p>Compress PDFs directly in your browser</p>
+    </header>
+
+    <div class="content">
+      <div class="upload-area" id="uploadArea">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <h3>Drop PDF here or click to upload</h3>
+        <p style="color: #666; margin-top: 10px;">Your file never leaves your browser</p>
+        <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+      </div>
+
+      <div class="options">
+        <div class="option-group">
+          <label>
+            Compression Level: <span class="range-value" id="levelValue">6</span>
+          </label>
+          <input type="range" id="compressionLevel" min="1" max="9" value="6">
+          <small style="color: #666;">1 = fastest, 9 = best compression</small>
+        </div>
+
+        <div class="option-group">
+          <label for="decodeLevel">Decode Level</label>
+          <select id="decodeLevel">
+            <option value="none">None - Don't decode anything</option>
+            <option value="generalized" selected>Generalized - Decode common filters</option>
+            <option value="specialized">Specialized - Decode JPEG, etc.</option>
+            <option value="all">All - Maximum compression</option>
+          </select>
+        </div>
+
+        <div class="option-group">
+          <label>Advanced Options</label>
+          <div class="checkbox-label">
+            <input type="checkbox" id="recompressFlate" checked>
+            <span>Recompress flate streams</span>
+          </div>
+          <div class="checkbox-label">
+            <input type="checkbox" id="compressPages">
+            <span>Compress pages (combine content streams)</span>
+          </div>
+          <div class="checkbox-label">
+            <input type="checkbox" id="removeUnreferenced">
+            <span>Remove unreferenced resources</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="status" id="status"></div>
+
+      <div class="results" id="results">
+        <h2>Compression Results</h2>
+        <div class="savings" id="savings">0%</div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Original Size</div>
+            <div class="stat-value" id="originalSize">-</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Compressed Size</div>
+            <div class="stat-value" id="compressedSize">-</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Saved</div>
+            <div class="stat-value" id="savedSize">-</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Processing Time</div>
+            <div class="stat-value" id="processingTime">-</div>
+          </div>
+        </div>
+        <button class="button" id="downloadBtn">Download Compressed PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Powered by <a href="https://github.com/qpdf/qpdf" target="_blank">qpdf</a> compiled to WebAssembly</p>
+    <p id="version" style="margin-top: 5px; opacity: 0.8;">Loading version...</p>
+  </footer>
+
+  <script type="module">
+    import { compressPdf, getVersion, formatBytes } from '../dist/index.js';
+
+    let compressedData = null;
+
+    // Display version
+    getVersion().then(version => {
+      document.getElementById('version').textContent = `qpdf ${version}`;
+    });
+
+    // File upload handling
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('drag-over');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('drag-over');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('drag-over');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) handleFile(files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
+
+    // Compression level slider
+    const levelSlider = document.getElementById('compressionLevel');
+    const levelValue = document.getElementById('levelValue');
+    levelSlider.addEventListener('input', (e) => {
+      levelValue.textContent = e.target.value;
+    });
+
+    // Handle file compression
+    async function handleFile(file) {
+      if (!file.type.includes('pdf')) {
+        showStatus('Please select a PDF file', 'error');
+        return;
+      }
+
+      showStatus('Reading file...', 'info');
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+
+        showStatus('Compressing PDF...', 'info');
+        const startTime = performance.now();
+
+        const options = {
+          compressionLevel: parseInt(levelSlider.value),
+          decodeLevel: document.getElementById('decodeLevel').value,
+          recompressFlate: document.getElementById('recompressFlate').checked,
+          compressPages: document.getElementById('compressPages').checked,
+          removeUnreferencedResources: document.getElementById('removeUnreferenced').checked,
+        };
+
+        const result = await compressPdf(arrayBuffer, options);
+        const processingTime = ((performance.now() - startTime) / 1000).toFixed(2);
+
+        compressedData = result.data;
+
+        // Display results
+        const savingsPercent = ((result.savedBytes / result.originalSize) * 100).toFixed(1);
+        document.getElementById('savings').textContent = `${savingsPercent}% saved`;
+        document.getElementById('originalSize').textContent = formatBytes(result.originalSize);
+        document.getElementById('compressedSize').textContent = formatBytes(result.compressedSize);
+        document.getElementById('savedSize').textContent = formatBytes(result.savedBytes);
+        document.getElementById('processingTime').textContent = `${processingTime}s`;
+
+        document.getElementById('results').classList.add('show');
+        showStatus('Compression complete!', 'success');
+      } catch (error) {
+        console.error('Compression error:', error);
+        showStatus(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    // Download handler
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      if (!compressedData) return;
+
+      const blob = new Blob([compressedData], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'compressed.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    function showStatus(message, type) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = `status show ${type}`;
+    }
+  </script>
+</body>
+</html>

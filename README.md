@@ -7,6 +7,8 @@
 - [ ] <https://tsdown.dev/options/lint>
 - [ ] Find a strategy for updates of the qpdf library
 - [ ] CI / CD
+- [ ] Documentation
+  - [ ] How to use it with vite (chunking)
 - [ ] Review the code
   - [ ] WASM build
   - [ ] Library design

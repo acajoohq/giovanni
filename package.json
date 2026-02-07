@@ -34,7 +34,9 @@
     "test:coverage": "vitest run --coverage",
     "lint": "oxlint src",
     "format": "oxlint --fix src",
-    "demo": "vite demo --open",
+    "demo": "vite --config vite.demo.config.ts --open",
+    "demo:build": "vite build --config vite.demo.config.ts",
+    "demo:preview": "vite preview --config vite.demo.config.ts",
     "validate": "publint",
     "typecheck": "tsc --noEmit"
   },

@@ -296,10 +296,32 @@ All modern browsers with WebAssembly support.
 Run the demo locally:
 
 ```bash
+# Build the library artifacts used by the demo
+npm run build
+
+# Start demo dev server
 npm run demo
 ```
 
 This will start a development server with a modern, mobile-friendly PDF compression demo.
+
+Build a static demo bundle:
+
+```bash
+npm run demo:build
+```
+
+The static output is written to `demo-dist/`.
+
+### Deploying to GitHub Pages
+
+This repository includes a workflow at `.github/workflows/deploy-demo.yml` that:
+
+1. Builds WASM + library (`npm run build`)
+2. Builds the static demo (`npm run demo:build`)
+3. Deploys `demo-dist/` to GitHub Pages
+
+Enable GitHub Pages in repository settings and set source to **GitHub Actions**.
 
 ## Testing
 

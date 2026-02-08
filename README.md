@@ -2,7 +2,7 @@
 
 ## Todo's
 
-- [ ] Move the `../qpdf` source to the `qpdf` directory
+- [x] Move the `../qpdf` source to the `qpdf` directory
 - [ ] Choose the outputs of the lib
 - [ ] <https://tsdown.dev/options/lint>
 - [ ] Find a strategy for updates of the qpdf library
@@ -216,7 +216,7 @@ downloadBuffer(compressedData, 'compressed.pdf');
 
 ### Prerequisites
 
-1. **Emscripten SDK** - Install and activate:
+1. **Emscripten SDK in your env** - Install and activate:
 
    ```bash
    git clone https://github.com/emscripten-core/emsdk.git
@@ -228,30 +228,23 @@ downloadBuffer(compressedData, 'compressed.pdf');
 
 2. **Node.js 18+** - For the build system
 
-3. **Parent qpdf source** - This project expects the qpdf source to be in a sibling directory:
+3. **qpdf source** - Clone into the project directory (this is gitignored):
 
-   ```
-   /path/to/
-   ├── qpdf/          ← parent qpdf source
-   └── qpdf-wasm/     ← this project
+   ```bash
+   # Clone latest qpdf source or a specific version
+   git clone --revision v12.3.2 https://github.com/qpdf/qpdf.git qpdf
    ```
 
 ### Build Steps
 
 ```bash
-# 1. Activate Emscripten environment
-source /path/to/emsdk/emsdk_env.sh
+# 1. Clone qpdf source into the project
+git clone https://github.com/qpdf/qpdf.git qpdf
 
 # 2. Install npm dependencies
 npm install
 
-# 3. Build WASM from qpdf source (outputs to build/wasm/)
-npm run build:wasm
-
-# 4. Build TypeScript library (outputs to dist/)
-npm run build:lib
-
-# Or build everything at once:
+# 3. Build
 npm run build
 ```
 
@@ -272,10 +265,10 @@ After building, the `dist/` directory will contain:
 
 - Make sure you've activated the Emscripten environment: `source /path/to/emsdk/emsdk_env.sh`
 
-**Error: "Parent qpdf source not found"**
+**Error: "qpdf source not found"**
 
-- Ensure the qpdf source is in `../qpdf/` relative to this project
-- The build script expects this directory structure
+- Clone qpdf into the project directory: `git clone https://github.com/qpdf/qpdf.git qpdf`
+- The `qpdf/` directory should be at the root of the qpdf-wasm project (it's gitignored)
 
 **Build fails with missing dependencies**
 

@@ -163,8 +163,12 @@ function Try-InitializeEmscripten {
 
 if (-not (Try-InitializeEmscripten)) {
     Write-Host "Error: Emscripten not available in this terminal session." -ForegroundColor Red
-    Write-Host "Run this in the SAME PowerShell, then retry:" -ForegroundColor Yellow
-    Write-Host '  . C:\\Users\\edwar\\source\\repos\\emsdk\\emsdk_env.ps1'
+    Write-Host "Run this in the SAME PowerShell, then retry (replace <path-to-emsdk>):" -ForegroundColor Yellow
+    Write-Host '  . <path-to-emsdk>\\emsdk_env.ps1'
+    if ($env:EMSDK) {
+        $detectedEmsdkEnv = Join-Path ([System.IO.Path]::GetFullPath($env:EMSDK)) 'emsdk_env.ps1'
+        Write-Host "  Detected EMSDK env var candidate: $detectedEmsdkEnv"
+    }
     Write-Host '  emcc --version'
     exit 1
 }

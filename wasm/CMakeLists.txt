@@ -35,7 +35,7 @@ set(LIBJPEG_LIB_PATH "jpeg" CACHE FILEPATH "libjpeg library") # Emscripten will 
 
 # Include parent qpdf project (adjust path to point to sibling qpdf directory)
 # We'll build libqpdf as a subdirectory
-set(qpdf_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../qpdf)
+set(qpdf_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../qpdf)
 set(qpdf_INCLUDE ${qpdf_SOURCE_DIR}/include)
 
 # Set build options for qpdf library

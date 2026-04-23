@@ -20,6 +20,9 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
     // Utility function: get version
     function("getQpdfVersion", &getQpdfVersion);
 
+    // Split PDF into individual pages
+    function("splitPages", &splitPages);
+
     // Advanced API: QPDF wrapper class
     class_<QPDFWrapper>("QPDF")
         .constructor<>()

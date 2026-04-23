@@ -9,6 +9,7 @@
 #include <qpdf/Constants.h>
 #include <string>
 #include <memory>
+#include <vector>
 #include <emscripten/val.h>
 
 // Compression options structure
@@ -24,6 +25,7 @@ struct CompressionOptions {
 qpdf_stream_decode_level_e getDecodeLevel(const std::string& level);
 emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& options);
 std::string getQpdfVersion();
+emscripten::val splitPages(const emscripten::val& inputArray);
 
 // QPDFWrapper class declaration
 class QPDFWrapper {

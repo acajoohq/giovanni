@@ -91,7 +91,55 @@ std::string getQpdfVersion() {
     return QPDF::QPDFVersion();
 }
 
-// Advanced API: QPDF class wrapper for memory file processing
+
+// Split PDF into individual pages
+// Takes a Uint8Array and returns a JS Array of Uint8Arrays (one per page)
+emscripten::val splitPages(const emscripten::val& inputArray) {
+    try {
+        unsigned int length = inputArray["length"].as<unsigned int>();
+        std::vector<uint8_t> inputData(length);
+        for (unsigned int i = 0; i < length; i++) {
+            inputData[i] = inputArray[i].as<uint8_t>();
+        }
+
+        QPDF pdf;
+        pdf.processMemoryFile("input.pdf",
+                             reinterpret_cast<const char*>(inputData.data()),
+                             inputData.size());
+
+        auto pages = pdf.getAllPages();
+        emscripten::val result = emscripten::val::array();
+
+        for (size_t i = 0; i < pages.size(); i++) {
+            QPDF outPdf;
+            outPdf.emptyPDF();
+            outPdf.addPage(pages[i], false);
+
+            QPDFWriter writer(outPdf);
+            writer.setOutputMemory();
+            writer.setObjectStreamMode(qpdf_o_generate);
+            writer.write();
+
+            std::shared_ptr<Buffer> buffer = writer.getBufferSharedPointer();
+            const unsigned char* outputData = buffer->getBuffer();
+            size_t outputSize = buffer->getSize();
+
+            emscripten::val uint8Array = emscripten::val::global("Uint8Array").new_(outputSize);
+            for (size_t j = 0; j < outputSize; j++) {
+                uint8Array.set(j, emscripten::val(outputData[j]));
+            }
+            result.call<void>("push", uint8Array);
+        }
+
+        return result;
+
+    } catch (const std::exception& e) {
+        std::string errorMsg = std::string("PDF split failed: ") + e.what();
+        throw std::runtime_error(errorMsg);
+    }
+}
+
+
 
 QPDFWrapper::QPDFWrapper() : initialized(false) {}
 

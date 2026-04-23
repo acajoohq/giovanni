@@ -303,17 +303,38 @@
         const fileName = `${baseName}_page_${pageNum}.pdf`;
         const item = document.createElement('div');
         item.className = 'page-item';
-        item.innerHTML = `
-          <div class="page-item-label">
-            <div class="page-icon">PDF</div>
-            <div>
-              <div class="page-name">${fileName}</div>
-              <div class="page-size">${formatBytes(page.byteLength)}</div>
-            </div>
-          </div>
-          <button class="button secondary" style="padding:8px 16px;font-size:14px;">Download</button>
-        `;
-        item.querySelector('button').addEventListener('click', () => downloadData(page, fileName));
+
+        const label = document.createElement('div');
+        label.className = 'page-item-label';
+
+        const icon = document.createElement('div');
+        icon.className = 'page-icon';
+        icon.textContent = 'PDF';
+
+        const textWrap = document.createElement('div');
+
+        const name = document.createElement('div');
+        name.className = 'page-name';
+        name.textContent = fileName;
+
+        const size = document.createElement('div');
+        size.className = 'page-size';
+        size.textContent = formatBytes(page.byteLength);
+
+        textWrap.appendChild(name);
+        textWrap.appendChild(size);
+        label.appendChild(icon);
+        label.appendChild(textWrap);
+
+        const button = document.createElement('button');
+        button.className = 'button secondary';
+        button.style.cssText = 'padding:8px 16px;font-size:14px;';
+        button.textContent = 'Download';
+
+        item.appendChild(label);
+        item.appendChild(button);
+
+        button.addEventListener('click', () => downloadData(page, fileName));
         list.appendChild(item);
       });
     }

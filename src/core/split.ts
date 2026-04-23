@@ -23,6 +23,11 @@ export async function splitPages(
 ): Promise<SplitResult> {
   try {
     const module = await initQpdfModule();
+    if (typeof module.splitPages !== 'function') {
+      throw new QpdfCompressionError(
+        'Failed to initialize PDF splitter: qpdf module is missing the splitPages export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.'
+      );
+    }
     const inputBuffer = normalizeBuffer(input);
     const pages: Uint8Array[] = module.splitPages(inputBuffer);
 

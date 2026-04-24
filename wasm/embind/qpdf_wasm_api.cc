@@ -61,13 +61,14 @@ emscripten::val compressPdf(const emscripten::val& inputArray, const Compression
         const unsigned char* outputData = buffer->getBuffer();
         size_t outputSize = buffer->getSize();
 
+        // Create a typed memory view for the output data
+        auto view = emscripten::typed_memory_view(outputSize, outputData);
+
         // Create JavaScript Uint8Array for output
         emscripten::val uint8Array = emscripten::val::global("Uint8Array").new_(outputSize);
 
         // Copy data from C++ to JavaScript
-        for (size_t i = 0; i < outputSize; i++) {
-            uint8Array.set(i, emscripten::val(outputData[i]));
-        }
+        uint8Array.call<void>("set", view);
 
         return uint8Array;
 
@@ -115,6 +116,12 @@ emscripten::val splitPages(const emscripten::val& inputArray) {
             for (size_t j = 0; j < outputSize; j++) {
                 uint8Array.set(j, emscripten::val(outputData[j]));
             }
+
+            // Create a typed memory view for the output data
+            auto view = emscripten::typed_memory_view(outputSize, outputData);
+
+            // Copy data from C++ to JavaScript
+            uint8Array.call<void>("set", view);
             result.call<void>("push", uint8Array);
         }
 

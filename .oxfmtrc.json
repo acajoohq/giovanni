@@ -11,5 +11,16 @@
     "bracketSpacing": true,
     "bracketSameLine": false,
     "arrowParens": "always",
-    "ignorePatterns": [".oxfmtrc.json"]
+    "ignorePatterns": [
+        "node_modules/**",
+        "vendor/**",
+        "dist/**",
+        "build/**",
+        "coverage/**",
+        ".turbo/**",
+        ".pnpm-store/**",
+        "apps/*/dist/**",
+        "packages/*/dist/**",
+        "packages/*/build/**"
+    ]
 }

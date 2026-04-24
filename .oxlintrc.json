@@ -1,0 +1,43 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": ["oxc", "typescript", "unicorn", "import", "react", "jsx-a11y", "vitest", "promise"],
+    "ignorePatterns": [
+        "node_modules/**",
+        "vendor/**",
+        "dist/**",
+        "build/**",
+        "coverage/**",
+        ".turbo/**",
+        ".pnpm-store/**",
+        "apps/*/dist/**",
+        "packages/*/dist/**",
+        "packages/*/build/**"
+    ],
+    "rules": {
+        "eqeqeq": "error",
+        "no-debugger": "error",
+        "no-var": "error",
+        "prefer-const": "error",
+        "import/no-cycle": "error",
+        "promise/no-return-wrap": "error",
+        "react/exhaustive-deps": "error",
+        "react/jsx-key": "error",
+        "react/self-closing-comp": [
+            "error",
+            {
+                "component": true,
+                "html": true
+            }
+        ],
+        "typescript/no-explicit-any": "error"
+    },
+    "overrides": [
+        {
+            "files": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
+            "plugins": ["vitest"],
+            "env": {
+                "vitest": true
+            }
+        }
+    ]
+}

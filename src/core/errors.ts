@@ -39,6 +39,16 @@ export class QpdfCompressionError extends QpdfError {
 }
 
 /**
+ * Error thrown when PDF splitting fails
+ */
+export class QpdfSplitError extends QpdfError {
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = 'QpdfSplitError';
+  }
+}
+
+/**
  * Error thrown when input validation fails
  */
 export class QpdfValidationError extends QpdfError {

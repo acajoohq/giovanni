@@ -1,7 +1,7 @@
-import { initQpdfModule } from './module-loader.js';
-import { QpdfCompressionError } from './errors.js';
-import { normalizeBuffer } from '../utils/validation.js';
-import type { SplitResult } from '../types/index.js';
+import { initQpdfModule } from "./module-loader.js";
+import { QpdfSplitError } from "./errors.js";
+import { normalizeBuffer } from "../utils/validation.js";
+import type { SplitResult } from "../types/index.js";
 
 /**
  * Split a PDF into individual single-page PDFs
@@ -19,13 +19,13 @@ import type { SplitResult } from '../types/index.js';
  * });
  */
 export async function splitPages(
-  input: Uint8Array | ArrayBuffer
+  input: Uint8Array | ArrayBuffer,
 ): Promise<SplitResult> {
   try {
     const module = await initQpdfModule();
-    if (typeof module.splitPages !== 'function') {
-      throw new QpdfCompressionError(
-        'Failed to initialize PDF splitter: qpdf module is missing the splitPages export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.'
+    if (typeof module.splitPages !== "function") {
+      throw new QpdfSplitError(
+        "Failed to initialize PDF splitter: qpdf module is missing the splitPages export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.",
       );
     }
     const inputBuffer = normalizeBuffer(input);
@@ -36,9 +36,9 @@ export async function splitPages(
       pageCount: pages.length,
     };
   } catch (error) {
-    if (error instanceof QpdfCompressionError) {
+    if (error instanceof QpdfSplitError) {
       throw error;
     }
-    throw new QpdfCompressionError('Failed to split PDF', { cause: error });
+    throw new QpdfSplitError("Failed to split PDF", { cause: error });
   }
 }

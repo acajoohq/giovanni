@@ -18,18 +18,16 @@ if ! command -v emcc &> /dev/null; then
     exit 1
 fi
 
-# Check if parent qpdf source exists
+# Check if qpdf source exists
 QPDF_SOURCE="../qpdf"
 if [ ! -d "$QPDF_SOURCE" ]; then
-    echo -e "${RED}Error: Parent qpdf source not found at $QPDF_SOURCE${NC}"
-    echo "Expected directory structure:"
-    echo "  /path/to/qpdf/          <- parent qpdf source"
-    echo "  /path/to/qpdf-wasm/     <- this project"
+    echo -e "${RED}Error: qpdf source not found at $QPDF_SOURCE${NC}"
+    echo "Please clone qpdf into the project directory (readme.md)"
     exit 1
 fi
 
 echo -e "${GREEN}✓ Emscripten found: $(emcc --version | head -n1)${NC}"
-echo -e "${GREEN}✓ Parent qpdf source found at: $QPDF_SOURCE${NC}"
+echo -e "${GREEN}✓ qpdf source found at: $QPDF_SOURCE${NC}"
 
 # Create build directory
 BUILD_DIR="cmake-build"

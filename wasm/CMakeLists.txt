@@ -33,7 +33,7 @@ set(ZLIB_LIB_PATH "z" CACHE FILEPATH "zlib library") # Emscripten will resolve t
 set(LIBJPEG_H_PATH "${EMSCRIPTEN_SYSROOT}/include" CACHE PATH "libjpeg include path")
 set(LIBJPEG_LIB_PATH "jpeg" CACHE FILEPATH "libjpeg library") # Emscripten will resolve this
 
-# Include parent qpdf project (adjust path to point to sibling qpdf directory)
+# Include qpdf project (cloned into qpdf-wasm/qpdf/)
 # We'll build libqpdf as a subdirectory
 set(qpdf_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../qpdf)
 set(qpdf_INCLUDE ${qpdf_SOURCE_DIR}/include)

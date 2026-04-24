@@ -28,16 +28,7 @@ qpdf_stream_decode_level_e getDecodeLevel(const std::string& level) {
 emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& options) {
     try {
         // Convert JavaScript Uint8Array to std::vector<uint8_t>
-        unsigned int length = inputArray["length"].as<unsigned int>();
-        std::vector<uint8_t> inputData(length);
-
-        // Copy data from JavaScript to C++
-        emscripten::val memory = emscripten::val::module_property("HEAPU8");
-        emscripten::val memoryView = inputArray;
-
-        for (unsigned int i = 0; i < length; i++) {
-            inputData[i] = memoryView[i].as<uint8_t>();
-        }
+        std::vector<uint8_t> inputData = emscripten::vecFromJSArray<uint8_t>(inputArray);
 
         // Set compression level for Flate
         if (options.compressionLevel >= 1 && options.compressionLevel <= 9) {
@@ -96,11 +87,7 @@ std::string getQpdfVersion() {
 // Takes a Uint8Array and returns a JS Array of Uint8Arrays (one per page)
 emscripten::val splitPages(const emscripten::val& inputArray) {
     try {
-        unsigned int length = inputArray["length"].as<unsigned int>();
-        std::vector<uint8_t> inputData(length);
-        for (unsigned int i = 0; i < length; i++) {
-            inputData[i] = inputArray[i].as<uint8_t>();
-        }
+        std::vector<uint8_t> inputData = emscripten::vecFromJSArray<uint8_t>(inputArray);
 
         QPDF pdf;
         pdf.processMemoryFile("input.pdf",

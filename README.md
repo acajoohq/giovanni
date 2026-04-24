@@ -119,6 +119,26 @@ const result = await compressPdf(pdfBytes, {
 });
 ```
 
+#### `splitPages(input, options?)`
+
+Split a PDF into individual pages or groups of pages.
+
+**Parameters:**
+
+- `input: Uint8Array | ArrayBuffer` - PDF file data
+
+**Returns:** `Promise<SplitResult>`
+
+**Example:**
+
+```typescript
+const result = await splitPages(pdfBytes);
+
+for (const page of result.pages) {
+  console.log(`Page ${page.pageNumber}: ${page.data.byteLength} bytes`);
+}
+```
+
 #### `initQpdf()`
 
 Preload the WASM module (optional, automatically called by `compressPdf`).

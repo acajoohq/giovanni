@@ -184,6 +184,7 @@
   </footer>
 
   <script type="module">
+    import JSZip from 'jszip';
     import { compressPdf, splitPages, getVersion, formatBytes } from '../dist/index.mjs';
 
     let compressedData = null;
@@ -340,21 +341,31 @@
     }
 
     document.getElementById('downloadAllBtn').addEventListener('click', () => {
-      splitPagesData.forEach((page, i) => {
-        const fileName = `${splitFileName}_page_${i + 1}.pdf`;
-        setTimeout(() => downloadData(page, fileName), i * 150);
-      });
+      downloadArchive(splitPagesData);
     });
 
     // ── Helpers ───────────────────────────────────────────────────
-    function downloadData(data, fileName) {
-      const blob = new Blob([data], { type: 'application/pdf' });
+    function downloadData(data, fileName, type = 'application/pdf') {
+      const blob = new Blob([data], { type });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = fileName;
       a.click();
       URL.revokeObjectURL(url);
+    }
+
+    async function downloadArchive(splitPagesData) {
+      const zip = new JSZip();
+      
+      splitPagesData.forEach((page, i) => {
+        const fileName = `${splitFileName}_page_${i + 1}.pdf`;
+        const blob = new Blob([page], { type: 'application/pdf' });
+        zip.file(fileName, blob);
+      });
+
+      const zipContent = await zip.generateAsync({ type: "blob" });
+      downloadData(zipContent, "archive_documents.zip");
     }
 
     function showStatus(id, message, type) {

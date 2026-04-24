@@ -5,7 +5,6 @@ node_modules/
 dist/
 build/
 demo-dist/
-demo/dist/
 
 # Coverage
 coverage/

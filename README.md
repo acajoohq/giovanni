@@ -1,3 +1,38 @@
+# Pdfly
+
+Local-first PDF tools powered by qpdf, WebAssembly, Vite, and React.
+
+## Workspace
+
+```text
+apps/
+  pdfly-web/       Vite React app
+packages/
+  pdfly-wasm/      qpdf WebAssembly package
+vendor/
+  qpdf/            local qpdf source clone, ignored by git
+```
+
+## Setup
+
+```bash
+pnpm install
+git clone https://github.com/qpdf/qpdf.git vendor/qpdf
+```
+
+## Commands
+
+```bash
+pnpm dev
+pnpm build
+pnpm test
+pnpm typecheck
+pnpm lint
+pnpm validate
+```
+
+Generated build output is ignored and can be recreated from source.
+
 # @qpdf/wasm
 
 ## Todo's
@@ -44,31 +79,33 @@ npm install @qpdf/wasm
 ### Simple API (Recommended)
 
 ```typescript
-import { compressPdf } from '@qpdf/wasm';
+import { compressPdf } from "@qpdf/wasm";
 
 // Fetch a PDF
-const pdfBytes = await fetch('document.pdf').then(r => r.arrayBuffer());
+const pdfBytes = await fetch("document.pdf").then((r) => r.arrayBuffer());
 
 // Compress it
 const result = await compressPdf(pdfBytes, {
   compressionLevel: 9,
-  decodeLevel: 'all',
-  recompressFlate: true
+  decodeLevel: "all",
+  recompressFlate: true,
 });
 
 console.log(`Original: ${result.originalSize} bytes`);
 console.log(`Compressed: ${result.compressedSize} bytes`);
-console.log(`Saved: ${result.savedBytes} bytes (${(result.savedBytes / result.originalSize * 100).toFixed(1)}%)`);
+console.log(
+  `Saved: ${result.savedBytes} bytes (${((result.savedBytes / result.originalSize) * 100).toFixed(1)}%)`,
+);
 
 // Download the compressed PDF
-const blob = new Blob([result.data], { type: 'application/pdf' });
+const blob = new Blob([result.data], { type: "application/pdf" });
 const url = URL.createObjectURL(blob);
 ```
 
 ### Advanced API (Fine-Grained Control)
 
 ```typescript
-import { QPDF, QPDFWriter } from '@qpdf/wasm';
+import { QPDF, QPDFWriter } from "@qpdf/wasm";
 
 // Load PDF
 const qpdf = new QPDF();
@@ -80,14 +117,14 @@ console.log(`Version: ${qpdf.getPDFVersion()}`);
 console.log(`Encrypted: ${qpdf.isEncrypted()}`);
 
 const info = qpdf.getInfo();
-console.log('PDF Info:', info);
+console.log("PDF Info:", info);
 
 // Configure compression
 const writer = new QPDFWriter(qpdf);
 await writer.setCompressionLevel(9);
-await writer.setDecodeLevel('all');
+await writer.setDecodeLevel("all");
 await writer.setRecompressFlate(true);
-await writer.setObjectStreamMode('generate');
+await writer.setObjectStreamMode("generate");
 
 // Write compressed PDF
 await writer.write();
@@ -118,7 +155,7 @@ Compress a PDF with the specified options.
 ```typescript
 const result = await compressPdf(pdfBytes, {
   compressionLevel: 9,
-  decodeLevel: 'all'
+  decodeLevel: "all",
 });
 ```
 
@@ -200,7 +237,7 @@ interface CompressionOptions {
   // 'generalized': Decode common filters
   // 'specialized': Decode JPEG, etc.
   // 'all': Maximum compression
-  decodeLevel?: 'none' | 'generalized' | 'specialized' | 'all'; // default: 'generalized'
+  decodeLevel?: "none" | "generalized" | "specialized" | "all"; // default: 'generalized'
 
   // Recompress flate-compressed streams
   recompressFlate?: boolean; // default: true
@@ -209,7 +246,7 @@ interface CompressionOptions {
   // 'preserve': Keep existing object streams
   // 'disable': Disable object streams
   // 'generate': Generate object streams (better compression)
-  objectStreams?: 'preserve' | 'disable' | 'generate'; // default: 'preserve'
+  objectStreams?: "preserve" | "disable" | "generate"; // default: 'preserve'
 
   // Combine multiple content streams per page
   compressPages?: boolean; // default: false
@@ -222,7 +259,7 @@ interface CompressionOptions {
 ## Utility Functions
 
 ```typescript
-import { formatBytes, calculateSavings, downloadBuffer } from '@qpdf/wasm';
+import { formatBytes, calculateSavings, downloadBuffer } from "@qpdf/wasm";
 
 // Format bytes as human-readable string
 formatBytes(1536); // "1.5 KB"
@@ -232,7 +269,7 @@ const savings = calculateSavings(1000, 500);
 // { savedBytes: 500, compressionRatio: 0.5, percentageSaved: 50 }
 
 // Trigger browser download
-downloadBuffer(compressedData, 'compressed.pdf');
+downloadBuffer(compressedData, "compressed.pdf");
 ```
 
 ## Building from Source

@@ -1,3 +1,0 @@
-export type { DecodeLevel, ObjectStreamMode, CompressionOptions } from './options.js';
-export type { CompressionResult, QPDFInfo, SplitResult } from './results.js';
-export type { QpdfWasmModule, CreateQpdfModule } from './wasm-module.js';

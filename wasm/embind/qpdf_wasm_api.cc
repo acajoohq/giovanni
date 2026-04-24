@@ -113,10 +113,7 @@ emscripten::val splitPages(const emscripten::val& inputArray) {
             size_t outputSize = buffer->getSize();
 
             emscripten::val uint8Array = emscripten::val::global("Uint8Array").new_(outputSize);
-            for (size_t j = 0; j < outputSize; j++) {
-                uint8Array.set(j, emscripten::val(outputData[j]));
-            }
-
+        
             // Create a typed memory view for the output data
             auto view = emscripten::typed_memory_view(outputSize, outputData);
 

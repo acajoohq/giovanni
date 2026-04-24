@@ -231,12 +231,9 @@ emscripten::val QPDFWriterWrapper::getBuffer() {
     const unsigned char* outputData = buffer->getBuffer();
     size_t outputSize = buffer->getSize();
 
-    // Create JavaScript Uint8Array
+    auto view = emscripten::typed_memory_view(outputSize, outputData);
     emscripten::val uint8Array = emscripten::val::global("Uint8Array").new_(outputSize);
-
-    for (size_t i = 0; i < outputSize; i++) {
-        uint8Array.set(i, emscripten::val(outputData[i]));
-    }
+    uint8Array.call<void>("set", view);
 
     return uint8Array;
 }

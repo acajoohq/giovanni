@@ -1,15 +1,15 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
-    "jsx": "react-jsx",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "noEmit": true,
-    "paths": {
-      "@pdfly/wasm": ["../../packages/pdfly-wasm/src/index.ts"]
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "ignoreDeprecations": "6.0",
+        "jsx": "react-jsx",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "noEmit": true,
+        "paths": {
+            "@pdfly/wasm": ["../../packages/pdfly-wasm/src/index.ts"]
+        },
+        "types": ["vite/client"]
     },
-    "types": ["vite/client"]
-  },
-  "include": ["src", "vite.config.ts"]
+    "include": ["src", "vite.config.ts"]
 }

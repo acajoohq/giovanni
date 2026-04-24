@@ -1,25 +1,25 @@
 {
-  "name": "pdfly-web",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "vite build",
-    "clean": "rm -rf dist",
-    "dev": "vite --host 127.0.0.1",
-    "format": "oxfmt --write src index.html vite.config.ts",
-    "format:check": "oxfmt --check src index.html vite.config.ts",
-    "lint": "oxlint src vite.config.ts",
-    "preview": "vite preview",
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
-    "validate": "pnpm run typecheck"
-  },
-  "dependencies": {
-    "@pdfly/wasm": "workspace:*",
-    "jszip": "^3.10.1",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
-  }
+    "name": "pdfly-web",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "clean": "rm -rf dist",
+        "dev": "vite --host 127.0.0.1",
+        "format": "oxfmt --write src index.html vite.config.ts",
+        "format:check": "oxfmt --check src index.html vite.config.ts",
+        "lint": "oxlint src vite.config.ts",
+        "preview": "vite preview",
+        "test": "vitest run --passWithNoTests",
+        "test:watch": "vitest",
+        "typecheck": "tsc --noEmit",
+        "validate": "pnpm run typecheck"
+    },
+    "dependencies": {
+        "@pdfly/wasm": "workspace:*",
+        "jszip": "^3.10.1",
+        "react": "^19.2.5",
+        "react-dom": "^19.2.5"
+    }
 }

@@ -40,23 +40,10 @@ export { QPDF } from "./core/qpdf.js";
 export { QPDFWriter } from "./core/writer.js";
 
 // error classes
-export {
-  QpdfError,
-  QpdfInitError,
-  QpdfCompressionError,
-  QpdfSplitError,
-  QpdfValidationError,
-} from "./core/errors.js";
+export { QpdfError, QpdfInitError, QpdfCompressionError, QpdfSplitError, QpdfValidationError } from "./core/errors.js";
 
 // types
-export type {
-  CompressionOptions,
-  DecodeLevel,
-  ObjectStreamMode,
-  CompressionResult,
-  SplitResult,
-  QPDFInfo,
-} from "./types/index.js";
+export type { CompressionOptions, DecodeLevel, ObjectStreamMode, CompressionResult, SplitResult, QPDFInfo } from "./types/index.js";
 
 // utility functions
 export { formatBytes, calculateSavings, formatPercentage } from "./utils/format.js";

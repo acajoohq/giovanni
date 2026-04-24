@@ -16,9 +16,9 @@ import { compressPdf, splitPages } from "@pdfly/wasm";
 const input = await fetch("document.pdf").then((response) => response.arrayBuffer());
 
 const compressed = await compressPdf(input, {
-  compressionLevel: 9,
-  decodeLevel: "all",
-  recompressFlate: true,
+    compressionLevel: 9,
+    decodeLevel: "all",
+    recompressFlate: true,
 });
 
 const pages = await splitPages(compressed.data);

@@ -12,48 +12,48 @@ export type ObjectStreamMode = "preserve" | "disable" | "generate";
  * Compression options for PDF optimization
  */
 export interface CompressionOptions {
-  /**
-   * Compression level (1-9)
-   * 1 = fastest, least compression
-   * 9 = slowest, best compression
-   * @default 6
-   */
-  compressionLevel?: number;
+    /**
+     * Compression level (1-9)
+     * 1 = fastest, least compression
+     * 9 = slowest, best compression
+     * @default 6
+     */
+    compressionLevel?: number;
 
-  /**
-   * Decode level - controls how aggressively to decode and recompress streams
-   * - 'none': Don't decode anything
-   * - 'generalized': Decode generalized filters (predictors, etc.)
-   * - 'specialized': Decode specialized filters (JPEG, etc.)
-   * - 'all': Decode everything possible
-   * @default 'generalized'
-   */
-  decodeLevel?: DecodeLevel;
+    /**
+     * Decode level - controls how aggressively to decode and recompress streams
+     * - 'none': Don't decode anything
+     * - 'generalized': Decode generalized filters (predictors, etc.)
+     * - 'specialized': Decode specialized filters (JPEG, etc.)
+     * - 'all': Decode everything possible
+     * @default 'generalized'
+     */
+    decodeLevel?: DecodeLevel;
 
-  /**
-   * Whether to recompress streams that are already compressed with flate
-   * @default true
-   */
-  recompressFlate?: boolean;
+    /**
+     * Whether to recompress streams that are already compressed with flate
+     * @default true
+     */
+    recompressFlate?: boolean;
 
-  /**
-   * Object stream mode - controls how objects are stored
-   * - 'preserve': Keep existing object streams
-   * - 'disable': Disable object streams
-   * - 'generate': Generate object streams for better compression
-   * @default 'preserve'
-   */
-  objectStreams?: ObjectStreamMode;
+    /**
+     * Object stream mode - controls how objects are stored
+     * - 'preserve': Keep existing object streams
+     * - 'disable': Disable object streams
+     * - 'generate': Generate object streams for better compression
+     * @default 'preserve'
+     */
+    objectStreams?: ObjectStreamMode;
 
-  /**
-   * Whether to compress pages (combine multiple content streams)
-   * @default false
-   */
-  compressPages?: boolean;
+    /**
+     * Whether to compress pages (combine multiple content streams)
+     * @default false
+     */
+    compressPages?: boolean;
 
-  /**
-   * Whether to remove unreferenced resources
-   * @default false
-   */
-  removeUnreferencedResources?: boolean;
+    /**
+     * Whether to remove unreferenced resources
+     * @default false
+     */
+    removeUnreferencedResources?: boolean;
 }

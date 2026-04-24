@@ -44,11 +44,11 @@ Generated build output is ignored and can be recreated from source.
 - [ ] CI / CD
 - [ ] Open source it
 - [ ] Documentation
-  - [ ] How to use it with vite (chunking)
+    - [ ] How to use it with vite (chunking)
 - [ ] Review the code
-  - [ ] WASM build
-  - [ ] Library design
-  - [ ] Tests
+    - [ ] WASM build
+    - [ ] Library design
+    - [ ] Tests
 - [ ] Choose a package name
 - [ ] Make from scratch a demo with a simple vite app
 - [ ] Clean the bloat
@@ -86,16 +86,14 @@ const pdfBytes = await fetch("document.pdf").then((r) => r.arrayBuffer());
 
 // Compress it
 const result = await compressPdf(pdfBytes, {
-  compressionLevel: 9,
-  decodeLevel: "all",
-  recompressFlate: true,
+    compressionLevel: 9,
+    decodeLevel: "all",
+    recompressFlate: true,
 });
 
 console.log(`Original: ${result.originalSize} bytes`);
 console.log(`Compressed: ${result.compressedSize} bytes`);
-console.log(
-  `Saved: ${result.savedBytes} bytes (${((result.savedBytes / result.originalSize) * 100).toFixed(1)}%)`,
-);
+console.log(`Saved: ${result.savedBytes} bytes (${((result.savedBytes / result.originalSize) * 100).toFixed(1)}%)`);
 
 // Download the compressed PDF
 const blob = new Blob([result.data], { type: "application/pdf" });
@@ -154,8 +152,8 @@ Compress a PDF with the specified options.
 
 ```typescript
 const result = await compressPdf(pdfBytes, {
-  compressionLevel: 9,
-  decodeLevel: "all",
+    compressionLevel: 9,
+    decodeLevel: "all",
 });
 ```
 
@@ -175,7 +173,7 @@ Split a PDF into individual pages or groups of pages.
 const result = await splitPages(pdfBytes);
 
 for (const page of result.pages) {
-  console.log(`Page ${page.pageNumber}: ${page.data.byteLength} bytes`);
+    console.log(`Page ${page.pageNumber}: ${page.data.byteLength} bytes`);
 }
 ```
 
@@ -227,32 +225,32 @@ Write a PDF with compression settings.
 
 ```typescript
 interface CompressionOptions {
-  // Compression level (1-9)
-  // 1 = fastest, least compression
-  // 9 = slowest, best compression
-  compressionLevel?: number; // default: 6
+    // Compression level (1-9)
+    // 1 = fastest, least compression
+    // 9 = slowest, best compression
+    compressionLevel?: number; // default: 6
 
-  // Decode level - controls stream recompression
-  // 'none': Don't decode anything
-  // 'generalized': Decode common filters
-  // 'specialized': Decode JPEG, etc.
-  // 'all': Maximum compression
-  decodeLevel?: "none" | "generalized" | "specialized" | "all"; // default: 'generalized'
+    // Decode level - controls stream recompression
+    // 'none': Don't decode anything
+    // 'generalized': Decode common filters
+    // 'specialized': Decode JPEG, etc.
+    // 'all': Maximum compression
+    decodeLevel?: "none" | "generalized" | "specialized" | "all"; // default: 'generalized'
 
-  // Recompress flate-compressed streams
-  recompressFlate?: boolean; // default: true
+    // Recompress flate-compressed streams
+    recompressFlate?: boolean; // default: true
 
-  // Object stream mode
-  // 'preserve': Keep existing object streams
-  // 'disable': Disable object streams
-  // 'generate': Generate object streams (better compression)
-  objectStreams?: "preserve" | "disable" | "generate"; // default: 'preserve'
+    // Object stream mode
+    // 'preserve': Keep existing object streams
+    // 'disable': Disable object streams
+    // 'generate': Generate object streams (better compression)
+    objectStreams?: "preserve" | "disable" | "generate"; // default: 'preserve'
 
-  // Combine multiple content streams per page
-  compressPages?: boolean; // default: false
+    // Combine multiple content streams per page
+    compressPages?: boolean; // default: false
 
-  // Remove unreferenced resources
-  removeUnreferencedResources?: boolean; // default: false
+    // Remove unreferenced resources
+    removeUnreferencedResources?: boolean; // default: false
 }
 ```
 
@@ -278,22 +276,22 @@ downloadBuffer(compressedData, "compressed.pdf");
 
 1. **Emscripten SDK in your env** - Install and activate:
 
-   ```bash
-   git clone https://github.com/emscripten-core/emsdk.git
-   cd emsdk
-   ./emsdk install latest
-   ./emsdk activate latest
-   source ./emsdk_env.sh
-   ```
+    ```bash
+    git clone https://github.com/emscripten-core/emsdk.git
+    cd emsdk
+    ./emsdk install latest
+    ./emsdk activate latest
+    source ./emsdk_env.sh
+    ```
 
 2. **Node.js 18+** - For the build system
 
 3. **qpdf source** - Clone into the project directory (this is gitignored):
 
-   ```bash
-   # Clone latest qpdf source or a specific version
-   git clone --revision v12.3.2 https://github.com/qpdf/qpdf.git qpdf
-   ```
+    ```bash
+    # Clone latest qpdf source or a specific version
+    git clone --revision v12.3.2 https://github.com/qpdf/qpdf.git qpdf
+    ```
 
 ### Build Steps
 

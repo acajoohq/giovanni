@@ -10,15 +10,15 @@ import type { CompressionOptions, CompressionResult } from "../types/index.js";
  * to preload the module before compression
  */
 export async function initQpdf(): Promise<void> {
-  await initQpdfModule();
+    await initQpdfModule();
 }
 
 /**
  * Get the qpdf library version
  */
 export async function getVersion(): Promise<string> {
-  const module = await initQpdfModule();
-  return module.getVersion();
+    const module = await initQpdfModule();
+    return module.getVersion();
 }
 
 /**
@@ -43,37 +43,34 @@ export async function getVersion(): Promise<string> {
  * const url = URL.createObjectURL(blob);
  * ```
  */
-export async function compressPdf(
-  input: Uint8Array | ArrayBuffer,
-  options?: CompressionOptions,
-): Promise<CompressionResult> {
-  try {
-    // Initialize module
-    const module = await initQpdfModule();
+export async function compressPdf(input: Uint8Array | ArrayBuffer, options?: CompressionOptions): Promise<CompressionResult> {
+    try {
+        // Initialize module
+        const module = await initQpdfModule();
 
-    // Normalize and validate input
-    const inputBuffer = normalizeBuffer(input);
-    const validatedOptions = validateCompressionOptions(options);
+        // Normalize and validate input
+        const inputBuffer = normalizeBuffer(input);
+        const validatedOptions = validateCompressionOptions(options);
 
-    // Perform compression
-    const compressedBuffer = module.compressPdf(inputBuffer, validatedOptions);
+        // Perform compression
+        const compressedBuffer = module.compressPdf(inputBuffer, validatedOptions);
 
-    // Calculate statistics
-    const originalSize = inputBuffer.byteLength;
-    const compressedSize = compressedBuffer.byteLength;
-    const { savedBytes, compressionRatio } = calculateSavings(originalSize, compressedSize);
+        // Calculate statistics
+        const originalSize = inputBuffer.byteLength;
+        const compressedSize = compressedBuffer.byteLength;
+        const { savedBytes, compressionRatio } = calculateSavings(originalSize, compressedSize);
 
-    return {
-      data: compressedBuffer,
-      originalSize,
-      compressedSize,
-      compressionRatio,
-      savedBytes,
-    };
-  } catch (error) {
-    if (error instanceof QpdfCompressionError) {
-      throw error;
+        return {
+            data: compressedBuffer,
+            originalSize,
+            compressedSize,
+            compressionRatio,
+            savedBytes,
+        };
+    } catch (error) {
+        if (error instanceof QpdfCompressionError) {
+            throw error;
+        }
+        throw new QpdfCompressionError("Failed to compress PDF", { cause: error });
     }
-    throw new QpdfCompressionError("Failed to compress PDF", { cause: error });
-  }
 }

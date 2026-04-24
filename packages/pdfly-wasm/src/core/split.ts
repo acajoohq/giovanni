@@ -19,24 +19,24 @@ import type { SplitResult } from "../types/index.js";
  * });
  */
 export async function splitPages(input: Uint8Array | ArrayBuffer): Promise<SplitResult> {
-  try {
-    const module = await initQpdfModule();
-    if (typeof module.splitPages !== "function") {
-      throw new QpdfSplitError(
-        "Failed to initialize PDF splitter: qpdf module is missing the splitPages export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.",
-      );
-    }
-    const inputBuffer = normalizeBuffer(input);
-    const pages: Uint8Array[] = module.splitPages(inputBuffer);
+    try {
+        const module = await initQpdfModule();
+        if (typeof module.splitPages !== "function") {
+            throw new QpdfSplitError(
+                "Failed to initialize PDF splitter: qpdf module is missing the splitPages export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.",
+            );
+        }
+        const inputBuffer = normalizeBuffer(input);
+        const pages: Uint8Array[] = module.splitPages(inputBuffer);
 
-    return {
-      pages,
-      pageCount: pages.length,
-    };
-  } catch (error) {
-    if (error instanceof QpdfSplitError) {
-      throw error;
+        return {
+            pages,
+            pageCount: pages.length,
+        };
+    } catch (error) {
+        if (error instanceof QpdfSplitError) {
+            throw error;
+        }
+        throw new QpdfSplitError("Failed to split PDF", { cause: error });
     }
-    throw new QpdfSplitError("Failed to split PDF", { cause: error });
-  }
 }

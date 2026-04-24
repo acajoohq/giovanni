@@ -18,6 +18,9 @@
 - [ ] Make from scratch a demo with a simple vite app
 - [ ] Clean the bloat
 - [ ] Publish
+- [ ] refine web
+- [ ] monorepo
+- [ ] desktop app
 
 Modern WebAssembly build of [qpdf](https://github.com/qpdf/qpdf) for PDF compression and manipulation in the browser and Node.js.
 

@@ -42,6 +42,18 @@ pnpm --filter @pdfly/wasm lint
 pnpm --filter @pdfly/wasm validate
 ```
 
+## Todo's
+
+- [ ] Choose the outputs of the lib
+- [ ] Find a strategy for updates of the qpdf library
+- [ ] CI / CD
+- [ ] Open source it
+- [ ] Documentation
+  - [ ] How to use it with Vite chunking
+- [ ] Review the code
+  - [ ] WASM build
+  - [ ] Library design
+
 ## Package Layout
 
 ```text

@@ -18,6 +18,7 @@ export interface WasmQPDFWrapper {
     getPDFVersion(): string;
     isEncrypted(): boolean;
     isLinearized(): boolean;
+    // metadata accessors are optional because minimal WASM builds may omit them
     getTitle?(): string;
     getAuthor?(): string;
     getSubject?(): string;
@@ -30,6 +31,7 @@ export interface WasmQPDFWriter {
     setDecodeLevel(level: string): void;
     setRecompressFlate(value: boolean): void;
     setObjectStreamMode(mode: string): void;
+    // advanced writer options are optional depending on the embind build
     setCompressPages?(value: boolean): void;
     setRemoveUnreferencedResources?(value: boolean): void;
     write(): void;

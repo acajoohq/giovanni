@@ -42,6 +42,7 @@ export interface WasmQPDFWriter {
 
 export interface QpdfWasmModule {
   compressPdf(data: Uint8Array, options: WasmCompressionOptions): Uint8Array;
+  splitPages(data: Uint8Array): Uint8Array[];
   getVersion(): string;
   getQpdfVersion?: () => string;
   QPDFWrapper: new () => WasmQPDFWrapper;

@@ -3,6 +3,7 @@ import {
   QpdfError,
   QpdfInitError,
   QpdfCompressionError,
+  QpdfSplitError,
   QpdfValidationError,
 } from '../src/core/errors.js';
 
@@ -44,6 +45,15 @@ describe('Error Classes', () => {
       expect(error).toBeInstanceOf(QpdfCompressionError);
       expect(error).toBeInstanceOf(QpdfError);
       expect(error.name).toBe('QpdfCompressionError');
+    });
+  });
+
+  describe('QpdfSplitError', () => {
+    it('should create split error', () => {
+      const error = new QpdfSplitError('split failed');
+      expect(error).toBeInstanceOf(QpdfSplitError);
+      expect(error).toBeInstanceOf(QpdfError);
+      expect(error.name).toBe('QpdfSplitError');
     });
   });
 

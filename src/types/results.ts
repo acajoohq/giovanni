@@ -72,3 +72,17 @@ export interface QPDFInfo {
    */
   creator?: string;
 }
+/**
+ * Result of a PDF split operation
+ */
+export interface SplitResult {
+  /**
+   * Array of PDF pages as individual Uint8Arrays
+   */
+  pages: Uint8Array[];
+
+  /**
+   * Total number of pages
+   */
+  pageCount: number;
+}

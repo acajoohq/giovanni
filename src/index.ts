@@ -33,6 +33,7 @@
 
 // Simple API
 export { initQpdf, getVersion, compressPdf } from './core/compress.js';
+export { splitPages } from './core/split.js';
 
 // Advanced API
 export { QPDF } from './core/qpdf.js';
@@ -52,6 +53,7 @@ export type {
   DecodeLevel,
   ObjectStreamMode,
   CompressionResult,
+  SplitResult,
   QPDFInfo,
 } from './types/index.js';
 

@@ -204,7 +204,7 @@ QPDF& QPDFWrapper::getQPDF() {
 
 // Advanced API: QPDFWriter wrapper
 
-QPDFWriterWrapper::QPDFWriterWrapper(QPDFWrapper& qpdf) : qpdfWrapper(&qpdf), compressionLevel(9) {
+QPDFWriterWrapper::QPDFWriterWrapper(QPDFWrapper& qpdf) : qpdfWrapper(&qpdf), compressionLevel(6) {
     writer = std::make_unique<QPDFWriter>(qpdf.getQPDF());
     writer->setOutputMemory();
 }

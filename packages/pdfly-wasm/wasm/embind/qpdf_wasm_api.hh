@@ -14,7 +14,7 @@
 
 // Compression options structure
 struct CompressionOptions {
-    int compressionLevel = 9;
+    int compressionLevel = 6;
     bool recompressFlate = true;
     std::string decodeLevel = "generalized";
     std::string objectStreams = "generate";

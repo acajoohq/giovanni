@@ -1,0 +1,25 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "printWidth": 180,
+    "endOfLine": "lf",
+    "semi": true,
+    "singleQuote": false,
+    "tabWidth": 4,
+    "useTabs": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "arrowParens": "always",
+    "ignorePatterns": [
+        "node_modules/**",
+        "vendor/**",
+        "dist/**",
+        "build/**",
+        "coverage/**",
+        ".turbo/**",
+        ".pnpm-store/**",
+        "apps/*/dist/**",
+        "packages/*/dist/**",
+        "packages/*/build/**"
+    ]
+}

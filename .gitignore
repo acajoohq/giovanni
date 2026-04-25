@@ -1,10 +1,17 @@
 # Dependencies
 node_modules/
+.pnpm-store/
+.turbo/
 
 # Build output
 dist/
 build/
 demo-dist/
+apps/*/dist/
+packages/*/dist/
+packages/*/build/
+apps/*/.turbo/
+packages/*/.turbo/
 
 # Coverage
 coverage/
@@ -28,7 +35,6 @@ npm-debug.log*
 .env
 .env.local
 .agents/skills/
-qpdf/
-
-
-wasm/cmake-build/
+vendor/qpdf/
+packages/pdfly-wasm/wasm/cmake-build/
+.claude/settings.local.json

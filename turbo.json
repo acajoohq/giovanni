@@ -1,0 +1,42 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "globalDependencies": [".oxfmtrc.json", ".oxlintrc.json", "package.json", "pnpm-lock.yaml", "tsconfig.json"],
+    "tasks": {
+        "build": {
+            "dependsOn": ["^build"],
+            "outputs": ["dist/**"]
+        },
+        "build:lib": {
+            "outputs": ["dist/**"],
+            "inputs": ["$TURBO_DEFAULT$", "build/wasm/**"]
+        },
+        "clean": {
+            "cache": false
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "format": {
+            "cache": false
+        },
+        "lint": {
+            "inputs": ["$TURBO_DEFAULT$"]
+        },
+        "test": {
+            "dependsOn": ["^build"],
+            "inputs": ["$TURBO_DEFAULT$"]
+        },
+        "test:watch": {
+            "cache": false,
+            "persistent": true
+        },
+        "typecheck": {
+            "dependsOn": ["^typecheck"],
+            "inputs": ["$TURBO_DEFAULT$"]
+        },
+        "validate": {
+            "dependsOn": ["build"]
+        }
+    }
+}

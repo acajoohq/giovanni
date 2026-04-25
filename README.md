@@ -42,7 +42,7 @@ pnpm clean
 ## Todo
 
 - [x] Setup repo (Matteo)
-- [ ] Choose the outputs of the lib
+- [ ] CLI
 - [ ] Find a strategy for updates of the qpdf library
 - [x] CI
 - [ ] CD

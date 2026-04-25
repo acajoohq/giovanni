@@ -88,6 +88,17 @@ jobs:
                   path: vendor/qpdf
                   key: qpdf-${{ env.QPDF_VERSION }}
 
+            - name: Ensure CMake
+              run: |
+                  set -euo pipefail
+                  if ! command -v cmake >/dev/null 2>&1; then
+                    echo "CMake not found, installing..."
+                    sudo apt-get update
+                    sudo apt-get install -y cmake
+                  else
+                    echo "CMake already installed."
+                  fi
+
             - name: Setup Emscripten
               run: |
                   set -euo pipefail
@@ -121,3 +132,4 @@ jobs:
 
             - name: Check package contents
               run: pnpm --filter @pdfly/wasm pack --dry-run
+         

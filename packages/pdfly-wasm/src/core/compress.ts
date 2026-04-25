@@ -45,20 +45,20 @@ export async function getVersion(): Promise<string> {
  */
 export async function compressPdf(input: Uint8Array | ArrayBuffer, options?: CompressionOptions): Promise<CompressionResult> {
     try {
-        // Initialize module
+        // initialize module
         const module = await initQpdfModule();
 
-        // Normalize and validate input
+        // normalize and validate input
         const inputBuffer = normalizeBuffer(input);
         const validatedOptions = validateCompressionOptions(options);
 
-        // Perform compression
+        // perform compression
         const compressedBuffer = module.compressPdf(inputBuffer, validatedOptions);
 
-        // Calculate statistics
+        // calculate statistics
         const originalSize = inputBuffer.byteLength;
         const compressedSize = compressedBuffer.byteLength;
-        const { savedBytes, compressionRatio } = calculateSavings(originalSize, compressedSize);
+        const { savedBytes, compressionRatio, percentageSaved } = calculateSavings(originalSize, compressedSize);
 
         return {
             data: compressedBuffer,
@@ -66,6 +66,7 @@ export async function compressPdf(input: Uint8Array | ArrayBuffer, options?: Com
             compressedSize,
             compressionRatio,
             savedBytes,
+            percentageSaved,
         };
     } catch (error) {
         if (error instanceof QpdfCompressionError) {

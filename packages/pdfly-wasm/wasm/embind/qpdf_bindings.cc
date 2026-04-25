@@ -11,7 +11,10 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
     value_object<CompressionOptions>("CompressionOptions")
         .field("compressionLevel", &CompressionOptions::compressionLevel)
         .field("recompressFlate", &CompressionOptions::recompressFlate)
-        .field("decodeLevel", &CompressionOptions::decodeLevel);
+        .field("decodeLevel", &CompressionOptions::decodeLevel)
+        .field("objectStreams", &CompressionOptions::objectStreams)
+        .field("compressPages", &CompressionOptions::compressPages)
+        .field("removeUnreferencedResources", &CompressionOptions::removeUnreferencedResources);
 
     // Simple API: compressPdf function
     function("compressPdf", &compressPdf,

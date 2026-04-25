@@ -5,7 +5,10 @@
       "Bash(ls:*)",
       "Bash(timeout 5 npm run dev:*)",
       "Bash(pnpm check *)",
-      "Bash(git -C /Users/matteolemni/dev/draft/qpdf-wasm show master:apps/pdfly-web/index.html)"
+      "Bash(git -C /Users/matteolemni/dev/draft/qpdf-wasm show master:apps/pdfly-web/index.html)",
+      "Bash(git -C /Users/matteolemni/dev/draft/qpdf-wasm log --oneline master)",
+      "Bash(git -C /Users/matteolemni/dev/draft/qpdf-wasm show master --stat)",
+      "Bash(git *)"
     ]
   }
 }

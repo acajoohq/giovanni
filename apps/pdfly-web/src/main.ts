@@ -1,5 +1,4 @@
-import JSZip from "jszip";
-import { calculateSavings, compressPdf, downloadBuffer, formatBytes, getVersion, splitPages, type CompressionOptions, type DecodeLevel } from "@pdfly/wasm";
+import { compressPdf, formatBytes, getVersion, splitPages } from "@pdfly/wasm";
 
 let compressedData: Uint8Array | null = null;
 let splitPagesData: Uint8Array[] = [];
@@ -43,7 +42,7 @@ compressInput.addEventListener("change", (event) => {
 levelSlider.addEventListener("input", () => setText("level-value", levelSlider.value));
 
 document.getElementById("download-btn")?.addEventListener("click", () => {
-    if (compressedData) downloadBuffer(compressedData, "compressed.pdf");
+    if (compressedData) downloadData(compressedData, "compressed.pdf");
 });
 
 async function handleCompressFile(file: File): Promise<void> {
@@ -56,9 +55,9 @@ async function handleCompressFile(file: File): Promise<void> {
 
     try {
         const arrayBuffer = await file.arrayBuffer();
-        const options: CompressionOptions = {
+        const options = {
             compressionLevel: parseInt(levelSlider.value),
-            decodeLevel: (document.getElementById("decode-level") as HTMLSelectElement).value as DecodeLevel,
+            decodeLevel: (document.getElementById("decode-level") as HTMLSelectElement).value as "none" | "generalized" | "specialized" | "all",
             recompressFlate: (document.getElementById("recompress-flate") as HTMLInputElement).checked,
             compressPages: (document.getElementById("compress-pages") as HTMLInputElement).checked,
             removeUnreferencedResources: (document.getElementById("remove-unreferenced") as HTMLInputElement).checked,
@@ -69,18 +68,18 @@ async function handleCompressFile(file: File): Promise<void> {
         const startTime = performance.now();
         const result = await compressPdf(arrayBuffer, options);
         const processingTime = ((performance.now() - startTime) / 1000).toFixed(2);
-        const { percentageSaved } = calculateSavings(result.originalSize, result.compressedSize);
+        const savingsPercent = ((result.savedBytes / result.originalSize) * 100).toFixed(1);
 
         compressedData = result.data;
-        setText("savings", `${percentageSaved.toFixed(1)}% saved`);
+        setText("savings", `${savingsPercent}% saved`);
         setText("original-size", formatBytes(result.originalSize));
         setText("compressed-size", formatBytes(result.compressedSize));
         setText("saved-size", formatBytes(result.savedBytes));
         setText("processing-time", `${processingTime}s`);
-        showElement("compress-results");
+        document.getElementById("compress-results")?.classList.add("show");
         showStatus("compress-status", "Compression complete!", "success");
     } catch (error) {
-        showStatus("compress-status", `Error: ${getErrorMessage(error)}`, "error");
+        showStatus("compress-status", `Error: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
     }
 }
 
@@ -105,7 +104,11 @@ splitInput.addEventListener("change", (event) => {
     if (file) void handleSplitFile(file);
 });
 
-document.getElementById("download-all-btn")?.addEventListener("click", () => void handleDownloadArchive());
+document.getElementById("download-all-btn")?.addEventListener("click", () => {
+    splitPagesData.forEach((page, i) => {
+        setTimeout(() => downloadData(page, `${splitFileName}_page_${i + 1}.pdf`), i * 150);
+    });
+});
 
 async function handleSplitFile(file: File): Promise<void> {
     if (!isPdfFile(file)) {
@@ -124,25 +127,11 @@ async function handleSplitFile(file: File): Promise<void> {
         splitPagesData = result.pages;
         renderPagesList(result.pages, splitFileName);
         setText("split-title", `${result.pageCount} ${label} extracted`);
-        showElement("split-results");
+        document.getElementById("split-results")?.classList.add("show");
         showStatus("split-status", `Successfully split into ${result.pageCount} ${label}`, "success");
     } catch (error) {
-        showStatus("split-status", `Error: ${getErrorMessage(error)}`, "error");
+        showStatus("split-status", `Error: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
     }
-}
-
-async function handleDownloadArchive(): Promise<void> {
-    const zip = new JSZip();
-    splitPagesData.forEach((page, index) => {
-        zip.file(`${splitFileName}_page_${index + 1}.pdf`, page);
-    });
-    const blob = await zip.generateAsync({ type: "blob" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${splitFileName}_pages.zip`;
-    link.click();
-    URL.revokeObjectURL(url);
 }
 
 function renderPagesList(pages: Uint8Array[], baseName: string): void {
@@ -177,7 +166,7 @@ function renderPagesList(pages: Uint8Array[], baseName: string): void {
         button.className = "button secondary small";
         button.type = "button";
         button.textContent = "Download";
-        button.addEventListener("click", () => downloadBuffer(page, fileName));
+        button.addEventListener("click", () => downloadData(page, fileName));
 
         const item = document.createElement("div");
         item.className = "page-item";
@@ -191,8 +180,13 @@ function isPdfFile(file: File): boolean {
     return file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf");
 }
 
-function getErrorMessage(error: unknown): string {
-    return error instanceof Error ? error.message : "Unknown error";
+function downloadData(data: Uint8Array, fileName: string): void {
+    const url = URL.createObjectURL(new Blob([data as BlobPart], { type: "application/pdf" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 function setText(id: string, text: string): void {
@@ -205,8 +199,4 @@ function showStatus(id: string, message: string, type: "info" | "success" | "err
     if (!element) return;
     element.textContent = message;
     element.className = `status ${type}`;
-}
-
-function showElement(id: string): void {
-    document.getElementById(id)?.classList.add("show");
 }

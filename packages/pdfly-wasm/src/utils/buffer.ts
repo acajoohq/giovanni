@@ -2,9 +2,7 @@
  * Convert Uint8Array to Blob
  */
 export function bufferToBlob(buffer: Uint8Array, type = "application/pdf"): Blob {
-    const bytes = new Uint8Array(buffer.byteLength);
-    bytes.set(buffer);
-    return new Blob([bytes.buffer], { type });
+    return new Blob([buffer as BlobPart], { type });
 }
 
 /**
@@ -24,5 +22,5 @@ export function downloadBuffer(buffer: Uint8Array, filename: string, type = "app
     a.href = url;
     a.download = filename;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
 }

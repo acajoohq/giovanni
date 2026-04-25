@@ -5,6 +5,7 @@
 #include <qpdf/QUtil.hh>
 #include <qpdf/Pl_Flate.hh>
 #include <qpdf/Buffer.hh>
+#include <qpdf/QPDFPageDocumentHelper.hh>
 #include <vector>
 #include <stdexcept>
 
@@ -18,9 +19,21 @@ qpdf_stream_decode_level_e getDecodeLevel(const std::string& level) {
         return qpdf_dl_specialized;
     } else if (level == "all") {
         return qpdf_dl_all;
-    } else {
-        return qpdf_dl_generalized;  // Default
     }
+
+    return qpdf_dl_generalized;
+}
+
+qpdf_object_stream_e getObjectStreamMode(const std::string& mode) {
+    if (mode == "disable") {
+        return qpdf_o_disable;
+    } else if (mode == "preserve") {
+        return qpdf_o_preserve;
+    } else if (mode == "generate") {
+        return qpdf_o_generate;
+    }
+
+    return qpdf_o_preserve;
 }
 
 // Main compression function
@@ -30,7 +43,6 @@ emscripten::val compressPdf(const emscripten::val& inputArray, const Compression
         // Convert JavaScript Uint8Array to std::vector<uint8_t>
         std::vector<uint8_t> inputData = emscripten::vecFromJSArray<uint8_t>(inputArray);
 
-        // Set compression level for Flate
         if (options.compressionLevel >= 1 && options.compressionLevel <= 9) {
             Pl_Flate::setCompressionLevel(options.compressionLevel);
         }
@@ -41,6 +53,17 @@ emscripten::val compressPdf(const emscripten::val& inputArray, const Compression
                              reinterpret_cast<const char*>(inputData.data()),
                              inputData.size());
 
+        if (options.compressPages) {
+            auto pages = pdf.getAllPages();
+            for (auto& page: pages) {
+                page.coalesceContentStreams();
+            }
+        }
+
+        if (options.removeUnreferencedResources) {
+            QPDFPageDocumentHelper(pdf).removeUnreferencedResources();
+        }
+
         // Create QPDFWriter to write to memory
         QPDFWriter writer(pdf);
         writer.setOutputMemory();
@@ -49,9 +72,7 @@ emscripten::val compressPdf(const emscripten::val& inputArray, const Compression
         writer.setCompressStreams(true);
         writer.setRecompressFlate(options.recompressFlate);
         writer.setDecodeLevel(getDecodeLevel(options.decodeLevel));
-
-        // Enable object streams for better compression
-        writer.setObjectStreamMode(qpdf_o_generate);
+        writer.setObjectStreamMode(getObjectStreamMode(options.objectStreams));
 
         // Write the PDF
         writer.write();
@@ -135,13 +156,7 @@ emscripten::val splitPages(const emscripten::val& inputArray) {
 QPDFWrapper::QPDFWrapper() : initialized(false) {}
 
 void QPDFWrapper::processMemoryFile(const emscripten::val& inputArray, const std::string& password) {
-    // Convert JavaScript Uint8Array to vector
-    unsigned int length = inputArray["length"].as<unsigned int>();
-    std::vector<uint8_t> inputData(length);
-
-    for (unsigned int i = 0; i < length; i++) {
-        inputData[i] = inputArray[i].as<uint8_t>();
-    }
+    std::vector<uint8_t> inputData = emscripten::vecFromJSArray<uint8_t>(inputArray);
 
     const char* pwd = password.empty() ? nullptr : password.c_str();
     pdf.processMemoryFile("input.pdf",
@@ -189,7 +204,7 @@ QPDF& QPDFWrapper::getQPDF() {
 
 // Advanced API: QPDFWriter wrapper
 
-QPDFWriterWrapper::QPDFWriterWrapper(QPDFWrapper& qpdf) : qpdfWrapper(&qpdf) {
+QPDFWriterWrapper::QPDFWriterWrapper(QPDFWrapper& qpdf) : qpdfWrapper(&qpdf), compressionLevel(9) {
     writer = std::make_unique<QPDFWriter>(qpdf.getQPDF());
     writer->setOutputMemory();
 }
@@ -208,21 +223,16 @@ void QPDFWriterWrapper::setDecodeLevel(const std::string& level) {
 
 void QPDFWriterWrapper::setCompressionLevel(int level) {
     if (level >= 1 && level <= 9) {
-        Pl_Flate::setCompressionLevel(level);
+        compressionLevel = level;
     }
 }
 
 void QPDFWriterWrapper::setObjectStreamMode(const std::string& mode) {
-    if (mode == "disable") {
-        writer->setObjectStreamMode(qpdf_o_disable);
-    } else if (mode == "preserve") {
-        writer->setObjectStreamMode(qpdf_o_preserve);
-    } else if (mode == "generate") {
-        writer->setObjectStreamMode(qpdf_o_generate);
-    }
+    writer->setObjectStreamMode(getObjectStreamMode(mode));
 }
 
 void QPDFWriterWrapper::write() {
+    Pl_Flate::setCompressionLevel(compressionLevel);
     writer->write();
 }
 

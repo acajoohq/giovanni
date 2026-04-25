@@ -21,7 +21,9 @@
             "cache": false,
             "persistent": true
         },
-        "typecheck": {},
+        "typecheck": {
+            "dependsOn": ["^build"]
+        },
         "validate": {
             "dependsOn": ["build"]
         }

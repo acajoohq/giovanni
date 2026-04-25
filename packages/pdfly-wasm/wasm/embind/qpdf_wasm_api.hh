@@ -17,12 +17,16 @@ struct CompressionOptions {
     int compressionLevel = 9;
     bool recompressFlate = true;
     std::string decodeLevel = "generalized";
+    std::string objectStreams = "generate";
+    bool compressPages = false;
+    bool removeUnreferencedResources = false;
 
     CompressionOptions() = default;
 };
 
 // Function declarations
 qpdf_stream_decode_level_e getDecodeLevel(const std::string& level);
+qpdf_object_stream_e getObjectStreamMode(const std::string& mode);
 emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& options);
 std::string getQpdfVersion();
 emscripten::val splitPages(const emscripten::val& inputArray);
@@ -48,6 +52,7 @@ class QPDFWriterWrapper {
 private:
     QPDFWrapper* qpdfWrapper;
     std::unique_ptr<QPDFWriter> writer;
+    int compressionLevel;
 
 public:
     QPDFWriterWrapper(QPDFWrapper& qpdf);

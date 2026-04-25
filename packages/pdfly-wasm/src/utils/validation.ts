@@ -23,7 +23,7 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
         compressionLevel: 6,
         decodeLevel: "generalized",
         recompressFlate: true,
-        objectStreams: "preserve",
+        objectStreams: "generate",
         compressPages: false,
         removeUnreferencedResources: false,
     };
@@ -34,7 +34,6 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
 
     const result = { ...defaults };
 
-    // Validate compression level
     if (options.compressionLevel !== undefined) {
         if (!Number.isInteger(options.compressionLevel) || options.compressionLevel < 1 || options.compressionLevel > 9) {
             throw new QpdfValidationError("compressionLevel must be an integer between 1 and 9");
@@ -42,7 +41,6 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
         result.compressionLevel = options.compressionLevel;
     }
 
-    // Validate decode level
     if (options.decodeLevel !== undefined) {
         const validDecodeLevels: DecodeLevel[] = ["none", "generalized", "specialized", "all"];
         if (!validDecodeLevels.includes(options.decodeLevel)) {
@@ -51,7 +49,6 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
         result.decodeLevel = options.decodeLevel;
     }
 
-    // Validate object streams mode
     if (options.objectStreams !== undefined) {
         const validModes: ObjectStreamMode[] = ["preserve", "disable", "generate"];
         if (!validModes.includes(options.objectStreams)) {
@@ -60,7 +57,6 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
         result.objectStreams = options.objectStreams;
     }
 
-    // Validate boolean options
     if (options.recompressFlate !== undefined) {
         result.recompressFlate = Boolean(options.recompressFlate);
     }

@@ -1,5 +1,5 @@
 import { initQpdfModule } from "./module-loader.js";
-import { QpdfCompressionError, QpdfValidationError } from "./errors.js";
+import { QpdfValidationError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { QPDFInfo } from "../types/results.js";
 import type { WasmQPDFWrapper } from "../types/wasm-module.js";
@@ -35,13 +35,12 @@ export class QPDF {
             const module = await initQpdfModule();
             const inputBuffer = normalizeBuffer(input);
 
-            // Create new WASM wrapper instance
             this.wasmInstance = new module.QPDFWrapper();
-            this.wasmInstance.processMemoryFile(inputBuffer, password);
+            this.wasmInstance.processMemoryFile(inputBuffer, password ?? "");
             this.initialized = true;
         } catch (error) {
             this.cleanup();
-            throw new QpdfCompressionError("Failed to process PDF file", { cause: error });
+            throw new QpdfValidationError("Failed to process PDF file", { cause: error });
         }
     }
 

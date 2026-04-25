@@ -26,6 +26,11 @@ export interface CompressionResult {
      * Space saved in bytes
      */
     savedBytes: number;
+
+    /**
+     * Percentage of space saved, negative when output is larger
+     */
+    percentageSaved: number;
 }
 
 /**

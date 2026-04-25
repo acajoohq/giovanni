@@ -17,7 +17,6 @@
         "validate": "pnpm run typecheck"
     },
     "dependencies": {
-        "@pdfly/wasm": "workspace:*",
-        "jszip": "^3.10.1"
+        "@pdfly/wasm": "workspace:*"
     }
 }

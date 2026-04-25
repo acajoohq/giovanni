@@ -30,7 +30,7 @@ describe("Validation Utilities", () => {
                 compressionLevel: 6,
                 decodeLevel: "generalized",
                 recompressFlate: true,
-                objectStreams: "preserve",
+                objectStreams: "generate",
                 compressPages: false,
                 removeUnreferencedResources: false,
             });

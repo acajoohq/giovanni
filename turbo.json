@@ -5,8 +5,9 @@
             "dependsOn": ["^build"],
             "outputs": ["dist/**"]
         },
-        "build:types": {
-            "outputs": ["dist/**/*.d.*"]
+        "build:lib": {
+            "outputs": ["dist/**"],
+            "inputs": ["src/**", "tsdown.config.ts", "tsconfig.json"]
         },
         "clean": {
             "cache": false
@@ -18,14 +19,19 @@
         "format": {
             "cache": false
         },
-        "lint": {},
-        "test": {},
+        "lint": {
+            "inputs": ["src/**", "*.config.ts"]
+        },
+        "test": {
+            "inputs": ["src/**", "vitest.config.ts"]
+        },
         "test:watch": {
             "cache": false,
             "persistent": true
         },
         "typecheck": {
-            "dependsOn": ["^build:types"]
+            "dependsOn": ["^build:lib"],
+            "inputs": ["src/**", "tsconfig.json"]
         },
         "validate": {
             "dependsOn": ["build"]

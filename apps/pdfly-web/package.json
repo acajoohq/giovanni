@@ -13,13 +13,11 @@
         "preview": "vite preview",
         "test": "vitest run --passWithNoTests",
         "test:watch": "vitest",
-        "typecheck": "tsc --noEmit",
+        "typecheck": "tsgo --noEmit",
         "validate": "pnpm run typecheck"
     },
     "dependencies": {
         "@pdfly/wasm": "workspace:*",
-        "jszip": "^3.10.1",
-        "react": "^19.2.5",
-        "react-dom": "^19.2.5"
+        "jszip": "^3.10.1"
     }
 }

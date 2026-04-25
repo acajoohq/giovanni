@@ -3,10 +3,5 @@
     "extends": ["../../.oxlintrc.json"],
     "env": {
         "browser": true
-    },
-    "settings": {
-        "react": {
-            "version": "19.2.5"
-        }
     }
 }

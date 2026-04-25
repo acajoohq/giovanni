@@ -4,9 +4,130 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Pdfly</title>
+        <link rel="stylesheet" href="/src/styles.css" />
     </head>
     <body>
-        <div id="root"></div>
-        <script type="module" src="/src/main.tsx"></script>
+        <main class="container">
+            <header class="hero">
+                <h1>Pdfly</h1>
+                <p>PDF tools powered by qpdf and WebAssembly</p>
+            </header>
+
+            <div class="tabs">
+                <button class="tab-button active" type="button" data-tab="compress">Compress</button>
+                <button class="tab-button" type="button" data-tab="split">Split Pages</button>
+            </div>
+
+            <section class="tab-panel active" id="tab-compress">
+                <button class="upload-area" type="button" id="compress-upload">
+                    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 0 1 15.9 6H16a5 5 0 0 1 1 9.9M15 13l-3-3m0 0-3 3m3-3v12"
+                        />
+                    </svg>
+                    <span class="upload-title">Drop PDF here or click to upload</span>
+                    <span class="upload-copy">Your file never leaves your browser</span>
+                </button>
+                <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="compress-input" />
+
+                <div class="options">
+                    <label class="option-group">
+                        <span>Compression Level: <strong id="level-value">6</strong></span>
+                        <input type="range" min="1" max="9" value="6" id="compression-level" />
+                        <small>1 = fastest, 9 = best compression</small>
+                    </label>
+                    <label class="option-group">
+                        <span>Decode Level</span>
+                        <select id="decode-level">
+                            <option value="none">None - do not decode anything</option>
+                            <option value="generalized" selected>Generalized - decode common filters</option>
+                            <option value="specialized">Specialized - decode JPEG and similar filters</option>
+                            <option value="all">All - maximum compression</option>
+                        </select>
+                    </label>
+                    <div class="option-group">
+                        <span>Advanced Options</span>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="recompress-flate" checked />
+                            Recompress flate streams
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="compress-pages" />
+                            Compress pages
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remove-unreferenced" />
+                            Remove unreferenced resources
+                        </label>
+                    </div>
+                </div>
+
+                <div class="status" id="compress-status"></div>
+
+                <div class="results" id="compress-results">
+                    <h2>Compression Results</h2>
+                    <div class="savings" id="savings"></div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-label">Original Size</div>
+                            <div class="stat-value" id="original-size"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Compressed Size</div>
+                            <div class="stat-value" id="compressed-size"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Saved</div>
+                            <div class="stat-value" id="saved-size"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Processing Time</div>
+                            <div class="stat-value" id="processing-time"></div>
+                        </div>
+                    </div>
+                    <button class="button" type="button" id="download-btn">Download Compressed PDF</button>
+                </div>
+            </section>
+
+            <section class="tab-panel" id="tab-split">
+                <button class="upload-area" type="button" id="split-upload">
+                    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 0 1 15.9 6H16a5 5 0 0 1 1 9.9M15 13l-3-3m0 0-3 3m3-3v12"
+                        />
+                    </svg>
+                    <span class="upload-title">Drop PDF here or click to upload</span>
+                    <span class="upload-copy">Each page will be extracted as a separate PDF</span>
+                </button>
+                <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="split-input" />
+
+                <div class="status" id="split-status"></div>
+
+                <div class="split-results" id="split-results">
+                    <div class="split-header">
+                        <h2 id="split-title"></h2>
+                        <button class="button secondary" type="button" id="download-all-btn">Download All</button>
+                    </div>
+                    <div class="pages-list" id="pages-list"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>
+                Powered by
+                <a href="https://github.com/qpdf/qpdf" rel="noreferrer" target="_blank">qpdf</a>
+                compiled to WebAssembly
+            </p>
+            <p id="version">Loading version...</p>
+        </footer>
+
+        <script type="module" src="/src/main.ts"></script>
     </body>
 </html>

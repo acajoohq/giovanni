@@ -7,6 +7,7 @@ body {
     margin: 0;
     padding: 20px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     color: #333;
@@ -60,6 +61,7 @@ select {
     border: 0;
     border-bottom: 3px solid transparent;
     cursor: pointer;
+    transition: all 0.2s;
 }
 
 .tab-button:hover,
@@ -74,7 +76,12 @@ select {
 }
 
 .tab-panel {
+    display: none;
     padding: 30px;
+}
+
+.tab-panel.active {
+    display: block;
 }
 
 .upload-area {
@@ -89,10 +96,12 @@ select {
     border: 2px dashed #667eea;
     border-radius: 12px;
     cursor: pointer;
+    transition: all 0.3s;
 }
 
 .upload-area:hover,
-.upload-area:focus-visible {
+.upload-area:focus-visible,
+.upload-area.drag-over {
     background: #f0f2ff;
     border-color: #764ba2;
 }
@@ -169,9 +178,16 @@ select {
 }
 
 .status {
+    display: none;
     margin-top: 20px;
     padding: 15px;
     border-radius: 8px;
+}
+
+.status.info,
+.status.success,
+.status.error {
+    display: block;
 }
 
 .status.info {
@@ -190,10 +206,15 @@ select {
 }
 
 .results {
+    display: none;
     margin-top: 30px;
     padding: 20px;
     background: #e8f5e9;
     border-radius: 12px;
+}
+
+.results.show {
+    display: block;
 }
 
 .results h2 {
@@ -245,11 +266,19 @@ select {
     border: 0;
     border-radius: 8px;
     cursor: pointer;
+    transition: all 0.3s;
 }
 
 .button:hover {
     background: #764ba2;
+    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgb(102 126 234 / 40%);
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .button.secondary {
@@ -269,7 +298,12 @@ select {
 }
 
 .split-results {
+    display: none;
     margin-top: 30px;
+}
+
+.split-results.show {
+    display: block;
 }
 
 .split-header {

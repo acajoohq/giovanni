@@ -34,6 +34,8 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
 
     const result = { ...defaults };
 
+    // TODO use zod schema validation instead
+
     if (options.compressionLevel !== undefined) {
         if (!Number.isInteger(options.compressionLevel) || options.compressionLevel < 1 || options.compressionLevel > 9) {
             throw new QpdfValidationError("compressionLevel must be an integer between 1 and 9");

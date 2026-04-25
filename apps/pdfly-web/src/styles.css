@@ -85,6 +85,7 @@ select {
 }
 
 .upload-area {
+    position: relative;
     width: 100%;
     padding: 40px;
     display: flex;
@@ -96,26 +97,87 @@ select {
     border: 2px dashed #667eea;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+.upload-area::before {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    opacity: 0;
+    background: linear-gradient(135deg, rgb(102 126 234 / 12%) 0%, rgb(118 75 162 / 10%) 100%);
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    content: "";
 }
 
 .upload-area:hover,
-.upload-area:focus-visible,
-.upload-area.drag-over {
+.upload-area:focus-visible {
     background: #f0f2ff;
     border-color: #764ba2;
 }
 
-.upload-area svg {
+.upload-area.drag-over-file {
+    background: #eef0ff;
+    border-style: solid;
+    border-color: #5a67d8;
+    box-shadow: 0 0 0 4px rgb(102 126 234 / 22%), 0 14px 36px rgb(102 126 234 / 18%);
+    transform: scale(1.01);
+}
+
+.upload-area.drag-over-file::before {
+    opacity: 1;
+}
+
+.upload-icon {
     width: 64px;
     height: 64px;
     margin-bottom: 15px;
-    opacity: 0.6;
+    color: #667eea;
+    opacity: 0.7;
+    transition: transform 0.2s ease, opacity 0.2s ease, color 0.2s ease;
+}
+
+.upload-area:hover .upload-icon,
+.upload-area:focus-visible .upload-icon {
+    opacity: 0.85;
+}
+
+.upload-area.drag-over-file .upload-icon {
+    opacity: 1;
+    color: #4c51bf;
+    filter: drop-shadow(0 2px 6px rgb(90 103 216 / 35%));
+    transform: scale(1.08) translateY(-2px);
 }
 
 .upload-title {
     font-size: 1.17rem;
     font-weight: 700;
+}
+
+.upload-title--drop {
+    display: none;
+    color: #4c51bf;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.upload-area.drag-over-file .upload-title--default {
+    display: none;
+}
+
+.upload-area.drag-over-file .upload-title--drop {
+    display: block;
+}
+
+.upload-area.drag-over-file .upload-copy {
+    color: #5a67d8;
+    font-weight: 500;
 }
 
 .upload-copy {

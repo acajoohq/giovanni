@@ -20,7 +20,7 @@
 
             <section class="tab-panel active" id="tab-compress">
                 <button class="upload-area" type="button" id="compress-upload">
-                    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="upload-icon" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -28,7 +28,10 @@
                             d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 0 1 15.9 6H16a5 5 0 0 1 1 9.9M15 13l-3-3m0 0-3 3m3-3v12"
                         />
                     </svg>
-                    <span class="upload-title">Drop PDF here or click to upload</span>
+                    <span class="upload-title">
+                        <span class="upload-title--default">Drop PDF here or click to upload</span>
+                        <span class="upload-title--drop" aria-hidden="true">Release to upload your PDF</span>
+                    </span>
                     <span class="upload-copy">Your file never leaves your browser</span>
                 </button>
                 <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="compress-input" />
@@ -98,7 +101,7 @@
 
             <section class="tab-panel" id="tab-split">
                 <button class="upload-area" type="button" id="split-upload">
-                    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="upload-icon" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -106,7 +109,10 @@
                             d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 0 1 15.9 6H16a5 5 0 0 1 1 9.9M15 13l-3-3m0 0-3 3m3-3v12"
                         />
                     </svg>
-                    <span class="upload-title">Drop PDF here or click to upload</span>
+                    <span class="upload-title">
+                        <span class="upload-title--default">Drop PDF here or click to upload</span>
+                        <span class="upload-title--drop" aria-hidden="true">Release to upload your PDF</span>
+                    </span>
                     <span class="upload-copy">Each page will be extracted as a separate PDF</span>
                 </button>
                 <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="split-input" />

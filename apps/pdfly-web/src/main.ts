@@ -7,6 +7,60 @@ let splitPagesData: Uint8Array[] = [];
 let splitFileName = "document";
 let splitListPageIndex = 0;
 
+function isFileDrag(dataTransfer: DataTransfer | null): boolean {
+    if (!dataTransfer) {
+        return false;
+    }
+    for (const type of dataTransfer.types) {
+        if (type === "Files") {
+            return true;
+        }
+    }
+    return false;
+}
+
+function bindFileDropTarget(element: HTMLElement, onFile: (file: File) => void): void {
+    element.addEventListener("dragenter", (event) => {
+        event.preventDefault();
+        if (!isFileDrag(event.dataTransfer)) {
+            return;
+        }
+        element.classList.add("drag-over-file");
+    });
+
+    element.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        const dataTransfer = event.dataTransfer;
+        if (!dataTransfer) {
+            return;
+        }
+        if (isFileDrag(dataTransfer)) {
+            dataTransfer.dropEffect = "copy";
+            element.classList.add("drag-over-file");
+        } else {
+            dataTransfer.dropEffect = "none";
+            element.classList.remove("drag-over-file");
+        }
+    });
+
+    element.addEventListener("dragleave", (event) => {
+        const nextTarget = event.relatedTarget as Node | null;
+        if (nextTarget && element.contains(nextTarget)) {
+            return;
+        }
+        element.classList.remove("drag-over-file");
+    });
+
+    element.addEventListener("drop", (event) => {
+        event.preventDefault();
+        element.classList.remove("drag-over-file");
+        const file = event.dataTransfer?.files.item(0);
+        if (file) {
+            onFile(file);
+        }
+    });
+}
+
 getVersion()
     .then((version) => setText("version", `qpdf ${version}`))
     .catch(() => setText("version", "qpdf version unavailable"));
@@ -27,16 +81,8 @@ const compressInput = document.getElementById("compress-input") as HTMLInputElem
 const levelSlider = document.getElementById("compression-level") as HTMLInputElement;
 
 compressUpload.addEventListener("click", () => compressInput.click());
-compressUpload.addEventListener("dragover", (event) => {
-    event.preventDefault();
-    compressUpload.classList.add("drag-over");
-});
-compressUpload.addEventListener("dragleave", () => compressUpload.classList.remove("drag-over"));
-compressUpload.addEventListener("drop", (event) => {
-    event.preventDefault();
-    compressUpload.classList.remove("drag-over");
-    const file = event.dataTransfer?.files.item(0);
-    if (file) void handleCompressFile(file);
+bindFileDropTarget(compressUpload, (file) => {
+    void handleCompressFile(file);
 });
 compressInput.addEventListener("change", (event) => {
     const file = (event.target as HTMLInputElement).files?.item(0);
@@ -93,16 +139,8 @@ const splitUpload = document.getElementById("split-upload") as HTMLButtonElement
 const splitInput = document.getElementById("split-input") as HTMLInputElement;
 
 splitUpload.addEventListener("click", () => splitInput.click());
-splitUpload.addEventListener("dragover", (event) => {
-    event.preventDefault();
-    splitUpload.classList.add("drag-over");
-});
-splitUpload.addEventListener("dragleave", () => splitUpload.classList.remove("drag-over"));
-splitUpload.addEventListener("drop", (event) => {
-    event.preventDefault();
-    splitUpload.classList.remove("drag-over");
-    const file = event.dataTransfer?.files.item(0);
-    if (file) void handleSplitFile(file);
+bindFileDropTarget(splitUpload, (file) => {
+    void handleSplitFile(file);
 });
 splitInput.addEventListener("change", (event) => {
     const file = (event.target as HTMLInputElement).files?.item(0);

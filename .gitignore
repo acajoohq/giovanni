@@ -37,3 +37,4 @@ npm-debug.log*
 .agents/skills/
 vendor/qpdf/
 packages/pdfly-wasm/wasm/cmake-build/
+.claude/settings.local.json

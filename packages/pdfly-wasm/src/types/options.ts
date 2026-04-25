@@ -41,7 +41,7 @@ export interface CompressionOptions {
      * - 'preserve': Keep existing object streams
      * - 'disable': Disable object streams
      * - 'generate': Generate object streams for better compression
-     * @default 'generate'
+     * @default 'generate' — prefer `'preserve'` when output must mirror input structure
      */
     objectStreams?: ObjectStreamMode;
 

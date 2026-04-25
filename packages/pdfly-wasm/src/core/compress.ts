@@ -24,6 +24,8 @@ export async function getVersion(): Promise<string> {
 /**
  * Compress a PDF file with the specified options
  *
+ * Defaults match {@link CompressionOptions}: including `objectStreams: "generate"` when unset (smaller files; use `"preserve"` to stay closer to the input structure).
+ *
  * @param input - PDF file as Uint8Array or ArrayBuffer
  * @param options - Compression options
  * @returns Compression result with compressed data and statistics

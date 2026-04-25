@@ -1,5 +1,5 @@
 import { initQpdfModule } from "./module-loader.js";
-import { QpdfValidationError } from "./errors.js";
+import { QpdfCompressionError, QpdfInitError, QpdfValidationError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { QPDFInfo } from "../types/results.js";
 import type { WasmQPDFWrapper } from "../types/wasm-module.js";
@@ -40,7 +40,10 @@ export class QPDF {
             this.initialized = true;
         } catch (error) {
             this.cleanup();
-            throw new QpdfValidationError("Failed to process PDF file", { cause: error });
+            if (error instanceof QpdfValidationError || error instanceof QpdfInitError || error instanceof QpdfCompressionError) {
+                throw error;
+            }
+            throw new QpdfCompressionError("Failed to process PDF file", { cause: error });
         }
     }
 

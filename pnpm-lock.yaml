@@ -32,9 +32,6 @@ importers:
       turbo:
         specifier: ^2.9.6
         version: 2.9.6
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)
@@ -47,6 +44,9 @@ importers:
       '@pdfly/wasm':
         specifier: workspace:*
         version: link:../../packages/pdfly-wasm
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
 
   packages/pdfly-wasm: {}
 
@@ -669,6 +669,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -1504,6 +1507,8 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.4
 
+  fflate@0.8.2: {}
+
   fsevents@2.3.3:
     optional: true
 
@@ -1798,7 +1803,8 @@ snapshots:
       '@turbo/windows-64': 2.9.6
       '@turbo/windows-arm64': 2.9.6
 
-  typescript@6.0.3: {}
+  typescript@6.0.3:
+    optional: true
 
   unconfig-core@7.5.0:
     dependencies:

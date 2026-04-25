@@ -24,6 +24,10 @@ const compressed = await compressPdf(input, {
 const pages = await splitPages(compressed.data);
 ```
 
+## Compression defaults
+
+Omitted options use the defaults in `CompressionOptions` (see TypeScript types). Notably, **`objectStreams` defaults to `generate`**, which usually improves size by rewriting object streams; set **`preserve`** if you need output structure closer to the input (e.g. compatibility or structural diffs).
+
 ## Development
 
 The qpdf source clone is kept outside the package at `vendor/qpdf`. The WASM package build expects that directory to exist.

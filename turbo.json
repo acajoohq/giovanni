@@ -30,7 +30,7 @@
             "persistent": true
         },
         "typecheck": {
-            "dependsOn": ["^build:lib"],
+            "dependsOn": ["^typecheck"],
             "inputs": ["src/**", "tsconfig.json"]
         },
         "validate": {

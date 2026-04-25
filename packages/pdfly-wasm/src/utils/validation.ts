@@ -34,14 +34,14 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
 
     const result = { ...defaults };
 
-    if (options.compressionLevel) {
+    if (options.compressionLevel !== undefined) {
         if (!Number.isInteger(options.compressionLevel) || options.compressionLevel < 1 || options.compressionLevel > 9) {
             throw new QpdfValidationError("compressionLevel must be an integer between 1 and 9");
         }
         result.compressionLevel = options.compressionLevel;
     }
 
-    if (options.decodeLevel) {
+    if (options.decodeLevel !== undefined) {
         const validDecodeLevels: DecodeLevel[] = ["none", "generalized", "specialized", "all"];
         if (!validDecodeLevels.includes(options.decodeLevel)) {
             throw new QpdfValidationError(`decodeLevel must be one of: ${validDecodeLevels.join(", ")}`);
@@ -49,7 +49,7 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
         result.decodeLevel = options.decodeLevel;
     }
 
-    if (options.objectStreams) {
+    if (options.objectStreams !== undefined) {
         const validModes: ObjectStreamMode[] = ["preserve", "disable", "generate"];
         if (!validModes.includes(options.objectStreams)) {
             throw new QpdfValidationError(`objectStreams must be one of: ${validModes.join(", ")}`);
@@ -57,15 +57,15 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
         result.objectStreams = options.objectStreams;
     }
 
-    if (options.recompressFlate) {
+    if (options.recompressFlate !== undefined) {
         result.recompressFlate = Boolean(options.recompressFlate);
     }
 
-    if (options.compressPages) {
+    if (options.compressPages !== undefined) {
         result.compressPages = Boolean(options.compressPages);
     }
 
-    if (options.removeUnreferencedResources) {
+    if (options.removeUnreferencedResources !== undefined) {
         result.removeUnreferencedResources = Boolean(options.removeUnreferencedResources);
     }
 

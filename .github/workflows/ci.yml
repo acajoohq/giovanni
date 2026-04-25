@@ -131,4 +131,4 @@ jobs:
               run: pnpm --filter @pdfly/wasm validate
 
             - name: Check package contents
-              run: pnpm --filter @pdfly/wasm pack --dry-run
+              run: pnpm --filter @pdfly/wasm exec pnpm pack --dry-run

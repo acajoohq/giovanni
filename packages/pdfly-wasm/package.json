@@ -54,6 +54,7 @@
         "test:coverage": "vitest run --coverage",
         "test:watch": "vitest",
         "typecheck": "tsgo --noEmit",
-        "validate": "publint && attw --pack . --profile node16"
+        "validate": "publint && attw --pack . --profile node16",
+        "package:check": "pnpm run validate && pnpm pack --dry-run"
     }
 }

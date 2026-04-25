@@ -33,33 +33,14 @@
     "exports": {
         ".": {
             "import": {
-                "types": "./src/index.ts",
+                "types": "./dist/index.d.mts",
                 "default": "./dist/index.mjs"
             },
             "require": {
-                "types": "./src/index.ts",
+                "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
             }
-        },
-        "./wasm": "./dist/qpdf.wasm"
-    },
-    "publishConfig": {
-        "exports": {
-            ".": {
-                "import": {
-                    "types": "./dist/index.d.mts",
-                    "default": "./dist/index.mjs"
-                },
-                "require": {
-                    "types": "./dist/index.d.cts",
-                    "default": "./dist/index.cjs"
-                }
-            },
-            "./wasm": "./dist/qpdf.wasm"
-        },
-        "main": "./dist/index.cjs",
-        "module": "./dist/index.mjs",
-        "types": "./dist/index.d.mts"
+        }
     },
     "scripts": {
         "build": "pnpm run build:wasm && pnpm run build:lib",
@@ -73,6 +54,6 @@
         "test:coverage": "vitest run --coverage",
         "test:watch": "vitest",
         "typecheck": "tsgo --noEmit",
-        "validate": "publint"
+        "validate": "publint && attw --pack . --profile node16"
     }
 }

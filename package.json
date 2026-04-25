@@ -17,6 +17,8 @@
         "validate": "turbo validate"
     },
     "devDependencies": {
+        "@arethetypeswrong/cli": "^0.18.2",
+        "@arethetypeswrong/core": "^0.18.2",
         "@types/node": "^25.6.0",
         "@typescript/native-preview": "7.0.0-dev.20260421.2",
         "@vitest/coverage-v8": "^4.1.5",

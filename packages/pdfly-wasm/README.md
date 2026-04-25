@@ -49,10 +49,10 @@ pnpm --filter @pdfly/wasm validate
 - [ ] CI / CD
 - [ ] Open source it
 - [ ] Documentation
-  - [ ] How to use it with Vite chunking
+    - [ ] How to use it with Vite chunking
 - [ ] Review the code
-  - [ ] WASM build
-  - [ ] Library design
+    - [ ] WASM build
+    - [ ] Library design
 
 ## Package Layout
 

@@ -87,6 +87,10 @@
                             <div class="stat-label">Processing Time</div>
                             <div class="stat-value" id="processing-time"></div>
                         </div>
+                        <div class="stat">
+                            <div class="stat-label">Throughput</div>
+                            <div class="stat-value" id="compress-throughput"></div>
+                        </div>
                     </div>
                     <button class="button" type="button" id="download-btn">Download Compressed PDF</button>
                 </div>
@@ -114,7 +118,30 @@
                         <h2 id="split-title"></h2>
                         <button class="button secondary" type="button" id="download-all-btn">Download All</button>
                     </div>
+                    <div class="stats split-speed-stats" id="split-speed-stats">
+                        <div class="stat">
+                            <div class="stat-label">Processing Time</div>
+                            <div class="stat-value" id="split-processing-time"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Pages / second</div>
+                            <div class="stat-value" id="split-pages-per-sec"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Input throughput</div>
+                            <div class="stat-value" id="split-throughput"></div>
+                        </div>
+                    </div>
                     <div class="pages-list" id="pages-list"></div>
+                    <div class="split-pagination" id="split-pagination" hidden>
+                        <button class="button secondary small" type="button" id="split-page-prev" aria-label="Previous page">
+                            Previous
+                        </button>
+                        <span class="split-page-info" id="split-page-info"></span>
+                        <button class="button secondary small" type="button" id="split-page-next" aria-label="Next page">
+                            Next
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>

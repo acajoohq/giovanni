@@ -1,8 +1,11 @@
 import { compressPdf, formatBytes, getVersion, splitPages } from "@pdfly/wasm";
 
+const SPLIT_LIST_PAGE_SIZE = 10;
+
 let compressedData: Uint8Array | null = null;
 let splitPagesData: Uint8Array[] = [];
 let splitFileName = "document";
+let splitListPageIndex = 0;
 
 getVersion()
     .then((version) => setText("version", `qpdf ${version}`))
@@ -67,7 +70,8 @@ async function handleCompressFile(file: File): Promise<void> {
 
         const startTime = performance.now();
         const result = await compressPdf(arrayBuffer, options);
-        const processingTime = ((performance.now() - startTime) / 1000).toFixed(2);
+        const elapsedSeconds = (performance.now() - startTime) / 1000;
+        const processingTime = elapsedSeconds.toFixed(2);
         const savingsPercent = ((result.savedBytes / result.originalSize) * 100).toFixed(1);
 
         compressedData = result.data;
@@ -76,6 +80,7 @@ async function handleCompressFile(file: File): Promise<void> {
         setText("compressed-size", formatBytes(result.compressedSize));
         setText("saved-size", formatBytes(result.savedBytes));
         setText("processing-time", `${processingTime}s`);
+        setText("compress-throughput", formatThroughputBytesPerSecond(result.originalSize, elapsedSeconds));
         document.getElementById("compress-results")?.classList.add("show");
         showStatus("compress-status", "Compression complete!", "success");
     } catch (error) {
@@ -110,6 +115,21 @@ document.getElementById("download-all-btn")?.addEventListener("click", () => {
     });
 });
 
+document.getElementById("split-page-prev")?.addEventListener("click", () => {
+    if (splitListPageIndex <= 0) return;
+
+    splitListPageIndex -= 1;
+    renderPagesList(splitPagesData, splitFileName);
+});
+
+document.getElementById("split-page-next")?.addEventListener("click", () => {
+    const pageCount = Math.ceil(splitPagesData.length / SPLIT_LIST_PAGE_SIZE);
+    if (splitListPageIndex >= pageCount - 1) return;
+
+    splitListPageIndex += 1;
+    renderPagesList(splitPagesData, splitFileName);
+});
+
 async function handleSplitFile(file: File): Promise<void> {
     if (!isPdfFile(file)) {
         showStatus("split-status", "Please select a PDF file", "error");
@@ -117,16 +137,23 @@ async function handleSplitFile(file: File): Promise<void> {
     }
 
     splitFileName = file.name.replace(/\.pdf$/i, "") || "document";
+    splitListPageIndex = 0;
     showStatus("split-status", "Splitting PDF...", "info");
 
     try {
         const arrayBuffer = await file.arrayBuffer();
+        const startTime = performance.now();
         const result = await splitPages(arrayBuffer);
+        const elapsedSeconds = (performance.now() - startTime) / 1000;
+
         const label = result.pageCount === 1 ? "page" : "pages";
 
         splitPagesData = result.pages;
-        renderPagesList(result.pages, splitFileName);
         setText("split-title", `${result.pageCount} ${label} extracted`);
+        setText("split-processing-time", `${elapsedSeconds.toFixed(2)}s`);
+        setText("split-pages-per-sec", formatPagesPerSecond(result.pageCount, elapsedSeconds));
+        setText("split-throughput", formatThroughputBytesPerSecond(arrayBuffer.byteLength, elapsedSeconds));
+        renderPagesList(result.pages, splitFileName);
         document.getElementById("split-results")?.classList.add("show");
         showStatus("split-status", `Successfully split into ${result.pageCount} ${label}`, "success");
     } catch (error) {
@@ -138,8 +165,26 @@ function renderPagesList(pages: Uint8Array[], baseName: string): void {
     const list = document.getElementById("pages-list");
     if (!list) return;
 
+    const total = pages.length;
+    if (total === 0) {
+        list.innerHTML = "";
+        updateSplitPagination(0);
+        return;
+    }
+
+    const listPageCount = Math.ceil(total / SPLIT_LIST_PAGE_SIZE);
+    if (splitListPageIndex >= listPageCount) {
+        splitListPageIndex = Math.max(0, listPageCount - 1);
+    }
+
+    const sliceStart = splitListPageIndex * SPLIT_LIST_PAGE_SIZE;
+    const sliceEnd = Math.min(sliceStart + SPLIT_LIST_PAGE_SIZE, total);
+
     list.innerHTML = "";
-    pages.forEach((page, index) => {
+    for (let index = sliceStart; index < sliceEnd; index++) {
+        const page = pages[index];
+        if (!page) continue;
+
         const fileName = `${baseName}_page_${index + 1}.pdf`;
 
         const label = document.createElement("div");
@@ -173,7 +218,47 @@ function renderPagesList(pages: Uint8Array[], baseName: string): void {
         item.appendChild(label);
         item.appendChild(button);
         list.appendChild(item);
-    });
+    }
+
+    updateSplitPagination(total);
+}
+
+function updateSplitPagination(totalItemCount: number): void {
+    const pagination = document.getElementById("split-pagination");
+    const info = document.getElementById("split-page-info");
+    const previousButton = document.getElementById("split-page-prev") as HTMLButtonElement | null;
+    const nextButton = document.getElementById("split-page-next") as HTMLButtonElement | null;
+    if (!pagination || !info || !previousButton || !nextButton) return;
+
+    if (totalItemCount <= SPLIT_LIST_PAGE_SIZE) {
+        pagination.hidden = true;
+        return;
+    }
+
+    pagination.hidden = false;
+    const listPageCount = Math.ceil(totalItemCount / SPLIT_LIST_PAGE_SIZE);
+    const rangeStart = splitListPageIndex * SPLIT_LIST_PAGE_SIZE + 1;
+    const rangeEnd = Math.min((splitListPageIndex + 1) * SPLIT_LIST_PAGE_SIZE, totalItemCount);
+    info.textContent = `Showing ${rangeStart}–${rangeEnd} of ${totalItemCount} · list ${splitListPageIndex + 1} / ${listPageCount}`;
+
+    previousButton.disabled = splitListPageIndex <= 0;
+    nextButton.disabled = splitListPageIndex >= listPageCount - 1;
+}
+
+function formatThroughputBytesPerSecond(byteLength: number, elapsedSeconds: number): string {
+    if (!Number.isFinite(elapsedSeconds) || elapsedSeconds <= 0 || !Number.isFinite(byteLength) || byteLength < 0) {
+        return "—";
+    }
+
+    return `${formatBytes(byteLength / elapsedSeconds)}/s`;
+}
+
+function formatPagesPerSecond(pageCount: number, elapsedSeconds: number): string {
+    if (!Number.isFinite(elapsedSeconds) || elapsedSeconds <= 0 || !Number.isFinite(pageCount) || pageCount < 0) {
+        return "—";
+    }
+
+    return `${(pageCount / elapsedSeconds).toFixed(1)} p/s`;
 }
 
 function isPdfFile(file: File): boolean {

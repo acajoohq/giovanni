@@ -24,9 +24,9 @@ pnpm validate         # package checks; requires build first
 pnpm clean
 ```
 
-| Task | Command |
-|------|---------|
-| Test / watch | `pnpm test` / `pnpm test:watch` |
+| Task                    | Command                                                              |
+| ----------------------- | -------------------------------------------------------------------- |
+| Test / watch            | `pnpm test` / `pnpm test:watch`                                      |
 | Typecheck, lint, format | `pnpm typecheck` · `pnpm lint` · `pnpm format` / `pnpm format:check` |
 
 **pnpm workspace:** `pnpm -F <name> <script>` runs a script in one package (`pdfly-web`, `@pdfly/wasm`). `pnpm -r <script>` runs it everywhere it exists. Globs: `pnpm-workspace.yaml`.
@@ -41,13 +41,18 @@ pnpm clean
 
 ## Todo
 
+- [x] Setup repo (Matteo)
 - [ ] Choose the outputs of the lib
 - [ ] Find a strategy for updates of the qpdf library
-- [ ] CI / CD
+- [x] CI
+- [ ] CD
 - [ ] Open source it
 - [ ] Documentation
-  - [ ] How to use it with Vite chunking
+    - [ ] How to use it with Vite chunking
+    - [ ] Extract image from PDF
 - [ ] Review the code
-  - [ ] WASM build
-  - [ ] Library design
+    - [ ] WASM build
+    - [ ] Library design
 - [ ] Publish package
+- [ ] Tauri (desktop app)
+- [ ] Merge/fuse PDFs

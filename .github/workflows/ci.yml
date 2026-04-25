@@ -5,8 +5,16 @@ on:
     push:
         branches: [master]
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 permissions:
     contents: read
+
+env:
+    EMSDK_VERSION: 5.0.6
+    TURBO_TELEMETRY_DISABLED: "1"
 
 jobs:
     checks:
@@ -44,3 +52,47 @@ jobs:
 
             - name: Run ${{ matrix.check.name }}
               run: ${{ matrix.check.command }}
+
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        needs: checks
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                  node-version: lts/*
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Cache Emscripten SDK
+              uses: actions/cache@v4
+              with:
+                  path: .cache/emsdk
+                  key: emsdk-${{ runner.os }}-${{ env.EMSDK_VERSION }}
+
+            - name: Setup Emscripten
+              run: |
+                  set -euo pipefail
+
+                  if [ ! -d .cache/emsdk/.git ]; then
+                      git clone --depth 1 https://github.com/emscripten-core/emsdk.git .cache/emsdk
+                  fi
+
+                  .cache/emsdk/emsdk install "$EMSDK_VERSION"
+                  .cache/emsdk/emsdk activate "$EMSDK_VERSION"
+
+            - name: Run build
+              run: |
+                  set -euo pipefail
+                  source .cache/emsdk/emsdk_env.sh
+                  pnpm run build

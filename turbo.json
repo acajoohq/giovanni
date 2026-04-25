@@ -5,6 +5,9 @@
             "dependsOn": ["^build"],
             "outputs": ["dist/**"]
         },
+        "build:types": {
+            "outputs": ["dist/**/*.d.*"]
+        },
         "clean": {
             "cache": false
         },
@@ -21,7 +24,9 @@
             "cache": false,
             "persistent": true
         },
-        "typecheck": {},
+        "typecheck": {
+            "dependsOn": ["^build:types"]
+        },
         "validate": {
             "dependsOn": ["build"]
         }

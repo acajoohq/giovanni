@@ -50,6 +50,15 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Cache Turbo
+              uses: actions/cache@v4
+              with:
+                  path: .turbo/cache
+                  key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-${{ github.sha }}
+                  restore-keys: |
+                      turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-
+                      turbo-${{ runner.os }}-
+
             - name: Run ${{ matrix.check.name }}
               run: ${{ matrix.check.command }}
 
@@ -85,6 +94,26 @@ jobs:
               with:
                   path: vendor/qpdf
                   key: qpdf-${{ env.QPDF_VERSION }}
+
+            - name: Cache Turbo
+              uses: actions/cache@v4
+              with:
+                  path: .turbo/cache
+                  key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-${{ github.sha }}
+                  restore-keys: |
+                      turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-
+                      turbo-${{ runner.os }}-
+
+            - name: Cache WASM build artifacts
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      packages/pdfly-wasm/wasm/cmake-build
+                      packages/pdfly-wasm/build/wasm
+                  key: wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-qpdf-${{ env.QPDF_VERSION }}-${{ hashFiles('pnpm-lock.yaml', 'packages/pdfly-wasm/package.json', 'packages/pdfly-wasm/tsdown.config.ts', 'packages/pdfly-wasm/src/**', 'packages/pdfly-wasm/wasm/**') }}
+                  restore-keys: |
+                      wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-qpdf-${{ env.QPDF_VERSION }}-
+                      wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-
 
             - name: Ensure CMake
               run: |

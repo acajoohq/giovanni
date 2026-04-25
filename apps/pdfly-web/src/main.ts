@@ -1,3 +1,4 @@
+import { zip } from "fflate";
 import { compressPdf, formatBytes, getVersion, splitPages } from "@pdfly/wasm";
 
 const SPLIT_LIST_PAGE_SIZE = 10;
@@ -142,6 +143,7 @@ async function handleCompressFile(file: File): Promise<void> {
 // split tab
 const splitUpload = document.getElementById("split-upload") as HTMLButtonElement;
 const splitInput = document.getElementById("split-input") as HTMLInputElement;
+const downloadAllBtn = document.getElementById("download-all-btn") as HTMLButtonElement | null;
 
 splitUpload.addEventListener("click", () => splitInput.click());
 bindFileDropTarget(splitUpload, (file) => {
@@ -152,11 +154,41 @@ splitInput.addEventListener("change", (event) => {
     if (file) void handleSplitFile(file);
 });
 
-document.getElementById("download-all-btn")?.addEventListener("click", () => {
-    splitPagesData.forEach((page, i) => {
-        setTimeout(() => downloadData(page, `${splitFileName}_page_${i + 1}.pdf`), i * 150);
-    });
+downloadAllBtn?.addEventListener("click", () => {
+    void handleDownloadAllZip();
 });
+
+async function handleDownloadAllZip(): Promise<void> {
+    if (!downloadAllBtn || splitPagesData.length === 0) {
+        return;
+    }
+
+    const entries: Record<string, Uint8Array> = {};
+    splitPagesData.forEach((page, i) => {
+        entries[`${splitFileName}_page_${i + 1}.pdf`] = page;
+    });
+
+    downloadAllBtn.disabled = true;
+    downloadAllBtn.setAttribute("aria-busy", "true");
+
+    try {
+        const zipped = await new Promise<Uint8Array>((resolve, reject) => {
+            zip(entries, { level: 0 }, (err, data) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(data);
+            });
+        });
+        downloadBlob(new Blob([new Uint8Array(zipped)], { type: "application/zip" }), `${splitFileName}_pages.zip`);
+    } catch (error) {
+        showStatus("split-status", `Error: ${error instanceof Error ? error.message : "Could not create ZIP"}`, "error");
+    } finally {
+        downloadAllBtn.disabled = false;
+        downloadAllBtn.removeAttribute("aria-busy");
+    }
+}
 
 document.getElementById("split-page-prev")?.addEventListener("click", () => {
     if (splitListPageIndex <= 0) return;
@@ -312,13 +344,17 @@ function isPdfFile(file: File): boolean {
     return file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf");
 }
 
-function downloadData(data: Uint8Array, fileName: string): void {
-    const url = URL.createObjectURL(new Blob([data as BlobPart], { type: "application/pdf" }));
+function downloadBlob(blob: Blob, fileName: string): void {
+    const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = fileName;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+function downloadData(data: Uint8Array, fileName: string): void {
+    downloadBlob(new Blob([data as BlobPart], { type: "application/pdf" }), fileName);
 }
 
 function setText(id: string, text: string): void {

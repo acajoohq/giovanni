@@ -17,6 +17,7 @@
         "validate": "pnpm run typecheck"
     },
     "dependencies": {
-        "@pdfly/wasm": "workspace:*"
+        "@pdfly/wasm": "workspace:*",
+        "fflate": "^0.8.2"
     }
 }

@@ -6,6 +6,9 @@
         "isolatedModules": true,
         "module": "ESNext",
         "moduleResolution": "Bundler",
+        "paths": {
+            "@pdfly/wasm": ["./packages/pdfly-wasm/src/index.ts"]
+        },
         "resolveJsonModule": true,
         "moduleDetection": "force",
         "skipLibCheck": true,

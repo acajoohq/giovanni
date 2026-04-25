@@ -14,6 +14,7 @@ permissions:
 
 env:
     EMSDK_VERSION: 5.0.6
+    NODE_VERSION: 22
     QPDF_VERSION: a898bb3a7289d1d05789d6d3f0d5dd534943a8da
     TURBO_TELEMETRY_DISABLED: "1"
 
@@ -45,7 +46,7 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v6
               with:
-                  node-version: lts/*
+                  node-version: ${{ env.NODE_VERSION }}
                   cache: pnpm
 
             - name: Install dependencies
@@ -69,7 +70,7 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v6
               with:
-                  node-version: lts/*
+                  node-version: ${{ env.NODE_VERSION }}
                   cache: pnpm
 
             - name: Install dependencies
@@ -80,6 +81,12 @@ jobs:
               with:
                   path: .cache/emsdk
                   key: emsdk-${{ runner.os }}-${{ env.EMSDK_VERSION }}
+
+            - name: Cache qpdf source
+              uses: actions/cache@v4
+              with:
+                  path: vendor/qpdf
+                  key: qpdf-${{ env.QPDF_VERSION }}
 
             - name: Setup Emscripten
               run: |
@@ -96,7 +103,11 @@ jobs:
               run: |
                   set -euo pipefail
 
-                  git clone --filter=blob:none https://github.com/qpdf/qpdf.git vendor/qpdf
+                  if [ ! -d vendor/qpdf/.git ]; then
+                      mkdir -p vendor
+                      git clone --filter=blob:none https://github.com/qpdf/qpdf.git vendor/qpdf
+                  fi
+
                   git -C vendor/qpdf checkout "$QPDF_VERSION"
 
             - name: Run build
@@ -104,3 +115,9 @@ jobs:
                   set -euo pipefail
                   source .cache/emsdk/emsdk_env.sh
                   pnpm run build
+
+            - name: Validate package metadata
+              run: pnpm --filter @pdfly/wasm validate
+
+            - name: Check package contents
+              run: pnpm --filter @pdfly/wasm pack --dry-run

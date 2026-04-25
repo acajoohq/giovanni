@@ -20,12 +20,12 @@ export default defineConfig({
         }
 
         for (const { src, dest } of wasmFiles) {
-            if (existsSync(src)) {
-                await copyFile(src, dest);
-                console.log(`Copied ${src} to ${dest}`);
-            } else {
-                console.warn(`Warning: ${src} not found, skipping copy`);
+            if (!existsSync(src)) {
+                throw new Error(`Required WASM build artifact is missing: ${src}. Run pnpm run build:wasm before pnpm run build:lib.`);
             }
+
+            await copyFile(src, dest);
+            console.log(`Copied ${src} to ${dest}`);
         }
     },
 });

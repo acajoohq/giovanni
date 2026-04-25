@@ -1,12 +1,12 @@
 # Pdfly
 
-Local-first PDF tools powered by qpdf, WebAssembly, Vite, and React.
+Local-first PDF tools powered by qpdf, WebAssembly, and Vite.
 
 ## Workspace
 
 ```text
 apps/
-    pdfly-web/       Vite React app
+    pdfly-web/       Vite demo app
 packages/
     pdfly-wasm/      qpdf WebAssembly package
 vendor/

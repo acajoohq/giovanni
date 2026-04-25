@@ -1,6 +1,6 @@
 {
     "$schema": "./node_modules/oxlint/configuration_schema.json",
-    "plugins": ["oxc", "typescript", "unicorn", "import", "react", "jsx-a11y", "vitest", "promise"],
+    "plugins": ["oxc", "typescript", "unicorn", "import", "vitest", "promise"],
     "ignorePatterns": [
         "node_modules/**",
         "vendor/**",
@@ -20,15 +20,6 @@
         "prefer-const": "error",
         "import/no-cycle": "error",
         "promise/no-return-wrap": "error",
-        "react/exhaustive-deps": "error",
-        "react/jsx-key": "error",
-        "react/self-closing-comp": [
-            "error",
-            {
-                "component": true,
-                "html": true
-            }
-        ],
         "typescript/no-explicit-any": "error"
     },
     "overrides": [

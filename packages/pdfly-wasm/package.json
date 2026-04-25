@@ -10,11 +10,16 @@
         "wasm",
         "webassembly"
     ],
+    "homepage": "https://github.com/MatteoGauthier/qpdf-wasm#readme",
+    "bugs": {
+        "url": "https://github.com/MatteoGauthier/qpdf-wasm/issues"
+    },
     "license": "Apache-2.0",
     "author": "qpdf contributors",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/qpdf/qpdf.git"
+        "url": "git+https://github.com/MatteoGauthier/qpdf-wasm.git",
+        "directory": "packages/pdfly-wasm"
     },
     "files": [
         "dist",

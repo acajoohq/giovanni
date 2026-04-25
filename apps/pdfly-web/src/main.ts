@@ -342,12 +342,7 @@ function clearStatus(id: string): void {
 
 type UploadLoaderIds = { labelId: string; loaderId: string };
 
-function setUploadLoading(
-    uploadButton: HTMLButtonElement,
-    { labelId, loaderId }: UploadLoaderIds,
-    loading: boolean,
-    message = "Working…",
-): void {
+function setUploadLoading(uploadButton: HTMLButtonElement, { labelId, loaderId }: UploadLoaderIds, loading: boolean, message = "Working…"): void {
     const loader = document.getElementById(loaderId);
     if (loading) {
         uploadButton.classList.add("is-loading");

@@ -72,8 +72,7 @@ getVersion()
 // tab switching
 document.querySelectorAll<HTMLButtonElement>(".tab-button").forEach((button) => {
     button.addEventListener("click", () => {
-        document.querySelectorAll(".tab-button").forEach((b) => b.classList.remove("active"));
-        document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+        document.querySelectorAll(".tab-button, .tab-panel").forEach((el) => el.classList.remove("active"));
         button.classList.add("active");
         document.getElementById(`tab-${button.dataset.tab}`)?.classList.add("active");
     });

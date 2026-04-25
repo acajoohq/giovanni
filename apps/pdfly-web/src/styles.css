@@ -84,6 +84,72 @@ select {
     display: block;
 }
 
+.upload-loader {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 20px;
+    text-align: center;
+    background: rgb(255 255 255 / 92%);
+    border-radius: 10px;
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    visibility: hidden;
+}
+
+.upload-area.is-loading .upload-loader {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}
+
+.spinner {
+    width: 42px;
+    height: 42px;
+    border: 3px solid #e0e4ff;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: task-spin 0.75s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spinner {
+        animation: none;
+        border-top-color: #667eea;
+    }
+}
+
+@keyframes task-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.upload-loader-label {
+    max-width: 12rem;
+    color: #4c51bf;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.upload-area:disabled,
+.upload-area.is-loading {
+    opacity: 1;
+    cursor: wait;
+}
+
+.upload-area:disabled {
+    color: inherit;
+}
+
 .upload-area {
     position: relative;
     width: 100%;

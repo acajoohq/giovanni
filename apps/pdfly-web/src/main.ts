@@ -2,6 +2,9 @@ import { compressPdf, formatBytes, getVersion, splitPages } from "@pdfly/wasm";
 
 const SPLIT_LIST_PAGE_SIZE = 10;
 
+const COMPRESS_LOADER = { labelId: "compress-loader-label", loaderId: "compress-loader" } as const;
+const SPLIT_LOADER = { labelId: "split-loader-label", loaderId: "split-loader" } as const;
+
 let compressedData: Uint8Array | null = null;
 let splitPagesData: Uint8Array[] = [];
 let splitFileName = "document";
@@ -100,10 +103,12 @@ async function handleCompressFile(file: File): Promise<void> {
         return;
     }
 
-    showStatus("compress-status", "Reading file...", "info");
+    clearStatus("compress-status");
+    setUploadLoading(compressUpload, COMPRESS_LOADER, true, "Reading file…");
 
     try {
         const arrayBuffer = await file.arrayBuffer();
+        setText(COMPRESS_LOADER.labelId, "Compressing PDF…");
         const options = {
             compressionLevel: parseInt(levelSlider.value),
             decodeLevel: (document.getElementById("decode-level") as HTMLSelectElement).value as "none" | "generalized" | "specialized" | "all",
@@ -111,8 +116,6 @@ async function handleCompressFile(file: File): Promise<void> {
             compressPages: (document.getElementById("compress-pages") as HTMLInputElement).checked,
             removeUnreferencedResources: (document.getElementById("remove-unreferenced") as HTMLInputElement).checked,
         };
-
-        showStatus("compress-status", "Compressing PDF...", "info");
 
         const startTime = performance.now();
         const result = await compressPdf(arrayBuffer, options);
@@ -131,6 +134,8 @@ async function handleCompressFile(file: File): Promise<void> {
         showStatus("compress-status", "Compression complete!", "success");
     } catch (error) {
         showStatus("compress-status", `Error: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
+    } finally {
+        setUploadLoading(compressUpload, COMPRESS_LOADER, false);
     }
 }
 
@@ -176,10 +181,12 @@ async function handleSplitFile(file: File): Promise<void> {
 
     splitFileName = file.name.replace(/\.pdf$/i, "") || "document";
     splitListPageIndex = 0;
-    showStatus("split-status", "Splitting PDF...", "info");
+    clearStatus("split-status");
+    setUploadLoading(splitUpload, SPLIT_LOADER, true, "Reading file…");
 
     try {
         const arrayBuffer = await file.arrayBuffer();
+        setText(SPLIT_LOADER.labelId, "Splitting pages…");
         const startTime = performance.now();
         const result = await splitPages(arrayBuffer);
         const elapsedSeconds = (performance.now() - startTime) / 1000;
@@ -196,6 +203,8 @@ async function handleSplitFile(file: File): Promise<void> {
         showStatus("split-status", `Successfully split into ${result.pageCount} ${label}`, "success");
     } catch (error) {
         showStatus("split-status", `Error: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
+    } finally {
+        setUploadLoading(splitUpload, SPLIT_LOADER, false);
     }
 }
 
@@ -322,4 +331,34 @@ function showStatus(id: string, message: string, type: "info" | "success" | "err
     if (!element) return;
     element.textContent = message;
     element.className = `status ${type}`;
+}
+
+function clearStatus(id: string): void {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.textContent = "";
+    element.className = "status";
+}
+
+type UploadLoaderIds = { labelId: string; loaderId: string };
+
+function setUploadLoading(
+    uploadButton: HTMLButtonElement,
+    { labelId, loaderId }: UploadLoaderIds,
+    loading: boolean,
+    message = "Working…",
+): void {
+    const loader = document.getElementById(loaderId);
+    if (loading) {
+        uploadButton.classList.add("is-loading");
+        uploadButton.setAttribute("aria-busy", "true");
+        uploadButton.disabled = true;
+        loader?.setAttribute("aria-hidden", "false");
+        setText(labelId, message);
+    } else {
+        uploadButton.classList.remove("is-loading");
+        uploadButton.removeAttribute("aria-busy");
+        uploadButton.disabled = false;
+        loader?.setAttribute("aria-hidden", "true");
+    }
 }

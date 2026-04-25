@@ -33,6 +33,10 @@
                         <span class="upload-title--drop" aria-hidden="true">Release to upload your PDF</span>
                     </span>
                     <span class="upload-copy">Your file never leaves your browser</span>
+                    <div class="upload-loader" id="compress-loader" aria-hidden="true">
+                        <span class="spinner" aria-hidden="true"></span>
+                        <span class="upload-loader-label" id="compress-loader-label" aria-live="polite">Working…</span>
+                    </div>
                 </button>
                 <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="compress-input" />
 
@@ -114,6 +118,10 @@
                         <span class="upload-title--drop" aria-hidden="true">Release to upload your PDF</span>
                     </span>
                     <span class="upload-copy">Each page will be extracted as a separate PDF</span>
+                    <div class="upload-loader" id="split-loader" aria-hidden="true">
+                        <span class="spinner" aria-hidden="true"></span>
+                        <span class="upload-loader-label" id="split-loader-label" aria-live="polite">Working…</span>
+                    </div>
                 </button>
                 <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="split-input" />
 

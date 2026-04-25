@@ -39,3 +39,16 @@ pnpm validate
 - Task orchestration: `turbo.json` with Turbo.
 
 Generated build output is ignored and can be recreated from source.
+
+## Todo
+
+- [ ] Choose the outputs of the lib
+- [ ] Find a strategy for updates of the qpdf library
+- [ ] CI / CD
+- [ ] Open source it
+- [ ] Documentation
+  - [ ] How to use it with Vite chunking
+- [ ] Review the code
+  - [ ] WASM build
+  - [ ] Library design
+- [ ] Publish package

@@ -7,9 +7,20 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo -e "${GREEN}Building qpdf WASM from source...${NC}"
+OUTPUT_DIR="../build/wasm"
+QPDF_JS="$OUTPUT_DIR/qpdf.js"
+QPDF_WASM="$OUTPUT_DIR/qpdf.wasm"
+
+echo -e "${GREEN}Preparing qpdf WASM artifacts...${NC}"
 
 if ! command -v emcc &> /dev/null; then
+    if [ -f "$QPDF_JS" ] && [ -f "$QPDF_WASM" ]; then
+        echo -e "${YELLOW}Emscripten not found; using existing WASM artifacts.${NC}"
+        echo -e "${GREEN}  qpdf.js: $QPDF_JS${NC}"
+        echo -e "${GREEN}  qpdf.wasm: $QPDF_WASM${NC}"
+        exit 0
+    fi
+
     echo -e "${RED}Error: Emscripten not found!${NC}"
     echo "Please activate Emscripten environment first:"
     echo "  source /path/to/emsdk/emsdk_env.sh"
@@ -26,6 +37,7 @@ QPDF_SOURCE="$(cd "$QPDF_SOURCE" && pwd)"
 
 echo -e "${GREEN}✓ Emscripten found: $(emcc --version | head -n1)${NC}"
 echo -e "${GREEN}✓ qpdf source found at: $QPDF_SOURCE${NC}"
+echo -e "${GREEN}Building qpdf WASM from source...${NC}"
 
 BUILD_DIR="cmake-build"
 mkdir -p "$BUILD_DIR"
@@ -46,7 +58,6 @@ emmake make install
 
 cd ..
 
-OUTPUT_DIR="../build/wasm"
 if [ -f "$OUTPUT_DIR/qpdf.wasm" ] && [ -f "$OUTPUT_DIR/qpdf.js" ]; then
     WASM_SIZE=$(du -h "$OUTPUT_DIR/qpdf.wasm" | cut -f1)
     echo -e "${GREEN}✓ Build successful!${NC}"

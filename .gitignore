@@ -10,6 +10,10 @@ demo-dist/
 apps/*/dist/
 packages/*/dist/
 packages/*/build/
+!packages/pdfly-wasm/build/
+!packages/pdfly-wasm/build/wasm/
+!packages/pdfly-wasm/build/wasm/qpdf.js
+!packages/pdfly-wasm/build/wasm/qpdf.wasm
 apps/*/.turbo/
 packages/*/.turbo/
 

@@ -50,12 +50,18 @@ importers:
 
   apps/pdfly-desktop:
     dependencies:
+      '@pdfly/wasm':
+        specifier: workspace:*
+        version: link:../../packages/pdfly-wasm
       '@tauri-apps/api':
         specifier: ^2
         version: 2.10.1
       '@tauri-apps/plugin-opener':
         specifier: ^2
         version: 2.5.3
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
       react:
         specifier: ^19.1.0
         version: 19.2.5

@@ -194,7 +194,7 @@ jobs:
                   github.event.pull_request.head.repo.full_name == github.repository
               run: printenv | sort
 
-            - name: Comment Worker preview on PR
+            - name: Upsert Worker preview comment on PR
               if: >
                   github.event_name == 'pull_request' &&
                   github.event.pull_request.base.ref == 'master' &&
@@ -207,6 +207,7 @@ jobs:
                   COMMAND_OUTPUT: ${{ steps.cf_preview.outputs.command-output }}
               with:
                   script: |
+                      const marker = "<!-- pdfly-cf-worker-preview -->";
                       const alias = (process.env.DEPLOYMENT_ALIAS_URL ?? "").trim();
                       const version = (process.env.DEPLOYMENT_URL ?? "").trim();
                       const commandOutput = (process.env.COMMAND_OUTPUT ?? "").trim();
@@ -221,9 +222,29 @@ jobs:
                       if (!preview && commandOutput) {
                           lines.push("", "<details><summary>Wrangler stdout</summary>", "", "```", commandOutput.slice(0, 50000), "```", "</details>");
                       }
-                      await github.rest.issues.createComment({
+                      const body = [marker, "", ...lines].join("\n");
+                      const bot = "github-actions[bot]";
+                      const comments = await github.paginate(github.rest.issues.listComments, {
                           owner: context.repo.owner,
                           repo: context.repo.repo,
                           issue_number: context.issue.number,
-                          body: lines.join("\n"),
                       });
+                      const ours = comments.filter(
+                          (c) => c.user?.login === bot && typeof c.body === "string" && c.body.includes(marker),
+                      );
+                      const existing = ours.length ? ours.reduce((a, b) => (a.id > b.id ? a : b)) : null;
+                      if (existing) {
+                          await github.rest.issues.updateComment({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              comment_id: existing.id,
+                              body,
+                          });
+                      } else {
+                          await github.rest.issues.createComment({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              issue_number: context.issue.number,
+                              body,
+                          });
+                      }

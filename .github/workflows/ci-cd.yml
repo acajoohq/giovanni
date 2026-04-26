@@ -227,4 +227,3 @@ jobs:
                           issue_number: context.issue.number,
                           body: lines.join("\n"),
                       });
-                 

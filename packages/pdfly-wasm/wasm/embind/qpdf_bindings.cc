@@ -29,6 +29,9 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
     // Merge multiple PDFs into one
     function("mergePdfs", &mergePdfs);
 
+    // Extract embedded raster images from a PDF
+    function("extractImages", &extractImages);
+
     // Advanced API: QPDF wrapper class
     class_<QPDFWrapper>("QPDF")
         .constructor<>()

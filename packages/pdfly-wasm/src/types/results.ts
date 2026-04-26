@@ -106,3 +106,50 @@ export interface MergeResult {
      */
     sourceCount: number;
 }
+
+/**
+ * A single image extracted from a PDF.
+ *
+ * `bytes` is always populated. `blob` is populated for filters the browser can
+ * decode directly (DCTDecode → JPEG, JPXDecode → JPEG-2000) and for raw-pixel
+ * streams that were re-encoded as PNG by the canvas adapter. For unsupported
+ * filter chains (CCITT, JBIG2, exotic color spaces, etc.) `blob` is null and
+ * `unsupportedReason` explains why — `bytes` still holds the raw stream so
+ * callers can offer a download or layer their own decoder on top.
+ */
+export interface ExtractedImage {
+    /** Stable identity in the source PDF (`"obj/gen"`). */
+    objectKey: string;
+    /** XObject name as it appears in the page's resource dictionary (e.g. `Im0`). */
+    xobjectKey: string;
+    /** Zero-based index of the first page where this image is referenced. */
+    pageIndex: number;
+    /** Leaf filter name from the PDF (e.g. `DCTDecode`, `FlateDecode`, `none`). */
+    filter: string;
+    width: number;
+    height: number;
+    bitsPerComponent: number;
+    /** Color space description from the image dictionary, in qpdf's string form. */
+    colorSpace: string;
+    /** Component count resolved by qpdf (1=gray, 3=RGB, 4=CMYK; 0 when unknown). */
+    components: number;
+    hasMask: boolean;
+    hasSMask: boolean;
+    isImageMask: boolean;
+    /** Raw bytes from the qpdf side; format depends on `filter`. */
+    bytes: Uint8Array;
+    /** Browser-ready Blob, or null when the image could not be decoded. */
+    blob: Blob | null;
+    /** Mime type of `blob`, or null when `blob` is null. */
+    mimeType: string | null;
+    /** Set when `blob` is null. */
+    unsupportedReason?: string;
+}
+
+/**
+ * Result of a PDF image extraction
+ */
+export interface ExtractImagesResult {
+    images: ExtractedImage[];
+    imageCount: number;
+}

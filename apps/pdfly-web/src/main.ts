@@ -1,15 +1,20 @@
 import { zip } from "fflate";
-import { compressPdf, formatBytes, getVersion, mergePdfs, splitPages } from "@pdfly/wasm";
+import type { ExtractedImage } from "@pdfly/wasm";
+import { compressPdf, extractImages, formatBytes, getVersion, mergePdfs, splitPages } from "@pdfly/wasm";
 
 const SPLIT_LIST_PAGE_SIZE = 10;
 
 const COMPRESS_LOADER = { labelId: "compress-loader-label", loaderId: "compress-loader" } as const;
 const SPLIT_LOADER = { labelId: "split-loader-label", loaderId: "split-loader" } as const;
+const IMAGES_LOADER = { labelId: "images-loader-label", loaderId: "images-loader" } as const;
 
 let compressedData: Uint8Array | null = null;
 let splitPagesData: Uint8Array[] = [];
 let splitFileName = "document";
 let splitListPageIndex = 0;
+let extractedImages: ExtractedImage[] = [];
+let extractedImagesObjectUrls: string[] = [];
+let extractedImagesFileName = "document";
 
 const mergeFiles: File[] = [];
 let mergedData: Uint8Array | null = null;
@@ -492,6 +497,209 @@ async function handleMerge(): Promise<void> {
             mergeBtn.removeAttribute("aria-busy");
         }
     }
+}
+
+// extract images tab
+const imagesUpload = document.getElementById("images-upload") as HTMLButtonElement;
+const imagesInput = document.getElementById("images-input") as HTMLInputElement;
+const downloadAllImagesBtn = document.getElementById("download-all-images-btn") as HTMLButtonElement | null;
+
+imagesUpload.addEventListener("click", () => imagesInput.click());
+bindFileDropTarget(imagesUpload, (file) => {
+    void handleExtractImagesFile(file);
+});
+imagesInput.addEventListener("change", (event) => {
+    const file = (event.target as HTMLInputElement).files?.item(0);
+    if (file) void handleExtractImagesFile(file);
+});
+
+downloadAllImagesBtn?.addEventListener("click", () => {
+    void handleDownloadAllImagesZip();
+});
+
+async function handleExtractImagesFile(file: File): Promise<void> {
+    if (!isPdfFile(file)) {
+        showStatus("images-status", "Please select a PDF file", "error");
+        return;
+    }
+
+    extractedImagesFileName = file.name.replace(/\.pdf$/i, "") || "document";
+    clearStatus("images-status");
+    setUploadLoading(imagesUpload, IMAGES_LOADER, true, "Reading file…");
+    revokeImageObjectUrls();
+
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        setText(IMAGES_LOADER.labelId, "Extracting images…");
+        const startTime = performance.now();
+        const result = await extractImages(arrayBuffer);
+        const elapsedSeconds = (performance.now() - startTime) / 1000;
+
+        extractedImages = result.images;
+        const noun = result.imageCount === 1 ? "image" : "images";
+        setText("images-title", `${result.imageCount} ${noun} extracted`);
+        setText("images-processing-time", `${elapsedSeconds.toFixed(2)}s`);
+        setText("images-per-sec", formatImagesPerSecond(result.imageCount, elapsedSeconds));
+        setText("images-throughput", formatThroughputBytesPerSecond(arrayBuffer.byteLength, elapsedSeconds));
+
+        renderImagesGrid(result.images, extractedImagesFileName);
+        document.getElementById("images-results")?.classList.add("show");
+
+        const decodedCount = result.images.filter((image) => image.blob !== null).length;
+        const skippedCount = result.imageCount - decodedCount;
+        const messageParts = [`Extracted ${decodedCount} ${decodedCount === 1 ? "image" : "images"}`];
+        if (skippedCount > 0) {
+            messageParts.push(`${skippedCount} skipped (unsupported filter or color space)`);
+        }
+        showStatus("images-status", messageParts.join(" · "), result.imageCount > 0 ? "success" : "info");
+
+        if (downloadAllImagesBtn) {
+            downloadAllImagesBtn.disabled = decodedCount === 0;
+        }
+    } catch (error) {
+        showStatus("images-status", `Error: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
+    } finally {
+        setUploadLoading(imagesUpload, IMAGES_LOADER, false);
+    }
+}
+
+function renderImagesGrid(images: ExtractedImage[], baseName: string): void {
+    const grid = document.getElementById("images-grid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+
+    if (images.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "page-name";
+        empty.style.padding = "16px";
+        empty.textContent = "No images found in this PDF.";
+        grid.appendChild(empty);
+        return;
+    }
+
+    images.forEach((image, index) => {
+        const card = document.createElement("div");
+        card.className = "image-card";
+
+        const thumb = document.createElement("div");
+        thumb.className = "image-card-thumb";
+
+        if (image.blob) {
+            const url = URL.createObjectURL(image.blob);
+            extractedImagesObjectUrls.push(url);
+            const img = document.createElement("img");
+            img.src = url;
+            img.alt = `Image ${index + 1} from page ${image.pageIndex + 1}`;
+            img.loading = "lazy";
+            thumb.appendChild(img);
+        } else {
+            thumb.classList.add("unsupported");
+            thumb.textContent = image.unsupportedReason ?? "Unable to decode";
+        }
+
+        const meta = document.createElement("div");
+        meta.className = "image-card-meta";
+        const dims = document.createElement("div");
+        dims.innerHTML = `<strong>${image.width}×${image.height}</strong> · ${formatBytes(image.bytes.byteLength)}`;
+        const filterLine = document.createElement("div");
+        filterLine.className = "filter";
+        filterLine.textContent = `${image.filter} · page ${image.pageIndex + 1}`;
+        meta.appendChild(dims);
+        meta.appendChild(filterLine);
+
+        const actions = document.createElement("div");
+        actions.className = "image-card-actions";
+        const button = document.createElement("button");
+        button.className = "button secondary small";
+        button.type = "button";
+        button.textContent = image.blob ? "Download" : "Raw bytes";
+        button.addEventListener("click", () => {
+            const fileName = imageDownloadName(baseName, index, image);
+            if (image.blob) {
+                downloadBlob(image.blob, fileName);
+            } else {
+                downloadBlob(new Blob([image.bytes as BlobPart], { type: "application/octet-stream" }), fileName);
+            }
+        });
+        actions.appendChild(button);
+
+        card.appendChild(thumb);
+        card.appendChild(meta);
+        card.appendChild(actions);
+        grid.appendChild(card);
+    });
+}
+
+function imageDownloadName(baseName: string, index: number, image: ExtractedImage): string {
+    const ordinal = String(index + 1).padStart(3, "0");
+    const extension = mimeTypeToExtension(image.mimeType, image.filter);
+    return `${baseName}_image_${ordinal}.${extension}`;
+}
+
+function mimeTypeToExtension(mimeType: string | null, filter: string): string {
+    if (mimeType === "image/jpeg") return "jpg";
+    if (mimeType === "image/jp2") return "jp2";
+    if (mimeType === "image/png") return "png";
+    if (filter === "CCITTFaxDecode") return "ccitt.bin";
+    if (filter === "JBIG2Decode") return "jbig2.bin";
+    return "bin";
+}
+
+async function handleDownloadAllImagesZip(): Promise<void> {
+    if (!downloadAllImagesBtn || extractedImages.length === 0) {
+        return;
+    }
+
+    downloadAllImagesBtn.disabled = true;
+    downloadAllImagesBtn.setAttribute("aria-busy", "true");
+
+    try {
+        const entries: Record<string, Uint8Array> = {};
+        for (const [index, image] of extractedImages.entries()) {
+            if (!image.blob) {
+                continue;
+            }
+            const fileName = imageDownloadName(extractedImagesFileName, index, image);
+            entries[fileName] = new Uint8Array(await image.blob.arrayBuffer());
+        }
+
+        if (Object.keys(entries).length === 0) {
+            showStatus("images-status", "Nothing to bundle: no images were decoded.", "error");
+            return;
+        }
+
+        const zipped = await new Promise<Uint8Array>((resolve, reject) => {
+            zip(entries, { level: 6 }, (err, data) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(data);
+            });
+        });
+        downloadBlob(new Blob([new Uint8Array(zipped)], { type: "application/zip" }), `${extractedImagesFileName}_images.zip`);
+    } catch (error) {
+        showStatus("images-status", `Error: ${error instanceof Error ? error.message : "Could not create ZIP"}`, "error");
+    } finally {
+        downloadAllImagesBtn.disabled = false;
+        downloadAllImagesBtn.removeAttribute("aria-busy");
+    }
+}
+
+function revokeImageObjectUrls(): void {
+    for (const url of extractedImagesObjectUrls) {
+        URL.revokeObjectURL(url);
+    }
+    extractedImagesObjectUrls = [];
+}
+
+function formatImagesPerSecond(imageCount: number, elapsedSeconds: number): string {
+    if (!Number.isFinite(elapsedSeconds) || elapsedSeconds <= 0 || !Number.isFinite(imageCount) || imageCount < 0) {
+        return "—";
+    }
+
+    return `${(imageCount / elapsedSeconds).toFixed(1)} img/s`;
 }
 
 function formatThroughputBytesPerSecond(byteLength: number, elapsedSeconds: number): string {

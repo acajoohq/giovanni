@@ -35,16 +35,27 @@
 export { initQpdf, getVersion, compressPdf } from "./core/compress.js";
 export { splitPages } from "./core/split.js";
 export { mergePdfs } from "./core/merge.js";
+export { extractImages } from "./core/extract-images.js";
 
 // advanced api
 export { QPDF } from "./core/qpdf.js";
 export { QPDFWriter } from "./core/writer.js";
 
 // error classes
-export { QpdfError, QpdfInitError, QpdfCompressionError, QpdfSplitError, QpdfMergeError, QpdfValidationError } from "./core/errors.js";
+export { QpdfError, QpdfInitError, QpdfCompressionError, QpdfSplitError, QpdfMergeError, QpdfValidationError, QpdfImageExtractionError } from "./core/errors.js";
 
 // types
-export type { CompressionOptions, DecodeLevel, ObjectStreamMode, CompressionResult, SplitResult, MergeResult, QPDFInfo } from "./types/index.js";
+export type {
+    CompressionOptions,
+    DecodeLevel,
+    ObjectStreamMode,
+    CompressionResult,
+    SplitResult,
+    MergeResult,
+    QPDFInfo,
+    ExtractedImage,
+    ExtractImagesResult,
+} from "./types/index.js";
 
 // utility functions
 export { formatBytes, calculateSavings, formatPercentage } from "./utils/format.js";

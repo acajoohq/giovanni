@@ -68,3 +68,13 @@ export class QpdfMergeError extends QpdfError {
         this.name = "QpdfMergeError";
     }
 }
+
+/**
+ * Error thrown when image extraction fails
+ */
+export class QpdfImageExtractionError extends QpdfError {
+    constructor(message: string, options?: ErrorOptions) {
+        super(message, options);
+        this.name = "QpdfImageExtractionError";
+    }
+}

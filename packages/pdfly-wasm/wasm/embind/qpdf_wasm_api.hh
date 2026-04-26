@@ -31,6 +31,7 @@ emscripten::val compressPdf(const emscripten::val& inputArray, const Compression
 std::string getQpdfVersion();
 emscripten::val splitPages(const emscripten::val& inputArray);
 emscripten::val mergePdfs(const emscripten::val& inputArrays);
+emscripten::val extractImages(const emscripten::val& inputArray);
 
 // QPDFWrapper class declaration
 class QPDFWrapper {

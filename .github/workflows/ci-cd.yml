@@ -1,3 +1,4 @@
+# pr: checks + build + test; push to master: same plus deploy (single workspace on build job)
 name: CI & CD
 
 on:
@@ -163,7 +164,7 @@ jobs:
             - name: Check package contract
               run: pnpm --filter @pdfly/wasm package:check
 
-            - name: Deploy production Worker
+            - name: Deploy Cloudflare Worker
               uses: cloudflare/wrangler-action@v3
               with:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

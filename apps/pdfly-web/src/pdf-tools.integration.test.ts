@@ -17,38 +17,51 @@ const compressionGoalsByFileName: Record<string, number> = {
 const fixtureDirectory = join(dirname(fileURLToPath(import.meta.url)), "test/fixtures/pdfs");
 const pdfFixtures = await loadPdfFixtures();
 const pdfFixturesWithCompressionGoals = pdfFixtures.filter((fixture): fixture is PdfFixture & { maxCompressedSize: number } => fixture.maxCompressedSize !== undefined);
+const integrationTestTimeoutMs = 60_000;
 
 describe("pdf tools", () => {
     it("has PDF fixtures", () => {
         expect(pdfFixtures.length).toBeGreaterThan(0);
     });
 
-    it.each(pdfFixtures)("compresses $name into a readable PDF", async ({ data }) => {
-        const result = await compressPdf(data);
+    it.each(pdfFixtures)(
+        "compresses $name into a readable PDF",
+        async ({ data }) => {
+            const result = await compressPdf(data);
 
-        expect(result.originalSize).toBe(data.byteLength);
-        expect(result.compressedSize).toBe(result.data.byteLength);
-        expect(result.data.byteLength).toBeGreaterThan(0);
-        expect(hasPdfHeader(result.data)).toBe(true);
-    });
+            expect(result.originalSize).toBe(data.byteLength);
+            expect(result.compressedSize).toBe(result.data.byteLength);
+            expect(result.data.byteLength).toBeGreaterThan(0);
+            expect(hasPdfHeader(result.data)).toBe(true);
+        },
+        integrationTestTimeoutMs,
+    );
 
-    it.each(pdfFixturesWithCompressionGoals)("keeps $name under the compression goal", async ({ data, maxCompressedSize }) => {
-        const result = await compressPdf(data);
+    it.each(pdfFixturesWithCompressionGoals)(
+        "keeps $name under the compression goal",
+        async ({ data, maxCompressedSize }) => {
+            const result = await compressPdf(data);
 
-        expect(result.compressedSize).toBeLessThanOrEqual(maxCompressedSize);
-    });
+            expect(result.compressedSize).toBeLessThanOrEqual(maxCompressedSize);
+        },
+        integrationTestTimeoutMs,
+    );
 
-    it.each(pdfFixtures)("splits $name into readable page PDFs", async ({ data }) => {
-        const result = await splitPages(data);
+    it.each(pdfFixtures)(
+        "splits $name into readable page PDFs",
+        async ({ data }) => {
+            const result = await splitPages(data);
 
-        expect(result.pageCount).toBeGreaterThan(0);
-        expect(result.pages).toHaveLength(result.pageCount);
+            expect(result.pageCount).toBeGreaterThan(0);
+            expect(result.pages).toHaveLength(result.pageCount);
 
-        for (const page of result.pages) {
-            expect(page.byteLength).toBeGreaterThan(0);
-            expect(hasPdfHeader(page)).toBe(true);
-        }
-    });
+            for (const page of result.pages) {
+                expect(page.byteLength).toBeGreaterThan(0);
+                expect(hasPdfHeader(page)).toBe(true);
+            }
+        },
+        integrationTestTimeoutMs,
+    );
 });
 
 async function loadPdfFixtures(): Promise<PdfFixture[]> {

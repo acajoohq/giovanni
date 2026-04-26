@@ -56,5 +56,8 @@
         "typecheck": "tsgo --noEmit",
         "validate": "publint && attw --pack . --profile node16",
         "package:check": "pnpm run validate && pnpm pack --dry-run"
+    },
+    "engines": {
+        "node": ">=24.0.0"
     }
 }

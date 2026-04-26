@@ -1,0 +1,35 @@
+# Oxfmt autofix via https://oxc.rs/docs/guide/usage/formatter/ci.html#autofix-formatting-issues
+# Install the GitHub App: https://autofix.ci/setup
+name: autofix.ci
+
+on:
+    pull_request:
+    push:
+        branches: [master]
+
+permissions:
+    contents: read
+
+jobs:
+    autofix:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                  node-version-file: .node-version
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Format with Oxfmt
+              run: pnpm run format
+
+            - uses: autofix-ci/action@c5b2d67aa2274e7b5a18224e8171550871fc7e4a

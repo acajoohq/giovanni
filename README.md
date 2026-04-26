@@ -64,3 +64,4 @@ pnpm clean
 - [ ] Publish package
 - [ ] Tauri (desktop app)
 - [ ] Merge/fuse PDFs
+- [ ] Lots of fixture tests (runned on demand)

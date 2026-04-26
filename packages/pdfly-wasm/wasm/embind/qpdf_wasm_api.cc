@@ -179,7 +179,8 @@ emscripten::val mergePdfs(const emscripten::val& inputArrays) {
             const auto& inputData = allInputData.back();   // ← stable reference
 
             auto srcPdf = std::make_unique<QPDF>();
-            srcPdf->processMemoryFile("input.pdf",
+            std::string inputName = "input-" + std::to_string(i) + ".pdf";
+            srcPdf->processMemoryFile(inputName.c_str(),
                                       reinterpret_cast<const char*>(inputData.data()),
                                       inputData.size());
 

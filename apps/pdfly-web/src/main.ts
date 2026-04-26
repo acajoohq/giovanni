@@ -1,5 +1,5 @@
 import { zip } from "fflate";
-import { compressPdf, formatBytes, getVersion, splitPages } from "@pdfly/wasm";
+import { compressPdf, formatBytes, getVersion, mergePdfs, splitPages } from "@pdfly/wasm";
 
 const SPLIT_LIST_PAGE_SIZE = 10;
 
@@ -10,6 +10,9 @@ let compressedData: Uint8Array | null = null;
 let splitPagesData: Uint8Array[] = [];
 let splitFileName = "document";
 let splitListPageIndex = 0;
+
+let mergeFiles: File[] = [];
+let mergedData: Uint8Array | null = null;
 
 function isFileDrag(dataTransfer: DataTransfer | null): boolean {
     if (!dataTransfer) {
@@ -321,6 +324,175 @@ function updateSplitPagination(totalItemCount: number): void {
 
     previousButton.disabled = splitListPageIndex <= 0;
     nextButton.disabled = splitListPageIndex >= listPageCount - 1;
+}
+
+// merge tab
+const mergeUpload = document.getElementById("merge-upload") as HTMLButtonElement;
+const mergeInput = document.getElementById("merge-input") as HTMLInputElement;
+const mergeBtn = document.getElementById("merge-btn") as HTMLButtonElement | null;
+const mergeDownloadBtn = document.getElementById("merge-download-btn") as HTMLButtonElement | null;
+
+mergeUpload.addEventListener("click", () => mergeInput.click());
+
+mergeUpload.addEventListener("dragenter", (event) => {
+    event.preventDefault();
+    if (!isFileDrag(event.dataTransfer)) return;
+    mergeUpload.classList.add("drag-over-file");
+});
+
+mergeUpload.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    const dt = event.dataTransfer;
+    if (!dt) return;
+    if (isFileDrag(dt)) {
+        dt.dropEffect = "copy";
+        mergeUpload.classList.add("drag-over-file");
+    } else {
+        dt.dropEffect = "none";
+        mergeUpload.classList.remove("drag-over-file");
+    }
+});
+
+mergeUpload.addEventListener("dragleave", (event) => {
+    const nextTarget = event.relatedTarget as Node | null;
+    if (nextTarget && mergeUpload.contains(nextTarget)) return;
+    mergeUpload.classList.remove("drag-over-file");
+});
+
+mergeUpload.addEventListener("drop", (event) => {
+    event.preventDefault();
+    mergeUpload.classList.remove("drag-over-file");
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) addMergeFiles(files);
+});
+
+mergeInput.addEventListener("change", (event) => {
+    const files = (event.target as HTMLInputElement).files;
+    if (files && files.length > 0) {
+        addMergeFiles(files);
+        mergeInput.value = "";
+    }
+});
+
+mergeBtn?.addEventListener("click", () => {
+    void handleMerge();
+});
+
+mergeDownloadBtn?.addEventListener("click", () => {
+    if (mergedData) downloadData(mergedData, "merged.pdf");
+});
+
+function addMergeFiles(files: FileList | File[]): void {
+    const pdfs = Array.from(files).filter(isPdfFile);
+    if (pdfs.length === 0) {
+        showStatus("merge-status", "Please select PDF files only", "error");
+        return;
+    }
+    mergeFiles.push(...pdfs);
+    console.log("new merge files", mergeFiles);
+    renderMergeFileList();
+    clearStatus("merge-status");
+    document.getElementById("merge-results")?.classList.remove("show");
+    mergedData = null;
+}
+
+function removeMergeFile(index: number): void {
+    mergeFiles.splice(index, 1);
+    renderMergeFileList();
+    document.getElementById("merge-results")?.classList.remove("show");
+    mergedData = null;
+}
+
+function renderMergeFileList(): void {
+    const list = document.getElementById("merge-file-list");
+    const actions = document.getElementById("merge-actions");
+    const hint = document.getElementById("merge-actions-hint");
+    if (!list || !actions) return;
+
+    if (mergeFiles.length === 0) {
+        list.hidden = true;
+        actions.hidden = true;
+        return;
+    }
+
+    list.hidden = false;
+    actions.hidden = false;
+
+    if (mergeBtn) mergeBtn.disabled = mergeFiles.length < 2;
+    if (hint) hint.textContent = mergeFiles.length < 2 ? "Add at least one more PDF" : `${mergeFiles.length} files ready`;
+
+    list.innerHTML = "";
+    mergeFiles.forEach((file, index) => {
+        const label = document.createElement("div");
+        label.className = "page-item-label";
+
+        const icon = document.createElement("span");
+        icon.className = "page-icon";
+        icon.textContent = "PDF";
+
+        const meta = document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "page-name";
+        name.textContent = file.name;
+        const sizeEl = document.createElement("div");
+        sizeEl.className = "page-size";
+        sizeEl.textContent = formatBytes(file.size);
+        meta.appendChild(name);
+        meta.appendChild(sizeEl);
+
+        label.appendChild(icon);
+        label.appendChild(meta);
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "button secondary small";
+        removeBtn.type = "button";
+        removeBtn.textContent = "Remove";
+        removeBtn.addEventListener("click", () => removeMergeFile(index));
+
+        const item = document.createElement("div");
+        item.className = "page-item";
+        item.appendChild(label);
+        item.appendChild(removeBtn);
+        list.appendChild(item);
+    });
+}
+
+async function handleMerge(): Promise<void> {
+    if (mergeFiles.length < 2) {
+        showStatus("merge-status", "Please add at least 2 PDFs to merge", "error");
+        return;
+    }
+
+    if (mergeBtn) {
+        mergeBtn.disabled = true;
+        mergeBtn.setAttribute("aria-busy", "true");
+    }
+    clearStatus("merge-status");
+    document.getElementById("merge-results")?.classList.remove("show");
+
+    try {
+        const buffers = await Promise.all(mergeFiles.map((f) => f.arrayBuffer()));
+        const totalInputBytes = buffers.reduce((sum, b) => sum + b.byteLength, 0);
+
+        const startTime = performance.now();
+        const result = await mergePdfs(buffers);
+        const elapsedSeconds = (performance.now() - startTime) / 1000;
+
+        mergedData = result.data;
+        setText("merge-output-size", formatBytes(result.data.byteLength));
+        setText("merge-file-count", String(result.sourceCount));
+        setText("merge-processing-time", `${elapsedSeconds.toFixed(2)}s`);
+        setText("merge-throughput", formatThroughputBytesPerSecond(totalInputBytes, elapsedSeconds));
+        document.getElementById("merge-results")?.classList.add("show");
+        showStatus("merge-status", `Successfully merged ${result.sourceCount} PDF${result.sourceCount > 1 ? "s" : ""}`, "success");
+    } catch (error) {
+        showStatus("merge-status", `Error: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
+    } finally {
+        if (mergeBtn) {
+            mergeBtn.disabled = mergeFiles.length < 2;
+            mergeBtn.removeAttribute("aria-busy");
+        }
+    }
 }
 
 function formatThroughputBytesPerSecond(byteLength: number, elapsedSeconds: number): string {

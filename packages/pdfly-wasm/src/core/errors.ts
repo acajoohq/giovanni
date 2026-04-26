@@ -58,3 +58,13 @@ export class QpdfValidationError extends QpdfError {
         this.name = "QpdfValidationError";
     }
 }
+
+/**
+ * Error thrown when PDF merging fails
+ */
+export class QpdfMergeError extends QpdfError {
+    constructor(message: string, options?: ErrorOptions) {
+        super(message, options);
+        this.name = "QpdfMergeError";
+    }
+}

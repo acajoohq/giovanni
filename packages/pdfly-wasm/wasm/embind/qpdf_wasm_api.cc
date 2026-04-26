@@ -36,6 +36,7 @@ qpdf_object_stream_e getObjectStreamMode(const std::string& mode) {
     return qpdf_o_preserve;
 }
 
+#pragma region Main Compression API
 // Main compression function
 // Takes a Uint8Array of PDF data and returns compressed Uint8Array
 emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& options) {
@@ -98,6 +99,7 @@ emscripten::val compressPdf(const emscripten::val& inputArray, const Compression
         throw std::runtime_error(errorMsg);
     }
 }
+#pragma endregion
 
 // Get qpdf version
 std::string getQpdfVersion() {
@@ -105,6 +107,7 @@ std::string getQpdfVersion() {
 }
 
 
+#pragma region Split Pages API
 // Split PDF into individual pages
 // Takes a Uint8Array and returns a JS Array of Uint8Arrays (one per page)
 emscripten::val splitPages(const emscripten::val& inputArray) {
@@ -134,7 +137,7 @@ emscripten::val splitPages(const emscripten::val& inputArray) {
             size_t outputSize = buffer->getSize();
 
             emscripten::val uint8Array = emscripten::val::global("Uint8Array").new_(outputSize);
-        
+
             // Create a typed memory view for the output data
             auto view = emscripten::typed_memory_view(outputSize, outputData);
 
@@ -152,6 +155,63 @@ emscripten::val splitPages(const emscripten::val& inputArray) {
 }
 
 
+#pragma region Merge Pages API
+// Merge multiple PDFs into a single PDF
+// Takes a JS Array of Uint8Arrays and returns a single Uint8Array
+emscripten::val mergePdfs(const emscripten::val& inputArrays) {
+    try {
+        int length = inputArrays["length"].as<int>();
+        if (length == 0) {
+            throw std::runtime_error("No PDFs provided to merge");
+        }
+
+        QPDF outPdf;
+        outPdf.emptyPDF();
+
+        // Keep source PDFs alive until write() is complete
+        std::vector<std::vector<uint8_t>> allInputData;
+        std::vector<std::unique_ptr<QPDF>> sourcePdfs;
+        allInputData.reserve(length);
+        sourcePdfs.reserve(length);
+
+        for (int i = 0; i < length; i++) {
+            allInputData.emplace_back(emscripten::vecFromJSArray<uint8_t>(inputArrays[i]));
+            const auto& inputData = allInputData.back();   // ← stable reference
+
+            auto srcPdf = std::make_unique<QPDF>();
+            srcPdf->processMemoryFile("input.pdf",
+                                      reinterpret_cast<const char*>(inputData.data()),
+                                      inputData.size());
+
+            auto pages = srcPdf->getAllPages();
+            for (auto& page : pages) {
+                outPdf.addPage(page, false);
+            }
+
+            sourcePdfs.push_back(std::move(srcPdf));
+        }
+
+        QPDFWriter writer(outPdf);
+        writer.setOutputMemory();
+        writer.setObjectStreamMode(qpdf_o_generate);
+        writer.write();
+
+        std::shared_ptr<Buffer> buffer = writer.getBufferSharedPointer();
+        const unsigned char* outputData = buffer->getBuffer();
+        size_t outputSize = buffer->getSize();
+
+        auto view = emscripten::typed_memory_view(outputSize, outputData);
+        emscripten::val uint8Array = emscripten::val::global("Uint8Array").new_(outputSize);
+        uint8Array.call<void>("set", view);
+
+        return uint8Array;
+
+    } catch (const std::exception& e) {
+        std::string errorMsg = std::string("PDF merge failed: ") + e.what();
+        throw std::runtime_error(errorMsg);
+    }
+}
+#pragma endregion
 
 QPDFWrapper::QPDFWrapper() : initialized(false) {}
 

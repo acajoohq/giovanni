@@ -213,18 +213,28 @@ jobs:
                       const env = (k) => (process.env[k] ?? "").trim();
                       const cmdOut = env("COMMAND_OUTPUT");
                       const pick = (re) => cmdOut.match(re)?.[1]?.trim() ?? "";
-                      const fields = [
-                          ["Worker Version ID", "VERSION_ID", /Worker Version ID:\s*(\S+)/i],
-                          ["Version Preview URL", "DEPLOYMENT_URL", /Version Preview URL:\s*(\S+)/i],
-                          ["Version Preview Alias URL", "DEPLOYMENT_ALIAS_URL", /Version Preview Alias URL:\s*(\S+)/i],
-                      ];
-                      const rows = fields
-                          .map(([label, envKey, re]) => [label, env(envKey) || pick(re)])
-                          .filter(([, value]) => value)
-                          .map(([label, value]) => `${label}: ${value}`);
-                      const body = rows.length
-                          ? [marker, "", ...rows].join("\n")
-                          : [marker, "", "*(no preview lines parsed; see Upload Cloudflare Worker preview step log)*"].join("\n");
+                      const vid = env("VERSION_ID") || pick(/Worker Version ID:\s*(\S+)/i);
+                      const previewUrl = env("DEPLOYMENT_URL") || pick(/Version Preview URL:\s*(\S+)/i);
+                      const aliasUrl = env("DEPLOYMENT_ALIAS_URL") || pick(/Version Preview Alias URL:\s*(\S+)/i);
+                      const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+                      let body;
+                      if (!vid && !previewUrl && !aliasUrl) {
+                          body = [marker, "", `> ☁️ ⚠️ [👀](${runUrl})`, ""].join("\n");
+                      } else {
+                          const idCell = vid ? `\`${vid.replace(/`/g, "'")}\`` : "—";
+                          const previewCell = previewUrl ? `[🌐](${previewUrl})` : "—";
+                          const aliasCell = aliasUrl ? `[📌](${aliasUrl})` : "—";
+                          body = [
+                              marker,
+                              "",
+                              "### ☁️",
+                              "",
+                              "| 🔖 | 🌐 | 📌 |",
+                              "| :--- | :---: | :---: |",
+                              `| ${idCell} | ${previewCell} | ${aliasCell} |`,
+                              "",
+                          ].join("\n");
+                      }
                       const bot = "github-actions[bot]";
                       const comments = await github.paginate(github.rest.issues.listComments, {
                           owner: context.repo.owner,

@@ -4,7 +4,7 @@ Local-first PDF tooling: a Vite demo ([`apps/pdfly-web`](apps/pdfly-web)), a qpd
 
 ## Requirements
 
-- Node.js 24+
+- Node.js 24+ (lts)
 - pnpm 10.33+
 - Git
 - `vendor/qpdf` (clone in Setup)

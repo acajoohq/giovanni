@@ -45,7 +45,7 @@ pnpm clean
 - [ ] CLI
 - [ ] Find a strategy for updates of the qpdf library
 - [x] CI
-- [ ] CD
+- [x] CD
 - [ ] Open source it
 - [ ] Documentation
     - [ ] How to use it with Vite chunking

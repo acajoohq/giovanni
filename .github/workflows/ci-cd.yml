@@ -218,11 +218,11 @@ jobs:
                       const aliasUrl = env("DEPLOYMENT_ALIAS_URL") || pick(/Version Preview Alias URL:\s*(\S+)/i);
                       const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
                       const idCell = vid ? `\`${vid.replace(/`/g, "'")}\`` : "—";
-                      const previewCell = previewUrl ? `[Open upload](${previewUrl})` : "—";
-                      const aliasCell = aliasUrl ? `[Stable preview](${aliasUrl})` : "—";
+                      const previewCell = previewUrl || "—";
+                      const aliasCell = aliasUrl || "—";
                       const body =
                           !vid && !previewUrl && !aliasUrl
-                              ? `${marker}\n\n> **Worker preview** — CI did not report a version or URLs. [Open this workflow run](${runUrl}).\n`
+                              ? `${marker}\n\n> **Worker preview** — CI did not report a version or URLs. Run: ${runUrl}\n`
                               : `${marker}\n\n### ☁️ Worker preview\n\nFrom the latest successful **versions upload** on this PR:\n\n| 🔖 Version | 🌐 This upload | 📌 Stable preview |\n| :--- | :--- | :--- |\n| ${idCell} | ${previewCell} | ${aliasCell} |\n\n`;
                       const bot = "github-actions[bot]";
                       const comments = await github.paginate(github.rest.issues.listComments, {

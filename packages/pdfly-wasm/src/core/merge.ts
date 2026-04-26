@@ -7,7 +7,7 @@ import type { MergeResult } from "../types/index.js";
  * Merge multiple PDFs into a single PDF
  *
  * @param inputs - Array of PDF files as Uint8Array or ArrayBuffer
- * @returns MergeResult with the merged PDF data and page count
+ * @returns MergeResult with the merged PDF data and source count
  *
  * @example
  * const [pdf1, pdf2] = await Promise.all([
@@ -25,9 +25,7 @@ export async function mergePdfs(inputs: Array<Uint8Array | ArrayBuffer>): Promis
     try {
         const module = await initQpdfModule();
         if (typeof module.mergePdfs !== "function") {
-            throw new QpdfMergeError(
-                "Failed to initialize PDF merger: qpdf module is missing the mergePdfs export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.",
-            );
+            throw new QpdfMergeError("Failed to initialize PDF merger: qpdf module is missing the mergePdfs export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.");
         }
 
         const normalizedInputs = inputs.map(normalizeBuffer);

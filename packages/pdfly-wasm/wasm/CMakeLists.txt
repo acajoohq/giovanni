@@ -56,12 +56,12 @@ add_subdirectory(${qpdf_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/qpdf-build EXCLU
 # Create WASM module with Embind bindings
 set(QPDF_WASM_SOURCES
   embind/bindings.cc
-  embind/impl/qpdf_utils.cc
-  embind/impl/compress.cc
-  embind/impl/split.cc
-  embind/impl/merge.cc
-  embind/impl/extract_images.cc
-  embind/impl/qpdf_wrapper.cc
+  embind/api/qpdf_commons.cc
+  embind/api/compress.cc
+  embind/api/split.cc
+  embind/api/merge.cc
+  embind/api/extract_images.cc
+  embind/api/qpdf_wrapper.cc
 )
 
 add_executable(qpdf-wasm ${QPDF_WASM_SOURCES})

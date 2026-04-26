@@ -1,4 +1,4 @@
-// declarations for the qpdf WASM module — implementations live under impl/
+// declarations for the qpdf WASM module — implementations live under api/
 
 #ifndef QPDF_WASM_HH
 #define QPDF_WASM_HH
@@ -23,7 +23,7 @@ struct CompressionOptions {
     CompressionOptions() = default;
 };
 
-// qpdf_utils.cc.
+// qpdf_commons.cc
 qpdf_stream_decode_level_e getDecodeLevel(const std::string& level);
 qpdf_object_stream_e getObjectStreamMode(const std::string& mode);
 std::string getQpdfVersion();

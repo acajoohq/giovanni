@@ -17,7 +17,7 @@ Local-first PDF tooling: a Vite demo ([`apps/pdfly-web`](apps/pdfly-web)), a qpd
 ```bash
 pnpm install
 git clone https://github.com/qpdf/qpdf.git vendor/qpdf
-```
+``` 
 
 WASM build needs `vendor/qpdf`. API and usage: [packages/pdfly-wasm/README.md](packages/pdfly-wasm/README.md).
 

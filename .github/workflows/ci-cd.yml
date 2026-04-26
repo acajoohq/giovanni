@@ -171,10 +171,6 @@ jobs:
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   command: deploy
 
-            - name: Print ENV after Cloudflare Worker deploy
-              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-              run: printenv | sort
-
             - name: Upload Cloudflare Worker preview
               id: cf_preview
               if: >
@@ -187,12 +183,17 @@ jobs:
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   command: versions upload --preview-alias pr-${{ github.event.pull_request.number }} --message "PR ${{ github.event.pull_request.number }}"
 
-            - name: Print ENV after Cloudflare Worker preview upload
+            - name: Log Cloudflare Worker preview step outputs
               if: >
                   github.event_name == 'pull_request' &&
                   github.event.pull_request.base.ref == 'master' &&
                   github.event.pull_request.head.repo.full_name == github.repository
-              run: printenv | sort
+              env:
+                  CF_PREVIEW_OUTPUTS_JSON: ${{ toJSON(steps.cf_preview.outputs) }}
+              run: |
+                  set -euo pipefail
+                  echo "steps.cf_preview.outputs"
+                  printf '%s' "${CF_PREVIEW_OUTPUTS_JSON}" | jq .
 
             - name: Upsert Worker preview comment on PR
               if: >

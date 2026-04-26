@@ -1,4 +1,4 @@
-name: CI
+name: CI & CD
 
 on:
     pull_request:
@@ -162,3 +162,11 @@ jobs:
 
             - name: Check package contract
               run: pnpm --filter @pdfly/wasm package:check
+
+            - name: Deploy production Worker
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: deploy

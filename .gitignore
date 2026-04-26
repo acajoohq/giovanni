@@ -12,7 +12,6 @@ packages/*/dist/
 packages/*/build/
 apps/*/.turbo/
 packages/*/.turbo/
-.cloudflare-build/
 
 # Coverage
 coverage/

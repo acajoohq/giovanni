@@ -5,7 +5,6 @@
     "type": "module",
     "scripts": {
         "build": "turbo build",
-        "build:cloudflare": "bash scripts/cloudflare-build.sh",
         "clean": "turbo clean",
         "dev": "turbo dev --filter=pdfly-web",
         "format": "oxfmt --write .",

@@ -16,6 +16,7 @@
             <div class="tabs">
                 <button class="tab-button active" type="button" data-tab="compress">Compress</button>
                 <button class="tab-button" type="button" data-tab="split">Split Pages</button>
+                <button class="tab-button" type="button" data-tab="merge">Merge</button>
             </div>
 
             <section class="tab-panel active" id="tab-compress">
@@ -152,6 +153,56 @@
                         <span class="split-page-info" id="split-page-info"></span>
                         <button class="button secondary small" type="button" id="split-page-next" aria-label="Next page">Next</button>
                     </div>
+                </div>
+            </section>
+            <section class="tab-panel" id="tab-merge">
+                <button class="upload-area" type="button" id="merge-upload">
+                    <svg class="upload-icon" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 0 1 15.9 6H16a5 5 0 0 1 1 9.9M9 11l3 3 3-3M12 14V2"
+                        />
+                    </svg>
+                    <span class="upload-title">
+                        <span class="upload-title--default">Drop PDFs here or click to add files</span>
+                        <span class="upload-title--drop" aria-hidden="true">Release to add PDFs</span>
+                    </span>
+                    <span class="upload-copy">Select multiple PDFs to merge into one</span>
+                </button>
+                <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="merge-input" multiple />
+
+                <div class="merge-file-list" id="merge-file-list" hidden></div>
+
+                <div class="merge-actions" id="merge-actions" hidden>
+                    <span class="merge-actions-hint" id="merge-actions-hint"></span>
+                    <button class="button" type="button" id="merge-btn" disabled>Merge PDFs</button>
+                </div>
+
+                <div class="status" id="merge-status"></div>
+
+                <div class="results" id="merge-results">
+                    <h2>Merge Results</h2>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-label">Output Size</div>
+                            <div class="stat-value" id="merge-output-size"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Files Merged</div>
+                            <div class="stat-value" id="merge-file-count"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Processing Time</div>
+                            <div class="stat-value" id="merge-processing-time"></div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Throughput</div>
+                            <div class="stat-value" id="merge-throughput"></div>
+                        </div>
+                    </div>
+                    <button class="button" type="button" id="merge-download-btn">Download Merged PDF</button>
                 </div>
             </section>
         </main>

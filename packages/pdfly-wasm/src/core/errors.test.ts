@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { QpdfCompressionError, QpdfError, QpdfInitError, QpdfSplitError, QpdfValidationError } from "./errors.js";
+import { QpdfCompressionError, QpdfError, QpdfInitError, QpdfMergeError, QpdfSplitError, QpdfValidationError } from "./errors.js";
 
 describe("Error Classes", () => {
     describe("QpdfError", () => {
@@ -48,6 +48,15 @@ describe("Error Classes", () => {
             expect(error).toBeInstanceOf(QpdfSplitError);
             expect(error).toBeInstanceOf(QpdfError);
             expect(error.name).toBe("QpdfSplitError");
+        });
+    });
+
+    describe("QpdfMergeError", () => {
+        it("should create merge error", () => {
+            const error = new QpdfMergeError("merge failed");
+            expect(error).toBeInstanceOf(QpdfMergeError);
+            expect(error).toBeInstanceOf(QpdfError);
+            expect(error.name).toBe("QpdfMergeError");
         });
     });
 

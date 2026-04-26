@@ -30,6 +30,7 @@ qpdf_object_stream_e getObjectStreamMode(const std::string& mode);
 emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& options);
 std::string getQpdfVersion();
 emscripten::val splitPages(const emscripten::val& inputArray);
+emscripten::val mergePdfs(const emscripten::val& inputArrays);
 
 // QPDFWrapper class declaration
 class QPDFWrapper {

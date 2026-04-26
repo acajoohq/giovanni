@@ -91,3 +91,18 @@ export interface SplitResult {
      */
     pageCount: number;
 }
+
+/**
+ * Result of a PDF merge operation
+ */
+export interface MergeResult {
+    /**
+     * Merged PDF as a single Uint8Array
+     */
+    data: Uint8Array;
+
+    /**
+     * Number of PDFs that were merged
+     */
+    sourceCount: number;
+}

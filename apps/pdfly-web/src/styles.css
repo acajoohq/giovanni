@@ -588,3 +588,33 @@ select {
         flex-wrap: wrap;
     }
 }
+
+/* -- Merge tab ---------------------------------------------- */
+
+.merge-file-list {
+    overflow: hidden;
+    margin-top: 20px;
+    border: 1px solid #d0d0e8;
+    border-bottom: 0;
+    border-radius: 12px 12px 0 0;
+}
+
+.merge-file-list .page-item {
+    border-color: #e4e4f4;
+}
+
+.merge-actions {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #f0f2ff;
+    border: 1px solid #d0d0e8;
+    border-radius: 0 0 12px 12px;
+}
+
+.merge-actions-hint {
+    color: #666;
+    font-size: 0.9rem;
+}

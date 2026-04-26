@@ -26,6 +26,9 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
     // Split PDF into individual pages
     function("splitPages", &splitPages);
 
+    // Merge multiple PDFs into one
+    function("mergePdfs", &mergePdfs);
+
     // Advanced API: QPDF wrapper class
     class_<QPDFWrapper>("QPDF")
         .constructor<>()

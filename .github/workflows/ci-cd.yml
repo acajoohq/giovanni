@@ -164,7 +164,7 @@ jobs:
               run: pnpm --filter @pdfly/wasm package:check
 
             - name: Deploy production Worker
-              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              if: github.event_name == 'push'
               uses: cloudflare/wrangler-action@v3
               with:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

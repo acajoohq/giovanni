@@ -1,4 +1,4 @@
-# pr: checks + build + test; push to master: same plus deploy (single workspace on build job)
+# pr: checks + build + test + Worker preview when base is master; push to master: production Worker deploy
 name: CI & CD
 
 on:
@@ -12,6 +12,7 @@ concurrency:
 
 permissions:
     contents: read
+    pull-requests: write
 
 env:
     EMSDK_VERSION: 5.0.6
@@ -164,9 +165,56 @@ jobs:
             - name: Check package contract
               run: pnpm --filter @pdfly/wasm package:check
 
-            - name: Deploy Cloudflare Worker
+            - name: Deploy Cloudflare Worker (production)
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
               uses: cloudflare/wrangler-action@v3
               with:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-                  command: deploy --name "morning-bar-2e0b"
+                  command: deploy
+
+            - name: Upload Cloudflare Worker preview
+              id: cf_preview
+              if: >
+                  github.event_name == 'pull_request' &&
+                  github.event.pull_request.base.ref == 'master' &&
+                  github.event.pull_request.head.repo.full_name == github.repository
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: versions upload --preview-alias pr-${{ github.event.pull_request.number }} --message "PR ${{ github.event.pull_request.number }}"
+
+            - name: Comment Worker preview on PR
+              if: >
+                  github.event_name == 'pull_request' &&
+                  github.event.pull_request.base.ref == 'master' &&
+                  github.event.pull_request.head.repo.full_name == github.repository &&
+                  steps.cf_preview.conclusion == 'success'
+              uses: actions/github-script@v7
+              env:
+                  DEPLOYMENT_URL: ${{ steps.cf_preview.outputs.deployment-url }}
+                  COMMAND_OUTPUT: ${{ steps.cf_preview.outputs.command-output }}
+              with:
+                  script: |
+                      const deploymentUrl = (process.env.DEPLOYMENT_URL ?? "").trim();
+                      const commandOutput = (process.env.COMMAND_OUTPUT ?? "").trim();
+                      const prNumber = context.payload.pull_request?.number;
+                      const lines = [
+                          "## Cloudflare Worker preview",
+                          "",
+                          deploymentUrl
+                              ? `**Preview URL:** ${deploymentUrl}`
+                              : "**Preview URL:** *(not parsed from Wrangler; check the “Upload Cloudflare Worker preview” step log — look for `*.workers.dev`)*",
+                          "",
+                          `Stable alias for this PR: \`pr-${prNumber}-pdfly-web.<your-subdomain>.workers.dev\` (see [preview aliases](https://developers.cloudflare.com/workers/configuration/previews/)).`,
+                      ];
+                      if (!deploymentUrl && commandOutput) {
+                          lines.push("", "<details><summary>Wrangler stdout</summary>", "", "```", commandOutput.slice(0, 50000), "```", "</details>");
+                      }
+                      await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: context.issue.number,
+                          body: lines.join("\n"),
+                      });

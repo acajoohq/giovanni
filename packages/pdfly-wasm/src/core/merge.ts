@@ -15,7 +15,7 @@ import type { MergeResult } from "../types/index.js";
  *   fetch('b.pdf').then(r => r.arrayBuffer()),
  * ]);
  * const result = await mergePdfs([pdf1, pdf2]);
- * console.log(`Merged ${result.sourceCount} PDFs into ${result.pageCount} pages`);
+ * console.log(`Merged ${result.sourceCount} PDFs into a ${result.data.byteLength}-byte PDF`);
  */
 export async function mergePdfs(inputs: Array<Uint8Array | ArrayBuffer>): Promise<MergeResult> {
     if (inputs.length === 0) {

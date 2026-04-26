@@ -1,13 +1,11 @@
-// Embind bindings for qpdf WASM module
-// Exposes C++ API to JavaScript
+// embind bindings — expose the C++ API to JavaScript
 
-#include "qpdf_wasm_api.hh"
+#include "qpdf_wasm.hh"
 #include <emscripten/bind.h>
 
 using namespace emscripten;
 
 EMSCRIPTEN_BINDINGS(qpdf_module) {
-    // CompressionOptions value object
     value_object<CompressionOptions>("CompressionOptions")
         .field("compressionLevel", &CompressionOptions::compressionLevel)
         .field("recompressFlate", &CompressionOptions::recompressFlate)
@@ -16,23 +14,12 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
         .field("compressPages", &CompressionOptions::compressPages)
         .field("removeUnreferencedResources", &CompressionOptions::removeUnreferencedResources);
 
-    // Simple API: compressPdf function
-    function("compressPdf", &compressPdf,
-             allow_raw_pointers());
-
-    // Utility function: get version
+    function("compressPdf", &compressPdf, allow_raw_pointers());
+    function("splitPages", &splitPages);
+    function("mergePdfs", &mergePdfs);
+    function("extractImages", &extractImages);
     function("getQpdfVersion", &getQpdfVersion);
 
-    // Split PDF into individual pages
-    function("splitPages", &splitPages);
-
-    // Merge multiple PDFs into one
-    function("mergePdfs", &mergePdfs);
-
-    // Extract embedded raster images from a PDF
-    function("extractImages", &extractImages);
-
-    // Advanced API: QPDF wrapper class
     class_<QPDFWrapper>("QPDF")
         .constructor<>()
         .function("processMemoryFile",
@@ -43,7 +30,6 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
         .function("isEncrypted", &QPDFWrapper::isEncrypted)
         .function("isLinearized", &QPDFWrapper::isLinearized);
 
-    // Advanced API: QPDFWriter wrapper class
     class_<QPDFWriterWrapper>("QPDFWriter")
         .constructor<QPDFWrapper&>()
         .function("setCompressStreams", &QPDFWriterWrapper::setCompressStreams)

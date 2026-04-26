@@ -1,4 +1,4 @@
-# pr: checks + build + test + Worker preview when base is master; push to master: production Worker deploy
+# pull request: checks + build + test + worker preview from head commit; push to master: production deploy
 name: CI & CD
 
 on:
@@ -18,6 +18,8 @@ env:
     EMSDK_VERSION: 5.0.6
     QPDF_VERSION: a898bb3a7289d1d05789d6d3f0d5dd534943a8da
     TURBO_TELEMETRY_DISABLED: "1"
+    # pull request workflows default to refs/pull/n/merge; use head so builds/previews match the branch
+    SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 jobs:
     checks:
@@ -38,6 +40,8 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v6
+              with:
+                  ref: ${{ env.SOURCE_SHA }}
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v4
@@ -54,7 +58,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: .turbo/cache
-                  key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-${{ github.sha }}
+                  key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-${{ env.SOURCE_SHA }}
                   restore-keys: |
                       turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-
                       turbo-${{ runner.os }}-
@@ -70,6 +74,8 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v6
+              with:
+                  ref: ${{ env.SOURCE_SHA }}
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v4
@@ -99,7 +105,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: .turbo/cache
-                  key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-${{ github.sha }}
+                  key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-${{ env.SOURCE_SHA }}
                   restore-keys: |
                       turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-
                       turbo-${{ runner.os }}-

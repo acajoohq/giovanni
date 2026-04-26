@@ -3,9 +3,6 @@
     "version": "0.1.0",
     "private": true,
     "type": "module",
-    "engines": {
-        "node": ">=24.0.0"
-    },
     "scripts": {
         "build": "vite build",
         "clean": "rm -rf dist",
@@ -22,5 +19,8 @@
     "dependencies": {
         "@pdfly/wasm": "workspace:*",
         "fflate": "^0.8.2"
+    },
+    "engines": {
+        "node": ">=24.0.0"
     }
 }

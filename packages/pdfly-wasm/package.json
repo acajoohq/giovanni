@@ -27,9 +27,6 @@
         "LICENSE"
     ],
     "type": "module",
-    "engines": {
-        "node": ">=24.0.0"
-    },
     "main": "./dist/index.cjs",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
@@ -59,5 +56,8 @@
         "typecheck": "tsgo --noEmit",
         "validate": "publint && attw --pack . --profile node16",
         "package:check": "pnpm run validate && pnpm pack --dry-run"
+    },
+    "engines": {
+        "node": ">=24.0.0"
     }
 }

@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EMSDK_VERSION="${EMSDK_VERSION:-5.0.6}"
 EMSDK_DIR="${EMSDK_DIR:-$ROOT_DIR/.cloudflare-build/emsdk}"
-CMAKE_PREFIX="${CMAKE_PREFIX:-$ROOT_DIR/.cloudflare-build/python}"
+CMAKE_VENV="${CMAKE_VENV:-$ROOT_DIR/.cloudflare-build/cmake-venv}"
 QPDF_REF="${QPDF_REF:-v12.3.2}"
 QPDF_SOURCE="${QPDF_SOURCE:-$ROOT_DIR/vendor/qpdf}"
 
@@ -35,8 +35,13 @@ if ! command -v cmake &> /dev/null; then
         exit 1
     fi
 
-    "$PYTHON_BIN" -m pip install --upgrade --prefix "$CMAKE_PREFIX" cmake
-    export PATH="$CMAKE_PREFIX/bin:$PATH"
+    if [ ! -x "$CMAKE_VENV/bin/cmake" ]; then
+        rm -rf "$CMAKE_VENV"
+        "$PYTHON_BIN" -m venv "$CMAKE_VENV"
+        "$CMAKE_VENV/bin/python" -m pip install --upgrade pip cmake
+    fi
+
+    export PATH="$CMAKE_VENV/bin:$PATH"
 fi
 
 if ! command -v cmake &> /dev/null; then

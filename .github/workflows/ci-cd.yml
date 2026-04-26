@@ -205,25 +205,26 @@ jobs:
               env:
                   DEPLOYMENT_URL: ${{ steps.cf_preview.outputs.deployment-url }}
                   DEPLOYMENT_ALIAS_URL: ${{ steps.cf_preview.outputs.deployment-alias-url }}
+                  VERSION_ID: ${{ steps.cf_preview.outputs.version-id }}
                   COMMAND_OUTPUT: ${{ steps.cf_preview.outputs.command-output }}
               with:
                   script: |
                       const marker = "<!-- pdfly-cf-worker-preview -->";
-                      const alias = (process.env.DEPLOYMENT_ALIAS_URL ?? "").trim();
-                      const version = (process.env.DEPLOYMENT_URL ?? "").trim();
-                      const commandOutput = (process.env.COMMAND_OUTPUT ?? "").trim();
-                      const preview = alias || version;
-                      const lines = [
-                          "## Cloudflare Worker preview",
-                          "",
-                          preview
-                              ? `**Preview URL:** ${preview}`
-                              : "**Preview URL:** *(not parsed; check the Upload Cloudflare Worker preview step log)*",
+                      const env = (k) => (process.env[k] ?? "").trim();
+                      const cmdOut = env("COMMAND_OUTPUT");
+                      const pick = (re) => cmdOut.match(re)?.[1]?.trim() ?? "";
+                      const fields = [
+                          ["Worker Version ID", "VERSION_ID", /Worker Version ID:\s*(\S+)/i],
+                          ["Version Preview URL", "DEPLOYMENT_URL", /Version Preview URL:\s*(\S+)/i],
+                          ["Version Preview Alias URL", "DEPLOYMENT_ALIAS_URL", /Version Preview Alias URL:\s*(\S+)/i],
                       ];
-                      if (!preview && commandOutput) {
-                          lines.push("", "<details><summary>Wrangler stdout</summary>", "", "```", commandOutput.slice(0, 50000), "```", "</details>");
-                      }
-                      const body = [marker, "", ...lines].join("\n");
+                      const rows = fields
+                          .map(([label, envKey, re]) => [label, env(envKey) || pick(re)])
+                          .filter(([, value]) => value)
+                          .map(([label, value]) => `${label}: ${value}`);
+                      const body = rows.length
+                          ? [marker, "", ...rows].join("\n")
+                          : [marker, "", "*(no preview lines parsed; see Upload Cloudflare Worker preview step log)*"].join("\n");
                       const bot = "github-actions[bot]";
                       const comments = await github.paginate(github.rest.issues.listComments, {
                           owner: context.repo.owner,

@@ -36,7 +36,7 @@ qpdf_object_stream_e getObjectStreamMode(const std::string& mode) {
     return qpdf_o_preserve;
 }
 
-#pragma region Main Compression API
+// #region Main Compression API
 // Main compression function
 // Takes a Uint8Array of PDF data and returns compressed Uint8Array
 emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& options) {
@@ -99,7 +99,7 @@ emscripten::val compressPdf(const emscripten::val& inputArray, const Compression
         throw std::runtime_error(errorMsg);
     }
 }
-#pragma endregion
+// #endregion
 
 // Get qpdf version
 std::string getQpdfVersion() {
@@ -107,7 +107,7 @@ std::string getQpdfVersion() {
 }
 
 
-#pragma region Split Pages API
+// #region Split Pages API
 // Split PDF into individual pages
 // Takes a Uint8Array and returns a JS Array of Uint8Arrays (one per page)
 emscripten::val splitPages(const emscripten::val& inputArray) {
@@ -153,9 +153,9 @@ emscripten::val splitPages(const emscripten::val& inputArray) {
         throw std::runtime_error(errorMsg);
     }
 }
+// #endregion
 
-
-#pragma region Merge Pages API
+// #region Merge Pages API
 // Merge multiple PDFs into a single PDF
 // Takes a JS Array of Uint8Arrays and returns a single Uint8Array
 emscripten::val mergePdfs(const emscripten::val& inputArrays) {
@@ -211,7 +211,7 @@ emscripten::val mergePdfs(const emscripten::val& inputArrays) {
         throw std::runtime_error(errorMsg);
     }
 }
-#pragma endregion
+// #endregion
 
 QPDFWrapper::QPDFWrapper() : initialized(false) {}
 

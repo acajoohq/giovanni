@@ -389,7 +389,6 @@ function addMergeFiles(files: FileList | File[]): void {
         return;
     }
     mergeFiles.push(...pdfs);
-    console.log("new merge files", mergeFiles);
     renderMergeFileList();
     clearStatus("merge-status");
     document.getElementById("merge-results")?.classList.remove("show");

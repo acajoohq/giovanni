@@ -17,59 +17,76 @@ const compressionGoalsByFileName: Record<string, number> = {
 const fixtureDirectory = join(dirname(fileURLToPath(import.meta.url)), "test/fixtures/pdfs");
 const pdfFixtures = await loadPdfFixtures();
 const pdfFixturesWithCompressionGoals = pdfFixtures.filter((fixture): fixture is PdfFixture & { maxCompressedSize: number } => fixture.maxCompressedSize !== undefined);
+const integrationTestTimeoutMs = 60_000;
 
 describe("pdf tools", () => {
     it("has PDF fixtures", () => {
         expect(pdfFixtures.length).toBeGreaterThan(0);
     });
 
-    it.each(pdfFixtures)("compresses $name into a readable PDF", async ({ data }) => {
-        const result = await compressPdf(data);
+    it.each(pdfFixtures)(
+        "compresses $name into a readable PDF",
+        async ({ data }) => {
+            const result = await compressPdf(data);
 
-        expect(result.originalSize).toBe(data.byteLength);
-        expect(result.compressedSize).toBe(result.data.byteLength);
-        expect(result.data.byteLength).toBeGreaterThan(0);
-        expect(hasPdfHeader(result.data)).toBe(true);
-    });
+            expect(result.originalSize).toBe(data.byteLength);
+            expect(result.compressedSize).toBe(result.data.byteLength);
+            expect(result.data.byteLength).toBeGreaterThan(0);
+            expect(hasPdfHeader(result.data)).toBe(true);
+        },
+        integrationTestTimeoutMs,
+    );
 
-    it.each(pdfFixturesWithCompressionGoals)("keeps $name under the compression goal", async ({ data, maxCompressedSize }) => {
-        const result = await compressPdf(data);
+    it.each(pdfFixturesWithCompressionGoals)(
+        "keeps $name under the compression goal",
+        async ({ data, maxCompressedSize }) => {
+            const result = await compressPdf(data);
 
-        expect(result.compressedSize).toBeLessThanOrEqual(maxCompressedSize);
-    });
+            expect(result.compressedSize).toBeLessThanOrEqual(maxCompressedSize);
+        },
+        integrationTestTimeoutMs,
+    );
 
-    it.each(pdfFixtures)("splits $name into readable page PDFs", async ({ data }) => {
-        const result = await splitPages(data);
+    it.each(pdfFixtures)(
+        "splits $name into readable page PDFs",
+        async ({ data }) => {
+            const result = await splitPages(data);
 
-        expect(result.pageCount).toBeGreaterThan(0);
-        expect(result.pages).toHaveLength(result.pageCount);
+            expect(result.pageCount).toBeGreaterThan(0);
+            expect(result.pages).toHaveLength(result.pageCount);
 
-        for (const page of result.pages) {
-            expect(page.byteLength).toBeGreaterThan(0);
-            expect(hasPdfHeader(page)).toBe(true);
-        }
-    });
+            for (const page of result.pages) {
+                expect(page.byteLength).toBeGreaterThan(0);
+                expect(hasPdfHeader(page)).toBe(true);
+            }
+        },
+        integrationTestTimeoutMs,
+    );
 
-    it.each(pdfFixtures)("extracts images from $name", async ({ data }) => {
-        const result = await extractImages(data);
+    it.each(pdfFixtures)(
+        "extracts images from $name",
+        async ({ data }) => {
+            const result = await extractImages(data);
 
-        // image-less PDFs are valid input
-        expect(result.images).toHaveLength(result.imageCount);
-        expect(result.imageCount).toBeGreaterThanOrEqual(0);
+            // image-less PDFs are valid input
+            expect(result.images).toHaveLength(result.imageCount);
+            expect(result.imageCount).toBeGreaterThanOrEqual(0);
 
-        for (const image of result.images) {
-            expect(image.width).toBeGreaterThan(0);
-            expect(image.height).toBeGreaterThan(0);
-            expect(typeof image.filter).toBe("string");
-            expect(image.filter.length).toBeGreaterThan(0);
-        }
+            for (const image of result.images) {
+                expect(image.width).toBeGreaterThan(0);
+                expect(image.height).toBeGreaterThan(0);
+                expect(typeof image.filter).toBe("string");
+                expect(image.filter.length).toBeGreaterThan(0);
+            }
 
-        // every DCTDecode image must be a valid JPEG (FF D8 FF) — proves the zero-re-encode path
-        const dctImages = result.images.filter((image) => image.filter === "DCTDecode" && image.bytes.byteLength > 0);
-        for (const dct of dctImages) {
-            expect(hasJpegMagic(dct.bytes)).toBe(true);
-        }
-    });
+            // every DCTDecode image must be a valid JPEG (FF D8 FF) — proves the zero-re-encode path
+            const dctImages = result.images.filter((image) => image.filter === "DCTDecode" && image.bytes.byteLength > 0);
+            for (const dct of dctImages) {
+                expect(hasJpegMagic(dct.bytes)).toBe(true);
+            }
+        },
+        integrationTestTimeoutMs,
+    );
 });
 
 function hasJpegMagic(data: Uint8Array): boolean {

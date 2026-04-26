@@ -1,0 +1,8 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "morning-bar-2e0b",
+    "compatibility_date": "2026-04-26",
+    "assets": {
+        "directory": "./apps/pdfly-web/dist",
+    },
+}

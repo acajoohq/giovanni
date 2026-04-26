@@ -1,6 +1,7 @@
 // shared helpers used across compress/split/extract paths
 
 #include "../qpdf_wasm.hh"
+#include <stdexcept>
 
 qpdf_stream_decode_level_e getDecodeLevel(const std::string& level) {
     if (level == "none") return qpdf_dl_none;
@@ -24,9 +25,16 @@ std::string getQpdfVersion() {
 }
 
 // copy a qpdf Buffer into a fresh JS Uint8Array (caller-owned)
-emscripten::val bufferToUint8Array(std::shared_ptr<Buffer>& buffer) {
+emscripten::val bufferToUint8Array(const std::shared_ptr<Buffer>& buffer) {
+    if (!buffer) {
+        throw std::runtime_error("bufferToUint8Array: buffer is null");
+    }
+
     const unsigned char* data = buffer->getBuffer();
     size_t size = buffer->getSize();
+    if (size > 0 && data == nullptr) {
+        throw std::runtime_error("bufferToUint8Array: buffer data pointer is null");
+    }
     auto view = emscripten::typed_memory_view(size, data);
     emscripten::val uint8Array = emscripten::val::global("Uint8Array").new_(size);
     uint8Array.call<void>("set", view);

@@ -113,8 +113,8 @@ static int getColorSpaceComponents(QPDFObjectHandle& streamDict) {
 }
 
 // pipe stream data into a buffer at the given decode level
-// uses pipeStreamData (returns false on failure) instead of getStreamData
-// (throws) — WASM is built without C++ exceptions, so a throw becomes abort()
+// uses pipeStreamData (returns false on failure) instead of getStreamData (throws)
+// so decode/pipe failures are handled as a bool, not via qpdf exceptions on this path
 static bool pipeImageData(QPDFObjectHandle& image,
                           qpdf_stream_decode_level_e level,
                           std::shared_ptr<Buffer>& outBuf) {

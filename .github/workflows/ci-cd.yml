@@ -171,6 +171,10 @@ jobs:
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   command: deploy
 
+            - name: Print ENV after Cloudflare Worker deploy
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              run: printenv | sort
+
             - name: Upload Cloudflare Worker preview
               id: cf_preview
               if: >
@@ -182,6 +186,13 @@ jobs:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   command: versions upload --preview-alias pr-${{ github.event.pull_request.number }} --message "PR ${{ github.event.pull_request.number }}"
+
+            - name: Print ENV after Cloudflare Worker preview upload
+              if: >
+                  github.event_name == 'pull_request' &&
+                  github.event.pull_request.base.ref == 'master' &&
+                  github.event.pull_request.head.repo.full_name == github.repository
+              run: printenv | sort
 
             - name: Comment Worker preview on PR
               if: >
@@ -216,3 +227,4 @@ jobs:
                           issue_number: context.issue.number,
                           body: lines.join("\n"),
                       });
+                 

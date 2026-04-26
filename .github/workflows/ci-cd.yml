@@ -218,8 +218,14 @@ jobs:
                       const aliasUrl = env("DEPLOYMENT_ALIAS_URL") || pick(/Version Preview Alias URL:\s*(\S+)/i);
                       const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
                       const idCell = vid ? `\`${vid.replace(/`/g, "'")}\`` : "—";
-                      const previewCell = previewUrl || "—";
-                      const aliasCell = aliasUrl || "—";
+                      const previewCell = previewUrl
+                          ? `[Open Last Commit Preview](${previewUrl})`
+                          : "—";
+                 
+                      const aliasCell = aliasUrl
+                          ? `[Open PR Preview](${aliasUrl})`
+                          : "—";
+                 
                       const body =
                           !vid && !previewUrl && !aliasUrl
                               ? `${marker}\n\n> **Worker preview** — CI did not report a version or URLs. Run: ${runUrl}\n`

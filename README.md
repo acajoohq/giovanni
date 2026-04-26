@@ -2,7 +2,15 @@
 
 Local-first PDF tooling: a Vite demo ([`apps/pdfly-web`](apps/pdfly-web)), a qpdf + WebAssembly package ([`@pdfly/wasm`](packages/pdfly-wasm)), and a local [qpdf](https://github.com/qpdf/qpdf) clone under `vendor/qpdf` for the WASM build. Processing stays on the device.
 
-**Node 22.12+** and **pnpm 10.33+** (see root `package.json`).
+## Requirements
+
+- Node.js 22.12+
+- pnpm 10.33+
+- Git
+- `vendor/qpdf` (clone in Setup)
+- Emscripten (`emcc`, `emcmake`, `emmake` on PATH) for `@pdfly/wasm` WASM build
+- CMake
+- Bash (WASM build script); on Windows use `packages/pdfly-wasm/wasm/build.ps1`
 
 ## Setup
 

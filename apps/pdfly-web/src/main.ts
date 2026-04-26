@@ -11,7 +11,7 @@ let splitPagesData: Uint8Array[] = [];
 let splitFileName = "document";
 let splitListPageIndex = 0;
 
-let mergeFiles: File[] = [];
+const mergeFiles: File[] = [];
 let mergedData: Uint8Array | null = null;
 
 function isFileDrag(dataTransfer: DataTransfer | null): boolean {

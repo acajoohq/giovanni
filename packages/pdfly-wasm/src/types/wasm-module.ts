@@ -39,10 +39,7 @@ export interface WasmQPDFWriter {
     delete(): void;
 }
 
-/**
- * Raw image record returned by the WASM extractImages binding.
- * Mirrors the C++ object built in qpdf_wasm_api.cc::extractImages.
- */
+// raw image record from the WASM extractImages binding
 export interface WasmExtractedImage {
     objectKey: string;
     xobjectKey: string;
@@ -51,13 +48,8 @@ export interface WasmExtractedImage {
     width: number;
     height: number;
     bitsPerComponent: number;
-    /** Color space name in qpdf's string form, for display only. */
     colorSpace: string;
-    /**
-     * Component count resolved by the C++ side (1=gray, 3=RGB, 4=CMYK).
-     * Zero when the color space is something we don't decode (Indexed,
-     * Pattern, Separation, etc.).
-     */
+    // resolved component count (1=gray, 3=RGB, 4=CMYK; 0 when unknown)
     components: number;
     hasMask: boolean;
     hasSMask: boolean;

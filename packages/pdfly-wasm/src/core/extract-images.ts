@@ -83,20 +83,13 @@ async function toExtractedImage(raw: WasmExtractedImage): Promise<ExtractedImage
             unsupportedReason: rawPixelUnsupportedReason(raw),
         };
     }
-
-    if (raw.strategy === "unsupported") {
-        return {
-            ...base,
-            blob: null,
-            mimeType: null,
-            unsupportedReason: `Filter ${raw.filter} is not supported by browsers; raw bytes are available.`,
-        };
-    }
+    const unsupportedReason =
+        raw.strategy === "unsupported" ? `Filter ${raw.filter} is not supported by browsers; raw bytes are available.` : "qpdf could not read this image stream.";
 
     return {
         ...base,
         blob: null,
         mimeType: null,
-        unsupportedReason: "qpdf could not read this image stream.",
+        unsupportedReason,
     };
 }

@@ -1,10 +1,10 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Pdfly</title>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     </head>
     <body>
         <main class="container">
@@ -36,7 +36,7 @@
                     <span class="upload-copy">Your file never leaves your browser</span>
                     <div class="upload-loader" id="compress-loader" aria-hidden="true">
                         <span class="spinner" aria-hidden="true"></span>
-                        <span class="upload-loader-label" id="compress-loader-label" aria-live="polite">Workingâ€¦</span>
+                        <span class="upload-loader-label" id="compress-loader-label" aria-live="polite">Working…</span>
                     </div>
                 </button>
                 <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="compress-input" />
@@ -121,7 +121,7 @@
                     <span class="upload-copy">Each page will be extracted as a separate PDF</span>
                     <div class="upload-loader" id="split-loader" aria-hidden="true">
                         <span class="spinner" aria-hidden="true"></span>
-                        <span class="upload-loader-label" id="split-loader-label" aria-live="polite">Workingâ€¦</span>
+                        <span class="upload-loader-label" id="split-loader-label" aria-live="polite">Working…</span>
                     </div>
                 </button>
                 <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="split-input" />
@@ -216,6 +216,6 @@
             <p id="version">Loading version...</p>
         </footer>
 
-        <script type="module" src="/src/main.ts"></script>
+        <script type="module" src="/src/main.tsx"></script>
     </body>
 </html>

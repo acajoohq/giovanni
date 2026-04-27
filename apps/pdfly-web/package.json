@@ -11,14 +11,11 @@
         "format:check": "oxfmt --check src index.html vite.config.ts",
         "lint": "oxlint src vite.config.ts",
         "preview": "vite preview",
-        "test": "vitest run --passWithNoTests",
-        "test:watch": "vitest",
         "typecheck": "tsgo --noEmit",
         "validate": "pnpm run typecheck"
     },
     "dependencies": {
-        "@pdfly/wasm": "workspace:*",
-        "fflate": "^0.8.2"
+        "@pdfly/ui": "workspace:*"
     },
     "engines": {
         "node": ">=24.0.0"

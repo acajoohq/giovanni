@@ -6,13 +6,13 @@
     "exports": {
         ".": "./src/index.ts"
     },
-    "dependencies": {
-        "@pdfly/wasm": "workspace:*",
-        "fflate": "^0.8.2"
-    },
     "scripts": {
         "test": "vitest run --passWithNoTests",
         "test:watch": "vitest"
+    },
+    "dependencies": {
+        "@pdfly/wasm": "workspace:*",
+        "fflate": "^0.8.2"
     },
     "devDependencies": {
         "vite": "^7.0.4"

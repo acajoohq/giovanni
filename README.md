@@ -64,3 +64,7 @@ pnpm clean
 - [ ] Publish package
 - [x] Tauri (desktop app)
 - [ ] Merge/fuse PDFs
+- [ ] Lots of fixture tests (runned on demand
+- [ ] Rename to Giovanni
+- [ ] Open Question
+    - [ ] Should we rename the wasm build to as it's doing more on top of qpdf?

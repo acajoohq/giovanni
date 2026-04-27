@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { compressPdf, splitPages } from "@pdfly/wasm";
+import { compressPdf, extractImages, splitPages } from "@pdfly/wasm";
 import { describe, expect, it } from "vitest";
 
 type PdfFixture = {
@@ -62,7 +62,36 @@ describe("pdf tools", () => {
         },
         integrationTestTimeoutMs,
     );
+
+    it.each(pdfFixtures)(
+        "extracts images from $name",
+        async ({ data }) => {
+            const result = await extractImages(data);
+
+            // image-less PDFs are valid input
+            expect(result.images).toHaveLength(result.imageCount);
+            expect(result.imageCount).toBeGreaterThanOrEqual(0);
+
+            for (const image of result.images) {
+                expect(image.width).toBeGreaterThan(0);
+                expect(image.height).toBeGreaterThan(0);
+                expect(typeof image.filter).toBe("string");
+                expect(image.filter.length).toBeGreaterThan(0);
+            }
+
+            // every DCTDecode image must be a valid JPEG (FF D8 FF) — proves the zero-re-encode path
+            const dctImages = result.images.filter((image) => image.filter === "DCTDecode" && image.bytes.byteLength > 0);
+            for (const dct of dctImages) {
+                expect(hasJpegMagic(dct.bytes)).toBe(true);
+            }
+        },
+        integrationTestTimeoutMs,
+    );
 });
+
+function hasJpegMagic(data: Uint8Array): boolean {
+    return data.length >= 3 && data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff;
+}
 
 async function loadPdfFixtures(): Promise<PdfFixture[]> {
     try {

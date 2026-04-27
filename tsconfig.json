@@ -6,10 +6,6 @@
         "isolatedModules": true,
         "module": "ESNext",
         "moduleResolution": "Bundler",
-        "paths": {
-            "@pdfly/ui": ["./packages/pdfly-ui/src/index.ts"],
-            "@pdfly/wasm": ["./packages/pdfly-wasm/src/index.ts"]
-        },
         "resolveJsonModule": true,
         "moduleDetection": "force",
         "skipLibCheck": true,

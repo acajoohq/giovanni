@@ -1,18 +1,41 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { copyFile, mkdir } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { defineConfig, type Plugin, type ResolvedConfig } from "vite";
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
-// https://vite.dev/config/
-export default defineConfig(async () => ({
-    plugins: [react()],
+const appDirectory = dirname(fileURLToPath(import.meta.url));
+const rootDirectory = resolve(appDirectory, "../..");
 
-    // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-    //
-    // 1. prevent Vite from obscuring rust errors
+function copyQpdfWasmPlugin(): Plugin {
+    let config: ResolvedConfig;
+
+    return {
+        name: "copy-qpdf-wasm",
+        apply: "build",
+        configResolved(resolvedConfig) {
+            config = resolvedConfig;
+        },
+        async writeBundle() {
+            const sourcePath = resolve(rootDirectory, "packages/pdfly-wasm/dist/qpdf.wasm");
+            const targetPath = resolve(config.root, config.build.outDir, config.build.assetsDir, "qpdf.wasm");
+
+            await mkdir(dirname(targetPath), { recursive: true });
+            await copyFile(sourcePath, targetPath);
+        },
+    };
+}
+
+export default defineConfig(async () => ({
+    plugins: [copyQpdfWasmPlugin()],
+
+    optimizeDeps: {
+        exclude: ["@pdfly/wasm"],
+    },
+
     clearScreen: false,
-    // 2. tauri expects a fixed port, fail if that port is not available
     server: {
         port: 1420,
         strictPort: true,
@@ -25,7 +48,6 @@ export default defineConfig(async () => ({
               }
             : undefined,
         watch: {
-            // 3. tell Vite to ignore watching `src-tauri`
             ignored: ["**/src-tauri/**"],
         },
     },

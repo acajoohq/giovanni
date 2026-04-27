@@ -1,0 +1,22 @@
+{
+    "name": "pdfly-desktop",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "tauri": "tauri"
+    },
+    "dependencies": {
+        "@pdfly/ui": "workspace:*",
+        "@tauri-apps/api": "^2",
+        "@tauri-apps/plugin-opener": "^2"
+    },
+    "devDependencies": {
+        "@tauri-apps/cli": "^2",
+        "@typescript/native-preview": "7.0.0-dev.20260421.2",
+        "vite": "^7.0.4"
+    }
+}

@@ -1,10 +1,10 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Pdfly</title>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     </head>
     <body>
         <main class="container">
@@ -17,7 +17,6 @@
                 <button class="tab-button active" type="button" data-tab="compress">Compress</button>
                 <button class="tab-button" type="button" data-tab="split">Split Pages</button>
                 <button class="tab-button" type="button" data-tab="merge">Merge</button>
-                <button class="tab-button" type="button" data-tab="images">Extract Images</button>
             </div>
 
             <section class="tab-panel active" id="tab-compress">
@@ -37,7 +36,7 @@
                     <span class="upload-copy">Your file never leaves your browser</span>
                     <div class="upload-loader" id="compress-loader" aria-hidden="true">
                         <span class="spinner" aria-hidden="true"></span>
-                        <span class="upload-loader-label" id="compress-loader-label" aria-live="polite">Workingâ€¦</span>
+                        <span class="upload-loader-label" id="compress-loader-label" aria-live="polite">Working…</span>
                     </div>
                 </button>
                 <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="compress-input" />
@@ -122,7 +121,7 @@
                     <span class="upload-copy">Each page will be extracted as a separate PDF</span>
                     <div class="upload-loader" id="split-loader" aria-hidden="true">
                         <span class="spinner" aria-hidden="true"></span>
-                        <span class="upload-loader-label" id="split-loader-label" aria-live="polite">Workingâ€¦</span>
+                        <span class="upload-loader-label" id="split-loader-label" aria-live="polite">Working…</span>
                     </div>
                 </button>
                 <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="split-input" />
@@ -206,53 +205,6 @@
                     <button class="button" type="button" id="merge-download-btn">Download Merged PDF</button>
                 </div>
             </section>
-
-            <section class="tab-panel" id="tab-images">
-                <button class="upload-area" type="button" id="images-upload">
-                    <svg class="upload-icon" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 0 1 15.9 6H16a5 5 0 0 1 1 9.9M15 13l-3-3m0 0-3 3m3-3v12"
-                        />
-                    </svg>
-                    <span class="upload-title">
-                        <span class="upload-title--default">Drop PDF here or click to upload</span>
-                        <span class="upload-title--drop" aria-hidden="true">Release to upload your PDF</span>
-                    </span>
-                    <span class="upload-copy">Every embedded raster image, decoded by the browser</span>
-                    <div class="upload-loader" id="images-loader" aria-hidden="true">
-                        <span class="spinner" aria-hidden="true"></span>
-                        <span class="upload-loader-label" id="images-loader-label" aria-live="polite">Working…</span>
-                    </div>
-                </button>
-                <input class="visually-hidden" type="file" accept=".pdf,application/pdf" id="images-input" />
-
-                <div class="status" id="images-status"></div>
-
-                <div class="images-results" id="images-results">
-                    <div class="split-header">
-                        <h2 id="images-title"></h2>
-                        <button class="button secondary" type="button" id="download-all-images-btn">Download ZIP</button>
-                    </div>
-                    <div class="stats split-speed-stats" id="images-speed-stats">
-                        <div class="stat">
-                            <div class="stat-label">Processing Time</div>
-                            <div class="stat-value" id="images-processing-time"></div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Images / second</div>
-                            <div class="stat-value" id="images-per-sec"></div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Input throughput</div>
-                            <div class="stat-value" id="images-throughput"></div>
-                        </div>
-                    </div>
-                    <div class="images-grid" id="images-grid"></div>
-                </div>
-            </section>
         </main>
 
         <footer class="footer">
@@ -264,6 +216,6 @@
             <p id="version">Loading version...</p>
         </footer>
 
-        <script type="module" src="/src/main.ts"></script>
+        <script type="module" src="/src/main.tsx"></script>
     </body>
 </html>

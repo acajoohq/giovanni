@@ -51,6 +51,7 @@ async function toExtractedImage(raw: WasmExtractedImage): Promise<ExtractedImage
         bitsPerComponent: raw.bitsPerComponent,
         colorSpace: raw.colorSpace,
         components: raw.components,
+        pixelColorModel: raw.pixelColorModel,
         hasMask: raw.hasMask,
         hasSMask: raw.hasSMask,
         isImageMask: raw.isImageMask,

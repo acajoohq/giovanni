@@ -83,8 +83,7 @@ static std::string getColorSpaceString(QPDFObjectHandle& streamDict) {
 }
 
 // resolve a color space to a component count (0 = unsupported)
-// only counts channels; the TS renderer applies no color management,
-// so ICCBased/Cal*/Lab fall back to sRGB and CMYK uses a naive (1-c)(1-k)
+// non-zero counts are only 1, 3, or 4 (no 2-component spaces on this path)
 static int getColorSpaceComponents(QPDFObjectHandle& streamDict) {
     QPDFObjectHandle cs = streamDict.getKey("/ColorSpace");
     if (cs.isNull()) {
@@ -133,6 +132,59 @@ static int getColorSpaceComponents(QPDFObjectHandle& streamDict) {
     }
 
     return 0;
+}
+
+// raw pixel interpretation supported by the TS canvas encoder
+static std::string getPixelColorModel(QPDFObjectHandle& streamDict) {
+    QPDFObjectHandle cs = streamDict.getKey("/ColorSpace");
+    if (cs.isNull()) {
+        // image masks have no /ColorSpace and are 1-bit single-channel
+        QPDFObjectHandle imObj = streamDict.getKey("/ImageMask");
+        if (imObj.isBool() && imObj.getBoolValue()) {
+            return "gray";
+        }
+
+        return "unknown";
+    }
+
+    if (cs.isName()) {
+        std::string name = stripLeadingSlash(cs.getName());
+        if (name == "DeviceGray" || name == "G" || name == "CalGray") return "gray";
+        if (name == "DeviceRGB" || name == "RGB" || name == "CalRGB") return "rgb";
+        if (name == "DeviceCMYK" || name == "CMYK") return "cmyk";
+
+        return "unknown";
+    }
+
+    if (cs.isArray() && cs.getArrayNItems() > 0) {
+        QPDFObjectHandle head = cs.getArrayItem(0);
+        if (!head.isName()) return "unknown";
+        std::string family = stripLeadingSlash(head.getName());
+
+        if (family == "ICCBased" && cs.getArrayNItems() > 1) {
+            QPDFObjectHandle profile = cs.getArrayItem(1);
+            if (profile.isStream()) {
+                QPDFObjectHandle profileDict = profile.getDict();
+                QPDFObjectHandle nObj = profileDict.getKey("/N");
+                if (nObj.isInteger()) {
+                    int n = static_cast<int>(nObj.getIntValue());
+                    if (n == 1) return "gray";
+                    if (n == 3) return "rgb";
+                    if (n == 4) return "cmyk";
+                }
+            }
+
+            return "unknown";
+        }
+
+        if (family == "CalGray") return "gray";
+        if (family == "CalRGB") return "rgb";
+
+        // Lab, Indexed, Pattern, Separation, DeviceN — unsupported for v1
+        return "unknown";
+    }
+
+    return "unknown";
 }
 
 // pipe stream data into a buffer at the given decode level
@@ -341,6 +393,7 @@ emscripten::val extractImages(const emscripten::val& inputArray) {
 
                     std::string colorSpace = getColorSpaceString(dict);
                     int components = getColorSpaceComponents(dict);
+                    std::string pixelColorModel = getPixelColorModel(dict);
                     bool hasMask = !dict.getKey("/Mask").isNull();
                     bool hasSMask = !dict.getKey("/SMask").isNull();
                     bool isImageMask = false;
@@ -383,6 +436,7 @@ emscripten::val extractImages(const emscripten::val& inputArray) {
                     info.set("bitsPerComponent", bitsPerComponent);
                     info.set("colorSpace", colorSpace);
                     info.set("components", components);
+                    info.set("pixelColorModel", pixelColorModel);
                     info.set("hasMask", hasMask);
                     info.set("hasSMask", hasSMask);
                     info.set("isImageMask", isImageMask);

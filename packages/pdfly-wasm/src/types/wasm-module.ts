@@ -39,6 +39,9 @@ export interface WasmQPDFWriter {
     delete(): void;
 }
 
+export type WasmPixelColorModel = "unknown" | "gray" | "rgb" | "cmyk";
+export type WasmColorComponentCount = 0 | 1 | 3 | 4;
+
 // raw image record from the WASM extractImages binding
 export interface WasmExtractedImage {
     objectKey: string;
@@ -49,8 +52,10 @@ export interface WasmExtractedImage {
     height: number;
     bitsPerComponent: number;
     colorSpace: string;
-    // resolved component count (1=gray, 3=RGB, 4=CMYK; 0 when unknown)
-    components: number;
+    // resolved pdf color component count kept for metadata compatibility
+    components: WasmColorComponentCount;
+    // raw pixel interpretation supported by the browser encoder
+    pixelColorModel: WasmPixelColorModel;
     hasMask: boolean;
     hasSMask: boolean;
     isImageMask: boolean;

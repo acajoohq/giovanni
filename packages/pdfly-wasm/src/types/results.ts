@@ -107,6 +107,9 @@ export interface MergeResult {
     sourceCount: number;
 }
 
+export type PixelColorModel = "unknown" | "gray" | "rgb" | "cmyk";
+export type ColorComponentCount = 0 | 1 | 3 | 4;
+
 /**
  * A single image extracted from a PDF. `bytes` is always populated; `blob` is
  * populated for JPEG/JPX (passthrough) and re-encoded raw-pixel streams.
@@ -126,8 +129,10 @@ export interface ExtractedImage {
     bitsPerComponent: number;
     // color space description in qpdf string form
     colorSpace: string;
-    // resolved component count (1=gray, 3=RGB, 4=CMYK; 0 when unknown)
-    components: number;
+    // resolved pdf color component count kept for metadata compatibility
+    components: ColorComponentCount;
+    // raw pixel interpretation supported by the browser encoder
+    pixelColorModel: PixelColorModel;
     hasMask: boolean;
     hasSMask: boolean;
     isImageMask: boolean;

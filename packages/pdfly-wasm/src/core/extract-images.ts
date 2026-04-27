@@ -29,10 +29,7 @@ export async function extractImages(input: Uint8Array | ArrayBuffer): Promise<Ex
         const inputBuffer = normalizeBuffer(input);
         const rawImages: WasmExtractedImage[] = module.extractImages(inputBuffer);
 
-        const images: ExtractedImage[] = [];
-        for (const raw of rawImages) {
-            images.push(await toExtractedImage(raw));
-        }
+        const images = await Promise.all(rawImages.map((raw) => toExtractedImage(raw)));
 
         return { images, imageCount: images.length };
     } catch (error) {

@@ -63,9 +63,9 @@ importers:
       '@tauri-apps/cli':
         specifier: ^2
         version: 2.10.1
-      typescript:
-        specifier: ~5.8.3
-        version: 5.8.3
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20260421.2
+        version: 7.0.0-dev.20260421.2
       vite:
         specifier: ^7.0.4
         version: 7.3.2(@types/node@25.6.0)(lightningcss@1.32.0)
@@ -1825,11 +1825,6 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@5.8.3:
-    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   typescript@6.0.3:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
@@ -3399,8 +3394,6 @@ snapshots:
       '@turbo/windows-arm64': 2.9.6
 
   typescript@5.6.1-rc: {}
-
-  typescript@5.8.3: {}
 
   typescript@6.0.3:
     optional: true

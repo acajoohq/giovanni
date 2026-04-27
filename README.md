@@ -62,5 +62,5 @@ pnpm clean
     - [ ] WASM build
     - [ ] Library design
 - [ ] Publish package
-- [ ] Tauri (desktop app)
+- [x] Tauri (desktop app)
 - [ ] Merge/fuse PDFs

@@ -67,4 +67,4 @@ pnpm clean
 - [ ] Lots of fixture tests (runned on demand
 - [ ] Rename to Giovanni
 - [ ] Open Question
-  - [ ] Should we rename the wasm build to as it's doing more on top of qpdf?
+    - [ ] Should we rename the wasm build to as it's doing more on top of qpdf?

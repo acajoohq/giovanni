@@ -8,10 +8,7 @@ import type { PdfPageJpg, PdfToJpgOptions, PdfToJpgResult } from "../types/index
 // Only set if the consumer has not already configured a worker source.
 if (!GlobalWorkerOptions.workerSrc) {
     try {
-        GlobalWorkerOptions.workerSrc = new URL(
-            "pdfjs-dist/build/pdf.worker.min.mjs",
-            import.meta.url,
-        ).href;
+        GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
     } catch {
         // Could not resolve worker URL (e.g. CommonJS context).
         // PDF.js will run in the main thread, which is slower but still functional.
@@ -29,10 +26,7 @@ if (!GlobalWorkerOptions.workerSrc) {
  * @param options - Conversion options
  * @returns Conversion result with one JPEG blob per page
  */
-export async function pdfToJpg(
-    input: Uint8Array | ArrayBuffer,
-    options?: PdfToJpgOptions,
-): Promise<PdfToJpgResult> {
+export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJpgOptions): Promise<PdfToJpgResult> {
     const quality = options?.quality ?? 0.92;
     const scale = options?.scale ?? 2.0;
 
@@ -91,10 +85,7 @@ export async function pdfToJpg(
     }
 }
 
-function createCanvas(
-    width: number,
-    height: number,
-): OffscreenCanvas | HTMLCanvasElement | null {
+function createCanvas(width: number, height: number): OffscreenCanvas | HTMLCanvasElement | null {
     if (typeof OffscreenCanvas !== "undefined") {
         return new OffscreenCanvas(width, height);
     }
@@ -107,10 +98,7 @@ function createCanvas(
     return null;
 }
 
-async function canvasToJpegBlob(
-    canvas: OffscreenCanvas | HTMLCanvasElement,
-    quality: number,
-): Promise<Blob | null> {
+async function canvasToJpegBlob(canvas: OffscreenCanvas | HTMLCanvasElement, quality: number): Promise<Blob | null> {
     if (canvas instanceof OffscreenCanvas) {
         return canvas.convertToBlob({ type: "image/jpeg", quality });
     }

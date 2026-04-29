@@ -69,9 +69,9 @@ export interface PdfToJpgOptions {
     quality?: number;
 
     /**
-     * When a page has multiple embedded images, return all of them.
-     * By default only the largest image (by pixel area) per page is returned.
-     * @default false
+     * Rendering scale multiplier for PDF page rasterisation.
+     * Higher values produce sharper images at the cost of larger file sizes.
+     * @default 2.0
      */
-    allImagesPerPage?: boolean;
+    scale?: number;
 }

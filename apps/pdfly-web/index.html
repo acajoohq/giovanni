@@ -280,13 +280,11 @@
                         <input type="range" min="10" max="100" value="92" id="jpg-quality" />
                         <small>10 = smallest file, 100 = best quality</small>
                     </label>
-                    <div class="option-group">
-                        <span>Advanced Options</span>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="jpg-all-images" />
-                            Extract all images per page (instead of largest only)
-                        </label>
-                    </div>
+                    <label class="option-group">
+                        <span>Scale: <strong id="jpg-scale-value">2</strong>x</span>
+                        <input type="range" min="0.5" max="4" step="0.5" value="2" id="jpg-scale" />
+                        <small>Higher scale = sharper image, larger file size</small>
+                    </label>
                 </div>
                 <div class="status" id="jpg-status"></div>
                 <div class="jpg-results" id="jpg-results">

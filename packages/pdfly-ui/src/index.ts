@@ -735,6 +735,11 @@ export function initApp(): void {
             setText("jpg-quality-value", jpgQualitySlider.value);
         });
 
+        const jpgScaleSliderEl = document.getElementById("jpg-scale") as HTMLInputElement | null;
+        jpgScaleSliderEl?.addEventListener("input", () => {
+            setText("jpg-scale-value", jpgScaleSliderEl.value);
+        });
+
         downloadAllJpgBtn?.addEventListener("click", () => {
             void handleDownloadAllJpgZip();
         });
@@ -754,10 +759,10 @@ export function initApp(): void {
                 const arrayBuffer = await file.arrayBuffer();
                 setText(JPEG_LOADER.labelId, "Converting to JPG...");
                 const quality = jpgQualitySlider ? parseInt(jpgQualitySlider.value) / 100 : 0.92;
-                const allImages = (document.getElementById("jpg-all-images") as HTMLInputElement | null)?.checked ?? false;
+                const scale = jpgScaleSliderEl ? parseFloat(jpgScaleSliderEl.value) : 2.0;
 
                 const startTime = performance.now();
-                const result = await pdfToJpg(arrayBuffer, { quality, allImagesPerPage: allImages });
+                const result = await pdfToJpg(arrayBuffer, { quality, scale });
                 const elapsedSeconds = (performance.now() - startTime) / 1000;
 
                 jpgPages = result.pages;
@@ -771,7 +776,7 @@ export function initApp(): void {
                 document.getElementById("jpg-results")?.classList.add("show");
 
                 if (result.convertedPageCount === 0) {
-                    showStatus("jpg-status", "No raster images found. This PDF may contain only vector graphics or text.", "info");
+                    showStatus("jpg-status", "The PDF appears to have no pages.", "info");
                 } else {
                     showStatus("jpg-status", `Converted ${result.convertedPageCount} ${noun} to JPG`, "success");
                 }

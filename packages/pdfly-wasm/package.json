@@ -59,5 +59,8 @@
     },
     "engines": {
         "node": ">=24.0.0"
+    },
+    "dependencies": {
+        "pdfjs-dist": "^5.7.284"
     }
 }

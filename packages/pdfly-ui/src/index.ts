@@ -1,7 +1,7 @@
 import "./styles.css";
 import { zip } from "fflate";
-import type { ExtractedImage } from "@pdfly/wasm";
-import { compressPdf, extractImages, formatBytes, getVersion, mergePdfs, splitPages } from "@pdfly/wasm";
+import type { ExtractedImage, PdfPageJpg } from "@pdfly/wasm";
+import { compressPdf, extractImages, formatBytes, getVersion, mergePdfs, pdfToJpg, splitPages } from "@pdfly/wasm";
 
 export function initApp(): void {
     const SPLIT_LIST_PAGE_SIZE = 10;
@@ -9,6 +9,7 @@ export function initApp(): void {
     const COMPRESS_LOADER = { labelId: "compress-loader-label", loaderId: "compress-loader" } as const;
     const SPLIT_LOADER = { labelId: "split-loader-label", loaderId: "split-loader" } as const;
     const IMAGES_LOADER = { labelId: "images-loader-label", loaderId: "images-loader" } as const;
+    const JPEG_LOADER = { labelId: "jpg-loader-label", loaderId: "jpg-loader" } as const;
 
     let compressedData: Uint8Array | null = null;
     let splitPagesData: Uint8Array[] = [];
@@ -21,6 +22,10 @@ export function initApp(): void {
     let extractedImages: ExtractedImage[] = [];
     let extractedImagesObjectUrls: string[] = [];
     let extractedImagesFileName = "document";
+
+    let jpgPages: PdfPageJpg[] = [];
+    let jpgPageObjectUrls: string[] = [];
+    let jpgFileName = "document";
 
     function isFileDrag(dataTransfer: DataTransfer | null): boolean {
         if (!dataTransfer) {
@@ -327,7 +332,7 @@ export function initApp(): void {
         const listPageCount = Math.ceil(totalItemCount / SPLIT_LIST_PAGE_SIZE);
         const rangeStart = splitListPageIndex * SPLIT_LIST_PAGE_SIZE + 1;
         const rangeEnd = Math.min((splitListPageIndex + 1) * SPLIT_LIST_PAGE_SIZE, totalItemCount);
-        info.textContent = `Showing ${rangeStart}-${rangeEnd} of ${totalItemCount} · list ${splitListPageIndex + 1} / ${listPageCount}`;
+        info.textContent = `Showing ${rangeStart}-${rangeEnd} of ${totalItemCount} Â· list ${splitListPageIndex + 1} / ${listPageCount}`;
 
         previousButton.disabled = splitListPageIndex <= 0;
         nextButton.disabled = splitListPageIndex >= listPageCount - 1;
@@ -501,7 +506,7 @@ export function initApp(): void {
         }
     }
 
-    // extract images tab (optional markup — e.g. pdfly-web includes it, pdfly-desktop may not)
+    // extract images tab (optional markup â€” e.g. pdfly-web includes it, pdfly-desktop may not)
     const imagesUploadCandidate = document.getElementById("images-upload");
     const imagesInputCandidate = document.getElementById("images-input");
     if (imagesUploadCandidate instanceof HTMLButtonElement && imagesInputCandidate instanceof HTMLInputElement) {
@@ -556,7 +561,7 @@ export function initApp(): void {
                 if (skippedCount > 0) {
                     messageParts.push(`${skippedCount} skipped (unsupported filter or color space)`);
                 }
-                showStatus("images-status", messageParts.join(" · "), result.imageCount > 0 ? "success" : "info");
+                showStatus("images-status", messageParts.join(" Â· "), result.imageCount > 0 ? "success" : "info");
 
                 if (downloadAllImagesBtn) {
                     downloadAllImagesBtn.disabled = decodedCount === 0;
@@ -606,10 +611,10 @@ export function initApp(): void {
                 const meta = document.createElement("div");
                 meta.className = "image-card-meta";
                 const dims = document.createElement("div");
-                dims.innerHTML = `<strong>${image.width}×${image.height}</strong> · ${formatBytes(image.bytes.byteLength)}`;
+                dims.innerHTML = `<strong>${image.width}Ã--${image.height}</strong> Â· ${formatBytes(image.bytes.byteLength)}`;
                 const filterLine = document.createElement("div");
                 filterLine.className = "filter";
-                filterLine.textContent = `${image.filter} · page ${image.pageIndex + 1}`;
+                filterLine.textContent = `${image.filter} Â· page ${image.pageIndex + 1}`;
                 meta.appendChild(dims);
                 meta.appendChild(filterLine);
 
@@ -708,6 +713,176 @@ export function initApp(): void {
         }
     }
 
+
+    // pdf to jpg tab (optional markup -- only present in pdfly-web)
+    const jpgUploadCandidate = document.getElementById("jpg-upload");
+    const jpgInputCandidate = document.getElementById("jpg-input");
+    if (jpgUploadCandidate instanceof HTMLButtonElement && jpgInputCandidate instanceof HTMLInputElement) {
+        const jpgUpload = jpgUploadCandidate;
+        const jpgInput = jpgInputCandidate;
+        const downloadAllJpgBtn = document.getElementById("download-all-jpg-btn") as HTMLButtonElement | null;
+        const jpgQualitySlider = document.getElementById("jpg-quality") as HTMLInputElement | null;
+
+        jpgUpload.addEventListener("click", () => jpgInput.click());
+        bindFileDropTarget(jpgUpload, (file) => {
+            void handleJpgFile(file);
+        });
+        jpgInput.addEventListener("change", (event) => {
+            const file = (event.target as HTMLInputElement).files?.item(0);
+            if (file) void handleJpgFile(file);
+        });
+
+        jpgQualitySlider?.addEventListener("input", () => {
+            setText("jpg-quality-value", jpgQualitySlider.value);
+        });
+
+        downloadAllJpgBtn?.addEventListener("click", () => {
+            void handleDownloadAllJpgZip();
+        });
+
+        async function handleJpgFile(file: File): Promise<void> {
+            if (!isPdfFile(file)) {
+                showStatus("jpg-status", "Please select a PDF file", "error");
+                return;
+            }
+
+            jpgFileName = file.name.replace(/\.pdf$/i, "") || "document";
+            clearStatus("jpg-status");
+            setUploadLoading(jpgUpload, JPEG_LOADER, true, "Reading file...");
+            revokeJpgObjectUrls();
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                setText(JPEG_LOADER.labelId, "Converting to JPG...");
+                const quality = jpgQualitySlider ? parseInt(jpgQualitySlider.value) / 100 : 0.92;
+                const allImages = (document.getElementById("jpg-all-images") as HTMLInputElement | null)?.checked ?? false;
+
+                const startTime = performance.now();
+                const result = await pdfToJpg(arrayBuffer, { quality, allImagesPerPage: allImages });
+                const elapsedSeconds = (performance.now() - startTime) / 1000;
+
+                jpgPages = result.pages;
+                const noun = result.convertedPageCount === 1 ? "page" : "pages";
+                setText("jpg-title", `${result.convertedPageCount} ${noun} converted`);
+                setText("jpg-processing-time", `${elapsedSeconds.toFixed(2)}s`);
+                setText("jpg-page-count", String(result.convertedPageCount));
+                setText("jpg-throughput", formatThroughputBytesPerSecond(arrayBuffer.byteLength, elapsedSeconds));
+
+                renderJpgGrid(result.pages, jpgFileName);
+                document.getElementById("jpg-results")?.classList.add("show");
+
+                if (result.convertedPageCount === 0) {
+                    showStatus("jpg-status", "No raster images found. This PDF may contain only vector graphics or text.", "info");
+                } else {
+                    showStatus("jpg-status", `Converted ${result.convertedPageCount} ${noun} to JPG`, "success");
+                }
+
+                if (downloadAllJpgBtn) {
+                    downloadAllJpgBtn.disabled = result.convertedPageCount === 0;
+                }
+            } catch (error) {
+                showStatus("jpg-status", `Error: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
+            } finally {
+                setUploadLoading(jpgUpload, JPEG_LOADER, false);
+            }
+        }
+
+        function renderJpgGrid(pages: PdfPageJpg[], baseName: string): void {
+            const grid = document.getElementById("jpg-grid");
+            if (!grid) return;
+
+            grid.innerHTML = "";
+
+            if (pages.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "page-name";
+                empty.style.padding = "16px";
+                empty.textContent = "No images could be extracted from this PDF.";
+                grid.appendChild(empty);
+                return;
+            }
+
+            pages.forEach((page, index) => {
+                const card = document.createElement("div");
+                card.className = "image-card";
+
+                const thumb = document.createElement("div");
+                thumb.className = "image-card-thumb";
+
+                const url = URL.createObjectURL(page.blob);
+                jpgPageObjectUrls.push(url);
+                const img = document.createElement("img");
+                img.src = url;
+                img.alt = `Page ${page.pageIndex + 1}`;
+                img.loading = "lazy";
+                thumb.appendChild(img);
+
+                const meta = document.createElement("div");
+                meta.className = "image-card-meta";
+                const dims = document.createElement("div");
+                dims.innerHTML = `<strong>${page.width}&#xD7;${page.height}</strong>`;
+                const pageLine = document.createElement("div");
+                pageLine.className = "filter";
+                pageLine.textContent = `page ${page.pageIndex + 1}`;
+                meta.appendChild(dims);
+                meta.appendChild(pageLine);
+
+                const actions = document.createElement("div");
+                actions.className = "image-card-actions";
+                const button = document.createElement("button");
+                button.className = "button secondary small";
+                button.type = "button";
+                button.textContent = "Download";
+                button.addEventListener("click", () => {
+                    const fileName = `${baseName}_page_${String(page.pageIndex + 1).padStart(3, "0")}.jpg`;
+                    downloadBlob(page.blob, fileName);
+                });
+                actions.appendChild(button);
+
+                card.appendChild(thumb);
+                card.appendChild(meta);
+                card.appendChild(actions);
+                grid.appendChild(card);
+
+                void index;
+            });
+        }
+
+        async function handleDownloadAllJpgZip(): Promise<void> {
+            if (!downloadAllJpgBtn || jpgPages.length === 0) return;
+
+            downloadAllJpgBtn.disabled = true;
+            downloadAllJpgBtn.setAttribute("aria-busy", "true");
+
+            try {
+                const entries: Record<string, Uint8Array> = {};
+                for (const page of jpgPages) {
+                    const fileName = `${jpgFileName}_page_${String(page.pageIndex + 1).padStart(3, "0")}.jpg`;
+                    entries[fileName] = new Uint8Array(await page.blob.arrayBuffer());
+                }
+
+                const zipped = await new Promise<Uint8Array>((resolve, reject) => {
+                    zip(entries, { level: 0 }, (err, data) => {
+                        if (err) { reject(err); return; }
+                        resolve(data);
+                    });
+                });
+                downloadBlob(new Blob([new Uint8Array(zipped)], { type: "application/zip" }), `${jpgFileName}_jpg.zip`);
+            } catch (error) {
+                showStatus("jpg-status", `Error: ${error instanceof Error ? error.message : "Could not create ZIP"}`, "error");
+            } finally {
+                downloadAllJpgBtn.disabled = false;
+                downloadAllJpgBtn.removeAttribute("aria-busy");
+            }
+        }
+
+        function revokeJpgObjectUrls(): void {
+            for (const url of jpgPageObjectUrls) {
+                URL.revokeObjectURL(url);
+            }
+            jpgPageObjectUrls = [];
+        }
+    }
     function formatThroughputBytesPerSecond(byteLength: number, elapsedSeconds: number): string {
         if (!Number.isFinite(elapsedSeconds) || elapsedSeconds <= 0 || !Number.isFinite(byteLength) || byteLength < 0) {
             return "-";
@@ -776,3 +951,6 @@ export function initApp(): void {
         }
     }
 }
+
+
+

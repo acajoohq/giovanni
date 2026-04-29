@@ -2,6 +2,7 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { QpdfConversionError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { PdfPageJpg, PdfToJpgOptions, PdfToJpgResult } from "../types/index.js";
+import { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
 
 // Set up PDF.js worker source using the new URL() pattern.
 // Modern bundlers (Vite, Webpack 5) recognise this and copy the worker as a static asset.
@@ -51,7 +52,7 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
             const width = Math.round(viewport.width);
             const height = Math.round(viewport.height);
 
-            const canvas = createCanvas(width, height);
+            const canvas = createCanvas(width, height) as HTMLCanvasElement;
             if (!canvas) {
                 page.cleanup();
                 continue;
@@ -63,10 +64,12 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
                 continue;
             }
 
-            await page.render({
-                canvasContext: context as unknown as CanvasRenderingContext2D,
+            const params: RenderParameters = {
+                canvas,
+                canvasContext: context as CanvasRenderingContext2D,
                 viewport,
-            }).promise;
+            };
+            await page.render(params).promise;
 
             page.cleanup();
 

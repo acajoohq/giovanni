@@ -43,7 +43,16 @@ export { QPDF } from "./core/qpdf.js";
 export { QPDFWriter } from "./core/writer.js";
 
 // error classes
-export { QpdfError, QpdfInitError, QpdfCompressionError, QpdfSplitError, QpdfMergeError, QpdfValidationError, QpdfImageExtractionError, QpdfConversionError } from "./core/errors.js";
+export {
+    QpdfError,
+    QpdfInitError,
+    QpdfCompressionError,
+    QpdfSplitError,
+    QpdfMergeError,
+    QpdfValidationError,
+    QpdfImageExtractionError,
+    QpdfConversionError,
+} from "./core/errors.js";
 
 // types
 export type {

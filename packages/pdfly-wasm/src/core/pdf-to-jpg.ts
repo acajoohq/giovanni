@@ -36,9 +36,7 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
     try {
         const module = await initQpdfModule();
         if (typeof module.extractImages !== "function") {
-            throw new QpdfConversionError(
-                "PDF to JPG conversion requires the extractImages export. Ensure qpdf.js and qpdf.wasm are up to date.",
-            );
+            throw new QpdfConversionError("PDF to JPG conversion requires the extractImages export. Ensure qpdf.js and qpdf.wasm are up to date.");
         }
 
         const inputBuffer = normalizeBuffer(input);

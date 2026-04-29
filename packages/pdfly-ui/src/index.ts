@@ -713,7 +713,6 @@ export function initApp(): void {
         }
     }
 
-
     // pdf to jpg tab (optional markup -- only present in pdfly-web)
     const jpgUploadCandidate = document.getElementById("jpg-upload");
     const jpgInputCandidate = document.getElementById("jpg-input");
@@ -863,7 +862,10 @@ export function initApp(): void {
 
                 const zipped = await new Promise<Uint8Array>((resolve, reject) => {
                     zip(entries, { level: 0 }, (err, data) => {
-                        if (err) { reject(err); return; }
+                        if (err) {
+                            reject(err);
+                            return;
+                        }
                         resolve(data);
                     });
                 });
@@ -951,6 +953,3 @@ export function initApp(): void {
         }
     }
 }
-
-
-

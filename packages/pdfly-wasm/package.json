@@ -45,7 +45,7 @@
     "scripts": {
         "build": "pnpm run build:wasm && pnpm run build:lib",
         "build:lib": "tsdown",
-        "build:wasm": "node wasm/build-wasm.mjs",
+        "build:wasm": "node script/build-wasm.mjs",
         "clean": "rm -rf dist build",
         "format": "oxfmt --write src tsdown.config.ts vitest.config.ts",
         "format:check": "oxfmt --check src tsdown.config.ts vitest.config.ts",

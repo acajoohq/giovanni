@@ -1,7 +1,9 @@
 /// <reference types="vite/client" />
 
-import type { ReactNode } from "react";
+import { css } from "@linaria/core";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { clsx } from "clsx";
+import type { ReactNode } from "react";
 import { createSeoMeta } from "../lib/seo";
 import appCss from "../styles/app.css?url";
 
@@ -37,81 +39,56 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     return (
-        <html lang="en" className="scroll-smooth motion-reduce:scroll-auto">
+        <html className={htmlClassName} lang="en">
             <head>
                 <HeadContent />
             </head>
-            <body className="min-h-dvh overflow-x-hidden bg-[#f8f1dc] font-sans text-stone-950 antialiased">
-                <a
-                    className="fixed left-6 top-4 z-50 -translate-y-24 touch-manipulation rounded-[8px] bg-stone-950 px-5 py-3 font-bold text-stone-50 transition-transform duration-200 focus-visible:translate-y-0 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-stone-950 motion-reduce:transition-none"
-                    href="#main-content"
-                >
+            <body className={bodyClassName}>
+                <a className={skipLinkClassName} href="#main-content">
                     Skip to Main Content
                 </a>
-                <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-                    <a
-                        aria-label="Giovanni Home"
-                        className="inline-flex touch-manipulation items-center gap-3 rounded-[8px] text-lg font-black tracking-normal text-stone-950 no-underline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-stone-950"
-                        href="/"
-                    >
-                        <span
-                            aria-hidden="true"
-                            className="grid size-10 place-items-center rounded-[6px] border border-stone-950 bg-[#fff2a8] font-serif text-lg text-stone-950 shadow-[2px_2px_0_#1c1917]"
-                        >
+                <header className={headerClassName}>
+                    <a aria-label="Giovanni Home" className={homeLinkClassName} href="/">
+                        <span aria-hidden="true" className={logoMarkClassName}>
                             G
                         </span>
                         <span translate="no">Giovanni</span>
                     </a>
                     <nav aria-label="Site navigation">
-                        <a
-                            className="text-sm font-bold text-stone-500 transition-colors duration-150 hover:text-stone-950 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-stone-950"
-                            href="https://github.com/MatteoGauthier/qpdf-wasm"
-                            rel="noreferrer"
-                            target="_blank"
-                        >
+                        <a className={headerNavLinkClassName} href="https://github.com/MatteoGauthier/qpdf-wasm" rel="noreferrer" target="_blank">
                             GitHub
                         </a>
                     </nav>
                 </header>
                 {children}
-                <footer className="mx-auto w-full max-w-7xl px-4 pb-10 pt-4 sm:px-6 lg:px-8" aria-label="Site footer">
-                    <div className="grid gap-6 border-t border-stone-950 pt-6 sm:grid-cols-[1.1fr_0.9fr_0.9fr]">
+                <footer aria-label="Site footer" className={footerClassName}>
+                    <div className={footerGridClassName}>
                         <div>
-                            <p className="m-0 text-lg font-black leading-6 text-stone-950" translate="no">
+                            <p className={footerBrandClassName} translate="no">
                                 Giovanni
                             </p>
-                            <p className="m-0 mt-2 max-w-sm text-sm font-bold leading-6 text-stone-600">Simple PDF tools that run in your browser.</p>
+                            <p className={footerDescriptionClassName}>Simple PDF tools that run in your browser.</p>
                         </div>
 
                         <div>
-                            <p className="m-0 text-xs font-black uppercase leading-4 text-stone-500">Principles</p>
-                            <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0 text-xs font-black uppercase leading-none text-stone-800">
-                                <li className="border border-stone-950 bg-[#fff2a8] px-3 py-2 shadow-[2px_2px_0_#1c1917]">Local-first</li>
-                                <li className="border border-stone-950 bg-[#ccebdc] px-3 py-2 shadow-[2px_2px_0_#1c1917]">Frugal</li>
-                                <li className="border border-stone-950 bg-[#ffd2c8] px-3 py-2 shadow-[2px_2px_0_#1c1917]">Commons</li>
+                            <p className={footerLabelClassName}>Principles</p>
+                            <ul className={principlesListClassName}>
+                                <li className={clsx(principleClassName, principleYellowClassName)}>Local-first</li>
+                                <li className={clsx(principleClassName, principleGreenClassName)}>Frugal</li>
+                                <li className={clsx(principleClassName, principleCoralClassName)}>Commons</li>
                             </ul>
                         </div>
 
                         <nav aria-label="Project links">
-                            <p className="m-0 text-xs font-black uppercase leading-4 text-stone-500">Project</p>
-                            <ul className="m-0 mt-3 grid list-none gap-2 p-0 text-sm font-bold leading-5">
+                            <p className={footerLabelClassName}>Project</p>
+                            <ul className={projectLinksListClassName}>
                                 <li>
-                                    <a
-                                        className="underline decoration-stone-400 decoration-2 underline-offset-4 hover:text-stone-600 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-stone-950"
-                                        href="https://github.com/MatteoGauthier/qpdf-wasm"
-                                        rel="noreferrer"
-                                        target="_blank"
-                                    >
+                                    <a className={footerLinkClassName} href="https://github.com/MatteoGauthier/qpdf-wasm" rel="noreferrer" target="_blank">
                                         Source code
                                     </a>
                                 </li>
                                 <li>
-                                    <a
-                                        className="underline decoration-stone-400 decoration-2 underline-offset-4 hover:text-stone-600 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-stone-950"
-                                        href="https://github.com/qpdf/qpdf"
-                                        rel="noreferrer"
-                                        target="_blank"
-                                    >
+                                    <a className={footerLinkClassName} href="https://github.com/qpdf/qpdf" rel="noreferrer" target="_blank">
                                         qpdf
                                     </a>
                                 </li>
@@ -127,16 +104,311 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 
 function NotFoundPage() {
     return (
-        <main className="mx-auto min-h-[60dvh] w-full max-w-3xl px-6 pb-20 pt-20 lg:px-8" id="main-content">
-            <p className="m-0 text-sm font-black uppercase leading-5 tracking-normal text-stone-700">Page Not Found</p>
-            <h1 className="m-0 mt-4 max-w-4xl text-balance font-serif text-5xl leading-tight tracking-normal text-stone-950 sm:text-6xl lg:text-7xl">This Page Is Not Available</h1>
-            <p className="m-0 mt-6 leading-7 text-stone-600">The page may have moved. Return home to continue.</p>
-            <a
-                className="mt-8 inline-flex min-h-12 touch-manipulation items-center justify-center rounded-[8px] bg-stone-950 px-6 py-3 text-base font-black text-stone-50 no-underline shadow-[4px_4px_0_#f6cf62] focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-stone-950"
-                href="/"
-            >
+        <main className={notFoundMainClassName} id="main-content">
+            <p className={notFoundEyebrowClassName}>Page Not Found</p>
+            <h1 className={notFoundTitleClassName}>This Page Is Not Available</h1>
+            <p className={notFoundDescriptionClassName}>The page may have moved. Return home to continue.</p>
+            <a className={notFoundLinkClassName} href="/">
                 Go Home
             </a>
         </main>
     );
 }
+
+const focusRing = `
+    outline: 3px solid #1c1917;
+    outline-offset: 4px;
+`;
+
+const htmlClassName = css`
+    scroll-behavior: smooth;
+
+    @media (prefers-reduced-motion: reduce) {
+        scroll-behavior: auto;
+    }
+`;
+
+const bodyClassName = css`
+    min-height: 100dvh;
+    overflow-x: hidden;
+    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    color: #1c1917;
+    background: #f8f1dc;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+`;
+
+const skipLinkClassName = css`
+    position: fixed;
+    top: 1rem;
+    left: 1.5rem;
+    z-index: 50;
+    min-height: 2.75rem;
+    padding: 0.75rem 1.25rem;
+    font-weight: 700;
+    color: #fafaf9;
+    text-decoration: none;
+    touch-action: manipulation;
+    background: #1c1917;
+    border-radius: 8px;
+    transform: translateY(-6rem);
+    transition: transform 200ms ease;
+
+    &:focus-visible {
+        ${focusRing}
+        transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+`;
+
+const headerClassName = css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 80rem;
+    padding: 0.75rem 1rem;
+    margin: 0 auto;
+
+    @media (min-width: 640px) {
+        padding-right: 1.5rem;
+        padding-left: 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+        padding-right: 2rem;
+        padding-left: 2rem;
+    }
+`;
+
+const homeLinkClassName = css`
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 900;
+    color: #1c1917;
+    text-decoration: none;
+    letter-spacing: 0;
+    touch-action: manipulation;
+    border-radius: 8px;
+
+    &:focus-visible {
+        ${focusRing}
+    }
+`;
+
+const logoMarkClassName = css`
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1.125rem;
+    color: #1c1917;
+    background: #fff2a8;
+    border: 1px solid #1c1917;
+    border-radius: 6px;
+    box-shadow: 2px 2px 0 #1c1917;
+`;
+
+const headerNavLinkClassName = css`
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #78716c;
+    text-decoration: none;
+    transition: color 150ms ease;
+
+    &:hover {
+        color: #1c1917;
+    }
+
+    &:focus-visible {
+        ${focusRing}
+    }
+`;
+
+const footerClassName = css`
+    width: 100%;
+    max-width: 80rem;
+    padding: 1rem 1rem 2.5rem;
+    margin: 0 auto;
+
+    @media (min-width: 640px) {
+        padding-right: 1.5rem;
+        padding-left: 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+        padding-right: 2rem;
+        padding-left: 2rem;
+    }
+`;
+
+const footerGridClassName = css`
+    display: grid;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #1c1917;
+
+    @media (min-width: 640px) {
+        grid-template-columns: 1.1fr 0.9fr 0.9fr;
+    }
+`;
+
+const footerBrandClassName = css`
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 900;
+    line-height: 1.5rem;
+    color: #1c1917;
+`;
+
+const footerDescriptionClassName = css`
+    max-width: 24rem;
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.5rem;
+    color: #57534e;
+`;
+
+const footerLabelClassName = css`
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 900;
+    line-height: 1rem;
+    color: #78716c;
+    text-transform: uppercase;
+`;
+
+const principlesListClassName = css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0.75rem 0 0;
+    font-size: 0.75rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #292524;
+    text-transform: uppercase;
+    list-style: none;
+`;
+
+const principleClassName = css`
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #1c1917;
+    box-shadow: 2px 2px 0 #1c1917;
+`;
+
+const principleYellowClassName = css`
+    background: #fff2a8;
+`;
+
+const principleGreenClassName = css`
+    background: #ccebdc;
+`;
+
+const principleCoralClassName = css`
+    background: #ffd2c8;
+`;
+
+const projectLinksListClassName = css`
+    display: grid;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+    list-style: none;
+`;
+
+const footerLinkClassName = css`
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: #a8a29e;
+    text-underline-offset: 4px;
+
+    &:hover {
+        color: #57534e;
+    }
+
+    &:focus-visible {
+        ${focusRing}
+    }
+`;
+
+const notFoundMainClassName = css`
+    width: 100%;
+    max-width: 48rem;
+    min-height: 60dvh;
+    padding: 5rem 1.5rem;
+    margin: 0 auto;
+
+    @media (min-width: 1024px) {
+        padding-right: 2rem;
+        padding-left: 2rem;
+    }
+`;
+
+const notFoundEyebrowClassName = css`
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 900;
+    line-height: 1.25rem;
+    color: #44403c;
+    text-transform: uppercase;
+    letter-spacing: 0;
+`;
+
+const notFoundTitleClassName = css`
+    max-width: 56rem;
+    margin: 1rem 0 0;
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 3rem;
+    line-height: 1.25;
+    color: #1c1917;
+    text-wrap: balance;
+    letter-spacing: 0;
+
+    @media (min-width: 640px) {
+        font-size: 3.75rem;
+    }
+
+    @media (min-width: 1024px) {
+        font-size: 4.5rem;
+    }
+`;
+
+const notFoundDescriptionClassName = css`
+    margin: 1.5rem 0 0;
+    line-height: 1.75rem;
+    color: #57534e;
+`;
+
+const notFoundLinkClassName = css`
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.75rem 1.5rem;
+    margin-top: 2rem;
+    font-size: 1rem;
+    font-weight: 900;
+    color: #fafaf9;
+    text-decoration: none;
+    touch-action: manipulation;
+    background: #1c1917;
+    border-radius: 8px;
+    box-shadow: 4px 4px 0 #f6cf62;
+
+    &:focus-visible {
+        ${focusRing}
+    }
+`;

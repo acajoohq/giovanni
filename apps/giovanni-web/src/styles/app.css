@@ -116,6 +116,11 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+
+    /* Skeuomorphic utilities */
+    --shadow-skeuo: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.15), 0px 2px 4px 0px rgba(0, 0, 0, 0.4);
+    --shadow-skeuo-sm: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+    --shadow-skeuo-inner: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.5), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 1px 0px 0px rgba(255, 255, 255, 0.05);
 }
 
 @layer base {

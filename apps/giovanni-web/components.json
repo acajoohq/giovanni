@@ -13,11 +13,11 @@
     "iconLibrary": "remixicon",
     "rtl": false,
     "aliases": {
-        "components": "@pdfly/ui/components",
-        "utils": "@pdfly/ui/lib/utils",
-        "ui": "@pdfly/ui/components/ui",
-        "lib": "@pdfly/ui/lib",
-        "hooks": "@pdfly/ui/hooks"
+        "components": "src/components",
+        "utils": "src/lib/utils",
+        "ui": "src/components/ui",
+        "lib": "src/lib",
+        "hooks": "src/hooks"
     },
     "menuColor": "default",
     "menuAccent": "bold",

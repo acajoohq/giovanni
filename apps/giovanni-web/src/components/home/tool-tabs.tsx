@@ -37,7 +37,7 @@ export function ToolTabList({ tools, activeToolId, onToolChange }: ToolTabListPr
     }
 
     return (
-        <div className="relative z-20 overflow-x-auto px-5 pt-1">
+        <div className="relative overflow-x-auto px-5 pt-1">
             <ul aria-label="PDF tools" aria-orientation="horizontal" className="m-0 flex min-w-max list-none items-end gap-1 p-0 pl-1" role="tablist">
                 {tools.map((tool) => {
                     const isActive = tool.id === activeToolId;
@@ -55,7 +55,7 @@ export function ToolTabList({ tools, activeToolId, onToolChange }: ToolTabListPr
                                     "relative flex min-h-17 min-w-36 flex-col items-start justify-end gap-1 rounded-t-[12px] border border-b-0 border-stone-950 px-4 pb-3.5 pt-4 text-left focus-visible:z-30 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-[#008fbe] sm:min-w-44 sm:px-5",
                                     tool.color,
                                     isActive
-                                        ? "z-20 shadow-[5px_0_0_rgba(28,25,23,0.16)] after:absolute after:inset-x-0 after:-bottom-2 after:h-3 after:rounded-b-[12px] after:bg-inherit"
+                                        ? "z-20 shadow-[5px_0_0_rgba(28,25,23,0.16)] after:absolute after:inset-x-0 after:-bottom-2 after:h-3 after:bg-inherit"
                                         : "z-0 shadow-[3px_0_0_rgba(28,25,23,0.09)]",
                                 )}
                                 id={`tool-tab-${tool.id}`}

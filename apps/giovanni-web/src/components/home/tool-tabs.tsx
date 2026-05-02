@@ -38,12 +38,7 @@ export function ToolTabList({ tools, activeToolId, onToolChange }: ToolTabListPr
 
     return (
         <div className="relative z-20 overflow-x-auto px-5 pt-1">
-            <ul
-                aria-label="PDF tools"
-                aria-orientation="horizontal"
-                className="m-0 flex min-w-max list-none items-end gap-1 p-0 pl-1"
-                role="tablist"
-            >
+            <ul aria-label="PDF tools" aria-orientation="horizontal" className="m-0 flex min-w-max list-none items-end gap-1 p-0 pl-1" role="tablist">
                 {tools.map((tool) => {
                     const isActive = tool.id === activeToolId;
                     return (
@@ -72,12 +67,8 @@ export function ToolTabList({ tools, activeToolId, onToolChange }: ToolTabListPr
                                 type="button"
                                 whileHover={!isActive ? { y: 5 } : undefined}
                             >
-                                <span className="text-[10px] font-black uppercase leading-none tracking-widest text-stone-500 sm:text-[11px]">
-                                    {tool.shortLabel}
-                                </span>
-                                <span className="text-[0.875rem] font-black leading-tight text-stone-950 sm:text-[0.95rem]">
-                                    {tool.label}
-                                </span>
+                                <span className="text-[10px] font-black uppercase leading-none tracking-widest text-stone-500 sm:text-[11px]">{tool.shortLabel}</span>
+                                <span className="text-[0.875rem] font-black leading-tight text-stone-950 sm:text-[0.95rem]">{tool.label}</span>
                             </motion.button>
                         </li>
                     );

@@ -43,9 +43,7 @@ export function DropZone({ className }: DropZoneProps) {
                 </p>
             </div>
 
-            <p className="text-xs font-medium leading-4 text-stone-400">
-                Your files never leave this device
-            </p>
+            <p className="text-xs font-medium leading-4 text-stone-400">Your files never leave this device</p>
         </div>
     );
 }

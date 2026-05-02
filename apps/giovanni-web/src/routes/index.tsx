@@ -43,8 +43,7 @@ export const Route = createFileRoute("/")({
     head: () => ({
         meta: createSeoMeta({
             title: "Giovanni | Frugal PDF Tools",
-            description:
-                "A pastel, local-first PDF workspace for compressing, splitting, merging, and extracting images.",
+            description: "A pastel, local-first PDF workspace for compressing, splitting, merging, and extracting images.",
         }),
     }),
     component: HomePage,
@@ -62,11 +61,7 @@ function HomePage() {
                 </h1>
 
                 <div className="mt-2 scroll-mt-8 drop-shadow-[0_16px_24px_rgba(28,25,23,0.09)]" id="tools">
-                    <ToolTabList
-                        activeToolId={activeToolId}
-                        onToolChange={(id) => setActiveToolId(id as (typeof tools)[number]["id"])}
-                        tools={tools}
-                    />
+                    <ToolTabList activeToolId={activeToolId} onToolChange={(id) => setActiveToolId(id as (typeof tools)[number]["id"])} tools={tools} />
 
                     {/* Tab panel — background color transitions when tool changes */}
                     <section
@@ -86,31 +81,15 @@ function HomePage() {
                                 transition={{ duration: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
                             >
                                 {/* Notebook decoration — margin line + ruled lines */}
-                                <div
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute inset-y-0 left-6 border-l border-red-300/50"
-                                />
-                                <div
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute inset-x-8 top-[7.5rem] border-t border-stone-950/[0.06]"
-                                />
-                                <div
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute inset-x-8 top-[9.75rem] border-t border-stone-950/[0.06]"
-                                />
-                                <div
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute inset-x-8 top-[12rem] border-t border-stone-950/[0.06]"
-                                />
+                                <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-6 border-l border-red-300/50" />
+                                <div aria-hidden="true" className="pointer-events-none absolute inset-x-8 top-[7.5rem] border-t border-stone-950/[0.06]" />
+                                <div aria-hidden="true" className="pointer-events-none absolute inset-x-8 top-[9.75rem] border-t border-stone-950/[0.06]" />
+                                <div aria-hidden="true" className="pointer-events-none absolute inset-x-8 top-[12rem] border-t border-stone-950/[0.06]" />
 
                                 {/* Tool header */}
                                 <div className="relative max-w-3xl">
-                                    <h2 className="m-0 font-serif text-4xl leading-none tracking-normal text-stone-950 sm:text-5xl">
-                                        {activeTool.title}
-                                    </h2>
-                                    <p className="m-0 mt-3 text-[0.9375rem] font-bold leading-6 text-stone-500">
-                                        {activeTool.helper}
-                                    </p>
+                                    <h2 className="m-0 font-serif text-4xl leading-none tracking-normal text-stone-950 sm:text-5xl">{activeTool.title}</h2>
+                                    <p className="m-0 mt-3 text-[0.9375rem] font-bold leading-6 text-stone-500">{activeTool.helper}</p>
                                 </div>
                             </motion.div>
                         </AnimatePresence>

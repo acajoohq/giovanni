@@ -48,11 +48,11 @@ export function ToolTabList({ tools, activeToolId, onToolChange }: ToolTabListPr
                                     if (el) tabRefs.current.set(tool.id, el);
                                     else tabRefs.current.delete(tool.id);
                                 }}
-                                animate={{ y: isActive ? 1 : 10 }}
+                                animate={{ y: isActive ? 1 : 6 }}
                                 aria-controls="tool-folder-panel"
                                 aria-selected={isActive}
                                 className={clsx(
-                                    "relative flex min-h-[4.25rem] min-w-36 flex-col items-start justify-end gap-1 rounded-t-[12px] border border-b-0 border-stone-950 px-4 pb-3.5 pt-4 text-left focus-visible:z-30 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-[#008fbe] sm:min-w-44 sm:px-5",
+                                    "relative flex min-h-17 min-w-36 flex-col items-start justify-end gap-1 rounded-t-[12px] border border-b-0 border-stone-950 px-4 pb-3.5 pt-4 text-left focus-visible:z-30 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-[#008fbe] sm:min-w-44 sm:px-5",
                                     tool.color,
                                     isActive
                                         ? "z-20 shadow-[5px_0_0_rgba(28,25,23,0.16)] after:absolute after:inset-x-0 after:-bottom-2 after:h-3 after:rounded-b-[12px] after:bg-inherit"
@@ -65,7 +65,7 @@ export function ToolTabList({ tools, activeToolId, onToolChange }: ToolTabListPr
                                 tabIndex={isActive ? 0 : -1}
                                 transition={{ type: "spring", stiffness: 500, damping: 36, mass: 0.75 }}
                                 type="button"
-                                whileHover={!isActive ? { y: 5 } : undefined}
+                                whileHover={!isActive ? { y: 4 } : undefined}
                             >
                                 <span className="text-[10px] font-black uppercase leading-none tracking-widest text-stone-500 sm:text-[11px]">{tool.shortLabel}</span>
                                 <span className="text-[0.875rem] font-black leading-tight text-stone-950 sm:text-[0.95rem]">{tool.label}</span>

@@ -17,6 +17,7 @@
     "devDependencies": {
         "@tauri-apps/cli": "^2",
         "@typescript/native-preview": "7.0.0-dev.20260421.2",
+        "typescript": "^6.0.3",
         "vite": "^7.0.4"
     }
 }

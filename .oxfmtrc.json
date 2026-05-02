@@ -18,6 +18,7 @@
         "coverage/**",
         ".turbo/**",
         ".pnpm-store/**",
+        "apps/*/src/routeTree.gen.ts",
         "apps/*/dist/**",
         "packages/*/dist/**",
         "packages/*/build/**"

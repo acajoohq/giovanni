@@ -1,0 +1,34 @@
+{
+    "name": "giovanni-web",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "clean": "rm -rf dist .output",
+        "dev": "vite --host 127.0.0.1",
+        "format": "oxfmt --write src public vite.config.ts package.json tsconfig.json .oxlintrc.json",
+        "format:check": "oxfmt --check src public vite.config.ts package.json tsconfig.json .oxlintrc.json",
+        "lint": "oxlint src vite.config.ts",
+        "preview": "vite preview",
+        "start": "node .output/server/index.mjs",
+        "typecheck": "tsgo --noEmit",
+        "validate": "pnpm run typecheck"
+    },
+    "dependencies": {
+        "@tailwindcss/vite": "^4.2.4",
+        "@tanstack/react-router": "^1.169.1",
+        "@tanstack/react-start": "^1.167.59",
+        "react": "^19.2.5",
+        "react-dom": "^19.2.5",
+        "tailwindcss": "^4.2.4"
+    },
+    "devDependencies": {
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.0.1"
+    },
+    "engines": {
+        "node": ">=24.0.0"
+    }
+}

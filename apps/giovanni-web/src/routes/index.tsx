@@ -1,13 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HomePage } from "../components/home/HomePage";
 import { createSeoMeta } from "../lib/seo";
 
 export const Route = createFileRoute("/")({
     head: () => ({
         meta: createSeoMeta({
-            title: "Giovanni | Frugal PDF Tools",
-            description: "A pastel, local-first PDF workspace for compressing, splitting, merging, and extracting images.",
+            title: "Giovanni",
+            description: "PDF tools in your browser.",
         }),
     }),
-    component: HomePage,
+    component: HomeRoute,
 });
+
+function HomeRoute() {
+    return <main className="min-h-screen bg-white" id="main-content" />;
+}

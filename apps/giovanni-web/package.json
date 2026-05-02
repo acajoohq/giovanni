@@ -16,24 +16,18 @@
         "validate": "pnpm run typecheck"
     },
     "dependencies": {
-        "@base-ui/react": "^1.4.1",
-        "@linaria/core": "^7.0.0",
-        "@linaria/react": "^7.0.1",
         "@tanstack/react-router": "^1.169.1",
         "@tanstack/react-start": "^1.167.59",
-        "clsx": "^2.1.1",
-        "motion": "^12.38.0",
         "react": "^19.2.5",
         "react-dom": "^19.2.5"
     },
     "devDependencies": {
-        "@babel/preset-react": "^7.28.5",
-        "@babel/preset-typescript": "^7.28.5",
+        "@tailwindcss/vite": "^4.1.17",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^6.0.1",
-        "@wyw-in-js/vite": "^1.1.0",
-        "code-inspector-plugin": "^1.5.1"
+        "code-inspector-plugin": "^1.5.1",
+        "tailwindcss": "^4.1.17"
     },
     "engines": {
         "node": ">=24.0.0"

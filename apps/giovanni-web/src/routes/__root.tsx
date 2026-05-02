@@ -48,20 +48,30 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
                 >
                     Skip to Main Content
                 </a>
-                <header className="mx-auto flex w-full max-w-7xl items-center px-4 py-3 sm:px-6 lg:px-8">
+                <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                     <a
+                        aria-label="Giovanni Home"
                         className="inline-flex touch-manipulation items-center gap-3 rounded-[8px] text-lg font-black tracking-normal text-stone-950 no-underline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-stone-950"
                         href="/"
-                        aria-label="Giovanni Home"
                     >
                         <span
-                            className="grid size-11 place-items-center border border-stone-950 bg-[#fff2a8] font-serif text-xl text-stone-950 shadow-[3px_3px_0_#1c1917]"
                             aria-hidden="true"
+                            className="grid size-10 place-items-center rounded-[6px] border border-stone-950 bg-[#fff2a8] font-serif text-lg text-stone-950 shadow-[2px_2px_0_#1c1917]"
                         >
                             G
                         </span>
                         <span translate="no">Giovanni</span>
                     </a>
+                    <nav aria-label="Site navigation">
+                        <a
+                            className="text-sm font-bold text-stone-500 transition-colors duration-150 hover:text-stone-950 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-stone-950"
+                            href="https://github.com/MatteoGauthier/qpdf-wasm"
+                            rel="noreferrer"
+                            target="_blank"
+                        >
+                            GitHub
+                        </a>
+                    </nav>
                 </header>
                 {children}
                 <footer className="mx-auto w-full max-w-7xl px-4 pb-10 pt-4 sm:px-6 lg:px-8" aria-label="Site footer">

@@ -1,97 +1,89 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createCanonicalLink, createSeoMeta } from "../lib/seo";
+import { createSeoMeta } from "../lib/seo";
 
-const toolPreviews = [
-    {
-        title: "Compress",
-        description: "Reduce file size before sending documents by email or storing them in shared folders.",
-    },
-    {
-        title: "Split",
-        description: "Separate large PDFs into practical sections without sending the file to a server.",
-    },
-    {
-        title: "Merge",
-        description: "Bring pages and documents together in the order you choose.",
-    },
-    {
-        title: "Extract Images",
-        description: "Pull useful images out of PDFs for review, archiving, or reuse.",
-    },
-];
-
-const principles = ["Readable at every age", "Keyboard friendly by default", "Private client-side processing", "No account required for core tools"];
+const tools = ["Compress", "Split", "Merge", "Extract Images"];
+const principles = ["Readable controls", "Plain language", "Keyboard access", "Local-first processing"];
 
 export const Route = createFileRoute("/")({
     head: () => ({
         meta: createSeoMeta({
             title: "Giovanni | Simple PDF Tools for Everyone",
-            description: "A warm, accessible PDF workspace for compressing, splitting, merging, and working with documents privately.",
+            description: "A clear, accessible PDF workspace for everyday document work.",
         }),
-        links: [createCanonicalLink()],
     }),
     component: HomePage,
 });
 
 function HomePage() {
-    const toolPreviewCards = toolPreviews.map((tool) => (
-        <article className="tool-card" key={tool.title}>
-            <h3>{tool.title}</h3>
-            <p>{tool.description}</p>
-        </article>
+    const toolItems = tools.map((tool) => (
+        <li className="rounded-2xl border border-stone-300 bg-white/50 px-5 py-4 text-lg font-bold text-stone-950" key={tool}>
+            {tool}
+        </li>
     ));
 
-    const principleItems = principles.map((principle) => <li key={principle}>{principle}</li>);
+    const principleItems = principles.map((principle) => (
+        <li className="rounded-2xl border border-stone-300 bg-stone-200/60 px-5 py-4 text-lg font-bold text-stone-950" key={principle}>
+            {principle}
+        </li>
+    ));
 
     return (
-        <main className="page-shell" id="main-content">
-            <section className="hero-section" aria-labelledby="hero-heading">
-                <div className="hero-copy">
-                    <p className="eyebrow">Private PDF Work, Made Calm</p>
-                    <h1 id="hero-heading">Giovanni helps everyone handle PDFs with confidence.</h1>
-                    <p className="hero-lede">
-                        A simple web app for everyday document tasks: clear language, generous controls, and PDF processing designed to stay close to your browser.
+        <main className="mx-auto w-full max-w-6xl px-6 pb-20 pt-6 lg:px-8" id="main-content">
+            <section
+                className="grid scroll-mt-8 gap-10 rounded-4xl border border-stone-300 bg-white/50 p-6 shadow-2xl backdrop-blur md:p-10 lg:p-14"
+                aria-labelledby="hero-heading"
+            >
+                <div className="flex max-w-4xl flex-col items-start gap-6">
+                    <p className="m-0 text-sm font-black uppercase leading-5 tracking-[0.22em] text-orange-900">Private PDF Work</p>
+                    <h1 className="m-0 text-balance font-serif text-5xl leading-tight tracking-[-0.03em] text-stone-950 sm:text-6xl lg:text-7xl" id="hero-heading">
+                        PDF tools that feel calm, readable, and close at hand.
+                    </h1>
+                    <p className="m-0 max-w-2xl text-xl leading-9 text-stone-600">
+                        Giovanni is for everyday document tasks: fewer choices to decode, larger controls to trust, and browser-based PDF processing.
                     </p>
-                    <div className="hero-actions" aria-label="Giovanni Highlights">
-                        <a className="button-link" href="#tools">
-                            Preview Tools
-                        </a>
-                        <a className="text-link" href="#privacy">
-                            Read Privacy Promise
-                        </a>
-                    </div>
+                    <a
+                        className="inline-flex min-h-12 touch-manipulation items-center justify-center rounded-full bg-stone-950 px-6 py-3 text-base font-black text-stone-50 no-underline shadow-lg hover:bg-orange-900 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-orange-900"
+                        href="#tools"
+                    >
+                        See Tools
+                    </a>
                 </div>
-                <aside className="hero-note" aria-label="Current Product Phase">
-                    <span className="note-label">Phase 1</span>
-                    <p>Giovanni starts as a fast, static, SEO-friendly home. Interactive PDF tools come next.</p>
-                </aside>
             </section>
 
-            <section className="section-grid" id="tools" aria-labelledby="tools-heading">
+            <section className="grid scroll-mt-8 gap-8 py-16 md:grid-cols-[0.75fr_1.25fr] md:items-start" id="tools" aria-labelledby="tools-heading">
                 <div>
-                    <p className="eyebrow">Tool Foundation</p>
-                    <h2 id="tools-heading">Built around the PDF features already in the workspace.</h2>
+                    <p className="m-0 text-sm font-black uppercase leading-5 tracking-[0.22em] text-orange-900">Tools</p>
+                    <h2 className="m-0 mt-3 text-balance font-serif text-4xl leading-tight tracking-[-0.03em] text-stone-950 sm:text-5xl" id="tools-heading">
+                        The core PDF tasks stay easy to find.
+                    </h2>
                 </div>
-                <div className="tool-grid">{toolPreviewCards}</div>
+                <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">{toolItems}</ul>
             </section>
 
-            <section className="privacy-panel" id="privacy" aria-labelledby="privacy-heading">
+            <section
+                className="grid scroll-mt-8 gap-8 rounded-4xl bg-stone-950 p-8 text-stone-50 md:grid-cols-[0.85fr_1.15fr] md:p-10"
+                id="privacy"
+                aria-labelledby="privacy-heading"
+            >
                 <div>
-                    <p className="eyebrow">Privacy First</p>
-                    <h2 id="privacy-heading">Documents should feel local, not lost.</h2>
+                    <p className="m-0 text-sm font-black uppercase leading-5 tracking-[0.22em] text-stone-50">Privacy</p>
+                    <h2 className="m-0 mt-3 text-balance font-serif text-4xl leading-tight tracking-[-0.03em] text-stone-50 sm:text-5xl" id="privacy-heading">
+                        Documents should feel local, not lost.
+                    </h2>
                 </div>
-                <p>
-                    The PDF engine will use the existing WebAssembly package so core work can happen in the browser. The interface will explain what is happening before a file is
-                    processed.
+                <p className="m-0 text-lg leading-8 text-stone-300">
+                    Giovanni is designed around browser-side PDF work. When a file is processed, the interface should say what is happening and why.
                 </p>
             </section>
 
-            <section className="section-grid" id="roadmap" aria-labelledby="roadmap-heading">
+            <section className="grid scroll-mt-8 gap-8 py-16 md:grid-cols-[0.75fr_1.25fr] md:items-start" id="principles" aria-labelledby="principles-heading">
                 <div>
-                    <p className="eyebrow">Design Promise</p>
-                    <h2 id="roadmap-heading">Accessible enough for a first visit, polished enough for daily use.</h2>
+                    <p className="m-0 text-sm font-black uppercase leading-5 tracking-[0.22em] text-orange-900">Principles</p>
+                    <h2 className="m-0 mt-3 text-balance font-serif text-4xl leading-tight tracking-[-0.03em] text-stone-950 sm:text-5xl" id="principles-heading">
+                        Clear enough for a first visit, steady enough for daily use.
+                    </h2>
                 </div>
-                <ul className="principle-list">{principleItems}</ul>
+                <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">{principleItems}</ul>
             </section>
         </main>
     );

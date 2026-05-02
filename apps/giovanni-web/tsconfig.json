@@ -4,7 +4,10 @@
         "jsx": "react-jsx",
         "lib": ["ES2022", "DOM", "DOM.Iterable"],
         "noEmit": true,
-        "types": ["vite/client"]
+        "types": ["vite/client"],
+        "paths": {
+            "@pdfly/wasm": ["../../packages/pdfly-wasm/src/index.ts"]
+        }
     },
-    "include": ["src", "vite.config.ts"]
+    "include": ["src", "@pdfly", "vite.config.ts"]
 }

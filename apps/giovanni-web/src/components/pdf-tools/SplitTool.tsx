@@ -6,8 +6,8 @@ import { EmptyState } from "../empty-state/EmptyState";
 import { Button } from "../shadcn-ui/Button";
 import { Input } from "../shadcn-ui/Input";
 import { Sidebar, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarInfo, SidebarSection, SidebarStat } from "../sidebar";
-import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./ToolUi";
-import { downloadPdf, downloadZip, formatDuration, formatThroughput, isPdfFile, pdfBaseName } from "./ToolUtils";
+import { downloadPdf, downloadZip, formatDuration, formatThroughput, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
+import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./PdfToolComponents";
 
 export function SplitTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);

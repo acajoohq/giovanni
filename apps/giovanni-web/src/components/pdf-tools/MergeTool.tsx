@@ -6,8 +6,8 @@ import { EmptyState } from "../empty-state/EmptyState";
 import { Button } from "../shadcn-ui/Button";
 import { Input } from "../shadcn-ui/Input";
 import { Sidebar, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarInfo, SidebarSection, SidebarStat } from "../sidebar";
-import { FilesList, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./ToolUi";
-import { downloadPdf, formatDuration, formatThroughput, isPdfFile } from "./ToolUtils";
+import { downloadPdf, formatDuration, formatThroughput, isPdfFile } from "../../lib/pdf-tools/utils";
+import { FilesList, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./PdfToolComponents";
 
 export function MergeTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);

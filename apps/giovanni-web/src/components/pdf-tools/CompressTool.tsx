@@ -6,8 +6,8 @@ import { EmptyState } from "../empty-state/EmptyState";
 import { Input } from "../shadcn-ui/Input";
 import { Sidebar, SidebarCheckbox, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarSection, SidebarStat, SidebarToggle, SidebarToggleGroup } from "../sidebar";
 import { Button } from "../shadcn-ui/Button";
-import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./ToolUi";
-import { downloadPdf, formatDuration, formatThroughput, isPdfFile, pdfBaseName } from "./ToolUtils";
+import { downloadPdf, formatDuration, formatThroughput, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
+import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./PdfToolComponents";
 
 type CompressionProfile = "balanced" | "extreme";
 

@@ -1,7 +1,7 @@
 import type { ExtractedImage } from "@pdfly/wasm";
 import { formatBytes } from "@pdfly/wasm";
 import * as React from "react";
-import { RiArrowDownSLine, RiArrowUpSLine, RiCloseLine, RiDownload2Line, RiFilePdf2Line, RiImageLine } from "@remixicon/react";
+import { RiArrowDownSLine, RiArrowUpSLine, RiCloseLine, RiFilePdf2Line, RiImageLine } from "@remixicon/react";
 import { Button } from "../shadcn-ui/Button";
 import { cn } from "../../lib/utils";
 
@@ -110,21 +110,6 @@ export function MetricGrid({ metrics }: { metrics: Array<{ label: string; value:
                     <div className={cn("mt-1 text-[13px] font-medium", metric.tone === "accent" ? "text-[#eb5a3f]" : "text-neutral-100")}>{metric.value}</div>
                 </div>
             ))}
-        </div>
-    );
-}
-
-export function DownloadRow({ title, detail, onDownload }: { title: React.ReactNode; detail?: React.ReactNode; onDownload: () => void }) {
-    return (
-        <div className="flex items-center justify-between gap-3 rounded-[6px] border border-[#2a2a2a] bg-[#101010] px-3 py-2">
-            <div className="min-w-0">
-                <div className="truncate text-[12px] font-medium text-neutral-100">{title}</div>
-                {detail && <div className="text-[11px] text-neutral-500">{detail}</div>}
-            </div>
-            <Button size="sm" variant="secondary" onClick={onDownload}>
-                <RiDownload2Line className="size-3.5" />
-                Download
-            </Button>
         </div>
     );
 }

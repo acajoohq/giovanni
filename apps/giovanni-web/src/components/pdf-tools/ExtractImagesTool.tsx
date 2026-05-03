@@ -5,8 +5,8 @@ import { ToolLayout } from "../ToolLayout";
 import { EmptyState } from "../empty-state/EmptyState";
 import { Button } from "../shadcn-ui/Button";
 import { Sidebar, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarInfo, SidebarSection, SidebarStat } from "../sidebar";
-import { FileSummary, ImageThumb, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./ToolUi";
-import { downloadBlob, downloadZip, formatDuration, formatThroughput, imageDownloadName, isPdfFile, pdfBaseName } from "./ToolUtils";
+import { downloadBlob, downloadZip, formatDuration, formatThroughput, imageDownloadName, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
+import { FileSummary, ImageThumb, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./PdfToolComponents";
 
 export function ExtractImagesTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);

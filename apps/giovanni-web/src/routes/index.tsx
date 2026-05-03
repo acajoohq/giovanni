@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ToolLayout } from "../components/tool-layout";
+import { ToolLayout } from "../components/ToolLayout";
 import { RiFilePdfLine, RiImageLine, RiFileZipLine, RiAddLine, RiInformationLine } from "@remixicon/react";
-import { Input } from "../components/ui/input";
+import { Input } from "../components/shadcn-ui/Input";
 
 export const Route = createFileRoute("/")({
     component: CompressRoute,

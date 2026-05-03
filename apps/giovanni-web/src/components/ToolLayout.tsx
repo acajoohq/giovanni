@@ -1,5 +1,5 @@
 import type * as React from "react";
-import { Button } from "./ui/button";
+import { Button } from "./shadcn-ui/Button";
 
 interface ToolLayoutProps {
     title: string;

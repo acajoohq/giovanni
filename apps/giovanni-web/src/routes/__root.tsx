@@ -53,6 +53,12 @@ function RootComponent() {
                             >
                                 Merge
                             </Link>
+                            <Link
+                                to="/extract-images"
+                                className="px-3 py-1.5 text-[11px] font-medium rounded-md text-neutral-500 hover:text-white transition-all [&.active]:bg-[#1f1f1f] [&.active]:text-white"
+                            >
+                                Extract Images
+                            </Link>
                         </nav>
                     </div>
 

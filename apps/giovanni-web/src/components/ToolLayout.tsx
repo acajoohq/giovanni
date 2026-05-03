@@ -4,11 +4,14 @@ import { Button } from "./shadcn-ui/Button";
 interface ToolLayoutProps {
     title: string;
     actionText: string;
+    isActionDisabled?: boolean;
+    isActionBusy?: boolean;
+    onAction?: () => void;
     sidebar: React.ReactNode;
     children: React.ReactNode;
 }
 
-export function ToolLayout({ title, actionText, sidebar, children }: ToolLayoutProps) {
+export function ToolLayout({ title, actionText, isActionDisabled, isActionBusy, onAction, sidebar, children }: ToolLayoutProps) {
     return (
         <div className="flex h-full w-full bg-[#0a0a0a] text-[#ededed]">
             {/* Main Area (Canvas / Empty State) */}
@@ -29,8 +32,12 @@ export function ToolLayout({ title, actionText, sidebar, children }: ToolLayoutP
                 <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">{sidebar}</div>
 
                 <div className="p-3 border-t border-[#282828] bg-[#181818]">
-                    <Button className="w-full h-8 rounded-[4px] bg-[#eb5a3f] hover:bg-[#d65037] text-[12px] font-medium shadow-sm border border-black/20 text-white transition-all">
-                        {actionText}
+                    <Button
+                        className="w-full h-8 rounded-[4px] bg-[#eb5a3f] hover:bg-[#d65037] text-[12px] font-medium shadow-sm border border-black/20 text-white transition-all"
+                        disabled={isActionDisabled || isActionBusy}
+                        onClick={onAction}
+                    >
+                        {isActionBusy ? "Working..." : actionText}
                     </Button>
                 </div>
             </aside>

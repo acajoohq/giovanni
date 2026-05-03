@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SplitRouteImport } from './routes/split'
 import { Route as MergeRouteImport } from './routes/merge'
+import { Route as ExtractImagesRouteImport } from './routes/extract-images'
 import { Route as CompressRouteImport } from './routes/compress'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -22,6 +23,11 @@ const SplitRoute = SplitRouteImport.update({
 const MergeRoute = MergeRouteImport.update({
   id: '/merge',
   path: '/merge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExtractImagesRoute = ExtractImagesRouteImport.update({
+  id: '/extract-images',
+  path: '/extract-images',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompressRoute = CompressRouteImport.update({
@@ -38,12 +44,14 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
+  '/extract-images': typeof ExtractImagesRoute
   '/merge': typeof MergeRoute
   '/split': typeof SplitRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
+  '/extract-images': typeof ExtractImagesRoute
   '/merge': typeof MergeRoute
   '/split': typeof SplitRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
+  '/extract-images': typeof ExtractImagesRoute
   '/merge': typeof MergeRoute
   '/split': typeof SplitRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/compress' | '/merge' | '/split'
+  fullPaths: '/' | '/compress' | '/extract-images' | '/merge' | '/split'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/compress' | '/merge' | '/split'
-  id: '__root__' | '/' | '/compress' | '/merge' | '/split'
+  to: '/' | '/compress' | '/extract-images' | '/merge' | '/split'
+  id: '__root__' | '/' | '/compress' | '/extract-images' | '/merge' | '/split'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CompressRoute: typeof CompressRoute
+  ExtractImagesRoute: typeof ExtractImagesRoute
   MergeRoute: typeof MergeRoute
   SplitRoute: typeof SplitRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/merge'
       fullPath: '/merge'
       preLoaderRoute: typeof MergeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/extract-images': {
+      id: '/extract-images'
+      path: '/extract-images'
+      fullPath: '/extract-images'
+      preLoaderRoute: typeof ExtractImagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compress': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CompressRoute: CompressRoute,
+  ExtractImagesRoute: ExtractImagesRoute,
   MergeRoute: MergeRoute,
   SplitRoute: SplitRoute,
 }

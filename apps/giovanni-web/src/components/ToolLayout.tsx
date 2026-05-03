@@ -10,25 +10,13 @@ interface ToolLayoutProps {
     onAction?: () => void;
     sidebar: React.ReactNode;
     children: React.ReactNode;
-    mediaPanel?: React.ReactNode;
     footerSlot?: React.ReactNode;
 }
 
-export function ToolLayout({ title, actionText, isActionDisabled, isActionBusy, onAction, sidebar, children, mediaPanel, footerSlot }: ToolLayoutProps) {
-    const hasMedia = mediaPanel !== undefined && mediaPanel !== null;
-
+export function ToolLayout({ title, actionText, isActionDisabled, isActionBusy, onAction, sidebar, children, footerSlot }: ToolLayoutProps) {
     return (
         <ResizablePanelGroup className="h-full w-full bg-[#0a0a0a] text-[#ededed]" direction="horizontal">
-            {hasMedia && (
-                <>
-                    <ResizablePanel defaultSize={22} maxSize={40} minSize={15}>
-                        <div className="h-full overflow-y-auto border-r border-[#1f1f1f] bg-[#0d0d0d]">{mediaPanel}</div>
-                    </ResizablePanel>
-                    <ResizableHandle withHandle />
-                </>
-            )}
-
-            <ResizablePanel defaultSize={hasMedia ? 53 : 75} minSize={30}>
+            <ResizablePanel defaultSize={75} minSize={40}>
                 <div className="relative h-full overflow-hidden bg-[#0f0f0f]">
                     <div
                         className="pointer-events-none absolute inset-0 opacity-20"
@@ -37,11 +25,11 @@ export function ToolLayout({ title, actionText, isActionDisabled, isActionBusy, 
                             backgroundSize: "16px 16px",
                         }}
                     />
-                    <div className="relative z-10 flex h-full w-full items-center justify-center overflow-y-auto p-4">{children}</div>
+                    <div className="relative z-10 h-full w-full overflow-hidden">{children}</div>
                 </div>
             </ResizablePanel>
 
-            <ResizableHandle withHandle />
+            <ResizableHandle />
 
             <ResizablePanel defaultSize={25} maxSize={40} minSize={18}>
                 <aside className="flex h-full flex-col border-l border-[#282828] bg-[#181818] shadow-[-8px_0_24px_rgba(0,0,0,0.5)]">

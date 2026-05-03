@@ -14,7 +14,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
         let objectUrl: string | null = null;
 
         if (data) {
-            objectUrl = URL.createObjectURL(new Blob([data as BlobPart], { type: "application/pdf" }));
+            objectUrl = URL.createObjectURL(new Blob([data.buffer as ArrayBuffer], { type: "application/pdf" }));
         } else if (file) {
             objectUrl = URL.createObjectURL(file);
         }

@@ -2,12 +2,15 @@ import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel } fr
 import * as React from "react";
 import { RiAddLine, RiArrowDownSLine, RiFileZipLine } from "@remixicon/react";
 import { ToolLayout } from "../ToolLayout";
+import { BeforeAfterView } from "../BeforeAfterView";
 import { EmptyState } from "../empty-state/EmptyState";
 import { Input } from "../shadcn-ui/Input";
-import { Sidebar, SidebarCheckbox, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarSection, SidebarStat, SidebarToggle, SidebarToggleGroup } from "../sidebar";
 import { Button } from "../shadcn-ui/Button";
-import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine } from "./PdfToolComponents";
-import { downloadPdf, formatDuration, formatThroughput, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
+import { Sidebar, SidebarCheckbox, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarSection, SidebarStat, SidebarToggle, SidebarToggleGroup } from "../sidebar";
+import { FileSummary } from "./FileSummary";
+import { MetricGrid } from "./MetricGrid";
+import { type ToolStatus, ToolStatusLine } from "./ToolStatusLine";
+import { downloadPdf, formatDuration, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
 import { PdfPreview } from "./PdfPreview";
 
 type CompressionProfile = "balanced" | "extreme";
@@ -33,52 +36,101 @@ export function CompressTool() {
             setStatus({ tone: "error", message: "Please select a PDF file." });
             return;
         }
-
         setFile(nextFile);
         setResult(null);
         setElapsedMs(null);
-        setStatus({ tone: "info", message: "PDF loaded. Choose a profile, then compress." });
+        setStatus(null);
     };
 
-    const handleCompress = async () => {
+    React.useEffect(() => {
+        if (!file) return;
+        let cancelled = false;
+
+        const run = async () => {
+            setIsWorking(true);
+            setResult(null);
+            setElapsedMs(null);
+
+            try {
+                const buffer = await file.arrayBuffer();
+                if (cancelled) return;
+                const start = performance.now();
+                const nextResult = await compressPdf(buffer, {
+                    compressionLevel,
+                    decodeLevel,
+                    recompressFlate,
+                    compressPages,
+                    removeUnreferencedResources,
+                    objectStreams: "generate",
+                });
+                if (cancelled) return;
+                setResult(nextResult);
+                setElapsedMs(performance.now() - start);
+                setStatus({
+                    tone: "success",
+                    message: nextResult.savedBytes >= 0 ? `Saved ${formatBytes(nextResult.savedBytes)}.` : "Result is slightly larger.",
+                });
+            } catch (error) {
+                if (!cancelled) setStatus({ tone: "error", message: error instanceof Error ? error.message : "Failed to compress PDF." });
+            } finally {
+                if (!cancelled) setIsWorking(false);
+            }
+        };
+
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, [file]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleRecompress = () => {
         if (!file) {
             inputRef.current?.click();
             return;
         }
-
         setIsWorking(true);
-        setStatus({ tone: "info", message: "Compressing PDF locally..." });
+        setResult(null);
+        setElapsedMs(null);
 
-        try {
-            const arrayBuffer = await file.arrayBuffer();
+        file.arrayBuffer().then((buffer) => {
             const start = performance.now();
-            const nextResult = await compressPdf(arrayBuffer, {
+            return compressPdf(buffer, {
                 compressionLevel,
                 decodeLevel,
                 recompressFlate,
                 compressPages,
                 removeUnreferencedResources,
                 objectStreams: "generate",
-            });
-            const nextElapsedMs = performance.now() - start;
-
-            setResult(nextResult);
-            setElapsedMs(nextElapsedMs);
+            }).then((r) => ({ r, start }));
+        }).then((val) => {
+            if (!val) return;
+            setResult(val.r);
+            setElapsedMs(performance.now() - val.start);
             setStatus({
                 tone: "success",
-                message: nextResult.savedBytes >= 0 ? `Compressed ${formatBytes(nextResult.savedBytes)} smaller.` : "Compression completed, but this PDF became larger.",
+                message: val.r.savedBytes >= 0 ? `Saved ${formatBytes(val.r.savedBytes)}.` : "Result is slightly larger.",
             });
-        } catch (error) {
-            setResult(null);
-            setElapsedMs(null);
-            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Failed to compress PDF." });
-        } finally {
+        }).catch((error) => {
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Failed." });
+        }).finally(() => {
             setIsWorking(false);
-        }
+        });
     };
 
     const sidebar = (
         <Sidebar>
+            {file && (
+                <SidebarSection>
+                    <SidebarContent>
+                        <FileSummary file={file} />
+                        <Button className="w-full" size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
+                            Replace PDF
+                        </Button>
+                        <ToolStatusLine status={status} />
+                    </SidebarContent>
+                </SidebarSection>
+            )}
+
             <SidebarSection>
                 <SidebarHeader>Compression</SidebarHeader>
                 <SidebarContent>
@@ -94,7 +146,7 @@ export function CompressTool() {
                     </SidebarField>
                     <SidebarField label="Level">
                         <Input
-                            className="h-7 px-2 rounded-[4px] bg-[#111] border-[#282828] text-[12px] text-white focus-visible:ring-1 focus-visible:ring-[#eb5a3f] shadow-inner"
+                            className="h-7 rounded-[4px] border-[#282828] bg-[#111] px-2 text-[12px] text-white shadow-inner focus-visible:ring-1 focus-visible:ring-[#eb5a3f]"
                             readOnly
                             value={compressionLevel}
                         />
@@ -102,7 +154,7 @@ export function CompressTool() {
                     <SidebarField label="Decode">
                         <div className="relative">
                             <select
-                                className="h-7 w-full appearance-none rounded-[4px] border border-[#282828] bg-[#111] px-2 py-0 pr-7 text-[12px] leading-none text-white shadow-inner focus-visible:ring-1 focus-visible:ring-[#eb5a3f] focus-visible:outline-none"
+                                className="h-7 w-full appearance-none rounded-[4px] border border-[#282828] bg-[#111] px-2 py-0 pr-7 text-[12px] leading-none text-white shadow-inner focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#eb5a3f]"
                                 value={decodeLevel}
                                 onChange={(event) => setDecodeLevel(event.currentTarget.value as DecodeLevel)}
                             >
@@ -130,62 +182,51 @@ export function CompressTool() {
                 </SidebarContent>
             </SidebarSection>
 
+            {result && (
+                <SidebarSection>
+                    <SidebarContent>
+                        <MetricGrid
+                            metrics={[
+                                { label: "Original", value: formatBytes(result.originalSize) },
+                                { label: "Compressed", value: formatBytes(result.compressedSize), tone: "accent" },
+                                { label: "Saved", value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
+                                { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
+                            ]}
+                        />
+                    </SidebarContent>
+                </SidebarSection>
+            )}
+
             <SidebarFooter>
                 <SidebarStat label="Original Size" value={result ? formatBytes(result.originalSize) : file ? formatBytes(file.size) : "-"} />
-                <SidebarStat label="New Size" value={result ? formatBytes(result.compressedSize) : "-"} isHighlight={Boolean(result)} />
-                <SidebarStat label="Savings" value={result ? `${result.percentageSaved.toFixed(1)}%` : "-"} isHighlight={Boolean(result)} />
+                <SidebarStat isHighlight={Boolean(result)} label="New Size" value={result ? formatBytes(result.compressedSize) : "-"} />
+                <SidebarStat isHighlight={Boolean(result)} label="Savings" value={result ? `${result.percentageSaved.toFixed(1)}%` : "-"} />
             </SidebarFooter>
         </Sidebar>
     );
 
     const visual = (
         <>
-            <div className="absolute inset-x-0 h-24 bg-[#111] border border-[#222] rounded-3xl shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)] transform scale-95 transition-transform duration-500 group-hover:scale-100 flex items-center justify-between px-2">
-                <div className="w-2 h-12 bg-[#222] rounded-full shadow-[inset_1px_0_2px_rgba(255,255,255,0.1)]" />
-                <div className="w-2 h-12 bg-[#222] rounded-full shadow-[inset_-1px_0_2px_rgba(255,255,255,0.1)]" />
+            <div className="absolute inset-x-0 h-24 flex items-center justify-between rounded-3xl border border-[#222] bg-[#111] px-2 shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)]">
+                <div className="h-12 w-2 rounded-full bg-[#222] shadow-[inset_1px_0_2px_rgba(255,255,255,0.1)]" />
+                <div className="h-12 w-2 rounded-full bg-[#222] shadow-[inset_-1px_0_2px_rgba(255,255,255,0.1)]" />
             </div>
-            <div className="relative w-16 h-20 bg-linear-to-br from-[#eb5a3f] to-[#b33e29] rounded-xl shadow-[0_10px_20px_rgba(235,90,63,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-[#ff7b63] flex flex-col items-center justify-center transition-all duration-500 group-hover:scale-95 group-hover:w-14 z-10">
+            <div className="relative z-10 flex h-20 w-16 flex-col items-center justify-center rounded-xl border border-[#ff7b63] bg-linear-to-br from-[#eb5a3f] to-[#b33e29] shadow-[0_10px_20px_rgba(235,90,63,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] transition-all duration-500 group-hover:w-14 group-hover:scale-95">
                 <RiFileZipLine className="size-6 text-white/90 drop-shadow-md" />
-                <div className="absolute top-0 right-0 w-4 h-4 bg-linear-to-bl from-white/40 to-transparent rounded-bl-lg shadow-sm" />
+                <div className="absolute right-0 top-0 h-4 w-4 rounded-bl-lg bg-linear-to-bl from-white/40 to-transparent shadow-sm" />
             </div>
         </>
     );
 
-    const mediaPanel = file ? (
-        <div className="flex flex-col gap-3 p-3">
-            <FileSummary file={file} />
-            <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
-                Replace PDF
-            </Button>
-            <ToolStatusLine status={status} />
-            {result && (
-                <MetricGrid
-                    metrics={[
-                        { label: "Original", value: formatBytes(result.originalSize) },
-                        { label: "Compressed", value: formatBytes(result.compressedSize), tone: "accent" },
-                        { label: "Saved", value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
-                        { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
-                        { label: "Throughput", value: elapsedMs === null ? "-" : formatThroughput(result.originalSize, elapsedMs) },
-                    ]}
-                />
-            )}
-            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
-        </div>
-    ) : undefined;
-
     const footerSlot =
         result && file ? (
-            <Button
-                className="h-8 w-full rounded-[4px] text-[12px] font-medium"
-                variant="secondary"
-                onClick={() => downloadPdf(result.data, `${pdfBaseName(file)}_compressed.pdf`)}
-            >
+            <Button className="h-8 w-full rounded-[4px] text-[12px] font-medium" variant="secondary" onClick={() => downloadPdf(result.data, `${pdfBaseName(file)}_compressed.pdf`)}>
                 Download Compressed
             </Button>
         ) : null;
 
     const centerContent = file ? (
-        <PdfPreview data={result?.data ?? null} file={result ? null : file} />
+        <BeforeAfterView before={<PdfPreview file={file} />} after={result ? <PdfPreview data={result.data} /> : undefined} isProcessing={isWorking} />
     ) : (
         <EmptyState
             accept="application/pdf,.pdf"
@@ -199,16 +240,19 @@ export function CompressTool() {
     );
 
     return (
-        <ToolLayout
-            actionText={file ? "Compress" : "Select PDF"}
-            footerSlot={footerSlot}
-            isActionBusy={isWorking}
-            mediaPanel={mediaPanel}
-            onAction={handleCompress}
-            sidebar={sidebar}
-            title="Compress PDF"
-        >
-            {centerContent}
-        </ToolLayout>
+        <>
+            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
+            <ToolLayout
+                actionText={file ? "Re-compress" : "Select PDF"}
+                footerSlot={footerSlot}
+                isActionBusy={isWorking}
+                isActionDisabled={!file}
+                onAction={handleRecompress}
+                sidebar={sidebar}
+                title="Compress PDF"
+            >
+                {centerContent}
+            </ToolLayout>
+        </>
     );
 }

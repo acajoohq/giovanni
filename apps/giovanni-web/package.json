@@ -6,7 +6,7 @@
     "scripts": {
         "build": "vite build",
         "clean": "rm -rf dist .output",
-        "dev": "vite --host 127.0.0.1",
+        "dev": "vite --host 0.0.0.0",
         "format": "oxfmt --write src public vite.config.ts package.json tsconfig.json .oxlintrc.json",
         "format:check": "oxfmt --check src public vite.config.ts package.json tsconfig.json .oxlintrc.json",
         "lint": "oxlint src vite.config.ts",

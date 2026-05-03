@@ -2,11 +2,14 @@ import { splitPages } from "@pdfly/wasm";
 import * as React from "react";
 import { RiAddLine, RiScissorsCutLine } from "@remixicon/react";
 import { ToolLayout } from "../ToolLayout";
+import { BeforeAfterView } from "../BeforeAfterView";
 import { EmptyState } from "../empty-state/EmptyState";
 import { Button } from "../shadcn-ui/Button";
 import { Input } from "../shadcn-ui/Input";
-import { Sidebar, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarInfo, SidebarSection, SidebarStat } from "../sidebar";
-import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine } from "./PdfToolComponents";
+import { Sidebar, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarSection, SidebarStat } from "../sidebar";
+import { FileSummary } from "./FileSummary";
+import { MetricGrid } from "./MetricGrid";
+import { type ToolStatus, ToolStatusLine } from "./ToolStatusLine";
 import { downloadPdf, downloadZip, formatDuration, formatThroughput, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
 import { PdfPreview } from "./PdfPreview";
 
@@ -25,39 +28,42 @@ export function SplitTool() {
             setStatus({ tone: "error", message: "Please select a PDF file." });
             return;
         }
-
         setFile(nextFile);
         setPages([]);
         setElapsedMs(null);
-        setStatus({ tone: "info", message: "PDF loaded. Split it into one file per page." });
+        setStatus(null);
     };
 
-    const handleSplit = async () => {
-        if (!file) {
-            inputRef.current?.click();
-            return;
-        }
+    React.useEffect(() => {
+        if (!file) return;
+        let cancelled = false;
 
-        setIsWorking(true);
-        setStatus({ tone: "info", message: "Splitting pages locally..." });
-
-        try {
-            const arrayBuffer = await file.arrayBuffer();
-            const start = performance.now();
-            const result = await splitPages(arrayBuffer);
-            const nextElapsedMs = performance.now() - start;
-
-            setPages(result.pages);
-            setElapsedMs(nextElapsedMs);
-            setStatus({ tone: "success", message: `Extracted ${result.pageCount} ${result.pageCount === 1 ? "page" : "pages"}.` });
-        } catch (error) {
+        const run = async () => {
+            setIsWorking(true);
             setPages([]);
             setElapsedMs(null);
-            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Failed to split PDF." });
-        } finally {
-            setIsWorking(false);
-        }
-    };
+
+            try {
+                const buffer = await file.arrayBuffer();
+                if (cancelled) return;
+                const start = performance.now();
+                const result = await splitPages(buffer);
+                if (cancelled) return;
+                setPages(result.pages);
+                setElapsedMs(performance.now() - start);
+                setStatus({ tone: "success", message: `Extracted ${result.pageCount} ${result.pageCount === 1 ? "page" : "pages"}.` });
+            } catch (error) {
+                if (!cancelled) setStatus({ tone: "error", message: error instanceof Error ? error.message : "Failed to split PDF." });
+            } finally {
+                if (!cancelled) setIsWorking(false);
+            }
+        };
+
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, [file]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const makePageName = (pageIndex: number) =>
         outputPattern
@@ -67,15 +73,11 @@ export function SplitTool() {
             .concat(".pdf");
 
     const handleDownloadAll = async () => {
-        if (pages.length === 0) {
-            return;
-        }
-
+        if (pages.length === 0 || !file) return;
         const entries: Record<string, Uint8Array> = {};
         pages.forEach((page, index) => {
             entries[makePageName(index)] = page;
         });
-
         try {
             await downloadZip(entries, `${pdfBaseName(file)}_pages.zip`, 0);
         } catch (error) {
@@ -85,6 +87,18 @@ export function SplitTool() {
 
     const sidebar = (
         <Sidebar>
+            {file && (
+                <SidebarSection>
+                    <SidebarContent>
+                        <FileSummary file={file} />
+                        <Button className="w-full" size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
+                            Replace PDF
+                        </Button>
+                        <ToolStatusLine status={status} />
+                    </SidebarContent>
+                </SidebarSection>
+            )}
+
             <SidebarSection>
                 <SidebarHeader>Split Settings</SidebarHeader>
                 <SidebarContent>
@@ -93,48 +107,69 @@ export function SplitTool() {
                             All pages
                         </div>
                     </SidebarField>
+                    <SidebarField label="Pattern">
+                        <Input
+                            className="h-7 rounded-[4px] border-[#282828] bg-[#111] px-2 text-[12px] text-white shadow-inner focus-visible:ring-1 focus-visible:ring-[#eb5a3f]"
+                            value={outputPattern}
+                            onChange={(event) => setOutputPattern(event.currentTarget.value)}
+                        />
+                    </SidebarField>
                 </SidebarContent>
             </SidebarSection>
 
-            <SidebarInfo>Select a PDF file to extract every page as a separate PDF.</SidebarInfo>
+            {pages.length > 0 && elapsedMs !== null && file && (
+                <SidebarSection>
+                    <SidebarContent>
+                        <MetricGrid
+                            metrics={[
+                                { label: "Pages", value: pages.length, tone: "accent" },
+                                { label: "Time", value: formatDuration(elapsedMs) },
+                                { label: "Throughput", value: formatThroughput(file.size, elapsedMs) },
+                            ]}
+                        />
+                    </SidebarContent>
+                </SidebarSection>
+            )}
 
             <SidebarFooter>
                 <SidebarStat label="Source Size" value={file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : "-"} />
-                <SidebarStat label="Pages" value={pages.length || "-"} isHighlight={pages.length > 0} />
+                <SidebarStat isHighlight={pages.length > 0} label="Pages" value={pages.length || "-"} />
             </SidebarFooter>
         </Sidebar>
     );
 
     const visual = (
-        <div className="absolute inset-0 flex items-center justify-center transform group-hover:rotate-6 transition-transform duration-500">
-            <div className="relative w-16 h-20">
-                <div className="absolute top-0 left-0 right-0 h-[38px] bg-linear-to-b from-[#2a2a2a] to-[#222] rounded-t-xl shadow-[0_5px_10px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.1)] border border-[#444] border-b-dashed transition-transform duration-500 group-hover:-translate-y-3 group-hover:-rotate-3 origin-bottom z-10 overflow-hidden">
-                    <div className="absolute top-0 right-0 w-4 h-4 bg-linear-to-bl from-white/20 to-transparent rounded-bl-sm shadow-sm" />
+        <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 group-hover:rotate-6">
+            <div className="relative h-20 w-16">
+                <div className="absolute left-0 right-0 top-0 z-10 h-[38px] origin-bottom overflow-hidden rounded-t-xl border border-[#444] border-b-dashed bg-linear-to-b from-[#2a2a2a] to-[#222] shadow-[0_5px_10px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.1)] transition-transform duration-500 group-hover:-translate-y-3 group-hover:-rotate-3">
+                    <div className="absolute right-0 top-0 h-4 w-4 rounded-bl-sm bg-linear-to-bl from-white/20 to-transparent shadow-sm" />
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 h-[38px] bg-linear-to-t from-[#2a2a2a] to-[#222] rounded-b-xl shadow-[0_10px_20px_rgba(0,0,0,0.5),inset_0_-1px_1px_rgba(255,255,255,0.1)] border border-[#444] border-t-0 transition-transform duration-500 group-hover:translate-y-3 group-hover:rotate-3 origin-top z-10" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#eb5a3f] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-125 z-20">
+                <div className="absolute bottom-0 left-0 right-0 z-10 h-[38px] origin-top rounded-b-xl border border-[#444] border-t-0 bg-linear-to-t from-[#2a2a2a] to-[#222] shadow-[0_10px_20px_rgba(0,0,0,0.5),inset_0_-1px_1px_rgba(255,255,255,0.1)] transition-transform duration-500 group-hover:translate-y-3 group-hover:rotate-3" />
+                <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-[#eb5a3f] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-125">
                     <RiScissorsCutLine className="size-6" />
                 </div>
             </div>
         </div>
     );
 
-    const mediaPanel = file ? (
-        <div className="flex flex-col gap-3 p-3">
-            <FileSummary file={file} />
-            <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
-                Replace PDF
-            </Button>
-            <div className="flex flex-col gap-1">
-                <label className="text-[11px] text-neutral-400">Pattern</label>
-                <Input
-                    className="h-7 px-2 rounded-[4px] bg-[#111] border-[#282828] text-[12px] text-white focus-visible:ring-1 focus-visible:ring-[#eb5a3f] shadow-inner"
-                    value={outputPattern}
-                    onChange={(event) => setOutputPattern(event.currentTarget.value)}
-                />
+    const pagesOutput = pages.length > 0 && file ? (
+        <div className="flex h-full w-full flex-col overflow-hidden">
+            <div className="flex-1 space-y-1.5 overflow-y-auto p-3">
+                {pages.map((page, index) => (
+                    <div
+                        key={`${makePageName(index)}-${index}`}
+                        className="flex items-center justify-between gap-3 rounded-[6px] border border-[#2a2a2a] bg-[#101010] px-3 py-2"
+                    >
+                        <div className="min-w-0">
+                            <div className="truncate text-[12px] font-medium text-neutral-100">{makePageName(index)}</div>
+                            <div className="text-[11px] text-neutral-500">Page {index + 1}</div>
+                        </div>
+                        <Button size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
+                            Download
+                        </Button>
+                    </div>
+                ))}
             </div>
-            <ToolStatusLine status={status} />
-            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
         </div>
     ) : undefined;
 
@@ -145,37 +180,7 @@ export function SplitTool() {
     ) : null;
 
     const centerContent = file ? (
-        pages.length > 0 ? (
-            <div className="flex h-full w-full flex-col overflow-hidden">
-                <div className="shrink-0 border-b border-[#1f1f1f] p-3">
-                    <MetricGrid
-                        metrics={[
-                            { label: "Pages", value: pages.length, tone: "accent" },
-                            { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
-                            { label: "Throughput", value: elapsedMs === null ? "-" : formatThroughput(file.size, elapsedMs) },
-                        ]}
-                    />
-                </div>
-                <div className="flex-1 space-y-2 overflow-y-auto p-3">
-                    {pages.map((page, index) => (
-                        <div
-                            key={`${makePageName(index)}-${index}`}
-                            className="flex items-center justify-between gap-3 rounded-[6px] border border-[#2a2a2a] bg-[#101010] px-3 py-2"
-                        >
-                            <div className="min-w-0">
-                                <div className="truncate text-[12px] font-medium text-neutral-100">{makePageName(index)}</div>
-                                <div className="text-[11px] text-neutral-500">Page {index + 1}</div>
-                            </div>
-                            <Button size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
-                                Download
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        ) : (
-            <PdfPreview file={file} />
-        )
+        <BeforeAfterView after={pagesOutput} before={<PdfPreview file={file} />} isProcessing={isWorking} />
     ) : (
         <EmptyState
             accept="application/pdf,.pdf"
@@ -189,16 +194,21 @@ export function SplitTool() {
     );
 
     return (
-        <ToolLayout
-            actionText={file ? "Split Pages" : "Select PDF"}
-            footerSlot={footerSlot}
-            isActionBusy={isWorking}
-            mediaPanel={mediaPanel}
-            onAction={handleSplit}
-            sidebar={sidebar}
-            title="Split Pages"
-        >
-            {centerContent}
-        </ToolLayout>
+        <>
+            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
+            <ToolLayout
+                actionText={file ? "Re-split" : "Select PDF"}
+                footerSlot={footerSlot}
+                isActionBusy={isWorking}
+                isActionDisabled={!file}
+                onAction={() => {
+                    if (!file) inputRef.current?.click();
+                }}
+                sidebar={sidebar}
+                title="Split Pages"
+            >
+                {centerContent}
+            </ToolLayout>
+        </>
     );
 }

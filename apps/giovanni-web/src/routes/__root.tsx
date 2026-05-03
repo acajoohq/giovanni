@@ -1,8 +1,10 @@
 import { createRootRoute, HeadContent, Outlet, Scripts, Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import * as React from "react";
 import { createSeoMeta } from "../lib/seo";
 import appCss from "../styles/app.css?url";
-import { RiFilePdfLine, RiSettings3Line } from "@remixicon/react";
+import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
+import { AboutDialog } from "../components/AboutDialog";
 
 export const Route = createRootRoute({
     head: () => ({
@@ -24,11 +26,12 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+    const [aboutOpen, setAboutOpen] = React.useState(false);
+
     return (
         <RootDocument>
             <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#0a0a0a] text-neutral-200 font-sans min-w-[1024px] min-h-[768px]">
-                {/* Topbar - Squoosh / Teenage Engineering / Pro App Style */}
-                <header className="h-12 flex items-center justify-between px-5 bg-[#141414] border-b border-[#1f1f1f] z-20 flex-shrink-0 shadow-sm">
+                <header className="h-12 flex items-center justify-between px-5 bg-[#141414] border-b border-[#1f1f1f] z-20 shrink-0 shadow-sm">
                     <div className="flex items-center gap-8">
                         <div className="flex items-center gap-2 text-white font-medium text-[13px] tracking-tight">
                             <RiFilePdfLine className="text-[#eb5a3f] size-4" />
@@ -63,8 +66,11 @@ function RootComponent() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <button className="size-7 flex items-center justify-center rounded-md hover:bg-[#1f1f1f] text-neutral-500 hover:text-white transition-colors">
-                            <RiSettings3Line className="size-4" />
+                        <button
+                            className="size-7 flex items-center justify-center rounded-md hover:bg-[#1f1f1f] text-neutral-500 hover:text-white transition-colors"
+                            onClick={() => setAboutOpen(true)}
+                        >
+                            <RiInformationLine className="size-4" />
                         </button>
                     </div>
                 </header>
@@ -73,6 +79,8 @@ function RootComponent() {
                     <Outlet />
                 </main>
             </div>
+
+            <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
         </RootDocument>
     );
 }

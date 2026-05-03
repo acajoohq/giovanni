@@ -11,7 +11,7 @@ function SplitRoute() {
     const sidebar = (
         <div className="flex flex-col h-full bg-[#181818] text-[#d4d4d4]">
             <div className="flex flex-col border-b border-[#282828]">
-                <div className="px-3 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
+                <div className="px-4 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
                     <span className="text-[11px] font-bold text-neutral-200 tracking-wide uppercase">Split Settings</span>
                 </div>
                 <div className="p-4 flex flex-col gap-3 bg-[#181818]">
@@ -36,7 +36,7 @@ function SplitRoute() {
             </div>
 
             <div className="flex flex-col border-b border-[#282828]">
-                <div className="px-3 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
+                <div className="px-4 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
                     <span className="text-[11px] font-bold text-neutral-200 tracking-wide uppercase">Output</span>
                 </div>
                 <div className="p-4 flex flex-col gap-3 bg-[#181818]">

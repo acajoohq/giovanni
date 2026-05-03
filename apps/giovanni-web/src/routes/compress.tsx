@@ -11,29 +11,22 @@ function CompressRoute() {
     const sidebar = (
         <div className="flex flex-col h-full bg-[#181818] text-[#d4d4d4]">
             <div className="flex flex-col border-b border-[#282828]">
-                <div className="px-3 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
-                    <span className="text-[11px] font-bold text-neutral-200 tracking-wide uppercase">Compression Profile</span>
+                <div className="px-4 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
+                    <span className="text-[11px] font-bold text-neutral-200 tracking-wide uppercase">Compression</span>
                 </div>
                 <div className="p-4 flex flex-col gap-3 bg-[#181818]">
-                    <div className="flex flex-col gap-2">
-                        <button className="flex items-center justify-between p-2 rounded-[4px] border border-[#eb5a3f]/50 bg-[#eb5a3f]/10 transition-colors shadow-sm cursor-pointer text-left">
-                            <div className="flex flex-col">
-                                <span className="text-[12px] font-medium text-[#eb5a3f]">Balanced</span>
-                            </div>
-                            <div className="size-3 rounded-full border-[3px] border-[#eb5a3f]"></div>
-                        </button>
-                        <button className="flex items-center justify-between p-2 rounded-[4px] border border-[#282828] bg-[#111] hover:bg-[#222] transition-colors cursor-pointer text-left">
-                            <div className="flex flex-col">
-                                <span className="text-[12px] font-medium text-white">Minimum Size</span>
-                            </div>
-                            <div className="size-3 rounded-full border border-neutral-600 bg-[#111]"></div>
-                        </button>
+                    <div className="grid grid-cols-[100px_1fr] items-center gap-2">
+                        <label className="text-[12px] text-neutral-400">Profile</label>
+                        <div className="flex bg-[#111] border border-[#282828] rounded-[4px] p-0.5">
+                            <button className="flex-1 py-1 rounded-[3px] bg-[#333] shadow-sm text-white text-[11px] font-medium transition-all">Balanced</button>
+                            <button className="flex-1 py-1 rounded-[3px] text-neutral-500 hover:text-white text-[11px] font-medium transition-colors">Extreme</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div className="flex flex-col border-b border-[#282828]">
-                <div className="px-3 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
+                <div className="px-4 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
                     <span className="text-[11px] font-bold text-neutral-200 tracking-wide uppercase">Image Settings</span>
                 </div>
                 <div className="p-4 flex flex-col gap-3 bg-[#181818]">
@@ -78,30 +71,39 @@ function CompressRoute() {
         </div>
     );
 
-    return (
-        <ToolLayout title="Compress PDF" actionText="Compress" sidebar={sidebar}>
-            <div className="flex-1 rounded-3xl border-2 border-dashed border-white/10 bg-[#1c1c1e]/40 flex flex-col p-6 hover:border-white/20 transition-colors overflow-y-auto items-center justify-center">
-                {/* Visual Representation of the PDF */}
-                <div className="w-full max-w-sm p-6 rounded-3xl bg-[#252525] border border-white/5 shadow-lg flex flex-col items-center text-center relative overflow-hidden">
-                    <div className="absolute -right-6 -top-6 size-24 bg-[#eb5a3f] opacity-10 rounded-full blur-2xl pointer-events-none"></div>
-
-                    <div className="size-16 rounded-full bg-[#111] shadow-skeuo-inner border border-black/50 flex items-center justify-center text-[#eb5a3f] mb-4">
-                        <RiFilePdfLine className="size-8" />
+    const emptyState = (
+        <div className="flex flex-col items-center justify-center text-center">
+            <label className="relative mb-10 group cursor-pointer block">
+                <input type="file" className="hidden" />
+                <div className="relative size-32 flex items-center justify-center">
+                    {/* Vise / Clamp background */}
+                    <div className="absolute inset-x-0 h-24 bg-[#111] border border-[#222] rounded-3xl shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)] transform scale-95 transition-transform duration-500 group-hover:scale-100 flex items-center justify-between px-2">
+                        <div className="w-2 h-12 bg-[#222] rounded-full shadow-[inset_1px_0_2px_rgba(255,255,255,0.1)]"></div>
+                        <div className="w-2 h-12 bg-[#222] rounded-full shadow-[inset_-1px_0_2px_rgba(255,255,255,0.1)]"></div>
                     </div>
-                    <h3 className="text-lg font-medium text-white mb-1">heavy-presentation-deck.pdf</h3>
-                    <p className="text-[13px] text-neutral-500 mb-6">85 pages • 45.2 MB</p>
 
-                    <div className="w-full p-4 rounded-2xl bg-black/20 border border-white/5 flex items-center gap-4 text-left">
-                        <RiImageLine className="size-6 text-neutral-600 flex-shrink-0" />
-                        <div className="flex flex-col">
-                            <span className="text-[13px] font-medium text-white">Images found</span>
-                            <span className="text-[12px] text-neutral-500">Most size comes from uncompressed images</span>
-                        </div>
+                    {/* File being squeezed */}
+                    <div className="relative w-16 h-20 bg-gradient-to-br from-[#eb5a3f] to-[#b33e29] rounded-xl shadow-[0_10px_20px_rgba(235,90,63,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-[#ff7b63] flex flex-col items-center justify-center transition-all duration-500 group-hover:scale-95 group-hover:w-14 z-10">
+                        <RiFileZipLine className="size-6 text-white/90 drop-shadow-md" />
+                        {/* Page fold */}
+                        <div className="absolute top-0 right-0 w-4 h-4 bg-gradient-to-bl from-white/40 to-transparent rounded-bl-lg shadow-sm"></div>
                     </div>
                 </div>
 
-                <p className="text-[13px] text-neutral-500 mt-8">Drag a different file here to replace</p>
-            </div>
+                {/* Add badge */}
+                <div className="absolute -bottom-2 -right-2 size-10 rounded-full bg-[#1a1a1a] shadow-[0_4px_12px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] border border-[#333] flex items-center justify-center text-neutral-400 group-hover:text-white transition-colors z-20">
+                    <RiAddLine className="size-5" />
+                </div>
+            </label>
+
+            <h2 className="text-[15px] font-medium text-white tracking-tight mb-1.5">Drop a PDF to compress</h2>
+            <p className="text-[12px] text-neutral-500">Secure, offline processing.</p>
+        </div>
+    );
+
+    return (
+        <ToolLayout title="Compress PDF" actionText="Compress" sidebar={sidebar}>
+            {emptyState}
         </ToolLayout>
     );
 }

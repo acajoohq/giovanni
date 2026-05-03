@@ -51,7 +51,6 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
             <DialogContent showCloseButton={false} className="max-w-[400px] gap-0 overflow-hidden p-0">
-                {/* App identity */}
                 <div className="relative px-6 pb-5 pt-7 text-center">
                     <DialogClose className="absolute right-3 top-3 flex size-7 items-center justify-center rounded-md text-neutral-600 outline-none transition-colors hover:bg-white/5 hover:text-neutral-300">
                         <RiCloseLine className="size-4" />
@@ -64,7 +63,6 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                     <p className="mt-1 text-[11px] text-neutral-500">PDF tools · offline &amp; private</p>
                 </div>
 
-                {/* Contributors */}
                 <div className="border-y border-white/5 bg-white/2 px-6 py-5">
                     <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-widest text-neutral-600">Made by</p>
                     <div className="flex justify-center gap-10">
@@ -74,7 +72,6 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                     </div>
                 </div>
 
-                {/* Footer */}
                 <div className="px-6 py-3.5">
                     <p className="text-pretty text-center text-[11px] leading-relaxed text-neutral-600">
                         Powered by{" "}

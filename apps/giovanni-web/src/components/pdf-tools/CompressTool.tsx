@@ -170,7 +170,6 @@ export function CompressTool() {
             {result && (
                 <SidebarSection>
                     <SidebarContent>
-                        {/* Size reduction bar */}
                         <div>
                             <div className="mb-1.5 flex items-center justify-between">
                                 <span className="text-[10px] uppercase tracking-wide text-neutral-600">Size</span>
@@ -218,12 +217,11 @@ export function CompressTool() {
         </>
     );
 
-    const footerSlot =
-        result && file ? (
-            <Button className="h-8 w-full rounded-[4px] text-[12px] font-medium" variant="secondary" onClick={() => downloadPdf(result.data, `${pdfBaseName(file)}_compressed.pdf`)}>
-                Download Compressed
-            </Button>
-        ) : null;
+    const footerSlot = result && file && (
+        <Button className="h-8 w-full rounded-[4px] text-[12px] font-medium" variant="secondary" onClick={() => downloadPdf(result.data, `${pdfBaseName(file)}_compressed.pdf`)}>
+            Download Compressed
+        </Button>
+    );
 
     const centerContent = file ? (
         <div className="relative h-full w-full">
@@ -233,7 +231,6 @@ export function CompressTool() {
                 isProcessing={isWorking}
             />
 
-            {/* Floating file info */}
             <div className="absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2.5 rounded-lg border border-white/8 bg-black/60 px-3 py-1.5">
                 <span className="max-w-[200px] truncate text-[11px] text-neutral-300">{file.name}</span>
                 <span className="text-[10px] text-neutral-600">{formatBytes(file.size)}</span>
@@ -246,7 +243,6 @@ export function CompressTool() {
                 </button>
             </div>
 
-            {/* Status toast */}
             {status && (
                 <div className={`absolute right-3 top-3 z-30 rounded-md border px-3 py-1.5 text-[11px] ${status.tone === "error" ? "border-red-900/50 bg-red-950/60 text-red-400" : "border-[#2a2a2a] bg-black/60 text-neutral-400"}`}>
                     {status.message}
@@ -274,6 +270,7 @@ export function CompressTool() {
                 isActionBusy={isWorking}
                 isActionDisabled={!file}
                 onAction={handleRecompress}
+                onFiles={handleFiles}
                 sidebar={sidebar}
                 title="Compress PDF"
             >

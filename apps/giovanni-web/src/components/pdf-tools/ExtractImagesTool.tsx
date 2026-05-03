@@ -148,27 +148,26 @@ export function ExtractImagesTool() {
         </>
     );
 
-    const imagesOutput =
-        images.length > 0 ? (
-            <div className="h-full w-full overflow-y-auto p-4">
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                    {images.map((image, index) => (
-                        <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2">
-                            <ImageThumb image={image} index={index} url={previewUrls[index] ?? null} />
-                            <Button className="w-full" size="sm" variant="secondary" onClick={() => downloadImage(image, index)}>
-                                {image.blob ? "Download" : "Download Raw"}
-                            </Button>
-                        </div>
-                    ))}
-                </div>
+    const imagesOutput = images.length > 0 && (
+        <div className="h-full w-full overflow-y-auto p-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                {images.map((image, index) => (
+                    <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2">
+                        <ImageThumb image={image} index={index} url={previewUrls[index] ?? null} />
+                        <Button className="w-full" size="sm" variant="secondary" onClick={() => downloadImage(image, index)}>
+                            {image.blob ? "Download" : "Download Raw"}
+                        </Button>
+                    </div>
+                ))}
             </div>
-        ) : undefined;
+        </div>
+    );
 
-    const footerSlot = file ? (
+    const footerSlot = file && (
         <Button className="h-8 w-full rounded-[4px] text-[12px] font-medium" disabled={decodedCount === 0} variant="secondary" onClick={handleDownloadAll}>
             Download ZIP
         </Button>
-    ) : null;
+    );
 
     const centerContent = file ? (
         <BeforeAfterView after={imagesOutput} before={<PdfPreview file={file} />} isProcessing={isWorking} />
@@ -195,6 +194,7 @@ export function ExtractImagesTool() {
                 onAction={() => {
                     if (!file) inputRef.current?.click();
                 }}
+                onFiles={handleFiles}
                 sidebar={sidebar}
                 title="Extract Images"
             >

@@ -149,11 +149,11 @@ export function MergeTool() {
         <PdfPreview data={mergedData} />
     ) : undefined;
 
-    const footerSlot = mergedData ? (
+    const footerSlot = mergedData && (
         <Button className="h-8 w-full rounded-[4px] text-[12px] font-medium" variant="secondary" onClick={() => downloadPdf(mergedData, normalizedOutputName)}>
             Download Merged PDF
         </Button>
-    ) : null;
+    );
 
     const centerContent =
         files.length > 0 ? (
@@ -189,9 +189,11 @@ export function MergeTool() {
                 footerSlot={footerSlot}
                 isActionBusy={isWorking}
                 isActionDisabled={files.length < 2}
+                isMultiple
                 onAction={() => {
                     if (files.length === 0) inputRef.current?.click();
                 }}
+                onFiles={handleFiles}
                 sidebar={sidebar}
                 title="Merge"
             >

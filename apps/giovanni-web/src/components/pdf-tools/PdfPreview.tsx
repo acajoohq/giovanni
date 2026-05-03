@@ -16,7 +16,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
     const [page, setPage] = React.useState(1);
     const [containerSize, setContainerSize] = React.useState<{ width: number; height: number } | null>(null);
 
-    // Debounced resize: fire only after 150ms of no changes to avoid re-rendering mid-drag.
+    // debounced resize: fires only after 150ms of inactivity to avoid re-rendering mid-drag
     React.useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
@@ -61,8 +61,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
         return () => { cancelled = true; };
     }, [data, file]);
 
-    // No isRendering state: offscreen canvas pattern keeps old content on-screen until the new
-    // frame is fully composited, so no overlay is needed and resize causes zero visible flash.
+    // no isRendering overlay: offscreen canvas keeps old frame visible until the new one is composited
     React.useEffect(() => {
         let cancelled = false;
         const render = async () => {
@@ -101,7 +100,6 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
 
             {hasSource && (
                 <>
-                    {/* Only shown while the PDF document itself is loading — not on resize re-renders */}
                     {isLoading && (
                         <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30">
                             <div className="size-5 animate-spin rounded-full border-2 border-neutral-600 border-t-neutral-300" />

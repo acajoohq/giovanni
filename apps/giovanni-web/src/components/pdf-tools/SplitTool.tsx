@@ -152,32 +152,29 @@ export function SplitTool() {
         </div>
     );
 
-    const pagesOutput = pages.length > 0 && file ? (
-        <div className="flex h-full w-full flex-col overflow-hidden">
-            <div className="flex-1 space-y-1.5 overflow-y-auto p-3">
+    const pagesOutput = pages.length > 0 && file && (
+        <div className="h-full w-full overflow-y-auto p-3">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
                 {pages.map((page, index) => (
-                    <div
-                        key={`${makePageName(index)}-${index}`}
-                        className="flex items-center justify-between gap-3 rounded-[6px] border border-[#2a2a2a] bg-[#101010] px-3 py-2"
-                    >
-                        <div className="min-w-0">
-                            <div className="truncate text-[12px] font-medium text-neutral-100">{makePageName(index)}</div>
-                            <div className="text-[11px] text-neutral-500">Page {index + 1}</div>
+                    <div key={index} className="flex flex-col gap-1.5">
+                        <div className="aspect-3/4 overflow-hidden rounded-md border border-[#2a2a2a] bg-[#0a0a0a]">
+                            <PdfPreview data={page} />
                         </div>
-                        <Button size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
+                        <span className="truncate text-center text-[10px] text-neutral-500">Page {index + 1}</span>
+                        <Button className="h-6 text-[10px]" size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
                             Download
                         </Button>
                     </div>
                 ))}
             </div>
         </div>
-    ) : undefined;
+    );
 
-    const footerSlot = file ? (
+    const footerSlot = file && (
         <Button className="h-8 w-full rounded-[4px] text-[12px] font-medium" disabled={pages.length === 0} variant="secondary" onClick={handleDownloadAll}>
             Download ZIP
         </Button>
-    ) : null;
+    );
 
     const centerContent = file ? (
         <BeforeAfterView after={pagesOutput} before={<PdfPreview file={file} />} isProcessing={isWorking} />
@@ -204,6 +201,7 @@ export function SplitTool() {
                 onAction={() => {
                     if (!file) inputRef.current?.click();
                 }}
+                onFiles={handleFiles}
                 sidebar={sidebar}
                 title="Split Pages"
             >

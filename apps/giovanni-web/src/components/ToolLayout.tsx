@@ -16,7 +16,7 @@ interface ToolLayoutProps {
 export function ToolLayout({ title, actionText, isActionDisabled, isActionBusy, onAction, sidebar, children, footerSlot }: ToolLayoutProps) {
     return (
         <ResizablePanelGroup className="h-full w-full bg-[#0a0a0a] text-[#ededed]" direction="horizontal">
-            <ResizablePanel defaultSize={75} minSize={40}>
+            <ResizablePanel defaultSize={80} minSize={40}>
                 <div className="relative h-full overflow-hidden bg-[#0f0f0f]">
                     <div
                         className="pointer-events-none absolute inset-0 opacity-20"
@@ -31,7 +31,7 @@ export function ToolLayout({ title, actionText, isActionDisabled, isActionBusy, 
 
             <ResizableHandle />
 
-            <ResizablePanel defaultSize={25} maxSize={40} minSize={18}>
+            <ResizablePanel defaultSize={20} maxSize={35} minSize={15}>
                 <aside className="flex h-full flex-col border-l border-[#282828] bg-[#181818] shadow-[-8px_0_24px_rgba(0,0,0,0.5)]">
                     <div className="shrink-0 border-b border-[#282828] bg-[#222] px-4 py-2">
                         <h2 className="text-[12px] font-semibold tracking-wide text-neutral-300">{title}</h2>

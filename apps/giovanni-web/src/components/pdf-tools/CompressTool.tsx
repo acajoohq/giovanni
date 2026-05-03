@@ -1,15 +1,13 @@
 import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel } from "@pdfly/wasm";
 import * as React from "react";
-import { RiAddLine, RiArrowDownSLine, RiFileZipLine } from "@remixicon/react";
+import { RiAddLine, RiFileZipLine } from "@remixicon/react";
 import { ToolLayout } from "../ToolLayout";
-import { BeforeAfterView } from "../BeforeAfterView";
+import { ComparisonSlider } from "../ComparisonSlider";
 import { EmptyState } from "../empty-state/EmptyState";
 import { Input } from "../shadcn-ui/Input";
 import { Button } from "../shadcn-ui/Button";
-import { Sidebar, SidebarCheckbox, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarSection, SidebarStat, SidebarToggle, SidebarToggleGroup } from "../sidebar";
-import { FileSummary } from "./FileSummary";
-import { MetricGrid } from "./MetricGrid";
-import { type ToolStatus, ToolStatusLine } from "./ToolStatusLine";
+import { Sidebar, SidebarCheckbox, SidebarContent, SidebarField, SidebarSection, SidebarHeader, SidebarToggle, SidebarToggleGroup } from "../sidebar";
+import { type ToolStatus } from "./ToolStatusLine";
 import { downloadPdf, formatDuration, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
 import { PdfPreview } from "./PdfPreview";
 
@@ -119,18 +117,6 @@ export function CompressTool() {
 
     const sidebar = (
         <Sidebar>
-            {file && (
-                <SidebarSection>
-                    <SidebarContent>
-                        <FileSummary file={file} />
-                        <Button className="w-full" size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
-                            Replace PDF
-                        </Button>
-                        <ToolStatusLine status={status} />
-                    </SidebarContent>
-                </SidebarSection>
-            )}
-
             <SidebarSection>
                 <SidebarHeader>Compression</SidebarHeader>
                 <SidebarContent>
@@ -163,7 +149,6 @@ export function CompressTool() {
                                 <option value="specialized">Specialized</option>
                                 <option value="all">All</option>
                             </select>
-                            <RiArrowDownSLine className="pointer-events-none absolute right-2 top-1/2 size-4 -translate-y-1/2 text-neutral-300" />
                         </div>
                     </SidebarField>
                 </SidebarContent>
@@ -185,23 +170,38 @@ export function CompressTool() {
             {result && (
                 <SidebarSection>
                     <SidebarContent>
-                        <MetricGrid
-                            metrics={[
-                                { label: "Original", value: formatBytes(result.originalSize) },
-                                { label: "Compressed", value: formatBytes(result.compressedSize), tone: "accent" },
-                                { label: "Saved", value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
-                                { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
-                            ]}
-                        />
+                        {/* Size reduction bar */}
+                        <div>
+                            <div className="mb-1.5 flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-wide text-neutral-600">Size</span>
+                                <span className="text-[11px]">
+                                    <span className="text-neutral-400">{formatBytes(result.originalSize)}</span>
+                                    <span className="mx-1 text-neutral-700">→</span>
+                                    <span className="text-[#eb5a3f]">{formatBytes(result.compressedSize)}</span>
+                                </span>
+                            </div>
+                            <div className="h-1 w-full overflow-hidden rounded-full bg-[#1e1e1e]">
+                                <div
+                                    className="h-full rounded-full bg-[#eb5a3f] transition-all duration-500"
+                                    style={{ width: `${Math.max(2, (result.compressedSize / result.originalSize) * 100)}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-baseline justify-between">
+                            <span className="text-[10px] uppercase tracking-wide text-neutral-600">Saved</span>
+                            <span className="text-[16px] font-semibold text-[#eb5a3f]">{result.percentageSaved.toFixed(1)}%</span>
+                        </div>
+
+                        {elapsedMs !== null && (
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-wide text-neutral-600">Time</span>
+                                <span className="text-[11px] text-neutral-500">{formatDuration(elapsedMs)}</span>
+                            </div>
+                        )}
                     </SidebarContent>
                 </SidebarSection>
             )}
-
-            <SidebarFooter>
-                <SidebarStat label="Original Size" value={result ? formatBytes(result.originalSize) : file ? formatBytes(file.size) : "-"} />
-                <SidebarStat isHighlight={Boolean(result)} label="New Size" value={result ? formatBytes(result.compressedSize) : "-"} />
-                <SidebarStat isHighlight={Boolean(result)} label="Savings" value={result ? `${result.percentageSaved.toFixed(1)}%` : "-"} />
-            </SidebarFooter>
         </Sidebar>
     );
 
@@ -226,7 +226,33 @@ export function CompressTool() {
         ) : null;
 
     const centerContent = file ? (
-        <BeforeAfterView before={<PdfPreview file={file} />} after={result ? <PdfPreview data={result.data} /> : undefined} isProcessing={isWorking} />
+        <div className="relative h-full w-full">
+            <ComparisonSlider
+                after={result ? <PdfPreview data={result.data} /> : undefined}
+                before={<PdfPreview file={file} />}
+                isProcessing={isWorking}
+            />
+
+            {/* Floating file info */}
+            <div className="absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2.5 rounded-lg border border-white/8 bg-black/60 px-3 py-1.5">
+                <span className="max-w-[200px] truncate text-[11px] text-neutral-300">{file.name}</span>
+                <span className="text-[10px] text-neutral-600">{formatBytes(file.size)}</span>
+                <button
+                    className="ml-0.5 text-[10px] text-neutral-500 transition-colors hover:text-neutral-300"
+                    onClick={() => inputRef.current?.click()}
+                    type="button"
+                >
+                    Replace
+                </button>
+            </div>
+
+            {/* Status toast */}
+            {status && (
+                <div className={`absolute right-3 top-3 z-30 rounded-md border px-3 py-1.5 text-[11px] ${status.tone === "error" ? "border-red-900/50 bg-red-950/60 text-red-400" : "border-[#2a2a2a] bg-black/60 text-neutral-400"}`}>
+                    {status.message}
+                </div>
+            )}
+        </div>
     ) : (
         <EmptyState
             accept="application/pdf,.pdf"

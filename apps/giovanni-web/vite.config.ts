@@ -18,4 +18,10 @@ export default defineConfig({
         }),
         viteReact(),
     ],
+    optimizeDeps: {
+        exclude: ["pdfjs-dist"],
+    },
+    worker: {
+        format: "es",
+    },
 });

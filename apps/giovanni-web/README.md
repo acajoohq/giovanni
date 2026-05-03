@@ -13,3 +13,13 @@ When the PDF tool phase starts, preserve the existing WASM packaging requirement
 - exclude `@pdfly/wasm` from dependency prebundling if the runtime import requires it
 - copy `qpdf.wasm` into the deployed asset output where the generated qpdf loader can fetch it
 - keep browser processing states explicit so users know when files stay local
+
+## TODOs
+
+- [ ] Eslint rules
+- [ ] unit tests
+- [ ] Nice visuals / illustrations / icons / empty states
+- [ ] Transitions / animations
+- [ ] Tooltips
+- [ ] SEO
+- [ ] Use toggle instead of checkbox 

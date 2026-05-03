@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SplitRouteImport } from './routes/split'
 import { Route as MergeRouteImport } from './routes/merge'
+import { Route as CompressRouteImport } from './routes/compress'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SplitRoute = SplitRouteImport.update({
@@ -23,6 +24,11 @@ const MergeRoute = MergeRouteImport.update({
   path: '/merge',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompressRoute = CompressRouteImport.update({
+  id: '/compress',
+  path: '/compress',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/compress': typeof CompressRoute
   '/merge': typeof MergeRoute
   '/split': typeof SplitRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/compress': typeof CompressRoute
   '/merge': typeof MergeRoute
   '/split': typeof SplitRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/compress': typeof CompressRoute
   '/merge': typeof MergeRoute
   '/split': typeof SplitRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/merge' | '/split'
+  fullPaths: '/' | '/compress' | '/merge' | '/split'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/merge' | '/split'
-  id: '__root__' | '/' | '/merge' | '/split'
+  to: '/' | '/compress' | '/merge' | '/split'
+  id: '__root__' | '/' | '/compress' | '/merge' | '/split'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CompressRoute: typeof CompressRoute
   MergeRoute: typeof MergeRoute
   SplitRoute: typeof SplitRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MergeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compress': {
+      id: '/compress'
+      path: '/compress'
+      fullPath: '/compress'
+      preLoaderRoute: typeof CompressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CompressRoute: CompressRoute,
   MergeRoute: MergeRoute,
   SplitRoute: SplitRoute,
 }

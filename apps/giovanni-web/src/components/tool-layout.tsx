@@ -21,15 +21,15 @@ export function ToolLayout({ title, actionText, sidebar, children }: ToolLayoutP
             </div>
 
             {/* Right Sidebar (Inspector) */}
-            <aside className="w-[320px] flex-shrink-0 bg-[#141414] flex flex-col z-10 shadow-[-8px_0_24px_rgba(0,0,0,0.5)]">
-                <div className="px-5 py-4 border-b border-[#1f1f1f] bg-[#141414]">
-                    <h2 className="text-[12px] font-semibold text-white tracking-wide uppercase">{title}</h2>
+            <aside className="w-[320px] flex-shrink-0 bg-[#181818] flex flex-col z-10 shadow-[-8px_0_24px_rgba(0,0,0,0.5)] border-l border-[#282828]">
+                <div className="px-4 py-2 border-b border-[#282828] bg-[#222]">
+                    <h2 className="text-[12px] font-semibold text-neutral-300 tracking-wide">{title}</h2>
                 </div>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">{sidebar}</div>
 
-                <div className="p-4 border-t border-[#1f1f1f] bg-[#111111]">
-                    <Button className="w-full h-10 rounded-lg bg-[#eb5a3f] hover:bg-[#d65037] text-[13px] font-medium shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.2)] border border-black/20 text-white transition-all">
+                <div className="p-3 border-t border-[#282828] bg-[#181818]">
+                    <Button className="w-full h-8 rounded-[4px] bg-[#eb5a3f] hover:bg-[#d65037] text-[12px] font-medium shadow-sm border border-black/20 text-white transition-all">
                         {actionText}
                     </Button>
                 </div>

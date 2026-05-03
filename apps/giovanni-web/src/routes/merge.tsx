@@ -9,35 +9,40 @@ export const Route = createFileRoute("/merge")({
 
 function MergeRoute() {
     const sidebar = (
-        <div className="p-5 flex flex-col gap-6 h-full">
-            <div className="flex flex-col gap-4 opacity-40 pointer-events-none">
-                <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-widest">Output Settings</label>
-                <div className="flex flex-col gap-3">
-                    <label className="text-[12px] font-medium text-neutral-400">Output filename</label>
-                    <Input
-                        defaultValue=""
-                        disabled
-                        className="h-9 px-3 rounded-md bg-[#0a0a0a] border-[#222] text-[12px] text-white shadow-inner focus-visible:ring-1 focus-visible:ring-[#eb5a3f]"
-                    />
+        <div className="flex flex-col h-full bg-[#181818] text-[#d4d4d4]">
+            <div className="flex flex-col border-b border-[#282828]">
+                <div className="px-3 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
+                    <span className="text-[11px] font-bold text-neutral-200 tracking-wide uppercase">Output Settings</span>
+                </div>
+                <div className="p-4 flex flex-col gap-3 bg-[#181818]">
+                    <div className="grid grid-cols-[100px_1fr] items-center gap-2">
+                        <label className="text-[12px] text-neutral-400">Filename</label>
+                        <Input
+                            defaultValue=""
+                            className="h-7 px-2 rounded-[4px] bg-[#111] border-[#282828] text-[12px] text-white focus-visible:ring-1 focus-visible:ring-[#eb5a3f] shadow-inner"
+                        />
+                    </div>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4 pt-6 border-t border-[#1f1f1f] opacity-40 pointer-events-none">
-                <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-widest">Advanced Options</label>
-                <div className="flex flex-col gap-4">
-                    <label className="flex items-center justify-between p-2.5 rounded-md bg-[#0a0a0a] border border-[#222]">
-                        <span className="text-[12px] text-neutral-400">Add Bookmarks</span>
-                        <input type="checkbox" className="accent-[#eb5a3f] size-3.5 rounded bg-black/20 border-[#333]" disabled />
+            <div className="flex flex-col border-b border-[#282828]">
+                <div className="px-3 py-2 bg-[#222] border-y border-[#333] flex justify-between items-center">
+                    <span className="text-[11px] font-bold text-neutral-200 tracking-wide uppercase">Advanced Options</span>
+                </div>
+                <div className="p-4 flex flex-col gap-3 bg-[#181818]">
+                    <label className="grid grid-cols-[100px_1fr] items-center gap-2 cursor-pointer group">
+                        <span className="text-[12px] text-neutral-400 group-hover:text-neutral-300 transition-colors">Add Bookmarks</span>
+                        <input type="checkbox" className="accent-[#eb5a3f] size-3.5 rounded bg-[#111] border-[#282828]" />
                     </label>
-                    <label className="flex items-center justify-between p-2.5 rounded-md bg-[#0a0a0a] border border-[#222]">
-                        <span className="text-[12px] text-neutral-400">Normalize Page Sizes</span>
-                        <input type="checkbox" className="accent-[#eb5a3f] size-3.5 rounded bg-black/20 border-[#333]" disabled />
+                    <label className="grid grid-cols-[100px_1fr] items-center gap-2 cursor-pointer group">
+                        <span className="text-[12px] text-neutral-400 group-hover:text-neutral-300 transition-colors">Normalize Size</span>
+                        <input type="checkbox" className="accent-[#eb5a3f] size-3.5 rounded bg-[#111] border-[#282828]" />
                     </label>
                 </div>
             </div>
 
-            <div className="mt-auto pt-6">
-                <div className="p-3 rounded-lg bg-[#111] border border-white/5 flex gap-3 items-start shadow-inner">
+            <div className="mt-auto p-4">
+                <div className="p-3 rounded-[4px] bg-[#111] border border-[#282828] flex gap-2 items-start">
                     <RiInformationLine className="size-4 text-neutral-500 flex-shrink-0 mt-0.5" />
                     <p className="text-[11px] text-neutral-400 leading-relaxed">Select multiple PDF files to merge them into a single document.</p>
                 </div>

@@ -6,8 +6,9 @@ import { EmptyState } from "../empty-state/EmptyState";
 import { Button } from "../shadcn-ui/Button";
 import { Input } from "../shadcn-ui/Input";
 import { Sidebar, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarInfo, SidebarSection, SidebarStat } from "../sidebar";
+import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine } from "./PdfToolComponents";
 import { downloadPdf, downloadZip, formatDuration, formatThroughput, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
-import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./PdfToolComponents";
+import { PdfPreview } from "./PdfPreview";
 
 export function SplitTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);
@@ -95,19 +96,6 @@ export function SplitTool() {
                 </SidebarContent>
             </SidebarSection>
 
-            <SidebarSection>
-                <SidebarHeader>Output</SidebarHeader>
-                <SidebarContent>
-                    <SidebarField label="Pattern">
-                        <Input
-                            className="h-7 px-2 rounded-[4px] bg-[#111] border-[#282828] text-[12px] text-white focus-visible:ring-1 focus-visible:ring-[#eb5a3f] shadow-inner"
-                            value={outputPattern}
-                            onChange={(event) => setOutputPattern(event.currentTarget.value)}
-                        />
-                    </SidebarField>
-                </SidebarContent>
-            </SidebarSection>
-
             <SidebarInfo>Select a PDF file to extract every page as a separate PDF.</SidebarInfo>
 
             <SidebarFooter>
@@ -131,73 +119,86 @@ export function SplitTool() {
         </div>
     );
 
-    const renderContent = () => {
-        if (!file) {
-            return (
-                <EmptyState
-                    accept="application/pdf,.pdf"
-                    badgeIcon={<RiAddLine className="size-5" />}
-                    description="Each page becomes a downloadable PDF."
-                    inputRef={inputRef}
-                    onFiles={handleFiles}
-                    title="Drop a PDF to split"
-                    visual={visual}
+    const mediaPanel = file ? (
+        <div className="flex flex-col gap-3 p-3">
+            <FileSummary file={file} />
+            <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
+                Replace PDF
+            </Button>
+            <div className="flex flex-col gap-1">
+                <label className="text-[11px] text-neutral-400">Pattern</label>
+                <Input
+                    className="h-7 px-2 rounded-[4px] bg-[#111] border-[#282828] text-[12px] text-white focus-visible:ring-1 focus-visible:ring-[#eb5a3f] shadow-inner"
+                    value={outputPattern}
+                    onChange={(event) => setOutputPattern(event.currentTarget.value)}
                 />
-            );
-        }
+            </div>
+            <ToolStatusLine status={status} />
+            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
+        </div>
+    ) : undefined;
 
-        return (
-            <ToolWorkspace
-                actions={
-                    <>
-                        <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
-                            Replace
-                        </Button>
-                        <Button disabled={pages.length === 0} size="sm" onClick={handleDownloadAll}>
-                            Download ZIP
-                        </Button>
-                    </>
-                }
-                description="Output files are generated from qpdf page splits."
-                title="Page Extraction"
-            >
-                <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
-                <FileSummary file={file} />
-                <ToolStatusLine status={status} />
-                {pages.length > 0 && (
-                    <>
-                        <MetricGrid
-                            metrics={[
-                                { label: "Pages", value: pages.length, tone: "accent" },
-                                { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
-                                { label: "Throughput", value: elapsedMs === null ? "-" : formatThroughput(file.size, elapsedMs) },
-                            ]}
-                        />
-                        <div className="max-h-[360px] space-y-2 overflow-y-auto pr-1 custom-scrollbar">
-                            {pages.map((page, index) => (
-                                <div
-                                    key={`${makePageName(index)}-${index}`}
-                                    className="flex items-center justify-between gap-3 rounded-[6px] border border-[#2a2a2a] bg-[#101010] px-3 py-2"
-                                >
-                                    <div className="min-w-0">
-                                        <div className="truncate text-[12px] font-medium text-neutral-100">{makePageName(index)}</div>
-                                        <div className="text-[11px] text-neutral-500">Page {index + 1}</div>
-                                    </div>
-                                    <Button size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
-                                        Download
-                                    </Button>
-                                </div>
-                            ))}
+    const footerSlot = file ? (
+        <Button className="h-8 w-full rounded-[4px] text-[12px] font-medium" disabled={pages.length === 0} variant="secondary" onClick={handleDownloadAll}>
+            Download ZIP
+        </Button>
+    ) : null;
+
+    const centerContent = file ? (
+        pages.length > 0 ? (
+            <div className="flex h-full w-full flex-col overflow-hidden">
+                <div className="shrink-0 border-b border-[#1f1f1f] p-3">
+                    <MetricGrid
+                        metrics={[
+                            { label: "Pages", value: pages.length, tone: "accent" },
+                            { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
+                            { label: "Throughput", value: elapsedMs === null ? "-" : formatThroughput(file.size, elapsedMs) },
+                        ]}
+                    />
+                </div>
+                <div className="flex-1 space-y-2 overflow-y-auto p-3">
+                    {pages.map((page, index) => (
+                        <div
+                            key={`${makePageName(index)}-${index}`}
+                            className="flex items-center justify-between gap-3 rounded-[6px] border border-[#2a2a2a] bg-[#101010] px-3 py-2"
+                        >
+                            <div className="min-w-0">
+                                <div className="truncate text-[12px] font-medium text-neutral-100">{makePageName(index)}</div>
+                                <div className="text-[11px] text-neutral-500">Page {index + 1}</div>
+                            </div>
+                            <Button size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
+                                Download
+                            </Button>
                         </div>
-                    </>
-                )}
-            </ToolWorkspace>
-        );
-    };
+                    ))}
+                </div>
+            </div>
+        ) : (
+            <PdfPreview file={file} />
+        )
+    ) : (
+        <EmptyState
+            accept="application/pdf,.pdf"
+            badgeIcon={<RiAddLine className="size-5" />}
+            description="Each page becomes a downloadable PDF."
+            inputRef={inputRef}
+            onFiles={handleFiles}
+            title="Drop a PDF to split"
+            visual={visual}
+        />
+    );
 
     return (
-        <ToolLayout isActionBusy={isWorking} actionText={file ? "Split Pages" : "Select PDF"} onAction={handleSplit} sidebar={sidebar} title="Split Pages">
-            {renderContent()}
+        <ToolLayout
+            actionText={file ? "Split Pages" : "Select PDF"}
+            footerSlot={footerSlot}
+            isActionBusy={isWorking}
+            mediaPanel={mediaPanel}
+            onAction={handleSplit}
+            sidebar={sidebar}
+            title="Split Pages"
+        >
+            {centerContent}
         </ToolLayout>
     );
 }

@@ -6,8 +6,9 @@ import { EmptyState } from "../empty-state/EmptyState";
 import { Button } from "../shadcn-ui/Button";
 import { Input } from "../shadcn-ui/Input";
 import { Sidebar, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarInfo, SidebarSection, SidebarStat } from "../sidebar";
+import { FilesList, MetricGrid, ToolStatus, ToolStatusLine } from "./PdfToolComponents";
 import { downloadPdf, formatDuration, formatThroughput, isPdfFile } from "../../lib/pdf-tools/utils";
-import { FilesList, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./PdfToolComponents";
+import { PdfPreview } from "./PdfPreview";
 
 export function MergeTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);
@@ -126,51 +127,18 @@ export function MergeTool() {
         </>
     );
 
-    const renderContent = () => {
-        if (files.length === 0) {
-            return (
-                <EmptyState
-                    accept="application/pdf,.pdf"
-                    badgeIcon={<RiAddLine className="size-5" />}
-                    description="Select multiple PDFs to merge into one."
-                    inputRef={inputRef}
-                    isMultiple
-                    onFiles={handleFiles}
-                    title="Drop PDFs to merge"
-                    visual={visual}
-                />
-            );
-        }
-
-        return (
-            <ToolWorkspace
-                actions={
-                    <>
-                        <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
-                            Add PDFs
-                        </Button>
-                        {mergedData && (
-                            <Button size="sm" onClick={() => downloadPdf(mergedData, normalizedOutputName)}>
-                                Download
-                            </Button>
-                        )}
-                    </>
-                }
-                description="Order matters. The first PDF appears first in the merged output."
-                title="Merge Queue"
-            >
-                <input
-                    ref={inputRef}
-                    hidden
-                    multiple
-                    accept="application/pdf,.pdf"
-                    type="file"
-                    onChange={(event) => {
-                        handleFiles(Array.from(event.currentTarget.files ?? []));
-                        event.currentTarget.value = "";
-                    }}
-                />
-                <FilesList files={files} onMove={handleMove} onRemove={handleRemove} />
+    const mediaPanel =
+        files.length > 0 ? (
+            <div className="flex h-full flex-col gap-3 overflow-hidden p-3">
+                <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-400">Queue</span>
+                    <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
+                        Add PDFs
+                    </Button>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                    <FilesList files={files} onMove={handleMove} onRemove={handleRemove} />
+                </div>
                 <ToolStatusLine status={status} />
                 {mergedData && (
                     <MetricGrid
@@ -182,13 +150,53 @@ export function MergeTool() {
                         ]}
                     />
                 )}
-            </ToolWorkspace>
+                <input
+                    ref={inputRef}
+                    hidden
+                    multiple
+                    accept="application/pdf,.pdf"
+                    type="file"
+                    onChange={(event) => {
+                        handleFiles(Array.from(event.currentTarget.files ?? []));
+                        event.currentTarget.value = "";
+                    }}
+                />
+            </div>
+        ) : undefined;
+
+    const footerSlot = mergedData ? (
+        <Button className="h-8 w-full rounded-[4px] text-[12px] font-medium" variant="secondary" onClick={() => downloadPdf(mergedData, normalizedOutputName)}>
+            Download Merged PDF
+        </Button>
+    ) : null;
+
+    const centerContent =
+        files.length > 0 ? (
+            <PdfPreview data={mergedData ?? undefined} file={!mergedData && files[0] ? files[0] : undefined} />
+        ) : (
+            <EmptyState
+                accept="application/pdf,.pdf"
+                badgeIcon={<RiAddLine className="size-5" />}
+                description="Select multiple PDFs to merge into one."
+                inputRef={inputRef}
+                isMultiple
+                onFiles={handleFiles}
+                title="Drop PDFs to merge"
+                visual={visual}
+            />
         );
-    };
 
     return (
-        <ToolLayout isActionBusy={isWorking} actionText={files.length > 0 ? "Merge PDFs" : "Select PDFs"} onAction={handleMerge} sidebar={sidebar} title="Merge">
-            {renderContent()}
+        <ToolLayout
+            actionText={files.length > 0 ? "Merge PDFs" : "Select PDFs"}
+            footerSlot={footerSlot}
+            isActionBusy={isWorking}
+            mediaPanel={mediaPanel}
+            onAction={handleMerge}
+            sidebar={sidebar}
+            title="Merge"
+        >
+            {centerContent}
         </ToolLayout>
     );
 }

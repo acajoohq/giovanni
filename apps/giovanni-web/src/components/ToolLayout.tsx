@@ -1,5 +1,6 @@
-import type * as React from "react";
+import * as React from "react";
 import { Button } from "./shadcn-ui/Button";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./shadcn-ui/Resizable";
 
 interface ToolLayoutProps {
     title: string;
@@ -9,38 +10,61 @@ interface ToolLayoutProps {
     onAction?: () => void;
     sidebar: React.ReactNode;
     children: React.ReactNode;
+    mediaPanel?: React.ReactNode;
+    footerSlot?: React.ReactNode;
 }
 
-export function ToolLayout({ title, actionText, isActionDisabled, isActionBusy, onAction, sidebar, children }: ToolLayoutProps) {
+export function ToolLayout({ title, actionText, isActionDisabled, isActionBusy, onAction, sidebar, children, mediaPanel, footerSlot }: ToolLayoutProps) {
+    const hasMedia = mediaPanel !== undefined && mediaPanel !== null;
+
     return (
-        <div className="flex h-full w-full bg-[#0a0a0a] text-[#ededed]">
-            {/* Main Area (Canvas / Empty State) */}
-            <div className="flex-1 flex flex-col overflow-hidden relative bg-[#0f0f0f] border-r border-[#1f1f1f]">
-                <div
-                    className="absolute inset-0 pointer-events-none opacity-20"
-                    style={{ backgroundImage: "radial-gradient(circle at center, rgba(255,255,255,0.05) 1px, transparent 1px)", backgroundSize: "16px 16px" }}
-                />
-                <div className="relative z-10 flex-1 overflow-y-auto w-full h-full custom-scrollbar flex items-center justify-center p-8">{children}</div>
-            </div>
+        <ResizablePanelGroup className="h-full w-full bg-[#0a0a0a] text-[#ededed]" direction="horizontal">
+            {hasMedia && (
+                <>
+                    <ResizablePanel defaultSize={22} maxSize={40} minSize={15}>
+                        <div className="h-full overflow-y-auto border-r border-[#1f1f1f] bg-[#0d0d0d]">{mediaPanel}</div>
+                    </ResizablePanel>
+                    <ResizableHandle withHandle />
+                </>
+            )}
 
-            {/* Right Sidebar (Inspector) */}
-            <aside className="w-[320px] flex-shrink-0 bg-[#181818] flex flex-col z-10 shadow-[-8px_0_24px_rgba(0,0,0,0.5)] border-l border-[#282828]">
-                <div className="px-4 py-2 border-b border-[#282828] bg-[#222]">
-                    <h2 className="text-[12px] font-semibold text-neutral-300 tracking-wide">{title}</h2>
+            <ResizablePanel defaultSize={hasMedia ? 53 : 75} minSize={30}>
+                <div className="relative h-full overflow-hidden bg-[#0f0f0f]">
+                    <div
+                        className="pointer-events-none absolute inset-0 opacity-20"
+                        style={{
+                            backgroundImage: "radial-gradient(circle at center, rgba(255,255,255,0.05) 1px, transparent 1px)",
+                            backgroundSize: "16px 16px",
+                        }}
+                    />
+                    <div className="relative z-10 flex h-full w-full items-center justify-center overflow-y-auto p-4">{children}</div>
                 </div>
+            </ResizablePanel>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">{sidebar}</div>
+            <ResizableHandle withHandle />
 
-                <div className="p-3 border-t border-[#282828] bg-[#181818]">
-                    <Button
-                        className="w-full h-8 rounded-[4px] bg-[#eb5a3f] hover:bg-[#d65037] text-[12px] font-medium shadow-sm border border-black/20 text-white transition-all"
-                        disabled={isActionDisabled || isActionBusy}
-                        onClick={onAction}
-                    >
-                        {isActionBusy ? "Working..." : actionText}
-                    </Button>
-                </div>
-            </aside>
-        </div>
+            <ResizablePanel defaultSize={25} maxSize={40} minSize={18}>
+                <aside className="flex h-full flex-col border-l border-[#282828] bg-[#181818] shadow-[-8px_0_24px_rgba(0,0,0,0.5)]">
+                    <div className="shrink-0 border-b border-[#282828] bg-[#222] px-4 py-2">
+                        <h2 className="text-[12px] font-semibold tracking-wide text-neutral-300">{title}</h2>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto">{sidebar}</div>
+
+                    <div className="shrink-0 border-t border-[#282828]">
+                        {footerSlot && <div className="border-b border-[#282828] p-3">{footerSlot}</div>}
+                        <div className="p-3">
+                            <Button
+                                className="h-8 w-full rounded-[4px] border border-black/20 bg-[#eb5a3f] text-[12px] font-medium text-white shadow-sm transition-all hover:bg-[#d65037]"
+                                disabled={isActionDisabled || isActionBusy}
+                                onClick={onAction}
+                            >
+                                {isActionBusy ? "Working..." : actionText}
+                            </Button>
+                        </div>
+                    </div>
+                </aside>
+            </ResizablePanel>
+        </ResizablePanelGroup>
     );
 }

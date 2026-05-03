@@ -5,8 +5,9 @@ import { ToolLayout } from "../ToolLayout";
 import { EmptyState } from "../empty-state/EmptyState";
 import { Button } from "../shadcn-ui/Button";
 import { Sidebar, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarInfo, SidebarSection, SidebarStat } from "../sidebar";
+import { FileSummary, ImageThumb, MetricGrid, ToolStatus, ToolStatusLine } from "./PdfToolComponents";
 import { downloadBlob, downloadZip, formatDuration, formatThroughput, imageDownloadName, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
-import { FileSummary, ImageThumb, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./PdfToolComponents";
+import { PdfPreview } from "./PdfPreview";
 
 export function ExtractImagesTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);
@@ -148,69 +149,74 @@ export function ExtractImagesTool() {
         </>
     );
 
-    const renderContent = () => {
-        if (!file) {
-            return (
-                <EmptyState
-                    accept="application/pdf,.pdf"
-                    badgeIcon={<RiAddLine className="size-5" />}
-                    description="Every embedded raster image, decoded by the browser."
-                    inputRef={inputRef}
-                    onFiles={handleFiles}
-                    title="Drop a PDF to extract images"
-                    visual={visual}
+    const mediaPanel = file ? (
+        <div className="flex flex-col gap-3 p-3">
+            <FileSummary file={file} />
+            <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
+                Replace PDF
+            </Button>
+            <ToolStatusLine status={status} />
+            {images.length > 0 && (
+                <MetricGrid
+                    metrics={[
+                        { label: "Images", value: images.length, tone: "accent" },
+                        { label: "Decoded", value: decodedCount, tone: "accent" },
+                        { label: "Raw", value: rawCount },
+                        { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
+                        { label: "Throughput", value: elapsedMs === null ? "-" : formatThroughput(file.size, elapsedMs) },
+                    ]}
                 />
-            );
-        }
+            )}
+            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
+        </div>
+    ) : undefined;
 
-        return (
-            <ToolWorkspace
-                actions={
-                    <>
-                        <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
-                            Replace
-                        </Button>
-                        <Button disabled={decodedCount === 0} size="sm" onClick={handleDownloadAll}>
-                            Download ZIP
-                        </Button>
-                    </>
-                }
-                description="Previews are created only for decoded image streams."
-                title="Image Extraction"
-            >
-                <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
-                <FileSummary file={file} />
-                <ToolStatusLine status={status} />
-                {images.length > 0 && (
-                    <>
-                        <MetricGrid
-                            metrics={[
-                                { label: "Images", value: images.length, tone: "accent" },
-                                { label: "Decoded", value: decodedCount, tone: "accent" },
-                                { label: "Raw", value: rawCount },
-                                { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
-                                { label: "Throughput", value: elapsedMs === null ? "-" : formatThroughput(file.size, elapsedMs) },
-                            ]}
-                        />
-                        <div className="grid max-h-[420px] grid-cols-2 gap-3 overflow-y-auto pr-1 custom-scrollbar md:grid-cols-3">
-                            {images.map((image, index) => (
-                                <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2">
-                                    <ImageThumb image={image} index={index} url={previewUrls[index] ?? null} />
-                                    <Button className="w-full" size="sm" variant="secondary" onClick={() => downloadImage(image, index)}>
-                                        {image.blob ? "Download" : "Download Raw"}
-                                    </Button>
-                                </div>
-                            ))}
+    const footerSlot = file ? (
+        <Button className="h-8 w-full rounded-[4px] text-[12px] font-medium" disabled={decodedCount === 0} variant="secondary" onClick={handleDownloadAll}>
+            Download ZIP
+        </Button>
+    ) : null;
+
+    const centerContent = file ? (
+        images.length > 0 ? (
+            <div className="h-full w-full overflow-y-auto p-4">
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                    {images.map((image, index) => (
+                        <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2">
+                            <ImageThumb image={image} index={index} url={previewUrls[index] ?? null} />
+                            <Button className="w-full" size="sm" variant="secondary" onClick={() => downloadImage(image, index)}>
+                                {image.blob ? "Download" : "Download Raw"}
+                            </Button>
                         </div>
-                    </>
-                )}
-            </ToolWorkspace>
-        );
-    };
+                    ))}
+                </div>
+            </div>
+        ) : (
+            <PdfPreview file={file} />
+        )
+    ) : (
+        <EmptyState
+            accept="application/pdf,.pdf"
+            badgeIcon={<RiAddLine className="size-5" />}
+            description="Every embedded raster image, decoded by the browser."
+            inputRef={inputRef}
+            onFiles={handleFiles}
+            title="Drop a PDF to extract images"
+            visual={visual}
+        />
+    );
 
     return (
-        <ToolLayout isActionBusy={isWorking} actionText={file ? "Extract Images" : "Select PDF"} onAction={handleExtract} sidebar={sidebar} title="Extract Images">
-            {renderContent()}
+        <ToolLayout
+            actionText={file ? "Extract Images" : "Select PDF"}
+            footerSlot={footerSlot}
+            isActionBusy={isWorking}
+            mediaPanel={mediaPanel}
+            onAction={handleExtract}
+            sidebar={sidebar}
+            title="Extract Images"
+        >
+            {centerContent}
         </ToolLayout>
     );
 }

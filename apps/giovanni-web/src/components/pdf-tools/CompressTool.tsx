@@ -6,8 +6,9 @@ import { EmptyState } from "../empty-state/EmptyState";
 import { Input } from "../shadcn-ui/Input";
 import { Sidebar, SidebarCheckbox, SidebarContent, SidebarField, SidebarFooter, SidebarHeader, SidebarSection, SidebarStat, SidebarToggle, SidebarToggleGroup } from "../sidebar";
 import { Button } from "../shadcn-ui/Button";
+import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine } from "./PdfToolComponents";
 import { downloadPdf, formatDuration, formatThroughput, isPdfFile, pdfBaseName } from "../../lib/pdf-tools/utils";
-import { FileSummary, MetricGrid, ToolStatus, ToolStatusLine, ToolWorkspace } from "./PdfToolComponents";
+import { PdfPreview } from "./PdfPreview";
 
 type CompressionProfile = "balanced" | "extreme";
 
@@ -150,59 +151,64 @@ export function CompressTool() {
         </>
     );
 
-    const renderContent = () => {
-        if (!file) {
-            return (
-                <EmptyState
-                    accept="application/pdf,.pdf"
-                    badgeIcon={<RiAddLine className="size-5" />}
-                    description="Secure, offline processing."
-                    inputRef={inputRef}
-                    onFiles={handleFiles}
-                    title="Drop a PDF to compress"
-                    visual={visual}
+    const mediaPanel = file ? (
+        <div className="flex flex-col gap-3 p-3">
+            <FileSummary file={file} />
+            <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
+                Replace PDF
+            </Button>
+            <ToolStatusLine status={status} />
+            {result && (
+                <MetricGrid
+                    metrics={[
+                        { label: "Original", value: formatBytes(result.originalSize) },
+                        { label: "Compressed", value: formatBytes(result.compressedSize), tone: "accent" },
+                        { label: "Saved", value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
+                        { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
+                        { label: "Throughput", value: elapsedMs === null ? "-" : formatThroughput(result.originalSize, elapsedMs) },
+                    ]}
                 />
-            );
-        }
+            )}
+            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
+        </div>
+    ) : undefined;
 
-        return (
-            <ToolWorkspace
-                actions={
-                    <>
-                        <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
-                            Replace
-                        </Button>
-                        {result && (
-                            <Button size="sm" onClick={() => downloadPdf(result.data, `${pdfBaseName(file)}_compressed.pdf`)}>
-                                Download
-                            </Button>
-                        )}
-                    </>
-                }
-                description="The selected qpdf options run entirely in this browser."
-                title="Compression Queue"
+    const footerSlot =
+        result && file ? (
+            <Button
+                className="h-8 w-full rounded-[4px] text-[12px] font-medium"
+                variant="secondary"
+                onClick={() => downloadPdf(result.data, `${pdfBaseName(file)}_compressed.pdf`)}
             >
-                <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
-                <FileSummary file={file} />
-                <ToolStatusLine status={status} />
-                {result && (
-                    <MetricGrid
-                        metrics={[
-                            { label: "Original", value: formatBytes(result.originalSize) },
-                            { label: "Compressed", value: formatBytes(result.compressedSize), tone: "accent" },
-                            { label: "Saved", value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
-                            { label: "Time", value: elapsedMs === null ? "-" : formatDuration(elapsedMs) },
-                            { label: "Throughput", value: elapsedMs === null ? "-" : formatThroughput(result.originalSize, elapsedMs) },
-                        ]}
-                    />
-                )}
-            </ToolWorkspace>
-        );
-    };
+                Download Compressed
+            </Button>
+        ) : null;
+
+    const centerContent = file ? (
+        <PdfPreview data={result?.data ?? null} file={result ? null : file} />
+    ) : (
+        <EmptyState
+            accept="application/pdf,.pdf"
+            badgeIcon={<RiAddLine className="size-5" />}
+            description="Secure, offline processing."
+            inputRef={inputRef}
+            onFiles={handleFiles}
+            title="Drop a PDF to compress"
+            visual={visual}
+        />
+    );
 
     return (
-        <ToolLayout isActionBusy={isWorking} actionText={file ? "Compress" : "Select PDF"} onAction={handleCompress} sidebar={sidebar} title="Compress PDF">
-            {renderContent()}
+        <ToolLayout
+            actionText={file ? "Compress" : "Select PDF"}
+            footerSlot={footerSlot}
+            isActionBusy={isWorking}
+            mediaPanel={mediaPanel}
+            onAction={handleCompress}
+            sidebar={sidebar}
+            title="Compress PDF"
+        >
+            {centerContent}
         </ToolLayout>
     );
 }

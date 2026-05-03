@@ -1,20 +1,7 @@
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { QpdfConversionError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { PdfPageJpg, PdfToJpgOptions, PdfToJpgResult } from "../types/index.js";
-import { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
-
-// Set up PDF.js worker source using the new URL() pattern.
-// Modern bundlers (Vite, Webpack 5) recognise this and copy the worker as a static asset.
-// Only set if the consumer has not already configured a worker source.
-if (!GlobalWorkerOptions.workerSrc) {
-    try {
-        GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
-    } catch {
-        // Could not resolve worker URL (e.g. CommonJS context).
-        // PDF.js will run in the main thread, which is slower but still functional.
-    }
-}
+import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
 
 /**
  * Convert a PDF to JPG images by rendering each page via PDF.js.
@@ -39,6 +26,17 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
     }
 
     const inputBuffer = normalizeBuffer(input);
+
+    const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
+
+    if (!GlobalWorkerOptions.workerSrc) {
+        try {
+            GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
+        } catch {
+            // Could not resolve worker URL (e.g. CommonJS context).
+            // PDF.js will run in the main thread, which is slower but still functional.
+        }
+    }
 
     try {
         const loadingTask = getDocument({ data: inputBuffer });

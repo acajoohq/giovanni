@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { compressPdf, extractImages, splitPages } from "@pdfly/wasm";
+import { compressPdf, extractImages, pdfToJpg, splitPages } from "@pdfly/wasm";
 import { describe, expect, it } from "vitest";
 
 type PdfFixture = {
@@ -87,6 +87,82 @@ describe("pdf tools", () => {
         },
         integrationTestTimeoutMs,
     );
+
+    describe("pdfToJpg", () => {
+        it.each(pdfFixtures)(
+            "converts $name to JPG images",
+            async ({ data }) => {
+                const result = await pdfToJpg(data);
+
+                expect(result.convertedPageCount).toBeGreaterThan(0);
+                expect(result.pages).toHaveLength(result.convertedPageCount);
+
+                for (const page of result.pages) {
+                    expect(page.pageIndex).toBeGreaterThanOrEqual(0);
+                    expect(page.width).toBeGreaterThan(0);
+                    expect(page.height).toBeGreaterThan(0);
+                    expect(page.blob).toBeInstanceOf(Blob);
+                    expect(page.blob.type).toBe("image/jpeg");
+                    expect(page.blob.size).toBeGreaterThan(0);
+
+                    const bytes = new Uint8Array(await page.blob.arrayBuffer());
+                    expect(hasJpegMagic(bytes)).toBe(true);
+                }
+            },
+            integrationTestTimeoutMs,
+        );
+
+        it.each(pdfFixtures)(
+            "respects quality option when converting $name",
+            async ({ data }) => {
+                const highQuality = await pdfToJpg(data, { quality: 0.99 });
+                const lowQuality = await pdfToJpg(data, { quality: 0.1 });
+
+                expect(highQuality.convertedPageCount).toBe(lowQuality.convertedPageCount);
+
+                // Higher quality should produce larger blobs
+                const highTotalSize = highQuality.pages.reduce((sum, p) => sum + p.blob.size, 0);
+                const lowTotalSize = lowQuality.pages.reduce((sum, p) => sum + p.blob.size, 0);
+                expect(highTotalSize).toBeGreaterThan(lowTotalSize);
+            },
+            integrationTestTimeoutMs,
+        );
+
+        it.each(pdfFixtures)(
+            "respects scale option when converting $name",
+            async ({ data }) => {
+                const normalScale = await pdfToJpg(data, { scale: 1.0 });
+                const doubleScale = await pdfToJpg(data, { scale: 2.0 });
+
+                expect(normalScale.convertedPageCount).toBe(doubleScale.convertedPageCount);
+
+                // Double scale should produce images with approximately double the dimensions
+                for (let i = 0; i < normalScale.pages.length; i++) {
+                    expect(doubleScale.pages[i].width).toBeCloseTo(normalScale.pages[i].width * 2, -1);
+                    expect(doubleScale.pages[i].height).toBeCloseTo(normalScale.pages[i].height * 2, -1);
+                }
+            },
+            integrationTestTimeoutMs,
+        );
+
+        it("throws on invalid quality (0)", async () => {
+            const [fixture] = pdfFixtures;
+            if (!fixture) return;
+            await expect(pdfToJpg(fixture.data, { quality: 0 })).rejects.toThrow();
+        });
+
+        it("throws on invalid quality (> 1)", async () => {
+            const [fixture] = pdfFixtures;
+            if (!fixture) return;
+            await expect(pdfToJpg(fixture.data, { quality: 1.1 })).rejects.toThrow();
+        });
+
+        it("throws on invalid scale (<= 0)", async () => {
+            const [fixture] = pdfFixtures;
+            if (!fixture) return;
+            await expect(pdfToJpg(fixture.data, { scale: 0 })).rejects.toThrow();
+        });
+    });
 });
 
 function hasJpegMagic(data: Uint8Array): boolean {

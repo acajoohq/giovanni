@@ -2,7 +2,7 @@ import { QpdfConversionError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { PdfPageJpg, PdfToJpgOptions, PdfToJpgResult } from "../types/index.js";
 import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
-import { createCanvas, Canvas as NodeCanvas } from "canvas";
+import type { Canvas as NodeCanvas } from "canvas";
 
 /**
  * Convert a PDF to JPG images by rendering each page via PDF.js.
@@ -28,6 +28,15 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
 
     const inputBuffer = normalizeBuffer(input);
 
+    // Lazily load node-canvas (optional native dep). Falls back to browser canvas when unavailable.
+    let nodeCreateCanvas: ((w: number, h: number) => NodeCanvas) | null = null;
+    try {
+        const { createCanvas } = await import("canvas");
+        nodeCreateCanvas = createCanvas;
+    } catch {
+        // Native canvas.node binary not present; OffscreenCanvas / DOM canvas will be used instead.
+    }
+
     const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
 
     if (!GlobalWorkerOptions.workerSrc) {
@@ -51,7 +60,7 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
             const width = Math.round(viewport.width);
             const height = Math.round(viewport.height);
 
-            const canvas = createCanvas(width, height);
+            const canvas = nodeCreateCanvas ? nodeCreateCanvas(width, height) : createBrowserCanvas(width, height);
             if (!canvas) {
                 page.cleanup();
                 continue;
@@ -72,7 +81,7 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
 
             page.cleanup();
 
-            const blob = await canvasToJpegBlob(canvas, quality);
+            const blob = await canvasToJpegBlob(canvas as NodeCanvas | OffscreenCanvas | HTMLCanvasElement, quality);
             if (blob) {
                 pages.push({ pageIndex: pageNum - 1, blob, width, height });
             }
@@ -85,6 +94,19 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
         if (error instanceof QpdfConversionError) throw error;
         throw new QpdfConversionError("Failed to convert PDF to JPG", { cause: error });
     }
+}
+
+function createBrowserCanvas(width: number, height: number): OffscreenCanvas | HTMLCanvasElement | null {
+    if (typeof OffscreenCanvas !== "undefined") {
+        return new OffscreenCanvas(width, height);
+    }
+    if (typeof document !== "undefined") {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        return canvas;
+    }
+    return null;
 }
 
 async function canvasToJpegBlob(canvas: OffscreenCanvas | HTMLCanvasElement | NodeCanvas, quality: number): Promise<Blob | null> {

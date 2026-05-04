@@ -1,7 +1,7 @@
-import * as React from "react";
+import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-export const SidebarToggle = ({ className, isActive, children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { isActive?: boolean }) => (
+export const SidebarToggle = ({ className, isActive, children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { isActive?: boolean }) => (
     <button
         type="button"
         className={cn(

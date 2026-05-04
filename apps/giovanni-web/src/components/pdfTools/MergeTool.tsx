@@ -1,7 +1,6 @@
 import { formatBytes, mergePdfs } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import * as React from "react";
-import { useEffect } from "react";
+import { useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -20,81 +19,67 @@ import { PdfPreview } from "@/components/pdfTools/PdfPreview";
 import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
 
 export function MergeTool() {
-    const inputRef = React.useRef<HTMLInputElement>(null);
-    const lastProcessedFilesKeyRef = React.useRef("");
-    const [files, setFiles] = React.useState<File[]>([]);
-    const [outputName, setOutputName] = React.useState("merged.pdf");
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [files, setFiles] = useState<File[]>([]);
+    const [outputName, setOutputName] = useState("merged.pdf");
     const { result: mergedData, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<Uint8Array>();
 
-    const totalInputBytes = React.useMemo(() => files.reduce((sum, file) => sum + file.size, 0), [files]);
-    const filesKey = React.useMemo(() => files.map((file) => `${file.name}:${file.size}:${file.lastModified}`).join("|"), [files]);
+    const totalInputBytes = files.reduce((sum, file) => sum + file.size, 0);
 
-    const processFiles = React.useCallback(
-        async (nextFiles: File[]) => {
-            if (nextFiles.length < 2) {
-                reset();
-                return;
-            }
-
-            await runJob({
-                execute: async () => {
-                    const buffers = await Promise.all(nextFiles.map((file) => file.arrayBuffer()));
-                    const result = await mergePdfs(buffers);
-
-                    return result.data;
-                },
-                errorMessage: "Failed to merge PDFs.",
-                successStatus: () => ({ tone: "success", message: `Merged ${nextFiles.length} PDFs.` }),
-            });
-        },
-        [reset, runJob],
-    );
-
-    useEffect(() => {
-        if (lastProcessedFilesKeyRef.current === filesKey) {
+    const processFiles = async (nextFiles: File[]) => {
+        if (nextFiles.length < 2) {
+            reset();
             return;
         }
 
-        lastProcessedFilesKeyRef.current = filesKey;
-        void processFiles(files);
-    }, [files, filesKey, processFiles]);
+        await runJob({
+            execute: async () => {
+                const buffers = await Promise.all(nextFiles.map((file) => file.arrayBuffer()));
+                const result = await mergePdfs(buffers);
 
-    const handleFiles = React.useCallback(
-        (nextFiles: File[]) => {
-            const pdfs = filterPdfFiles(nextFiles);
-
-            if (pdfs.length === 0) {
-                setStatus({ tone: "error", message: "Please select PDF files only." });
-                return;
-            }
-
-            setFiles((current) => [...current, ...pdfs]);
-        },
-        [setStatus],
-    );
-
-    const handleRemove = React.useCallback((index: number) => {
-        setFiles((current) => current.filter((_, currentIndex) => currentIndex !== index));
-    }, []);
-
-    const handleMove = React.useCallback((index: number, direction: -1 | 1) => {
-        setFiles((current) => {
-            const target = index + direction;
-
-            if (target < 0 || target >= current.length) {
-                return current;
-            }
-
-            const next = [...current];
-            const [file] = next.splice(index, 1);
-
-            if (file) {
-                next.splice(target, 0, file);
-            }
-
-            return next;
+                return result.data;
+            },
+            errorMessage: "Failed to merge PDFs.",
+            successStatus: () => ({ tone: "success", message: `Merged ${nextFiles.length} PDFs.` }),
         });
-    }, []);
+    };
+
+    const updateFiles = (nextFiles: File[]) => {
+        setFiles(nextFiles);
+        void processFiles(nextFiles);
+    };
+
+    const handleFiles = (nextFiles: File[]) => {
+        const pdfs = filterPdfFiles(nextFiles);
+
+        if (pdfs.length === 0) {
+            setStatus({ tone: "error", message: "Please select PDF files only." });
+            return;
+        }
+
+        updateFiles([...files, ...pdfs]);
+    };
+
+    const handleRemove = (index: number) => {
+        updateFiles(files.filter((_, currentIndex) => currentIndex !== index));
+    };
+
+    const handleMove = (index: number, direction: -1 | 1) => {
+        const target = index + direction;
+
+        if (target < 0 || target >= files.length) {
+            return;
+        }
+
+        const nextFiles = [...files];
+        const [file] = nextFiles.splice(index, 1);
+
+        if (file) {
+            nextFiles.splice(target, 0, file);
+        }
+
+        updateFiles(nextFiles);
+    };
 
     const normalizedOutputName = ensurePdfExtension(outputName);
 

@@ -1,5 +1,4 @@
 import { formatBytes, type ExtractedImage } from "@pdfly/wasm";
-import * as React from "react";
 import { RiImageLine } from "@remixicon/react";
 
 export function ImageThumb({ image, url, index }: { image: ExtractedImage; url: string | null; index: number }) {

@@ -1,6 +1,6 @@
 import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
 import { Link, Outlet } from "@tanstack/react-router";
-import * as React from "react";
+import { useState } from "react";
 import { AboutDialog } from "@/components/AboutDialog";
 
 const navigationItems = [
@@ -11,7 +11,7 @@ const navigationItems = [
 ] as const;
 
 export function AppShell() {
-    const [aboutOpen, setAboutOpen] = React.useState(false);
+    const [aboutOpen, setAboutOpen] = useState(false);
 
     return (
         <div className="flex h-dvh w-screen min-w-0 flex-col overflow-hidden bg-app-bg font-sans text-neutral-200">

@@ -1,8 +1,8 @@
-import * as React from "react";
+import type { ComponentProps } from "react";
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import { cn } from "@/lib/utils";
 
-type SliderProps = Omit<React.ComponentProps<typeof SliderPrimitive.Root<number>>, "children">;
+type SliderProps = Omit<ComponentProps<typeof SliderPrimitive.Root<number>>, "children">;
 
 function Slider({ className, ...props }: SliderProps) {
     return (

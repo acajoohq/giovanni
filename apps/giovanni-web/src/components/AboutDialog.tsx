@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { RiCloseLine, RiFilePdfLine } from "@remixicon/react";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/shadcn/Dialog";
 
@@ -13,7 +13,7 @@ const CONTRIBUTORS = [
 ] as const;
 
 function Avatar({ name, github, initials, color }: (typeof CONTRIBUTORS)[number]) {
-    const [failed, setFailed] = React.useState(false);
+    const [failed, setFailed] = useState(false);
     const fallbackBackground = `color-mix(in oklab, ${color} 12%, transparent)`;
     const fallbackBorder = `color-mix(in oklab, ${color} 25%, transparent)`;
 

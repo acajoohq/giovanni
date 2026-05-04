@@ -1,7 +1,6 @@
 import { extractImages, formatBytes, type ExtractedImage, type ExtractImagesResult } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import * as React from "react";
-import { useEffect } from "react";
+import { useState, useRef } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -31,17 +30,20 @@ import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
 
 const EMPTY_IMAGES: ExtractedImage[] = [];
 
+function getImageBlob(image: ExtractedImage) {
+    return image.blob;
+}
+
 export function ExtractImagesTool() {
-    const inputRef = React.useRef<HTMLInputElement>(null);
-    const [file, setFile] = React.useState<File | null>(null);
-    const [archiveName, setArchiveName] = React.useState("{basename}_images.zip");
-    const [includeRawStreams, setIncludeRawStreams] = React.useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [file, setFile] = useState<File | null>(null);
+    const [archiveName, setArchiveName] = useState("{basename}_images.zip");
+    const [includeRawStreams, setIncludeRawStreams] = useState(false);
     const { result, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<ExtractImagesResult>();
     const images = result?.images ?? EMPTY_IMAGES;
-    const getImageBlob = React.useCallback((image: ExtractedImage) => image.blob, []);
     const previewUrls = useObjectUrls(images, getImageBlob);
 
-    const { decodedCount, rawCount } = React.useMemo(() => {
+    const { decodedCount, rawCount } = (() => {
         let decodedImages = 0;
 
         for (const image of images) {
@@ -51,73 +53,59 @@ export function ExtractImagesTool() {
         }
 
         return { decodedCount: decodedImages, rawCount: images.length - decodedImages };
-    }, [images]);
+    })();
 
-    const processFile = React.useCallback(
-        async (nextFile: File) => {
-            await runJob({
-                execute: async () => {
-                    const buffer = await nextFile.arrayBuffer();
+    const processFile = async (nextFile: File) => {
+        await runJob({
+            execute: async () => {
+                const buffer = await nextFile.arrayBuffer();
 
-                    return extractImages(buffer);
-                },
-                errorMessage: "Failed to extract images.",
-                successStatus: (nextResult) => {
-                    let nextDecodedCount = 0;
-                    for (const image of nextResult.images) {
-                        if (image.blob) {
-                            nextDecodedCount += 1;
-                        }
+                return extractImages(buffer);
+            },
+            errorMessage: "Failed to extract images.",
+            successStatus: (nextResult) => {
+                let nextDecodedCount = 0;
+                for (const image of nextResult.images) {
+                    if (image.blob) {
+                        nextDecodedCount += 1;
                     }
-                    const nextRawCount = nextResult.imageCount - nextDecodedCount;
+                }
+                const nextRawCount = nextResult.imageCount - nextDecodedCount;
 
-                    return {
-                        tone: nextResult.imageCount > 0 ? "success" : "info",
-                        message:
-                            nextResult.imageCount === 0
-                                ? "No embedded raster images were found."
-                                : `Extracted ${nextDecodedCount} browser-ready ${nextDecodedCount === 1 ? "image" : "images"}${nextRawCount > 0 ? ` and ${nextRawCount} raw streams` : ""}.`,
-                    };
-                },
-            });
-        },
-        [runJob],
-    );
+                return {
+                    tone: nextResult.imageCount > 0 ? "success" : "info",
+                    message:
+                        nextResult.imageCount === 0
+                            ? "No embedded raster images were found."
+                            : `Extracted ${nextDecodedCount} browser-ready ${nextDecodedCount === 1 ? "image" : "images"}${nextRawCount > 0 ? ` and ${nextRawCount} raw streams` : ""}.`,
+                };
+            },
+        });
+    };
 
-    const handleFiles = React.useCallback(
-        (files: File[]) => {
-            const nextFile = findFirstPdfFile(files);
+    const handleFiles = (files: File[]) => {
+        const nextFile = findFirstPdfFile(files);
 
-            if (!nextFile) {
-                setStatus({ tone: "error", message: "Please select a PDF file." });
-                return;
-            }
-
-            reset();
-            setFile(nextFile);
-        },
-        [reset, setStatus],
-    );
-
-    useEffect(() => {
-        if (file) {
-            void processFile(file);
+        if (!nextFile) {
+            setStatus({ tone: "error", message: "Please select a PDF file." });
+            return;
         }
-    }, [file, processFile]);
 
-    const downloadImage = React.useCallback(
-        (image: ExtractedImage, index: number) => {
-            const name = imageDownloadName(pdfBaseName(file), index, image);
+        reset();
+        setFile(nextFile);
+        void processFile(nextFile);
+    };
 
-            if (image.blob) {
-                downloadBlob(image.blob, name);
-                return;
-            }
+    const downloadImage = (image: ExtractedImage, index: number) => {
+        const name = imageDownloadName(pdfBaseName(file), index, image);
 
-            downloadBlob(new Blob([image.bytes as BlobPart], { type: "application/octet-stream" }), name);
-        },
-        [file],
-    );
+        if (image.blob) {
+            downloadBlob(image.blob, name);
+            return;
+        }
+
+        downloadBlob(new Blob([image.bytes as BlobPart], { type: "application/octet-stream" }), name);
+    };
 
     const handleDownloadAll = async () => {
         if (images.length === 0 || !file) {
@@ -152,24 +140,21 @@ export function ExtractImagesTool() {
         </Sidebar>
     );
 
-    const imagesOutput = React.useMemo(
-        () =>
-            images.length > 0 ? (
-                <div className="h-full w-full overflow-y-auto p-4 pb-24">
-                    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                        {images.map((image, index) => (
-                            <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2 [content-visibility:auto] [contain-intrinsic-size:210px]">
-                                <ImageThumb image={image} index={index} url={previewUrls[index] ?? null} />
-                                <Button className="w-full" size="sm" variant="secondary" onClick={() => downloadImage(image, index)}>
-                                    {image.blob ? "Download" : "Download Raw"}
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
+    const imagesOutput =
+        images.length > 0 ? (
+            <div className="h-full w-full overflow-y-auto p-4 pb-24">
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                    {images.map((image, index) => (
+                        <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2 [content-visibility:auto] [contain-intrinsic-size:210px]">
+                            <ImageThumb image={image} index={index} url={previewUrls[index] ?? null} />
+                            <Button className="w-full" size="sm" variant="secondary" onClick={() => downloadImage(image, index)}>
+                                {image.blob ? "Download" : "Download Raw"}
+                            </Button>
+                        </div>
+                    ))}
                 </div>
-            ) : null,
-        [downloadImage, images, previewUrls],
-    );
+            </div>
+        ) : null;
 
     const centerContent = file ? (
         <div className="relative h-full w-full">

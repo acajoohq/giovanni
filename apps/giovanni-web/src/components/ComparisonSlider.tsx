@@ -1,15 +1,15 @@
-import * as React from "react";
+import { useRef, useState, type ReactNode } from "react";
 
 interface ComparisonSliderProps {
-    before: React.ReactNode;
-    after?: React.ReactNode;
+    before: ReactNode;
+    after?: ReactNode;
     isProcessing?: boolean;
 }
 
 export function ComparisonSlider({ before, after, isProcessing }: ComparisonSliderProps) {
-    const [position, setPosition] = React.useState(50);
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const dragging = React.useRef(false);
+    const [position, setPosition] = useState(50);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const dragging = useRef(false);
 
     const showSlider = Boolean(after) && !isProcessing;
 

@@ -1,4 +1,4 @@
-import * as React from "react";
+import type { ReactNode } from "react";
 import { RiCheckboxCircleLine, RiCloseCircleLine, RiFilePdf2Line, RiInformationLine } from "@remixicon/react";
 import { cn } from "@/lib/utils";
 import type { ToolStatus } from "@/lib/features/pdfTools/utils/toolStatus";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/shadcn/Button";
 
 interface ToolResultMetric {
     label: string;
-    value: React.ReactNode;
+    value: ReactNode;
     tone?: "accent" | "neutral";
 }
 

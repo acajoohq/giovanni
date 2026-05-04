@@ -1,7 +1,6 @@
 import { RiArrowLeftSLine, RiArrowRightSLine, RiFilePdf2Line } from "@remixicon/react";
 import { createClientOnlyFn } from "@tanstack/react-start";
-import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { PDFDocumentProxy } from "@/lib/features/pdfTools/utils/pdfRenderer.client";
 
 type PdfRendererClient = typeof import("@/lib/features/pdfTools/utils/pdfRenderer.client");
@@ -11,18 +10,18 @@ const loadPdfRenderer = createClientOnlyFn(async () => import("@/lib/features/pd
 interface PdfPreviewProps {
     data?: Uint8Array | null;
     file?: File | null;
-    placeholder?: React.ReactNode;
+    placeholder?: ReactNode;
 }
 
 export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const canvasRef = React.useRef<HTMLCanvasElement>(null);
-    const renderGenerationRef = React.useRef(0);
-    const [renderer, setRenderer] = React.useState<PdfRendererClient | null>(null);
-    const [pdfDoc, setPdfDoc] = React.useState<PDFDocumentProxy | null>(null);
-    const [isLoading, setIsLoading] = React.useState(false);
-    const [page, setPage] = React.useState(1);
-    const [containerSize, setContainerSize] = React.useState<{ width: number; height: number } | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const renderGenerationRef = useRef(0);
+    const [renderer, setRenderer] = useState<PdfRendererClient | null>(null);
+    const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [page, setPage] = useState(1);
+    const [containerSize, setContainerSize] = useState<{ width: number; height: number } | null>(null);
 
     useEffect(() => {
         const element = containerRef.current;

@@ -1,7 +1,6 @@
 import { formatBytes, splitPages } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import * as React from "react";
-import { useEffect } from "react";
+import { useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -38,55 +37,44 @@ interface SplitJobResult {
 type ZipCompressionMode = "store" | "compress";
 
 export function SplitTool() {
-    const inputRef = React.useRef<HTMLInputElement>(null);
-    const [file, setFile] = React.useState<File | null>(null);
-    const [outputPattern, setOutputPattern] = React.useState("{basename}_page_{page}");
-    const [archiveName, setArchiveName] = React.useState("{basename}_pages.zip");
-    const [zipCompressionMode, setZipCompressionMode] = React.useState<ZipCompressionMode>("store");
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [file, setFile] = useState<File | null>(null);
+    const [outputPattern, setOutputPattern] = useState("{basename}_page_{page}");
+    const [archiveName, setArchiveName] = useState("{basename}_pages.zip");
+    const [zipCompressionMode, setZipCompressionMode] = useState<ZipCompressionMode>("store");
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<SplitJobResult>();
 
     const pages = result?.pages ?? [];
 
-    const processFile = React.useCallback(
-        async (nextFile: File) => {
-            await runJob({
-                execute: async () => {
-                    const buffer = await nextFile.arrayBuffer();
+    const processFile = async (nextFile: File) => {
+        await runJob({
+            execute: async () => {
+                const buffer = await nextFile.arrayBuffer();
 
-                    return splitPages(buffer);
-                },
-                errorMessage: "Failed to split PDF.",
-                successStatus: (nextResult) => ({
-                    tone: "success",
-                    message: `Extracted ${nextResult.pageCount} ${nextResult.pageCount === 1 ? "page" : "pages"}.`,
-                }),
-            });
-        },
-        [runJob],
-    );
+                return splitPages(buffer);
+            },
+            errorMessage: "Failed to split PDF.",
+            successStatus: (nextResult) => ({
+                tone: "success",
+                message: `Extracted ${nextResult.pageCount} ${nextResult.pageCount === 1 ? "page" : "pages"}.`,
+            }),
+        });
+    };
 
-    const handleFiles = React.useCallback(
-        (files: File[]) => {
-            const nextFile = findFirstPdfFile(files);
+    const handleFiles = (files: File[]) => {
+        const nextFile = findFirstPdfFile(files);
 
-            if (!nextFile) {
-                setStatus({ tone: "error", message: "Please select a PDF file." });
-                return;
-            }
-
-            reset();
-            setFile(nextFile);
-        },
-        [reset, setStatus],
-    );
-
-    useEffect(() => {
-        if (file) {
-            void processFile(file);
+        if (!nextFile) {
+            setStatus({ tone: "error", message: "Please select a PDF file." });
+            return;
         }
-    }, [file, processFile]);
 
-    const makePageName = React.useCallback((pageIndex: number) => makePagePdfName(outputPattern, pdfBaseName(file), pageIndex), [file, outputPattern]);
+        reset();
+        setFile(nextFile);
+        void processFile(nextFile);
+    };
+
+    const makePageName = (pageIndex: number) => makePagePdfName(outputPattern, pdfBaseName(file), pageIndex);
 
     const handleDownloadAll = async () => {
         if (pages.length === 0 || !file) {
@@ -130,27 +118,24 @@ export function SplitTool() {
         </Sidebar>
     );
 
-    const pagesOutput = React.useMemo(
-        () =>
-            pages.length > 0 && file ? (
-                <div className="h-full w-full overflow-y-auto p-3 pb-24">
-                    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-                        {pages.map((page, index) => (
-                            <div key={index} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:260px]">
-                                <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
-                                    <PdfPreview data={page} />
-                                </div>
-                                <span className="truncate text-center text-[10px] text-neutral-500">Page {index + 1}</span>
-                                <Button className="h-6 text-[10px]" size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
-                                    Download
-                                </Button>
+    const pagesOutput =
+        pages.length > 0 && file ? (
+            <div className="h-full w-full overflow-y-auto p-3 pb-24">
+                <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                    {pages.map((page, index) => (
+                        <div key={index} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:260px]">
+                            <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
+                                <PdfPreview data={page} />
                             </div>
-                        ))}
-                    </div>
+                            <span className="truncate text-center text-[10px] text-neutral-500">Page {index + 1}</span>
+                            <Button className="h-6 text-[10px]" size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
+                                Download
+                            </Button>
+                        </div>
+                    ))}
                 </div>
-            ) : null,
-        [file, makePageName, pages],
-    );
+            </div>
+        ) : null;
 
     const centerContent = file ? (
         <div className="relative h-full w-full">

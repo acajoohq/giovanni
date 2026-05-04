@@ -1,39 +1,38 @@
-import * as React from "react";
-import { useEffect } from "react";
+import { useCallback, useRef, useState, useSyncExternalStore, type DragEvent, type HTMLAttributes, type ReactNode } from "react";
 import { RiUploadCloud2Line } from "@remixicon/react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/shadcn/Resizable";
 
 interface ToolLayoutProps {
     title: string;
-    sidebar: React.ReactNode;
-    children: React.ReactNode;
+    sidebar: ReactNode;
+    children: ReactNode;
     onFiles?: (files: File[]) => void;
     isMultiple?: boolean;
 }
 
 export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: ToolLayoutProps) {
     const isDesktop = useMediaQuery("(min-width: 1024px)");
-    const [isDragOver, setIsDragOver] = React.useState(false);
-    const dragCounter = React.useRef(0);
+    const [isDragOver, setIsDragOver] = useState(false);
+    const dragCounter = useRef(0);
 
-    const handleDragEnter = (e: React.DragEvent) => {
+    const handleDragEnter = (e: DragEvent) => {
         e.preventDefault();
         dragCounter.current++;
         if (dragCounter.current === 1) setIsDragOver(true);
     };
 
-    const handleDragLeave = (e: React.DragEvent) => {
+    const handleDragLeave = (e: DragEvent) => {
         e.preventDefault();
         dragCounter.current--;
         if (dragCounter.current === 0) setIsDragOver(false);
     };
 
-    const handleDragOver = (e: React.DragEvent) => {
+    const handleDragOver = (e: DragEvent) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "copy";
     };
 
-    const handleDrop = (e: React.DragEvent) => {
+    const handleDrop = (e: DragEvent) => {
         e.preventDefault();
         dragCounter.current = 0;
         setIsDragOver(false);
@@ -81,22 +80,22 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
 }
 
 function useMediaQuery(query: string): boolean {
-    const [matches, setMatches] = React.useState(false);
+    const subscribe = useCallback(
+        (onStoreChange: () => void) => {
+            const mediaQueryList = window.matchMedia(query);
+            mediaQueryList.addEventListener("change", onStoreChange);
 
-    useEffect(() => {
-        const mediaQueryList = window.matchMedia(query);
-        const updateMatches = () => setMatches(mediaQueryList.matches);
+            return () => mediaQueryList.removeEventListener("change", onStoreChange);
+        },
+        [query],
+    );
 
-        updateMatches();
-        mediaQueryList.addEventListener("change", updateMatches);
+    const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query]);
 
-        return () => mediaQueryList.removeEventListener("change", updateMatches);
-    }, [query]);
-
-    return matches;
+    return useSyncExternalStore(subscribe, getSnapshot, () => false);
 }
 
-interface ToolWorkspaceProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ToolWorkspaceProps extends HTMLAttributes<HTMLDivElement> {
     isDragOver: boolean;
     isMultiple?: boolean;
 }
@@ -128,7 +127,7 @@ function ToolWorkspace({ children, isDragOver, isMultiple, ...props }: ToolWorks
     );
 }
 
-function ToolSidebar({ sidebar, title }: { sidebar: React.ReactNode; title: string }) {
+function ToolSidebar({ sidebar, title }: { sidebar: ReactNode; title: string }) {
     return (
         <aside className="flex h-full flex-col border-l border-app-border bg-app-panel shadow-sidebar max-lg:border-l-0 max-lg:shadow-none">
             <div className="shrink-0 border-b border-app-border bg-app-panel-strong px-4 py-2">

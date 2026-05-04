@@ -1,27 +1,27 @@
-import * as React from "react";
+import { useRef, useState, type DragEvent, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { cn } from "@/lib/utils";
 
-export interface EmptyStateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
-    title: React.ReactNode;
-    description: React.ReactNode;
-    badgeIcon?: React.ReactNode;
-    visual: React.ReactNode;
+export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
+    title: ReactNode;
+    description: ReactNode;
+    badgeIcon?: ReactNode;
+    visual: ReactNode;
     isMultiple?: boolean;
     accept?: string;
-    inputRef?: React.Ref<HTMLInputElement>;
+    inputRef?: Ref<HTMLInputElement>;
     onFiles?: (files: File[]) => void;
 }
 
 export const EmptyState = ({ className, title, description, badgeIcon, visual, isMultiple, accept, inputRef, onFiles, ...props }: EmptyStateProps) => {
-    const [isDragOver, setIsDragOver] = React.useState(false);
-    const dragCounterRef = React.useRef(0);
+    const [isDragOver, setIsDragOver] = useState(false);
+    const dragCounterRef = useRef(0);
 
     const handleFiles = (files: FileList | null) => {
         if (!files || files.length === 0) return;
         onFiles?.(Array.from(files));
     };
 
-    const handleDragEnter = (event: React.DragEvent) => {
+    const handleDragEnter = (event: DragEvent) => {
         if (!onFiles) return;
         event.preventDefault();
         event.stopPropagation();
@@ -29,7 +29,7 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, i
         setIsDragOver(true);
     };
 
-    const handleDragLeave = (event: React.DragEvent) => {
+    const handleDragLeave = (event: DragEvent) => {
         if (!onFiles) return;
         event.preventDefault();
         event.stopPropagation();
@@ -37,14 +37,14 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, i
         if (dragCounterRef.current === 0) setIsDragOver(false);
     };
 
-    const handleDragOver = (event: React.DragEvent) => {
+    const handleDragOver = (event: DragEvent) => {
         if (!onFiles) return;
         event.preventDefault();
         event.stopPropagation();
         event.dataTransfer.dropEffect = "copy";
     };
 
-    const handleDrop = (event: React.DragEvent) => {
+    const handleDrop = (event: DragEvent) => {
         if (!onFiles) return;
         event.preventDefault();
         event.stopPropagation();

@@ -1,9 +1,9 @@
-import type * as React from "react";
+import type { ComponentProps, ReactNode, SelectHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/shadcn/Input";
 import { Slider } from "@/components/ui/shadcn/Slider";
 
-export function SidebarInput({ className, ...props }: React.ComponentProps<typeof Input>) {
+export function SidebarInput({ className, ...props }: ComponentProps<typeof Input>) {
     return (
         <Input
             className={cn("h-7 rounded-[4px] border-app-border bg-app-control px-2 text-[12px] text-white shadow-inner focus-visible:ring-1 focus-visible:ring-brand", className)}
@@ -17,7 +17,7 @@ interface SidebarSelectOption<TValue extends string> {
     value: TValue;
 }
 
-interface SidebarSelectProps<TValue extends string> extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "children" | "onChange" | "value"> {
+interface SidebarSelectProps<TValue extends string> extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "children" | "onChange" | "value"> {
     options: Array<SidebarSelectOption<TValue>>;
     value: TValue;
     onValueChange: (value: TValue) => void;
@@ -43,7 +43,7 @@ export function SidebarSelect<TValue extends string>({ className, options, value
     );
 }
 
-export function SidebarReadonlyValue({ children, className }: { children: React.ReactNode; className?: string }) {
+export function SidebarReadonlyValue({ children, className }: { children: ReactNode; className?: string }) {
     return (
         <div className={cn("flex h-7 items-center rounded-[4px] border border-app-border bg-app-control px-2 text-[12px] leading-none text-neutral-300 shadow-inner", className)}>
             {children}
@@ -51,10 +51,10 @@ export function SidebarReadonlyValue({ children, className }: { children: React.
     );
 }
 
-interface SidebarRangeProps extends Omit<React.ComponentProps<typeof Slider>, "className"> {
+interface SidebarRangeProps extends Omit<ComponentProps<typeof Slider>, "className"> {
     className?: string;
-    label?: React.ReactNode;
-    valueLabel?: React.ReactNode;
+    label?: ReactNode;
+    valueLabel?: ReactNode;
 }
 
 export function SidebarRange({ className, label, valueLabel, ...props }: SidebarRangeProps) {

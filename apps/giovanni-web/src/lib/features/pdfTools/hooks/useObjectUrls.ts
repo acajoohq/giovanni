@@ -1,8 +1,7 @@
-import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function useObjectUrls<TItem>(items: TItem[], getBlob: (item: TItem) => Blob | null): Array<string | null> {
-    const [urls, setUrls] = React.useState<Array<string | null>>([]);
+    const [urls, setUrls] = useState<Array<string | null>>([]);
 
     useEffect(() => {
         if (items.length === 0) {

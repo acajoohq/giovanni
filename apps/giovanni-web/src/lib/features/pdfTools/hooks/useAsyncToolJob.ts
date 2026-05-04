@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useCallback, useRef, useState } from "react";
 import type { ToolStatus } from "../utils/toolStatus";
 
 interface RunToolJobOptions<TResult> {
@@ -10,13 +10,13 @@ interface RunToolJobOptions<TResult> {
 }
 
 export function useAsyncToolJob<TResult>() {
-    const jobIdRef = React.useRef(0);
-    const [result, setResult] = React.useState<TResult | null>(null);
-    const [elapsedMs, setElapsedMs] = React.useState<number | null>(null);
-    const [status, setStatus] = React.useState<ToolStatus>(null);
-    const [isWorking, setIsWorking] = React.useState(false);
+    const jobIdRef = useRef(0);
+    const [result, setResult] = useState<TResult | null>(null);
+    const [elapsedMs, setElapsedMs] = useState<number | null>(null);
+    const [status, setStatus] = useState<ToolStatus>(null);
+    const [isWorking, setIsWorking] = useState(false);
 
-    const reset = React.useCallback(() => {
+    const reset = useCallback(() => {
         jobIdRef.current += 1;
         setResult(null);
         setElapsedMs(null);
@@ -24,12 +24,12 @@ export function useAsyncToolJob<TResult>() {
         setIsWorking(false);
     }, []);
 
-    const clearResult = React.useCallback(() => {
+    const clearResult = useCallback(() => {
         setResult(null);
         setElapsedMs(null);
     }, []);
 
-    const runJob = React.useCallback(async ({ execute, successStatus, errorMessage, onSuccess, onError }: RunToolJobOptions<TResult>) => {
+    const runJob = useCallback(async ({ execute, successStatus, errorMessage, onSuccess, onError }: RunToolJobOptions<TResult>) => {
         const jobId = jobIdRef.current + 1;
         jobIdRef.current = jobId;
 

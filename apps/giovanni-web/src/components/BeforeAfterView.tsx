@@ -1,17 +1,17 @@
-import * as React from "react";
+import { useState, type ReactNode } from "react";
 import { RiLayoutColumnLine, RiLayoutRowLine } from "@remixicon/react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/shadcn/Resizable";
 
 type Direction = "horizontal" | "vertical";
 
 interface BeforeAfterViewProps {
-    before: React.ReactNode;
-    after?: React.ReactNode;
+    before: ReactNode;
+    after?: ReactNode;
     isProcessing?: boolean;
 }
 
 export function BeforeAfterView({ before, after, isProcessing }: BeforeAfterViewProps) {
-    const [direction, setDirection] = React.useState<Direction>("horizontal");
+    const [direction, setDirection] = useState<Direction>("horizontal");
 
     return (
         <div className="relative h-full w-full">
@@ -51,7 +51,7 @@ export function BeforeAfterView({ before, after, isProcessing }: BeforeAfterView
     );
 }
 
-function SectionBadge({ children }: { children: React.ReactNode }) {
+function SectionBadge({ children }: { children: ReactNode }) {
     return (
         <div className="pointer-events-none absolute left-2 top-2 z-10 rounded-full border border-app-control-hover bg-app-surface-raised px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-neutral-700">
             {children}

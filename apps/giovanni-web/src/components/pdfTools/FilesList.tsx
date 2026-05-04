@@ -1,5 +1,4 @@
 import { formatBytes } from "@pdfly/wasm";
-import * as React from "react";
 import { RiArrowDownSLine, RiArrowUpSLine, RiCloseLine, RiFilePdf2Line } from "@remixicon/react";
 import { Button } from "@/components/ui/shadcn/Button";
 

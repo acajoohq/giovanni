@@ -52,7 +52,7 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
 
     const pdfjs = await pdfjsPromise;
     if (!pdfjs) {
-        throw new QpdfConversionError('pdfjs-dist is required for pdfToJpg. Install it with: npm install pdfjs-dist');
+        throw new QpdfConversionError("pdfjs-dist is required for pdfToJpg. Install it with: npm install pdfjs-dist");
     }
 
     const inputBuffer = normalizeBuffer(input);

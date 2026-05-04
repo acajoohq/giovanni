@@ -18,10 +18,21 @@ export function pdfBaseName(file: File | null): string {
 }
 
 export function ensurePdfExtension(fileName: string): string {
-    const trimmedName = fileName.trim();
-    const baseName = trimmedName.length > 0 ? trimmedName : "document";
+    return ensureFileExtension(fileName, "pdf", "document");
+}
 
-    return baseName.toLowerCase().endsWith(".pdf") ? baseName : `${baseName}.pdf`;
+export function ensureFileExtension(fileName: string, extension: string, fallbackBaseName = "document"): string {
+    const trimmedName = fileName.trim();
+    const baseName = trimmedName.length > 0 ? trimmedName : fallbackBaseName;
+    const normalizedExtension = extension.replace(/^\./, "");
+
+    return baseName.toLowerCase().endsWith(`.${normalizedExtension.toLowerCase()}`) ? baseName : `${baseName}.${normalizedExtension}`;
+}
+
+export function makeArchiveName(pattern: string, baseName: string, extension = "zip"): string {
+    const resolvedName = pattern.replaceAll("{basename}", baseName);
+
+    return ensureFileExtension(resolvedName, extension, `${baseName}_archive`);
 }
 
 export function makePagePdfName(pattern: string, baseName: string, pageIndex: number): string {
@@ -77,18 +88,31 @@ export async function downloadZip(entries: Record<string, Uint8Array>, fileName:
     downloadBlob(new Blob([zipped as BlobPart], { type: "application/zip" }), fileName);
 }
 
-export async function buildBrowserReadyImageEntries(images: ExtractedImage[], baseName: string): Promise<Record<string, Uint8Array>> {
+interface BuildExtractedImageEntriesOptions {
+    includeRawStreams?: boolean;
+}
+
+export async function buildExtractedImageEntries(images: ExtractedImage[], baseName: string, options: BuildExtractedImageEntriesOptions = {}): Promise<Record<string, Uint8Array>> {
     const entries: Record<string, Uint8Array> = {};
 
     for (const [index, image] of images.entries()) {
-        if (!image.blob) {
+        const name = imageDownloadName(baseName, index, image);
+
+        if (image.blob) {
+            entries[name] = new Uint8Array(await image.blob.arrayBuffer());
             continue;
         }
 
-        entries[imageDownloadName(baseName, index, image)] = new Uint8Array(await image.blob.arrayBuffer());
+        if (options.includeRawStreams) {
+            entries[name] = image.bytes;
+        }
     }
 
     return entries;
+}
+
+export async function buildBrowserReadyImageEntries(images: ExtractedImage[], baseName: string): Promise<Record<string, Uint8Array>> {
+    return buildExtractedImageEntries(images, baseName);
 }
 
 export function imageDownloadName(baseName: string, index: number, image: ExtractedImage): string {

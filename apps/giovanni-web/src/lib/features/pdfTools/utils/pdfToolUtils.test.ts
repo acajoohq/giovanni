@@ -2,12 +2,15 @@ import { describe, expect, it } from "vitest";
 import type { ExtractedImage } from "@pdfly/wasm";
 import {
     buildBrowserReadyImageEntries,
+    buildExtractedImageEntries,
     buildSplitPageEntries,
+    ensureFileExtension,
     ensurePdfExtension,
     filterPdfFiles,
     findFirstPdfFile,
     imageDownloadName,
     isPdfFile,
+    makeArchiveName,
     makePagePdfName,
 } from "./pdfToolUtils";
 
@@ -33,6 +36,8 @@ describe("pdfToolUtils", () => {
         expect(ensurePdfExtension("merged")).toBe("merged.pdf");
         expect(ensurePdfExtension("merged.PDF")).toBe("merged.PDF");
         expect(ensurePdfExtension("   ")).toBe("document.pdf");
+        expect(ensureFileExtension("images", "zip")).toBe("images.zip");
+        expect(makeArchiveName("{basename}_pages", "source")).toBe("source_pages.zip");
     });
 
     it("builds split page names and entries", () => {
@@ -66,5 +71,22 @@ describe("pdfToolUtils", () => {
 
         expect(Object.keys(entries)).toEqual(["source_image_001.png"]);
         expect(entries["source_image_001.png"]).toEqual(imageBytes);
+    });
+
+    it("can include raw extracted image streams in ZIP entries", async () => {
+        const imageBytes = new Uint8Array([1, 2, 3]);
+        const rawBytes = new Uint8Array([4, 5, 6]);
+        const entries = await buildExtractedImageEntries(
+            [
+                { blob: new Blob([imageBytes as BlobPart], { type: "image/png" }), mimeType: "image/png" } as ExtractedImage,
+                { blob: null, bytes: rawBytes, filter: "CCITTFaxDecode" } as ExtractedImage,
+            ],
+            "source",
+            { includeRawStreams: true },
+        );
+
+        expect(Object.keys(entries)).toEqual(["source_image_001.png", "source_image_002.ccitt.bin"]);
+        expect(entries["source_image_001.png"]).toEqual(imageBytes);
+        expect(entries["source_image_002.ccitt.bin"]).toEqual(rawBytes);
     });
 });

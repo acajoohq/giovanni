@@ -1,5 +1,5 @@
 /**
- * pdfjs-dist mock – avoids browser-globals (DOMMatrix, Worker) in Node test env.
+ * pdfjs-dist mock avoids browser-globals (DOMMatrix, Worker) in Node test env.
  * Pages use standard US-letter dimensions (612 x 792 pt) scaled by the `scale` option.
  */
 

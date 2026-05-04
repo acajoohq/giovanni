@@ -1,5 +1,5 @@
 /**
- * Canvas mock – replaces the native canvas addon for testing.
+ * Canvas mock replaces the native canvas addon for testing.
  * toBuffer size scales with quality so quality-comparison tests pass.
  */
 
@@ -38,7 +38,7 @@ export const createCanvas = (width: number, height: number) => {
         getContext: (_type: string) => makeContext(),
         toBuffer: (_mime: string, opts?: { quality?: number }) => {
             const quality = opts?.quality ?? 0.92;
-            // Size proportional to quality – quality-comparison tests rely on this.
+            // Size proportional to quality ï¿½ quality-comparison tests rely on this.
             const size = Math.round(500 + 9500 * quality);
             const buf = Buffer.alloc(size);
             buf[0] = 0xff; buf[1] = 0xd8; buf[2] = 0xff; // JPEG magic bytes

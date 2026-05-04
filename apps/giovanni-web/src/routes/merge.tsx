@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MergeTool } from "@/components/pdfTools/MergeTool";
+import { MergeTool } from "@/components/pdf/tools/MergeTool";
 
 export const Route = createFileRoute("/merge")({
     component: MergeTool,

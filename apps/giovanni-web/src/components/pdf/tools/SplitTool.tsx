@@ -2,7 +2,7 @@ import { formatBytes, splitPages } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
-import { BeforeAfterView } from "@/components/BeforeAfterView";
+import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
 import { Sidebar } from "@/components/sidebar/Sidebar";
@@ -13,7 +13,10 @@ import { SidebarInput } from "@/components/sidebar/SidebarControls";
 import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { SidebarToggle } from "@/components/sidebar/SidebarToggle";
 import { SidebarToggleGroup } from "@/components/sidebar/SidebarToggleGroup";
-import { useAsyncToolJob } from "@/lib/features/pdfTools/hooks/useAsyncToolJob";
+import { EmptySplit } from "@/components/pdf/emptyState/EmptySplit";
+import { PdfPreview } from "@/components/pdf/PdfPreview";
+import { ResultTray } from "@/components/pdf/ResultTray";
+import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
 import {
     buildSplitPageEntries,
     downloadPdf,
@@ -24,10 +27,7 @@ import {
     makeArchiveName,
     makePagePdfName,
     pdfBaseName,
-} from "@/lib/features/pdfTools/utils/pdfToolUtils";
-import { SplitVisual } from "@/components/pdfTools/visuals/SplitVisual";
-import { PdfPreview } from "@/components/pdfTools/PdfPreview";
-import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
+} from "@/utils/pdf/pdfToolUtils";
 
 interface SplitJobResult {
     pages: Uint8Array[];
@@ -140,7 +140,7 @@ export function SplitTool() {
                                 <PdfPreview data={page} />
                             </div>
                             <span className="truncate text-center text-[10px] text-neutral-500">Page {index + 1}</span>
-                            <Button className="h-6 text-[10px]" size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
+                            <Button className="h-6 text-[10px]" size="sm" variant="secondary" type="button" onClick={() => downloadPdf(page, makePageName(index))}>
                                 Download
                             </Button>
                         </div>
@@ -152,7 +152,7 @@ export function SplitTool() {
     const centerContent = file ? (
         <div className="relative h-full w-full">
             <BeforeAfterView after={pagesOutput} before={<PdfPreview file={file} />} isProcessing={isWorking} />
-            <ToolResultTray
+            <ResultTray
                 fileName={file.name}
                 fileSize={formatBytes(file.size)}
                 metrics={[
@@ -173,7 +173,7 @@ export function SplitTool() {
             inputRef={inputRef}
             onFiles={handleFiles}
             title="Drop a PDF to split"
-            visual={<SplitVisual />}
+            visual={<EmptySplit />}
         />
     );
 

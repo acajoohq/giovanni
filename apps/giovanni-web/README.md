@@ -16,28 +16,30 @@ Route files stay thin and bind URLs to tool screens.
 
 ## Source Layout
 
-The app keeps product components in `src/components` and domain logic in `src/lib/features`.
+Product `.tsx` lives under `src/components`. Hooks and pure helpers live in top-level `src/hooks` and `src/utils`, grouped by domain (mirroring Lemni Web).
 
 - `src/components/layout` - app shell and tool layout.
-- `src/components/pdfTools` - PDF tool screens, preview, result tray, and tool-specific panels.
-- `src/components/pdfTools/visuals` - empty-state visuals for PDF tools.
+- `src/components/dialogs` - app-level dialogs such as About.
+- `src/components/viewer` - before/after, comparison slider, processing placeholder.
+- `src/components/pdf` - PDF tool UI: shared widgets (`PdfPreview`, `PdfFilesList`, `ResultTray`, `ExtractedImageCard`), drop-zone vignettes (`emptyState`), route-level tools (`tools`).
 - `src/components/sidebar` - typed sidebar settings controls and sections.
 - `src/components/emptyState` - reusable file drop/select empty state.
 - `src/components/ui/shadcn` - shadcn primitives only.
-- `src/lib/features/pdfTools/hooks` - reusable tool workflow hooks.
-- `src/lib/features/pdfTools/utils` - pure file, filename, metric, ZIP, and download helpers.
+- `src/hooks/pdf` - reusable tool workflow hooks.
+- `src/utils/pdf` - pure file, filename, metric, ZIP, download helpers, and client-only pdf.js helpers (`pdfRenderer.client`).
 
 Folders use camelCase/PascalCase naming in app-owned areas. The only `ui` subtree is `ui/shadcn`.
 
 ## Imports
 
-Use the `@/*` alias for source imports instead of long relative paths. The alias is configured in `vite.config.ts`, `tsconfig.json`, and `components.json`.
+Use the `@/*` alias for source imports instead of long relative paths. The alias is configured in `vite.config.ts`, `tsconfig.json`, and `components.json`. You may also import from `@/hooks/*` and `@/utils/*` explicitly.
 
 Examples:
 
 ```ts
 import { ToolLayout } from "@/components/layout/ToolLayout";
-import { useAsyncToolJob } from "@/lib/features/pdfTools/hooks/useAsyncToolJob";
+import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
+import { filterPdfFiles } from "@/utils/pdf/pdfToolUtils";
 ```
 
 ## Styling

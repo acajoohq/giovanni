@@ -1,11 +1,11 @@
 import { RiArrowLeftSLine, RiArrowRightSLine, RiFilePdf2Line } from "@remixicon/react";
 import { createClientOnlyFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { PDFDocumentProxy } from "@/lib/features/pdfTools/utils/pdfRenderer.client";
+import type { PDFDocumentProxy } from "@/utils/pdf/pdfRenderer.client";
 
-type PdfRendererClient = typeof import("@/lib/features/pdfTools/utils/pdfRenderer.client");
+type PdfRendererClient = typeof import("@/utils/pdf/pdfRenderer.client");
 
-const loadPdfRenderer = createClientOnlyFn(async () => import("@/lib/features/pdfTools/utils/pdfRenderer.client"));
+const loadPdfRenderer = createClientOnlyFn(async () => import("@/utils/pdf/pdfRenderer.client"));
 
 interface PdfPreviewProps {
     data?: Uint8Array | null;
@@ -69,6 +69,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
                 if (prevDoc) {
                     void prevDoc.destroy();
                 }
+
                 return null;
             });
             setPage(1);
@@ -106,6 +107,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
                 if (prevDoc) {
                     void prevDoc.destroy();
                 }
+
                 return null;
             });
         };
@@ -180,8 +182,8 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
                             <button
                                 className="flex size-6 items-center justify-center rounded text-neutral-400 transition-colors hover:bg-app-control-hover hover:text-white disabled:opacity-30"
                                 disabled={page === 1}
-                                onClick={() => setPage((currentPage) => currentPage - 1)}
                                 type="button"
+                                onClick={() => setPage((currentPage) => currentPage - 1)}
                             >
                                 <RiArrowLeftSLine className="size-4" />
                             </button>
@@ -191,8 +193,8 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
                             <button
                                 className="flex size-6 items-center justify-center rounded text-neutral-400 transition-colors hover:bg-app-control-hover hover:text-white disabled:opacity-30"
                                 disabled={page === totalPages}
-                                onClick={() => setPage((currentPage) => currentPage + 1)}
                                 type="button"
+                                onClick={() => setPage((currentPage) => currentPage + 1)}
                             >
                                 <RiArrowRightSLine className="size-4" />
                             </button>

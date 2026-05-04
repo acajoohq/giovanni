@@ -1,6 +1,6 @@
 import { RiFileZipLine } from "@remixicon/react";
 
-export function CompressVisual() {
+export function EmptyCompress() {
     return (
         <>
             <div className="absolute inset-x-0 flex h-24 items-center justify-between rounded-3xl border border-app-panel-strong bg-app-control px-2 shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)]">

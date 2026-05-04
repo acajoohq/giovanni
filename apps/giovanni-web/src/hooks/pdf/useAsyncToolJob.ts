@@ -1,5 +1,5 @@
 import { useCallback, useReducer, useRef } from "react";
-import type { ToolStatus } from "../utils/toolStatus";
+import type { ToolStatus } from "@/utils/pdf/toolStatus";
 
 interface RunToolJobOptions<TResult> {
     execute: () => Promise<TResult>;

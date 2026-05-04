@@ -1,7 +1,7 @@
 import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { useState } from "react";
-import { AboutDialog } from "@/components/AboutDialog";
+import { AboutDialog } from "@/components/dialogs/AboutDialog";
 
 const navigationItems = [
     { label: "Compress", to: "/compress" },

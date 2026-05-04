@@ -2,7 +2,7 @@ import { formatBytes } from "@pdfly/wasm";
 import { RiArrowDownSLine, RiArrowUpSLine, RiCloseLine, RiFilePdf2Line } from "@remixicon/react";
 import { Button } from "@/components/ui/shadcn/Button";
 
-export function FilesList({ files, onRemove, onMove }: { files: File[]; onRemove?: (index: number) => void; onMove?: (index: number, direction: -1 | 1) => void }) {
+export function PdfFilesList({ files, onRemove, onMove }: { files: File[]; onRemove?: (index: number) => void; onMove?: (index: number, direction: -1 | 1) => void }) {
     return (
         <div className="space-y-2">
             {files.map((file, index) => (

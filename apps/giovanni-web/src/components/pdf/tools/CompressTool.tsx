@@ -2,7 +2,7 @@ import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel, typ
 import { RiAddLine } from "@remixicon/react";
 import { useState, useRef } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
-import { ComparisonSlider } from "@/components/ComparisonSlider";
+import { ComparisonSlider } from "@/components/viewer/ComparisonSlider";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { SidebarCheckbox } from "@/components/sidebar/SidebarCheckbox";
@@ -11,11 +11,11 @@ import { SidebarField } from "@/components/sidebar/SidebarField";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { SidebarRange, SidebarSelect } from "@/components/sidebar/SidebarControls";
 import { SidebarSection } from "@/components/sidebar/SidebarSection";
-import { useAsyncToolJob } from "@/lib/features/pdfTools/hooks/useAsyncToolJob";
-import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/lib/features/pdfTools/utils/pdfToolUtils";
-import { CompressVisual } from "@/components/pdfTools/visuals/CompressVisual";
-import { PdfPreview } from "@/components/pdfTools/PdfPreview";
-import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
+import { EmptyCompress } from "@/components/pdf/emptyState/EmptyCompress";
+import { PdfPreview } from "@/components/pdf/PdfPreview";
+import { ResultTray } from "@/components/pdf/ResultTray";
+import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
+import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdf/pdfToolUtils";
 
 const decodeLevelOptions: Array<{ label: string; value: DecodeLevel }> = [
     { label: "None", value: "none" },
@@ -75,6 +75,7 @@ export function CompressTool() {
         setCompressionOptions((prev) => {
             const nextOptions = { ...prev, ...patch };
             processCurrentFile(nextOptions);
+
             return nextOptions;
         });
     };
@@ -149,7 +150,7 @@ export function CompressTool() {
     const centerContent = file ? (
         <div className="relative h-full w-full">
             <ComparisonSlider after={result ? <PdfPreview data={result.data} /> : undefined} before={<PdfPreview file={file} />} isProcessing={isWorking} />
-            <ToolResultTray
+            <ResultTray
                 fileName={file.name}
                 fileSize={formatBytes(file.size)}
                 metrics={
@@ -181,7 +182,7 @@ export function CompressTool() {
             inputRef={inputRef}
             onFiles={handleFiles}
             title="Drop a PDF to compress"
-            visual={<CompressVisual />}
+            visual={<EmptyCompress />}
         />
     );
 

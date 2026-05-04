@@ -1,6 +1,6 @@
 import { RiScissorsCutLine } from "@remixicon/react";
 
-export function SplitVisual() {
+export function EmptySplit() {
     return (
         <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 group-hover:rotate-6">
             <div className="relative h-20 w-16">

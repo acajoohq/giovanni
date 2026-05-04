@@ -8,9 +8,11 @@
         "paths": {
             "@/*": ["./src/*"],
             "@/components/*": ["./src/components/*"],
+            "@/hooks/*": ["./src/hooks/*"],
             "@/lib/*": ["./src/lib/*"],
             "@/routes/*": ["./src/routes/*"],
             "@/styles/*": ["./src/styles/*"],
+            "@/utils/*": ["./src/utils/*"],
             "@pdfly/wasm": ["../../packages/pdfly-wasm/src/index.ts"]
         }
     },

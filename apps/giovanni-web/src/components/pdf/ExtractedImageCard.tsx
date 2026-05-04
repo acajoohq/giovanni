@@ -1,7 +1,7 @@
 import { formatBytes, type ExtractedImage } from "@pdfly/wasm";
 import { RiImageLine } from "@remixicon/react";
 
-export function ImageThumb({ image, url, index }: { image: ExtractedImage; url: string | null; index: number }) {
+export function ExtractedImageCard({ image, url, index }: { image: ExtractedImage; url: string | null; index: number }) {
     const thumbnailContent = url ? (
         <img alt={`Extracted image ${index + 1}`} className="h-full w-full object-contain" src={url} />
     ) : (

@@ -1,6 +1,6 @@
 import { RiStackLine } from "@remixicon/react";
 
-export function MergeVisual() {
+export function EmptyMerge() {
     return (
         <>
             <div className="absolute h-20 w-16 -translate-x-3 translate-y-1 -rotate-12 rounded-xl border border-app-border-strong bg-linear-to-br from-app-surface-muted to-app-control shadow-[0_10px_20px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.1)] transition-all duration-500 group-hover:-translate-x-5 group-hover:rotate-[-15deg]" />

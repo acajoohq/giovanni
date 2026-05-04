@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { RiCheckboxCircleLine, RiCloseCircleLine, RiFilePdf2Line, RiInformationLine } from "@remixicon/react";
 import { cn } from "@/lib/utils";
-import type { ToolStatus } from "@/lib/features/pdfTools/utils/toolStatus";
+import type { ToolStatus } from "@/utils/pdf/toolStatus";
 import { Button } from "@/components/ui/shadcn/Button";
 
 interface ToolResultMetric {
@@ -16,7 +16,7 @@ interface ToolResultAction {
     disabled?: boolean;
 }
 
-interface ToolResultTrayProps {
+interface ResultTrayProps {
     fileName?: string;
     fileSize?: string;
     status?: ToolStatus;
@@ -25,7 +25,7 @@ interface ToolResultTrayProps {
     secondaryActions?: ToolResultAction[];
 }
 
-export function ToolResultTray({ fileName, fileSize, metrics = [], primaryAction, secondaryActions = [], status }: ToolResultTrayProps) {
+export function ResultTray({ fileName, fileSize, metrics = [], primaryAction, secondaryActions = [], status }: ResultTrayProps) {
     if (!fileName && !status && metrics.length === 0 && !primaryAction && secondaryActions.length === 0) {
         return null;
     }
@@ -79,6 +79,7 @@ export function ToolResultTray({ fileName, fileSize, metrics = [], primaryAction
                                 disabled={action.disabled}
                                 size="sm"
                                 variant="secondary"
+                                type="button"
                                 onClick={action.onClick}
                             >
                                 {action.label}
@@ -89,6 +90,7 @@ export function ToolResultTray({ fileName, fileSize, metrics = [], primaryAction
                                 className="h-7 rounded-[5px] border border-black/30 bg-brand px-3 text-[11px] font-semibold text-white shadow-sm hover:bg-brand-hover"
                                 disabled={primaryAction.disabled}
                                 size="sm"
+                                type="button"
                                 onClick={primaryAction.onClick}
                             >
                                 {primaryAction.label}

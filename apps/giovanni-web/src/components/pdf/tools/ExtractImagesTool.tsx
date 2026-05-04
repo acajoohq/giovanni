@@ -2,7 +2,7 @@ import { extractImages, formatBytes, type ExtractedImage, type ExtractImagesResu
 import { RiAddLine } from "@remixicon/react";
 import { useState, useRef } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
-import { BeforeAfterView } from "@/components/BeforeAfterView";
+import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
 import { Sidebar } from "@/components/sidebar/Sidebar";
@@ -12,21 +12,13 @@ import { SidebarField } from "@/components/sidebar/SidebarField";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { SidebarInput } from "@/components/sidebar/SidebarControls";
 import { SidebarSection } from "@/components/sidebar/SidebarSection";
-import { useAsyncToolJob } from "@/lib/features/pdfTools/hooks/useAsyncToolJob";
-import { useObjectUrls } from "@/lib/features/pdfTools/hooks/useObjectUrls";
-import {
-    buildExtractedImageEntries,
-    downloadBlob,
-    downloadZip,
-    findFirstPdfFile,
-    imageDownloadName,
-    makeArchiveName,
-    pdfBaseName,
-} from "@/lib/features/pdfTools/utils/pdfToolUtils";
-import { ExtractImagesVisual } from "@/components/pdfTools/visuals/ExtractImagesVisual";
-import { ImageThumb } from "@/components/pdfTools/ImageThumb";
-import { PdfPreview } from "@/components/pdfTools/PdfPreview";
-import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
+import { EmptyExtractImages } from "@/components/pdf/emptyState/EmptyExtractImages";
+import { ExtractedImageCard } from "@/components/pdf/ExtractedImageCard";
+import { PdfPreview } from "@/components/pdf/PdfPreview";
+import { ResultTray } from "@/components/pdf/ResultTray";
+import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
+import { useObjectUrls } from "@/hooks/pdf/useObjectUrls";
+import { buildExtractedImageEntries, downloadBlob, downloadZip, findFirstPdfFile, imageDownloadName, makeArchiveName, pdfBaseName } from "@/utils/pdf/pdfToolUtils";
 
 const EMPTY_IMAGES: ExtractedImage[] = [];
 
@@ -164,8 +156,8 @@ export function ExtractImagesTool() {
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                     {images.map((image, index) => (
                         <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2 [content-visibility:auto] [contain-intrinsic-size:210px]">
-                            <ImageThumb image={image} index={index} url={previewUrls[index] ?? null} />
-                            <Button className="w-full" size="sm" variant="secondary" onClick={() => downloadImage(image, index)}>
+                            <ExtractedImageCard image={image} index={index} url={previewUrls[index] ?? null} />
+                            <Button className="w-full" size="sm" variant="secondary" type="button" onClick={() => downloadImage(image, index)}>
                                 {image.blob ? "Download" : "Download Raw"}
                             </Button>
                         </div>
@@ -177,7 +169,7 @@ export function ExtractImagesTool() {
     const centerContent = file ? (
         <div className="relative h-full w-full">
             <BeforeAfterView after={imagesOutput} before={<PdfPreview file={file} />} isProcessing={isWorking} />
-            <ToolResultTray
+            <ResultTray
                 fileName={file.name}
                 fileSize={formatBytes(file.size)}
                 metrics={[
@@ -202,7 +194,7 @@ export function ExtractImagesTool() {
             inputRef={inputRef}
             onFiles={handleFiles}
             title="Drop a PDF to extract images"
-            visual={<ExtractImagesVisual />}
+            visual={<EmptyExtractImages />}
         />
     );
 

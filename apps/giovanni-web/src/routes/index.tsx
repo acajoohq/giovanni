@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CompressTool } from "@/components/pdfTools/CompressTool";
+import { CompressTool } from "@/components/pdf/tools/CompressTool";
 
 export const Route = createFileRoute("/")({
     component: CompressTool,

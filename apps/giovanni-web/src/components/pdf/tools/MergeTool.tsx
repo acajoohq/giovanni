@@ -2,7 +2,7 @@ import { formatBytes, mergePdfs } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
-import { BeforeAfterView } from "@/components/BeforeAfterView";
+import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
 import { Sidebar } from "@/components/sidebar/Sidebar";
@@ -11,12 +11,12 @@ import { SidebarField } from "@/components/sidebar/SidebarField";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { SidebarInput } from "@/components/sidebar/SidebarControls";
 import { SidebarSection } from "@/components/sidebar/SidebarSection";
-import { useAsyncToolJob } from "@/lib/features/pdfTools/hooks/useAsyncToolJob";
-import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/lib/features/pdfTools/utils/pdfToolUtils";
-import { MergeVisual } from "@/components/pdfTools/visuals/MergeVisual";
-import { FilesList } from "@/components/pdfTools/FilesList";
-import { PdfPreview } from "@/components/pdfTools/PdfPreview";
-import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
+import { PdfFilesList } from "@/components/pdf/PdfFilesList";
+import { PdfPreview } from "@/components/pdf/PdfPreview";
+import { ResultTray } from "@/components/pdf/ResultTray";
+import { EmptyMerge } from "@/components/pdf/emptyState/EmptyMerge";
+import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
+import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/utils/pdf/pdfToolUtils";
 
 export function MergeTool() {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -103,12 +103,12 @@ export function MergeTool() {
                     <span className="text-[11px] font-medium text-neutral-500">
                         {files.length} {files.length === 1 ? "file" : "files"}
                     </span>
-                    <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()}>
+                    <Button size="sm" variant="secondary" type="button" onClick={() => inputRef.current?.click()}>
                         Add PDFs
                     </Button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-3 pb-24">
-                    <FilesList files={files} onMove={handleMove} onRemove={handleRemove} />
+                    <PdfFilesList files={files} onMove={handleMove} onRemove={handleRemove} />
                 </div>
             </div>
         ) : null;
@@ -126,7 +126,7 @@ export function MergeTool() {
         files.length > 0 ? (
             <div className="relative h-full w-full">
                 <BeforeAfterView after={afterContent} before={beforeContent} isProcessing={isWorking && files.length >= 2} />
-                <ToolResultTray
+                <ResultTray
                     fileName={`${files.length} ${files.length === 1 ? "PDF" : "PDFs"} selected`}
                     fileSize={formatBytes(totalInputBytes)}
                     metrics={[
@@ -147,7 +147,7 @@ export function MergeTool() {
                 isMultiple
                 onFiles={handleFiles}
                 title="Drop PDFs to merge"
-                visual={<MergeVisual />}
+                visual={<EmptyMerge />}
             />
         );
 

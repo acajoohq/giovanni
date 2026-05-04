@@ -1,5 +1,5 @@
 import { useRef, useState, type ReactNode } from "react";
-import { ProcessingPlaceholder } from "@/components/ProcessingPlaceholder";
+import { ProcessingPlaceholder } from "@/components/viewer/ProcessingPlaceholder";
 
 interface ComparisonSliderProps {
     before: ReactNode;

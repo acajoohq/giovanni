@@ -83,15 +83,15 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
             }
 
             const params: RenderParameters = {
-                canvas: canvas as unknown as HTMLCanvasElement,
-                canvasContext: context as unknown as CanvasRenderingContext2D,
+                canvas: canvas as HTMLCanvasElement,
+                canvasContext: context as CanvasRenderingContext2D,
                 viewport,
             };
             await page.render(params).promise;
 
             page.cleanup();
 
-            const blob = await canvasToJpegBlob(canvas as NodeCanvas | OffscreenCanvas | HTMLCanvasElement, quality);
+            const blob = await canvasToJpegBlob(canvas, quality);
             if (blob) {
                 pages.push({ pageIndex: pageNum - 1, blob, width, height });
             }

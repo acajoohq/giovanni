@@ -19,9 +19,7 @@ try {
 const isBrowser = typeof window !== "undefined" || typeof OffscreenCanvas !== "undefined" || typeof document !== "undefined";
 const nodeCanvasPromise: Promise<((w: number, h: number) => NodeCanvas) | null> = isBrowser
     ? Promise.resolve(null)
-    : import("canvas")
-          .then(({ createCanvas }) => createCanvas as (w: number, h: number) => NodeCanvas)
-          .catch(() => null);
+    : import("canvas").then(({ createCanvas }) => createCanvas as (w: number, h: number) => NodeCanvas).catch(() => null);
 
 /**
  * Convert a PDF to JPG images by rendering each page via PDF.js.
@@ -122,4 +120,3 @@ async function canvasToJpegBlob(canvas: OffscreenCanvas | HTMLCanvasElement | No
         (canvas as HTMLCanvasElement).toBlob((blob) => resolve(blob), "image/jpeg", quality);
     });
 }
-

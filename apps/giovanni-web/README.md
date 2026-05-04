@@ -37,9 +37,9 @@ Use the `@/*` alias for source imports instead of long relative paths. The alias
 Examples:
 
 ```ts
-import { ToolLayout } from "@/components/layout/ToolLayout";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { filterPdfFiles } from "@/utils/pdf/pdfToolUtils";
+import { ToolLayout } from "@/components/layout/ToolLayout"
+import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob"
+import { filterPdfFiles } from "@/utils/pdf/pdfToolUtils"
 ```
 
 ## Styling
@@ -74,3 +74,16 @@ Build acceptance for PDF preview changes:
 - no prerender `DOMMatrix is not defined` errors
 - no pdf.js worker import warning
 - no format failures
+
+## TODOs
+
+- [ ] Eslint rules
+- [ ] unit tests
+- [ ] Nice visuals / illustrations / icons / empty states
+- [ ] Transitions / animations
+- [ ] Tooltips
+- [ ] SEO
+- [ ] Use toggle instead of checkbox
+- [ ] Landing page, with dropzone to have one interaction flow
+- [ ] PDF JS preview, or something else but nice
+- [ ] Mobile version (responsive layout — collapse resizable panels into a stacked single-panel flow on small screens)

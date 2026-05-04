@@ -1,8 +1,27 @@
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { QpdfConversionError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { PdfPageJpg, PdfToJpgOptions, PdfToJpgResult } from "../types/index.js";
 import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
 import type { Canvas as NodeCanvas } from "canvas";
+
+// Initialize PDF.js worker once at module level.
+try {
+    if (!GlobalWorkerOptions.workerSrc) {
+        GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
+    }
+} catch {
+    // Could not resolve worker URL (e.g. CommonJS context).
+    // PDF.js will run in the main thread, which is slower but still functional.
+}
+
+// Lazily load node-canvas once; result is cached for all subsequent calls.
+const isBrowser = typeof window !== "undefined" || typeof OffscreenCanvas !== "undefined" || typeof document !== "undefined";
+const nodeCanvasPromise: Promise<((w: number, h: number) => NodeCanvas) | null> = isBrowser
+    ? Promise.resolve(null)
+    : import("canvas")
+          .then(({ createCanvas }) => createCanvas as (w: number, h: number) => NodeCanvas)
+          .catch(() => null);
 
 /**
  * Convert a PDF to JPG images by rendering each page via PDF.js.
@@ -27,26 +46,7 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
     }
 
     const inputBuffer = normalizeBuffer(input);
-
-    // Lazily load node-canvas (optional native dep). Falls back to browser canvas when unavailable.
-    let nodeCreateCanvas: ((w: number, h: number) => NodeCanvas) | null = null;
-    try {
-        const { createCanvas } = await import("canvas");
-        nodeCreateCanvas = createCanvas;
-    } catch {
-        // Native canvas.node binary not present; OffscreenCanvas / DOM canvas will be used instead.
-    }
-
-    const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
-
-    if (!GlobalWorkerOptions.workerSrc) {
-        try {
-            GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
-        } catch {
-            // Could not resolve worker URL (e.g. CommonJS context).
-            // PDF.js will run in the main thread, which is slower but still functional.
-        }
-    }
+    const nodeCreateCanvas = await nodeCanvasPromise;
 
     try {
         const loadingTask = getDocument({ data: inputBuffer });
@@ -122,3 +122,4 @@ async function canvasToJpegBlob(canvas: OffscreenCanvas | HTMLCanvasElement | No
         (canvas as HTMLCanvasElement).toBlob((blob) => resolve(blob), "image/jpeg", quality);
     });
 }
+

@@ -57,9 +57,17 @@
         "validate": "publint && attw --pack . --profile node16",
         "package:check": "pnpm run validate && pnpm pack --dry-run"
     },
-    "dependencies": {
+    "peerDependencies": {
         "canvas": "^3.2.3",
         "pdfjs-dist": "^5.7.284"
+    },
+    "peerDependenciesMeta": {
+        "canvas": {
+            "optional": true
+        },
+        "pdfjs-dist": {
+            "optional": true
+        }
     },
     "engines": {
         "node": ">=24.0.0"

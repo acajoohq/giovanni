@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AboutDialog } from "@/components/AboutDialog";
 
 const navigationItems = [
-    { label: "Compress", to: "/" },
+    { label: "Compress", to: "/compress" },
     { label: "Split", to: "/split" },
     { label: "Merge", to: "/merge" },
     { label: "Extract Images", to: "/extract-images" },

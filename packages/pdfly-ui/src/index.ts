@@ -806,7 +806,7 @@ export function initApp(): void {
                 return;
             }
 
-            pages.forEach((page, index) => {
+            pages.forEach((page) => {
                 const card = document.createElement("div");
                 card.className = "image-card";
 

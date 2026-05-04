@@ -40,9 +40,10 @@ interface RenderPdfPageToCanvasOptions {
     pdfPage: PDFPageProxy;
     canvas: HTMLCanvasElement;
     scale: number;
+    shouldCommit?: () => boolean;
 }
 
-export async function renderPdfPageToCanvas({ pdfPage, canvas, scale }: RenderPdfPageToCanvasOptions): Promise<void> {
+export async function renderPdfPageToCanvas({ pdfPage, canvas, scale, shouldCommit }: RenderPdfPageToCanvasOptions): Promise<void> {
     const viewport = pdfPage.getViewport({ scale });
     const outputScale = window.devicePixelRatio ?? 1;
     const context = canvas.getContext("2d");
@@ -67,6 +68,10 @@ export async function renderPdfPageToCanvas({ pdfPage, canvas, scale }: RenderPd
 
     const renderTask = pdfPage.render(renderContext);
     await renderTask.promise;
+
+    if (shouldCommit && !shouldCommit()) {
+        return;
+    }
 
     canvas.width = offscreenCanvas.width;
     canvas.height = offscreenCanvas.height;

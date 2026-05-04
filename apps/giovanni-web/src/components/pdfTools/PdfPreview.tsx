@@ -16,6 +16,7 @@ interface PdfPreviewProps {
 export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
     const containerRef = React.useRef<HTMLDivElement>(null);
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const renderGenerationRef = React.useRef(0);
     const [renderer, setRenderer] = React.useState<PdfRendererClient | null>(null);
     const [pdfDoc, setPdfDoc] = React.useState<PDFDocumentProxy | null>(null);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -101,6 +102,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
 
     React.useEffect(() => {
         let cancelled = false;
+        const renderGeneration = ++renderGenerationRef.current;
 
         const render = async () => {
             if (!canvasRef.current || !pdfDoc || !renderer) {
@@ -116,7 +118,12 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
 
                 const baseViewport = pdfPage.getViewport({ scale: 1 });
                 const scale = renderer.calculatePdfScale({ baseViewport, viewerSize: containerSize, pdfDocument: pdfDoc });
-                await renderer.renderPdfPageToCanvas({ pdfPage, canvas: canvasRef.current, scale });
+                await renderer.renderPdfPageToCanvas({
+                    pdfPage,
+                    canvas: canvasRef.current,
+                    scale,
+                    shouldCommit: () => !cancelled && renderGeneration === renderGenerationRef.current,
+                });
             } catch (error) {
                 if ((error as Error)?.name !== "RenderingCancelledException") {
                     console.error("pdf render error", error);

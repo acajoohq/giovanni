@@ -1,6 +1,7 @@
 import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel, type ObjectStreamMode } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import * as React from "react";
+import { useEffect } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { ComparisonSlider } from "@/components/ComparisonSlider";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -81,7 +82,7 @@ export function CompressTool() {
         [reset, setStatus],
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (file) {
             void processFile(file);
         }

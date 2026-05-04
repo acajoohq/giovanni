@@ -1,6 +1,7 @@
 import { formatBytes, splitPages } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import * as React from "react";
+import { useEffect } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -79,7 +80,7 @@ export function SplitTool() {
         [reset, setStatus],
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (file) {
             void processFile(file);
         }

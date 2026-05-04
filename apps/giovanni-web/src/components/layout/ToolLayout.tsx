@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect } from "react";
 import { RiUploadCloud2Line } from "@remixicon/react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/shadcn/Resizable";
 
@@ -82,7 +83,7 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
 function useMediaQuery(query: string): boolean {
     const [matches, setMatches] = React.useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const mediaQueryList = window.matchMedia(query);
         const updateMatches = () => setMatches(mediaQueryList.matches);
 

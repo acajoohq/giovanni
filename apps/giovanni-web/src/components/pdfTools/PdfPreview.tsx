@@ -1,6 +1,7 @@
 import { RiArrowLeftSLine, RiArrowRightSLine, RiFilePdf2Line } from "@remixicon/react";
 import { createClientOnlyFn } from "@tanstack/react-start";
 import * as React from "react";
+import { useEffect } from "react";
 import type { PDFDocumentProxy } from "@/lib/features/pdfTools/utils/pdfRenderer.client";
 
 type PdfRendererClient = typeof import("@/lib/features/pdfTools/utils/pdfRenderer.client");
@@ -23,7 +24,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
     const [page, setPage] = React.useState(1);
     const [containerSize, setContainerSize] = React.useState<{ width: number; height: number } | null>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const element = containerRef.current;
 
         if (!element || typeof ResizeObserver === "undefined") {
@@ -60,7 +61,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
         };
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         let cancelled = false;
 
         const load = async () => {
@@ -100,7 +101,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
         };
     }, [data, file]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         let cancelled = false;
         const renderGeneration = ++renderGenerationRef.current;
 

@@ -1,9 +1,10 @@
 import * as React from "react";
+import { useEffect } from "react";
 
 export function useObjectUrls<TItem>(items: TItem[], getBlob: (item: TItem) => Blob | null): Array<string | null> {
     const [urls, setUrls] = React.useState<Array<string | null>>([]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (items.length === 0) {
             setUrls((currentUrls) => (currentUrls.length === 0 ? currentUrls : []));
             return;

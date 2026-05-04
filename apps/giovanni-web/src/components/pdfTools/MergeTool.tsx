@@ -1,6 +1,7 @@
 import { formatBytes, mergePdfs } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import * as React from "react";
+import { useEffect } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -49,7 +50,7 @@ export function MergeTool() {
         [reset, runJob],
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (lastProcessedFilesKeyRef.current === filesKey) {
             return;
         }

@@ -67,10 +67,10 @@ export function CompressTool() {
                 return compressPdf(buffer, options);
             },
             errorMessage: "Failed to compress PDF.",
-            successStatus: (nextResult) => ({
-                tone: "success",
-                message: nextResult.savedBytes >= 0 ? `Saved ${formatBytes(nextResult.savedBytes)}.` : "Result is slightly larger.",
-            }),
+            successStatus: (nextResult) =>
+                nextResult.savedBytes >= 0
+                    ? { tone: "success", message: `Saved ${formatBytes(nextResult.savedBytes)}.` }
+                    : { tone: "info", message: "Result is slightly larger." },
         });
     };
 

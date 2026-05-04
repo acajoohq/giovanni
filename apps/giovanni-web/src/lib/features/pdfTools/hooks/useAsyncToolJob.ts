@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useReducer, useRef } from "react";
 import type { ToolStatus } from "../utils/toolStatus";
 
 interface RunToolJobOptions<TResult> {
@@ -9,33 +9,104 @@ interface RunToolJobOptions<TResult> {
     onError?: (error: unknown) => void;
 }
 
+interface ToolJobState<TResult> {
+    result: TResult | null;
+    elapsedMs: number | null;
+    status: ToolStatus;
+    isWorking: boolean;
+}
+
+type ToolJobAction<TResult> =
+    | { type: "started" }
+    | { type: "succeeded"; result: TResult; elapsedMs: number; status: ToolStatus }
+    | { type: "failed"; status: ToolStatus }
+    | { type: "reset" }
+    | { type: "clearedResult" }
+    | { type: "setStatus"; status: ToolStatus }
+    | { type: "setResult"; result: TResult | null };
+
+function getInitialToolJobState<TResult>(): ToolJobState<TResult> {
+    return {
+        result: null,
+        elapsedMs: null,
+        status: null,
+        isWorking: false,
+    };
+}
+
+function toolJobReducer<TResult>(state: ToolJobState<TResult>, action: ToolJobAction<TResult>): ToolJobState<TResult> {
+    switch (action.type) {
+        case "started":
+            return {
+                ...state,
+                result: null,
+                elapsedMs: null,
+                isWorking: true,
+            };
+        case "succeeded":
+            return {
+                result: action.result,
+                elapsedMs: action.elapsedMs,
+                status: action.status,
+                isWorking: false,
+            };
+        case "failed":
+            return {
+                ...state,
+                status: action.status,
+                isWorking: false,
+            };
+        case "reset":
+            return getInitialToolJobState();
+        case "clearedResult":
+            return {
+                ...state,
+                result: null,
+                elapsedMs: null,
+            };
+        case "setStatus":
+            return {
+                ...state,
+                status: action.status,
+            };
+        case "setResult":
+            return {
+                ...state,
+                result: action.result,
+            };
+        default: {
+            const exhaustiveAction: never = action;
+            return exhaustiveAction;
+        }
+    }
+}
+
 export function useAsyncToolJob<TResult>() {
     const jobIdRef = useRef(0);
-    const [result, setResult] = useState<TResult | null>(null);
-    const [elapsedMs, setElapsedMs] = useState<number | null>(null);
-    const [status, setStatus] = useState<ToolStatus>(null);
-    const [isWorking, setIsWorking] = useState(false);
+    const [state, dispatch] = useReducer(toolJobReducer<TResult>, undefined, getInitialToolJobState);
 
     const reset = useCallback(() => {
         jobIdRef.current += 1;
-        setResult(null);
-        setElapsedMs(null);
-        setStatus(null);
-        setIsWorking(false);
+        dispatch({ type: "reset" });
     }, []);
 
     const clearResult = useCallback(() => {
-        setResult(null);
-        setElapsedMs(null);
+        dispatch({ type: "clearedResult" });
+    }, []);
+
+    const setStatus = useCallback((status: ToolStatus) => {
+        dispatch({ type: "setStatus", status });
+    }, []);
+
+    const setResult = useCallback((result: TResult | null) => {
+        dispatch({ type: "setResult", result });
     }, []);
 
     const runJob = useCallback(async ({ execute, successStatus, errorMessage, onSuccess, onError }: RunToolJobOptions<TResult>) => {
         const jobId = jobIdRef.current + 1;
         jobIdRef.current = jobId;
 
-        setIsWorking(true);
-        setResult(null);
-        setElapsedMs(null);
+        dispatch({ type: "started" });
 
         try {
             const start = performance.now();
@@ -46,31 +117,22 @@ export function useAsyncToolJob<TResult>() {
                 return null;
             }
 
-            setResult(nextResult);
-            setElapsedMs(nextElapsedMs);
-            setStatus(successStatus?.(nextResult, nextElapsedMs) ?? null);
+            dispatch({ type: "succeeded", result: nextResult, elapsedMs: nextElapsedMs, status: successStatus?.(nextResult, nextElapsedMs) ?? null });
             onSuccess?.(nextResult, nextElapsedMs);
 
             return nextResult;
         } catch (error) {
             if (jobIdRef.current === jobId) {
-                setStatus({ tone: "error", message: error instanceof Error ? error.message : errorMessage });
+                dispatch({ type: "failed", status: { tone: "error", message: error instanceof Error ? error.message : errorMessage } });
                 onError?.(error);
             }
 
             return null;
-        } finally {
-            if (jobIdRef.current === jobId) {
-                setIsWorking(false);
-            }
         }
     }, []);
 
     return {
-        result,
-        elapsedMs,
-        status,
-        isWorking,
+        ...state,
         setStatus,
         setResult,
         reset,

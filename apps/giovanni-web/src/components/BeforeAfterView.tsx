@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { RiLayoutColumnLine, RiLayoutRowLine } from "@remixicon/react";
+import { ProcessingPlaceholder } from "@/components/ProcessingPlaceholder";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/shadcn/Resizable";
 
 type Direction = "horizontal" | "vertical";
@@ -55,15 +56,6 @@ function SectionBadge({ children }: { children: ReactNode }) {
     return (
         <div className="pointer-events-none absolute left-2 top-2 z-10 rounded-full border border-app-control-hover bg-app-surface-raised px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-neutral-700">
             {children}
-        </div>
-    );
-}
-
-function ProcessingPlaceholder() {
-    return (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-neutral-600">
-            <div className="size-5 animate-spin rounded-full border-2 border-app-control-hover border-t-brand" />
-            <span className="text-[12px]">Processing...</span>
         </div>
     );
 }

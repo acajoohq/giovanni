@@ -58,6 +58,7 @@
         "package:check": "pnpm run validate && pnpm pack --dry-run"
     },
     "dependencies": {
+        "canvas": "^3.2.3",
         "pdfjs-dist": "^5.7.284"
     },
     "engines": {

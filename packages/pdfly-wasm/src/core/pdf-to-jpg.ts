@@ -2,6 +2,7 @@ import { QpdfConversionError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { PdfPageJpg, PdfToJpgOptions, PdfToJpgResult } from "../types/index.js";
 import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
+import { createCanvas, Canvas as NodeCanvas } from "canvas";
 
 /**
  * Convert a PDF to JPG images by rendering each page via PDF.js.
@@ -50,7 +51,7 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
             const width = Math.round(viewport.width);
             const height = Math.round(viewport.height);
 
-            const canvas = createCanvas(width, height) as HTMLCanvasElement;
+            const canvas = createCanvas(width, height);
             if (!canvas) {
                 page.cleanup();
                 continue;
@@ -63,8 +64,8 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
             }
 
             const params: RenderParameters = {
-                canvas,
-                canvasContext: context as CanvasRenderingContext2D,
+                canvas: canvas as unknown as HTMLCanvasElement,
+                canvasContext: context as unknown as CanvasRenderingContext2D,
                 viewport,
             };
             await page.render(params).promise;
@@ -86,22 +87,14 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
     }
 }
 
-function createCanvas(width: number, height: number): OffscreenCanvas | HTMLCanvasElement | null {
-    if (typeof OffscreenCanvas !== "undefined") {
-        return new OffscreenCanvas(width, height);
-    }
-    if (typeof document !== "undefined") {
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        return canvas;
-    }
-    return null;
-}
-
-async function canvasToJpegBlob(canvas: OffscreenCanvas | HTMLCanvasElement, quality: number): Promise<Blob | null> {
+async function canvasToJpegBlob(canvas: OffscreenCanvas | HTMLCanvasElement | NodeCanvas, quality: number): Promise<Blob | null> {
     if (canvas instanceof OffscreenCanvas) {
         return canvas.convertToBlob({ type: "image/jpeg", quality });
+    }
+    // node-canvas (Canvas from the 'canvas' package) uses toBuffer instead of toBlob
+    if (typeof (canvas as NodeCanvas).toBuffer === "function") {
+        const buffer = (canvas as NodeCanvas).toBuffer("image/jpeg", { quality });
+        return new Blob([new Uint8Array(buffer)], { type: "image/jpeg" });
     }
     return new Promise<Blob | null>((resolve) => {
         (canvas as HTMLCanvasElement).toBlob((blob) => resolve(blob), "image/jpeg", quality);

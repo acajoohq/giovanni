@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 export const SidebarField = ({ className, label, children, ...props }: React.HTMLAttributes<HTMLDivElement> & { label: React.ReactNode }) => (
     <div className={cn("flex flex-col gap-1.5", className)} {...props}>

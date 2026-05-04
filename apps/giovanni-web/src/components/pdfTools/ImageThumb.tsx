@@ -13,8 +13,8 @@ export function ImageThumb({ image, url, index }: { image: ExtractedImage; url: 
     );
 
     return (
-        <div className="overflow-hidden rounded-[6px] border border-[#2a2a2a] bg-[#101010]">
-            <div className="flex aspect-4/3 items-center justify-center border-b border-[#262626] bg-[#0c0c0c]">{thumbnailContent}</div>
+        <div className="overflow-hidden rounded-[6px] border border-app-border bg-app-surface">
+            <div className="flex aspect-4/3 items-center justify-center border-b border-app-border bg-app-bg">{thumbnailContent}</div>
             <div className="space-y-1 p-3">
                 <div className="text-[12px] font-medium text-neutral-100">
                     {image.width}x{image.height}

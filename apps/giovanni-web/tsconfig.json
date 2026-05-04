@@ -6,6 +6,11 @@
         "noEmit": true,
         "types": ["vite/client"],
         "paths": {
+            "@/*": ["./src/*"],
+            "@/components/*": ["./src/components/*"],
+            "@/lib/*": ["./src/lib/*"],
+            "@/routes/*": ["./src/routes/*"],
+            "@/styles/*": ["./src/styles/*"],
             "@pdfly/wasm": ["../../packages/pdfly-wasm/src/index.ts"]
         }
     },

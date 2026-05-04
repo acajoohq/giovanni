@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 export interface EmptyStateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
     title: React.ReactNode;
@@ -51,16 +51,16 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, i
 
     return (
         <div
-            className={cn("relative flex h-full w-full flex-col items-center justify-center text-center transition-colors duration-150", isDragOver && "bg-[#eb5a3f]/5", className)}
+            className={cn("relative flex h-full w-full flex-col items-center justify-center text-center transition-colors duration-150", isDragOver && "bg-brand/5", className)}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             {...props}
         >
-            {isDragOver && <div className="pointer-events-none absolute inset-4 rounded-xl border-2 border-dashed border-[#eb5a3f]/40" />}
+            {isDragOver && <div className="pointer-events-none absolute inset-4 rounded-xl border-2 border-dashed border-brand/40" />}
 
-            <label className="relative mb-10 block cursor-pointer group">
+            <label className="group relative flex cursor-pointer flex-col items-center">
                 <input
                     ref={inputRef}
                     type="file"
@@ -72,17 +72,17 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, i
                         event.currentTarget.value = "";
                     }}
                 />
-                <div className="relative flex size-32 items-center justify-center">{visual}</div>
+                <div className="relative mb-10 flex size-32 items-center justify-center">{visual}</div>
 
                 {badgeIcon && (
-                    <div className="absolute -bottom-2 -right-2 z-30 flex size-10 items-center justify-center rounded-full border border-[#333] bg-[#1a1a1a] text-neutral-400 shadow-[0_4px_12px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] transition-colors group-hover:text-white">
+                    <div className="absolute left-[calc(50%+34px)] top-[86px] z-30 flex size-10 items-center justify-center rounded-full border border-app-border-strong bg-app-surface-muted text-neutral-400 shadow-[0_4px_12px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] transition-colors group-hover:text-white">
                         {badgeIcon}
                     </div>
                 )}
-            </label>
 
-            <h2 className="mb-1.5 text-[15px] font-medium tracking-tight text-white">{title}</h2>
-            <p className="text-[12px] text-neutral-500">{description}</p>
+                <h2 className="mb-1.5 text-[15px] font-medium tracking-tight text-white transition-colors group-hover:text-brand">{title}</h2>
+                <p className="text-[12px] text-neutral-500">{description}</p>
+            </label>
         </div>
     );
 };

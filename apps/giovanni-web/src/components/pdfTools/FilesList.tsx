@@ -1,14 +1,14 @@
 import { formatBytes } from "@pdfly/wasm";
 import * as React from "react";
 import { RiArrowDownSLine, RiArrowUpSLine, RiCloseLine, RiFilePdf2Line } from "@remixicon/react";
-import { Button } from "../shadcn-ui/Button";
+import { Button } from "@/components/ui/shadcn/Button";
 
 export function FilesList({ files, onRemove, onMove }: { files: File[]; onRemove?: (index: number) => void; onMove?: (index: number, direction: -1 | 1) => void }) {
     return (
         <div className="space-y-2">
             {files.map((file, index) => (
-                <div key={`${file.name}-${file.size}-${index}`} className="flex items-center gap-2 rounded-[6px] border border-[#2a2a2a] bg-[#101010] px-3 py-2">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-[5px] border border-[#393939] bg-[#1c1c1c] text-[#eb5a3f]">
+                <div key={`${file.name}-${file.size}-${index}`} className="flex items-center gap-2 rounded-[6px] border border-app-border bg-app-surface px-3 py-2">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-[5px] border border-app-border-strong bg-app-surface-muted text-brand">
                         <RiFilePdf2Line className="size-4" />
                     </div>
                     <div className="min-w-0 flex-1">

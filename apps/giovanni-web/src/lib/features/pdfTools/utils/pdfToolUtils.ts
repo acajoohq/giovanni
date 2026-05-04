@@ -5,8 +5,35 @@ export function isPdfFile(file: File): boolean {
     return file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf");
 }
 
+export function findFirstPdfFile(files: File[]): File | null {
+    return files.find(isPdfFile) ?? null;
+}
+
+export function filterPdfFiles(files: File[]): File[] {
+    return files.filter(isPdfFile);
+}
+
 export function pdfBaseName(file: File | null): string {
     return file?.name.replace(/\.pdf$/i, "") || "document";
+}
+
+export function ensurePdfExtension(fileName: string): string {
+    const trimmedName = fileName.trim();
+    const baseName = trimmedName.length > 0 ? trimmedName : "document";
+
+    return baseName.toLowerCase().endsWith(".pdf") ? baseName : `${baseName}.pdf`;
+}
+
+export function makePagePdfName(pattern: string, baseName: string, pageIndex: number): string {
+    return pattern
+        .replaceAll("{basename}", baseName)
+        .replaceAll("{page}", String(pageIndex + 1))
+        .replace(/\.pdf$/i, "")
+        .concat(".pdf");
+}
+
+export function buildSplitPageEntries(pages: Uint8Array[], pattern: string, baseName: string): Record<string, Uint8Array> {
+    return Object.fromEntries(pages.map((page, index) => [makePagePdfName(pattern, baseName, index), page]));
 }
 
 export function formatDuration(ms: number): string {
@@ -48,6 +75,20 @@ export async function downloadZip(entries: Record<string, Uint8Array>, fileName:
     });
 
     downloadBlob(new Blob([zipped as BlobPart], { type: "application/zip" }), fileName);
+}
+
+export async function buildBrowserReadyImageEntries(images: ExtractedImage[], baseName: string): Promise<Record<string, Uint8Array>> {
+    const entries: Record<string, Uint8Array> = {};
+
+    for (const [index, image] of images.entries()) {
+        if (!image.blob) {
+            continue;
+        }
+
+        entries[imageDownloadName(baseName, index, image)] = new Uint8Array(await image.blob.arrayBuffer());
+    }
+
+    return entries;
 }
 
 export function imageDownloadName(baseName: string, index: number, image: ExtractedImage): string {

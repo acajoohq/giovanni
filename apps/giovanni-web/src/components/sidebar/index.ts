@@ -7,5 +7,4 @@ export * from "./SidebarToggleGroup";
 export * from "./SidebarToggle";
 export * from "./SidebarCheckbox";
 export * from "./SidebarInfo";
-export * from "./SidebarFooter";
-export * from "./SidebarStat";
+export * from "./SidebarControls";

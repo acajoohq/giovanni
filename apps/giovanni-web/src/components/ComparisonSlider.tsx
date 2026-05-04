@@ -22,16 +22,11 @@ export function ComparisonSlider({ before, after, isProcessing }: ComparisonSlid
     return (
         <div ref={containerRef} className="relative h-full w-full select-none overflow-hidden">
             {/* Back layer: after (or before when no output yet) */}
-            <div className="absolute inset-0">
-                {isProcessing ? <ProcessingPlaceholder /> : (after ?? before)}
-            </div>
+            <div className="absolute inset-0">{isProcessing ? <ProcessingPlaceholder /> : (after ?? before)}</div>
 
             {/* Front layer: before, clipped to left of divider */}
             {showSlider && (
-                <div
-                    className="absolute inset-0"
-                    style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
-                >
+                <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}>
                     {before}
                 </div>
             )}
@@ -79,7 +74,7 @@ export function ComparisonSlider({ before, after, isProcessing }: ComparisonSlid
 function ProcessingPlaceholder() {
     return (
         <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-neutral-600">
-            <div className="size-5 animate-spin rounded-full border-2 border-[#252525] border-t-[#eb5a3f]" />
+            <div className="size-5 animate-spin rounded-full border-2 border-app-control-hover border-t-brand" />
             <span className="text-[12px]">Processing…</span>
         </div>
     );

@@ -22,7 +22,7 @@ When the PDF tool phase starts, preserve the existing WASM packaging requirement
 - [ ] Transitions / animations
 - [ ] Tooltips
 - [ ] SEO
-- [ ] Use toggle instead of checkbox 
+- [ ] Use toggle instead of checkbox
 - [ ] Landing page, with dropzone to have one interaction flow
 - [ ] PDF JS preview, or something else but nice
 - [ ] Mobile version (responsive layout — collapse resizable panels into a stacked single-panel flow on small screens)

@@ -7,6 +7,26 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+    --brand: #eb5a3f;
+    --brand-hover: #d65037;
+    --brand-dark: #b33e29;
+    --brand-deep: #8f3426;
+    --brand-soft: #ff7b63;
+    --app-bg: #0a0a0a;
+    --app-workspace: #0f0f0f;
+    --app-panel: #181818;
+    --app-panel-strong: #222222;
+    --app-control: #111111;
+    --app-control-hover: #252525;
+    --app-surface: #101010;
+    --app-surface-raised: #141414;
+    --app-surface-muted: #1a1a1a;
+    --app-border: #282828;
+    --app-border-subtle: #1f1f1f;
+    --app-border-strong: #333333;
+    --app-border-stronger: #444444;
+    --app-text: #ededed;
+    --app-text-muted: #d4d4d4;
     --background: oklch(1 0 0);
     --foreground: oklch(0.141 0.005 285.823);
     --card: oklch(1 0 0);
@@ -109,6 +129,26 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
+    --color-brand: var(--brand);
+    --color-brand-hover: var(--brand-hover);
+    --color-brand-dark: var(--brand-dark);
+    --color-brand-deep: var(--brand-deep);
+    --color-brand-soft: var(--brand-soft);
+    --color-app-bg: var(--app-bg);
+    --color-app-workspace: var(--app-workspace);
+    --color-app-panel: var(--app-panel);
+    --color-app-panel-strong: var(--app-panel-strong);
+    --color-app-control: var(--app-control);
+    --color-app-control-hover: var(--app-control-hover);
+    --color-app-surface: var(--app-surface);
+    --color-app-surface-raised: var(--app-surface-raised);
+    --color-app-surface-muted: var(--app-surface-muted);
+    --color-app-border: var(--app-border);
+    --color-app-border-subtle: var(--app-border-subtle);
+    --color-app-border-strong: var(--app-border-strong);
+    --color-app-border-stronger: var(--app-border-stronger);
+    --color-app-text: var(--app-text);
+    --color-app-text-muted: var(--app-text-muted);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -121,6 +161,11 @@
     --shadow-skeuo: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.15), 0px 2px 4px 0px rgba(0, 0, 0, 0.4);
     --shadow-skeuo-sm: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
     --shadow-skeuo-inner: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.5), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 1px 0px 0px rgba(255, 255, 255, 0.05);
+    --shadow-sidebar: -8px 0 24px rgba(0, 0, 0, 0.5);
+    --shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.62);
+    --shadow-brand-glow: 0 0 48px rgba(235, 90, 63, 0.18);
+    --shadow-brand-card: 0 10px 20px rgba(235, 90, 63, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    --shadow-pdf-page: 0 4px 16px rgba(0, 0, 0, 0.6);
 }
 
 @layer base {

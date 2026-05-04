@@ -1,8 +1,8 @@
 import * as React from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 export const SidebarContent = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div className={cn("p-4 flex flex-col gap-3 bg-[#181818]", className)} {...props}>
+    <div className={cn("p-4 flex flex-col gap-3 bg-app-panel", className)} {...props}>
         {children}
     </div>
 );

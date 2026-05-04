@@ -41,7 +41,7 @@ export interface CompressionOptions {
      * - 'preserve': Keep existing object streams
      * - 'disable': Disable object streams
      * - 'generate': Generate object streams for better compression
-     * @default 'generate' — prefer `'preserve'` when output must mirror input structure
+     * @default 'generate' prefer `'preserve'` when output must mirror input structure
      */
     objectStreams?: ObjectStreamMode;
 
@@ -56,4 +56,22 @@ export interface CompressionOptions {
      * @default false
      */
     removeUnreferencedResources?: boolean;
+}
+
+/**
+ * Options for PDF to JPG conversion
+ */
+export interface PdfToJpgOptions {
+    /**
+     * JPEG quality (0-1], where 1 is best quality)
+     * @default 0.92
+     */
+    quality?: number;
+
+    /**
+     * Rendering scale multiplier for PDF page rasterisation.
+     * Higher values produce sharper images at the cost of larger file sizes.
+     * @default 2.0
+     */
+    scale?: number;
 }

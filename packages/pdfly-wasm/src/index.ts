@@ -36,13 +36,23 @@ export { initQpdf, getVersion, compressPdf } from "./core/compress.js";
 export { splitPages } from "./core/split.js";
 export { mergePdfs } from "./core/merge.js";
 export { extractImages } from "./core/extract-images.js";
+export { pdfToJpg } from "./core/pdf-to-jpg.js";
 
 // advanced api
 export { QPDF } from "./core/qpdf.js";
 export { QPDFWriter } from "./core/writer.js";
 
 // error classes
-export { QpdfError, QpdfInitError, QpdfCompressionError, QpdfSplitError, QpdfMergeError, QpdfValidationError, QpdfImageExtractionError } from "./core/errors.js";
+export {
+    QpdfError,
+    QpdfInitError,
+    QpdfCompressionError,
+    QpdfSplitError,
+    QpdfMergeError,
+    QpdfValidationError,
+    QpdfImageExtractionError,
+    QpdfConversionError,
+} from "./core/errors.js";
 
 // types
 export type {
@@ -55,6 +65,9 @@ export type {
     QPDFInfo,
     ExtractedImage,
     ExtractImagesResult,
+    PdfPageJpg,
+    PdfToJpgResult,
+    PdfToJpgOptions,
 } from "./types/index.js";
 
 // utility functions

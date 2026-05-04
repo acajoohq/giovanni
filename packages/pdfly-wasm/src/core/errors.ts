@@ -78,3 +78,13 @@ export class QpdfImageExtractionError extends QpdfError {
         this.name = "QpdfImageExtractionError";
     }
 }
+
+/**
+ * Error thrown when PDF to JPG conversion fails
+ */
+export class QpdfConversionError extends QpdfError {
+    constructor(message: string, options?: ErrorOptions) {
+        super(message, options);
+        this.name = "QpdfConversionError";
+    }
+}

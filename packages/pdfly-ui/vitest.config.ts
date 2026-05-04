@@ -1,8 +1,7 @@
 import { defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
 
-const mock = (name: string) =>
-    fileURLToPath(new URL(`./src/test/__mocks__/${name}.ts`, import.meta.url));
+const mock = (name: string) => fileURLToPath(new URL(`./src/test/__mocks__/${name}.ts`, import.meta.url));
 
 export default defineConfig({
     resolve: {

@@ -92,7 +92,7 @@ async function upsertPrDescription({ aliasUrl, previewUrl, shortSha, sha }) {
 
     const { owner, repo, number: pullNumber } = context.issue;
     const prLink = aliasUrl || previewUrl;
-    const prLine = `${PR_MARKER}\n<sup>☁️ [PR Preview](${prLink}) · [\`${shortSha}\`](https://github.com/${owner}/${repo}/commit/${sha})</sup>\n`;
+    const prLine = `${PR_MARKER}\n☁️ **Preview:** [Open](${prLink}) · [\`${shortSha}\`](https://github.com/${owner}/${repo}/commit/${sha})\n`;
 
     const pr = await github.rest.pulls.get({ owner, repo, pull_number: pullNumber });
     const currentBody = pr.data.body || "";

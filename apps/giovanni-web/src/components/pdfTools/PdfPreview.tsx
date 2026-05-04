@@ -65,7 +65,12 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
 
         const load = async () => {
             setIsLoading(true);
-            setPdfDoc(null);
+            setPdfDoc((prevDoc) => {
+                if (prevDoc) {
+                    void prevDoc.destroy();
+                }
+                return null;
+            });
             setPage(1);
 
             try {
@@ -97,6 +102,12 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
 
         return () => {
             cancelled = true;
+            setPdfDoc((prevDoc) => {
+                if (prevDoc) {
+                    void prevDoc.destroy();
+                }
+                return null;
+            });
         };
     }, [data, file]);
 

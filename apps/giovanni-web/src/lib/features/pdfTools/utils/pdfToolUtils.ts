@@ -65,7 +65,7 @@ export function downloadBlob(blob: Blob, fileName: string): void {
     anchor.href = url;
     anchor.download = fileName;
     anchor.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    window.setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 
 export function downloadPdf(data: Uint8Array, fileName: string): void {

@@ -72,12 +72,9 @@ export function CompressTool() {
     };
 
     const updateCompressionOptions = (patch: Partial<CompressionOptions>) => {
-        setCompressionOptions((prev) => {
-            const nextOptions = { ...prev, ...patch };
-            processCurrentFile(nextOptions);
-
-            return nextOptions;
-        });
+        const nextOptions = { ...compressionOptions, ...patch };
+        setCompressionOptions(nextOptions);
+        processCurrentFile(nextOptions);
     };
 
     const handleFiles = (files: File[]) => {

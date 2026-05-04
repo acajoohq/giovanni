@@ -5,11 +5,25 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar, SidebarContent, SidebarField, SidebarHeader, SidebarReadonlyValue, SidebarSection } from "@/components/sidebar";
+import { Sidebar } from "@/components/sidebar/Sidebar";
+import { SidebarCheckbox } from "@/components/sidebar/SidebarCheckbox";
+import { SidebarContent } from "@/components/sidebar/SidebarContent";
+import { SidebarField } from "@/components/sidebar/SidebarField";
+import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
+import { SidebarInput } from "@/components/sidebar/SidebarControls";
+import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { useAsyncToolJob } from "@/lib/features/pdfTools/hooks/useAsyncToolJob";
 import { useObjectUrls } from "@/lib/features/pdfTools/hooks/useObjectUrls";
-import { buildBrowserReadyImageEntries, downloadBlob, downloadZip, findFirstPdfFile, imageDownloadName, pdfBaseName } from "@/lib/features/pdfTools/utils/pdfToolUtils";
-import { ExtractImagesVisual } from "@/components/pdfTools/visuals/PdfToolVisuals";
+import {
+    buildExtractedImageEntries,
+    downloadBlob,
+    downloadZip,
+    findFirstPdfFile,
+    imageDownloadName,
+    makeArchiveName,
+    pdfBaseName,
+} from "@/lib/features/pdfTools/utils/pdfToolUtils";
+import { ExtractImagesVisual } from "@/components/pdfTools/visuals/ExtractImagesVisual";
 import { ImageThumb } from "@/components/pdfTools/ImageThumb";
 import { PdfPreview } from "@/components/pdfTools/PdfPreview";
 import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
@@ -19,12 +33,24 @@ const EMPTY_IMAGES: ExtractedImage[] = [];
 export function ExtractImagesTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [file, setFile] = React.useState<File | null>(null);
+    const [archiveName, setArchiveName] = React.useState("{basename}_images.zip");
+    const [includeRawStreams, setIncludeRawStreams] = React.useState(false);
     const { result, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<ExtractImagesResult>();
     const images = result?.images ?? EMPTY_IMAGES;
     const getImageBlob = React.useCallback((image: ExtractedImage) => image.blob, []);
     const previewUrls = useObjectUrls(images, getImageBlob);
 
-    const decodedCount = images.filter((image) => image.blob !== null).length;
+    const { decodedCount, rawCount } = React.useMemo(() => {
+        let decodedImages = 0;
+
+        for (const image of images) {
+            if (image.blob) {
+                decodedImages += 1;
+            }
+        }
+
+        return { decodedCount: decodedImages, rawCount: images.length - decodedImages };
+    }, [images]);
 
     const processFile = React.useCallback(
         async (nextFile: File) => {
@@ -36,7 +62,12 @@ export function ExtractImagesTool() {
                 },
                 errorMessage: "Failed to extract images.",
                 successStatus: (nextResult) => {
-                    const nextDecodedCount = nextResult.images.filter((image) => image.blob !== null).length;
+                    let nextDecodedCount = 0;
+                    for (const image of nextResult.images) {
+                        if (image.blob) {
+                            nextDecodedCount += 1;
+                        }
+                    }
                     const nextRawCount = nextResult.imageCount - nextDecodedCount;
 
                     return {
@@ -73,31 +104,34 @@ export function ExtractImagesTool() {
         }
     }, [file, processFile]);
 
-    const downloadImage = (image: ExtractedImage, index: number) => {
-        const name = imageDownloadName(pdfBaseName(file), index, image);
+    const downloadImage = React.useCallback(
+        (image: ExtractedImage, index: number) => {
+            const name = imageDownloadName(pdfBaseName(file), index, image);
 
-        if (image.blob) {
-            downloadBlob(image.blob, name);
-            return;
-        }
+            if (image.blob) {
+                downloadBlob(image.blob, name);
+                return;
+            }
 
-        downloadBlob(new Blob([image.bytes as BlobPart], { type: "application/octet-stream" }), name);
-    };
+            downloadBlob(new Blob([image.bytes as BlobPart], { type: "application/octet-stream" }), name);
+        },
+        [file],
+    );
 
     const handleDownloadAll = async () => {
         if (images.length === 0 || !file) {
             return;
         }
 
-        const entries = await buildBrowserReadyImageEntries(images, pdfBaseName(file));
+        const entries = await buildExtractedImageEntries(images, pdfBaseName(file), { includeRawStreams });
 
         if (Object.keys(entries).length === 0) {
-            setStatus({ tone: "error", message: "No browser-ready images are available to bundle." });
+            setStatus({ tone: "error", message: includeRawStreams ? "No images are available to bundle." : "No browser-ready images are available to bundle." });
             return;
         }
 
         try {
-            await downloadZip(entries, `${pdfBaseName(file)}_images.zip`);
+            await downloadZip(entries, makeArchiveName(archiveName, pdfBaseName(file)));
         } catch (error) {
             setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not create ZIP." });
         }
@@ -106,29 +140,34 @@ export function ExtractImagesTool() {
     const sidebar = (
         <Sidebar>
             <SidebarSection>
-                <SidebarHeader>Extraction</SidebarHeader>
+                <SidebarHeader>Export Settings</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Images">
-                        <SidebarReadonlyValue>Raster XObjects</SidebarReadonlyValue>
+                    <SidebarField label="Archive">
+                        <SidebarInput value={archiveName} onChange={(event) => setArchiveName(event.currentTarget.value)} />
                     </SidebarField>
+                    <SidebarCheckbox checked={includeRawStreams} label="Include raw" onChange={(event) => setIncludeRawStreams(event.currentTarget.checked)} />
                 </SidebarContent>
             </SidebarSection>
         </Sidebar>
     );
 
-    const imagesOutput = images.length > 0 && (
-        <div className="h-full w-full overflow-y-auto p-4 pb-24">
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                {images.map((image, index) => (
-                    <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2">
-                        <ImageThumb image={image} index={index} url={previewUrls[index] ?? null} />
-                        <Button className="w-full" size="sm" variant="secondary" onClick={() => downloadImage(image, index)}>
-                            {image.blob ? "Download" : "Download Raw"}
-                        </Button>
+    const imagesOutput = React.useMemo(
+        () =>
+            images.length > 0 ? (
+                <div className="h-full w-full overflow-y-auto p-4 pb-24">
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                        {images.map((image, index) => (
+                            <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2 [content-visibility:auto] [contain-intrinsic-size:210px]">
+                                <ImageThumb image={image} index={index} url={previewUrls[index] ?? null} />
+                                <Button className="w-full" size="sm" variant="secondary" onClick={() => downloadImage(image, index)}>
+                                    {image.blob ? "Download" : "Download Raw"}
+                                </Button>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-        </div>
+                </div>
+            ) : null,
+        [downloadImage, images, previewUrls],
     );
 
     const centerContent = file ? (
@@ -140,8 +179,11 @@ export function ExtractImagesTool() {
                 metrics={[
                     ...(images.length > 0 ? [{ label: "Images", value: images.length, tone: "accent" as const }] : []),
                     ...(images.length > 0 ? [{ label: "Decoded", value: decodedCount }] : []),
+                    ...(rawCount > 0 ? [{ label: "Raw", value: rawCount }] : []),
                 ]}
-                primaryAction={file ? { label: "Download ZIP", disabled: decodedCount === 0, onClick: handleDownloadAll } : undefined}
+                primaryAction={
+                    file ? { label: "Download ZIP", disabled: images.length === 0 || (!includeRawStreams && decodedCount === 0), onClick: handleDownloadAll } : undefined
+                }
                 secondaryActions={[{ label: "Replace", onClick: () => inputRef.current?.click() }]}
                 status={isWorking ? { tone: "info", message: "Extracting images..." } : status}
             />
@@ -160,7 +202,16 @@ export function ExtractImagesTool() {
 
     return (
         <>
-            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
+            <input
+                ref={inputRef}
+                hidden
+                accept="application/pdf,.pdf"
+                type="file"
+                onChange={(event) => {
+                    handleFiles(Array.from(event.currentTarget.files ?? []));
+                    event.currentTarget.value = "";
+                }}
+            />
             <ToolLayout onFiles={handleFiles} sidebar={sidebar} title="Extract Images">
                 {centerContent}
             </ToolLayout>

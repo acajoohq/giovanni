@@ -5,7 +5,14 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar, SidebarContent, SidebarField, SidebarHeader, SidebarInput, SidebarReadonlyValue, SidebarSection } from "@/components/sidebar";
+import { Sidebar } from "@/components/sidebar/Sidebar";
+import { SidebarContent } from "@/components/sidebar/SidebarContent";
+import { SidebarField } from "@/components/sidebar/SidebarField";
+import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
+import { SidebarInput } from "@/components/sidebar/SidebarControls";
+import { SidebarSection } from "@/components/sidebar/SidebarSection";
+import { SidebarToggle } from "@/components/sidebar/SidebarToggle";
+import { SidebarToggleGroup } from "@/components/sidebar/SidebarToggleGroup";
 import { useAsyncToolJob } from "@/lib/features/pdfTools/hooks/useAsyncToolJob";
 import {
     buildSplitPageEntries,
@@ -14,10 +21,11 @@ import {
     findFirstPdfFile,
     formatDuration,
     formatThroughput,
+    makeArchiveName,
     makePagePdfName,
     pdfBaseName,
 } from "@/lib/features/pdfTools/utils/pdfToolUtils";
-import { SplitVisual } from "@/components/pdfTools/visuals/PdfToolVisuals";
+import { SplitVisual } from "@/components/pdfTools/visuals/SplitVisual";
 import { PdfPreview } from "@/components/pdfTools/PdfPreview";
 import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
 
@@ -26,10 +34,14 @@ interface SplitJobResult {
     pageCount: number;
 }
 
+type ZipCompressionMode = "store" | "compress";
+
 export function SplitTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [file, setFile] = React.useState<File | null>(null);
     const [outputPattern, setOutputPattern] = React.useState("{basename}_page_{page}");
+    const [archiveName, setArchiveName] = React.useState("{basename}_pages.zip");
+    const [zipCompressionMode, setZipCompressionMode] = React.useState<ZipCompressionMode>("store");
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<SplitJobResult>();
 
     const pages = result?.pages ?? [];
@@ -73,7 +85,7 @@ export function SplitTool() {
         }
     }, [file, processFile]);
 
-    const makePageName = (pageIndex: number) => makePagePdfName(outputPattern, pdfBaseName(file), pageIndex);
+    const makePageName = React.useCallback((pageIndex: number) => makePagePdfName(outputPattern, pdfBaseName(file), pageIndex), [file, outputPattern]);
 
     const handleDownloadAll = async () => {
         if (pages.length === 0 || !file) {
@@ -81,7 +93,11 @@ export function SplitTool() {
         }
 
         try {
-            await downloadZip(buildSplitPageEntries(pages, outputPattern, pdfBaseName(file)), `${pdfBaseName(file)}_pages.zip`, 0);
+            await downloadZip(
+                buildSplitPageEntries(pages, outputPattern, pdfBaseName(file)),
+                makeArchiveName(archiveName, pdfBaseName(file)),
+                zipCompressionMode === "store" ? 0 : 6,
+            );
         } catch (error) {
             setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not create ZIP." });
         }
@@ -92,33 +108,47 @@ export function SplitTool() {
             <SidebarSection>
                 <SidebarHeader>Split Settings</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Mode">
-                        <SidebarReadonlyValue>All pages</SidebarReadonlyValue>
-                    </SidebarField>
                     <SidebarField label="Pattern">
                         <SidebarInput value={outputPattern} onChange={(event) => setOutputPattern(event.currentTarget.value)} />
+                    </SidebarField>
+                    <SidebarField label="Archive">
+                        <SidebarInput value={archiveName} onChange={(event) => setArchiveName(event.currentTarget.value)} />
+                    </SidebarField>
+                    <SidebarField label="ZIP">
+                        <SidebarToggleGroup>
+                            <SidebarToggle isActive={zipCompressionMode === "store"} onClick={() => setZipCompressionMode("store")}>
+                                Store
+                            </SidebarToggle>
+                            <SidebarToggle isActive={zipCompressionMode === "compress"} onClick={() => setZipCompressionMode("compress")}>
+                                Compress
+                            </SidebarToggle>
+                        </SidebarToggleGroup>
                     </SidebarField>
                 </SidebarContent>
             </SidebarSection>
         </Sidebar>
     );
 
-    const pagesOutput = pages.length > 0 && file && (
-        <div className="h-full w-full overflow-y-auto p-3 pb-24">
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-                {pages.map((page, index) => (
-                    <div key={index} className="flex flex-col gap-1.5">
-                        <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
-                            <PdfPreview data={page} />
-                        </div>
-                        <span className="truncate text-center text-[10px] text-neutral-500">Page {index + 1}</span>
-                        <Button className="h-6 text-[10px]" size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
-                            Download
-                        </Button>
+    const pagesOutput = React.useMemo(
+        () =>
+            pages.length > 0 && file ? (
+                <div className="h-full w-full overflow-y-auto p-3 pb-24">
+                    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                        {pages.map((page, index) => (
+                            <div key={index} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:260px]">
+                                <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
+                                    <PdfPreview data={page} />
+                                </div>
+                                <span className="truncate text-center text-[10px] text-neutral-500">Page {index + 1}</span>
+                                <Button className="h-6 text-[10px]" size="sm" variant="secondary" onClick={() => downloadPdf(page, makePageName(index))}>
+                                    Download
+                                </Button>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-        </div>
+                </div>
+            ) : null,
+        [file, makePageName, pages],
     );
 
     const centerContent = file ? (
@@ -151,7 +181,16 @@ export function SplitTool() {
 
     return (
         <>
-            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
+            <input
+                ref={inputRef}
+                hidden
+                accept="application/pdf,.pdf"
+                type="file"
+                onChange={(event) => {
+                    handleFiles(Array.from(event.currentTarget.files ?? []));
+                    event.currentTarget.value = "";
+                }}
+            />
             <ToolLayout onFiles={handleFiles} sidebar={sidebar} title="Split Pages">
                 {centerContent}
             </ToolLayout>

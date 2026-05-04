@@ -5,26 +5,33 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar, SidebarContent, SidebarField, SidebarHeader, SidebarInput, SidebarSection } from "@/components/sidebar";
+import { Sidebar } from "@/components/sidebar/Sidebar";
+import { SidebarContent } from "@/components/sidebar/SidebarContent";
+import { SidebarField } from "@/components/sidebar/SidebarField";
+import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
+import { SidebarInput } from "@/components/sidebar/SidebarControls";
+import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { useAsyncToolJob } from "@/lib/features/pdfTools/hooks/useAsyncToolJob";
 import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/lib/features/pdfTools/utils/pdfToolUtils";
-import { MergeVisual } from "@/components/pdfTools/visuals/PdfToolVisuals";
+import { MergeVisual } from "@/components/pdfTools/visuals/MergeVisual";
 import { FilesList } from "@/components/pdfTools/FilesList";
 import { PdfPreview } from "@/components/pdfTools/PdfPreview";
 import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
 
 export function MergeTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);
+    const lastProcessedFilesKeyRef = React.useRef("");
     const [files, setFiles] = React.useState<File[]>([]);
     const [outputName, setOutputName] = React.useState("merged.pdf");
-    const { result: mergedData, status, isWorking, setStatus, setResult, clearResult, runJob } = useAsyncToolJob<Uint8Array>();
+    const { result: mergedData, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<Uint8Array>();
 
-    const totalInputBytes = files.reduce((sum, file) => sum + file.size, 0);
+    const totalInputBytes = React.useMemo(() => files.reduce((sum, file) => sum + file.size, 0), [files]);
+    const filesKey = React.useMemo(() => files.map((file) => `${file.name}:${file.size}:${file.lastModified}`).join("|"), [files]);
 
     const processFiles = React.useCallback(
         async (nextFiles: File[]) => {
             if (nextFiles.length < 2) {
-                clearResult();
+                reset();
                 return;
             }
 
@@ -39,8 +46,17 @@ export function MergeTool() {
                 successStatus: () => ({ tone: "success", message: `Merged ${nextFiles.length} PDFs.` }),
             });
         },
-        [clearResult, runJob],
+        [reset, runJob],
     );
+
+    React.useEffect(() => {
+        if (lastProcessedFilesKeyRef.current === filesKey) {
+            return;
+        }
+
+        lastProcessedFilesKeyRef.current = filesKey;
+        void processFiles(files);
+    }, [files, filesKey, processFiles]);
 
     const handleFiles = React.useCallback(
         (nextFiles: File[]) => {
@@ -51,26 +67,16 @@ export function MergeTool() {
                 return;
             }
 
-            setFiles((current) => {
-                const mergedFiles = [...current, ...pdfs];
-                void processFiles(mergedFiles);
-
-                return mergedFiles;
-            });
+            setFiles((current) => [...current, ...pdfs]);
         },
-        [processFiles, setStatus],
+        [setStatus],
     );
 
-    const handleRemove = (index: number) => {
-        setFiles((current) => {
-            const next = current.filter((_, currentIndex) => currentIndex !== index);
-            void processFiles(next);
+    const handleRemove = React.useCallback((index: number) => {
+        setFiles((current) => current.filter((_, currentIndex) => currentIndex !== index));
+    }, []);
 
-            return next;
-        });
-    };
-
-    const handleMove = (index: number, direction: -1 | 1) => {
+    const handleMove = React.useCallback((index: number, direction: -1 | 1) => {
         setFiles((current) => {
             const target = index + direction;
 
@@ -85,12 +91,9 @@ export function MergeTool() {
                 next.splice(target, 0, file);
             }
 
-            setResult(null);
-            void processFiles(next);
-
             return next;
         });
-    };
+    }, []);
 
     const normalizedOutputName = ensurePdfExtension(outputName);
 

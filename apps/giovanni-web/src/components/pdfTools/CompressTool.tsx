@@ -1,28 +1,21 @@
-import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel } from "@pdfly/wasm";
+import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel, type ObjectStreamMode } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import * as React from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { ComparisonSlider } from "@/components/ComparisonSlider";
 import { EmptyState } from "@/components/emptyState/EmptyState";
-import {
-    Sidebar,
-    SidebarCheckbox,
-    SidebarContent,
-    SidebarField,
-    SidebarHeader,
-    SidebarInput,
-    SidebarSection,
-    SidebarSelect,
-    SidebarToggle,
-    SidebarToggleGroup,
-} from "@/components/sidebar";
+import { Sidebar } from "@/components/sidebar/Sidebar";
+import { SidebarCheckbox } from "@/components/sidebar/SidebarCheckbox";
+import { SidebarContent } from "@/components/sidebar/SidebarContent";
+import { SidebarField } from "@/components/sidebar/SidebarField";
+import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
+import { SidebarRange, SidebarSelect } from "@/components/sidebar/SidebarControls";
+import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { useAsyncToolJob } from "@/lib/features/pdfTools/hooks/useAsyncToolJob";
 import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/lib/features/pdfTools/utils/pdfToolUtils";
-import { CompressVisual } from "@/components/pdfTools/visuals/PdfToolVisuals";
+import { CompressVisual } from "@/components/pdfTools/visuals/CompressVisual";
 import { PdfPreview } from "@/components/pdfTools/PdfPreview";
 import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
-
-type CompressionProfile = "balanced" | "extreme";
 
 const decodeLevelOptions: Array<{ label: string; value: DecodeLevel }> = [
     { label: "None", value: "none" },
@@ -31,17 +24,22 @@ const decodeLevelOptions: Array<{ label: string; value: DecodeLevel }> = [
     { label: "All", value: "all" },
 ];
 
+const objectStreamOptions: Array<{ label: string; value: ObjectStreamMode }> = [
+    { label: "Generate", value: "generate" },
+    { label: "Preserve", value: "preserve" },
+    { label: "Disable", value: "disable" },
+];
+
 export function CompressTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [file, setFile] = React.useState<File | null>(null);
-    const [profile, setProfile] = React.useState<CompressionProfile>("balanced");
+    const [compressionLevel, setCompressionLevel] = React.useState(6);
     const [decodeLevel, setDecodeLevel] = React.useState<DecodeLevel>("generalized");
+    const [objectStreams, setObjectStreams] = React.useState<ObjectStreamMode>("generate");
     const [recompressFlate, setRecompressFlate] = React.useState(true);
     const [compressPages, setCompressPages] = React.useState(false);
     const [removeUnreferencedResources, setRemoveUnreferencedResources] = React.useState(false);
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<CompressionResult>();
-
-    const compressionLevel = profile === "extreme" ? 9 : 6;
 
     const processFile = React.useCallback(
         async (nextFile: File) => {
@@ -55,7 +53,7 @@ export function CompressTool() {
                         recompressFlate,
                         compressPages,
                         removeUnreferencedResources,
-                        objectStreams: "generate",
+                        objectStreams,
                     });
                 },
                 errorMessage: "Failed to compress PDF.",
@@ -65,7 +63,7 @@ export function CompressTool() {
                 }),
             });
         },
-        [compressPages, compressionLevel, decodeLevel, recompressFlate, removeUnreferencedResources, runJob],
+        [compressPages, compressionLevel, decodeLevel, objectStreams, recompressFlate, removeUnreferencedResources, runJob],
     );
 
     const handleFiles = React.useCallback(
@@ -94,21 +92,14 @@ export function CompressTool() {
             <SidebarSection>
                 <SidebarHeader>Compression</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Profile">
-                        <SidebarToggleGroup>
-                            <SidebarToggle isActive={profile === "balanced"} onClick={() => setProfile("balanced")}>
-                                Balanced
-                            </SidebarToggle>
-                            <SidebarToggle isActive={profile === "extreme"} onClick={() => setProfile("extreme")}>
-                                Extreme
-                            </SidebarToggle>
-                        </SidebarToggleGroup>
-                    </SidebarField>
                     <SidebarField label="Level">
-                        <SidebarInput readOnly value={compressionLevel} />
+                        <SidebarRange max={9} min={1} value={compressionLevel} valueLabel={compressionLevel} onValueChange={setCompressionLevel} />
                     </SidebarField>
                     <SidebarField label="Decode">
                         <SidebarSelect options={decodeLevelOptions} value={decodeLevel} onValueChange={setDecodeLevel} />
+                    </SidebarField>
+                    <SidebarField label="Object streams">
+                        <SidebarSelect options={objectStreamOptions} value={objectStreams} onValueChange={setObjectStreams} />
                     </SidebarField>
                 </SidebarContent>
             </SidebarSection>
@@ -169,7 +160,16 @@ export function CompressTool() {
 
     return (
         <>
-            <input ref={inputRef} hidden accept="application/pdf,.pdf" type="file" onChange={(event) => handleFiles(Array.from(event.currentTarget.files ?? []))} />
+            <input
+                ref={inputRef}
+                hidden
+                accept="application/pdf,.pdf"
+                type="file"
+                onChange={(event) => {
+                    handleFiles(Array.from(event.currentTarget.files ?? []));
+                    event.currentTarget.value = "";
+                }}
+            />
             <ToolLayout onFiles={handleFiles} sidebar={sidebar} title="Compress PDF">
                 {centerContent}
             </ToolLayout>

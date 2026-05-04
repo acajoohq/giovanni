@@ -1,6 +1,7 @@
 import type * as React from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/shadcn/Input";
+import { Slider } from "@/components/ui/shadcn/Slider";
 
 export function SidebarInput({ className, ...props }: React.ComponentProps<typeof Input>) {
     return (
@@ -46,6 +47,28 @@ export function SidebarReadonlyValue({ children, className }: { children: React.
     return (
         <div className={cn("flex h-7 items-center rounded-[4px] border border-app-border bg-app-control px-2 text-[12px] leading-none text-neutral-300 shadow-inner", className)}>
             {children}
+        </div>
+    );
+}
+
+interface SidebarRangeProps extends Omit<React.ComponentProps<typeof Slider>, "className"> {
+    className?: string;
+    label?: React.ReactNode;
+    valueLabel?: React.ReactNode;
+}
+
+export function SidebarRange({ className, label, valueLabel, ...props }: SidebarRangeProps) {
+    return (
+        <div className={cn("grid items-center gap-2", label ? "grid-cols-[64px_minmax(0,1fr)_44px]" : "grid-cols-[1fr_44px]")}>
+            {label && <div className="justify-self-end text-right text-[12px] leading-none text-neutral-400">{label}</div>}
+            <div className="flex h-7 items-center px-1">
+                <Slider className={cn("min-w-0 flex-1", className)} {...props} />
+            </div>
+            {valueLabel && (
+                <div className="flex h-7 items-center justify-end rounded-[3px] border border-black bg-[#151515] px-2 text-[12px] font-semibold leading-none text-neutral-100 shadow-[inset_0_1px_2px_rgba(0,0,0,0.95),0_1px_0_rgba(255,255,255,0.07)]">
+                    {valueLabel}
+                </div>
+            )}
         </div>
     );
 }

@@ -1,21 +1,28 @@
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { QpdfConversionError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { PdfPageJpg, PdfToJpgOptions, PdfToJpgResult } from "../types/index.js";
 import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
 import type { Canvas as NodeCanvas } from "canvas";
+import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api.js";
 
-// Initialize PDF.js worker once at module level.
-try {
-    if (!GlobalWorkerOptions.workerSrc) {
-        GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
-    }
-} catch {
-    // Could not resolve worker URL (e.g. CommonJS context).
-    // PDF.js will run in the main thread, which is slower but still functional.
-}
+type PdfjsModule = typeof import("pdfjs-dist");
 
-// Lazily load node-canvas once; result is cached for all subsequent calls.
+// Load pdfjs-dist once; resolves to null if the optional peer is not installed.
+const pdfjsPromise: Promise<PdfjsModule | null> = import("pdfjs-dist")
+    .then((mod) => {
+        if (!mod.GlobalWorkerOptions.workerSrc) {
+            try {
+                mod.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
+            } catch {
+                // Could not resolve worker URL (e.g. CommonJS context).
+                // PDF.js will run in the main thread, which is slower but still functional.
+            }
+        }
+        return mod;
+    })
+    .catch(() => null);
+
+// Load node-canvas once; skipped in browser environments where a native canvas is available.
 const isBrowser = typeof window !== "undefined" || typeof OffscreenCanvas !== "undefined" || typeof document !== "undefined";
 const nodeCanvasPromise: Promise<((w: number, h: number) => NodeCanvas) | null> = isBrowser
     ? Promise.resolve(null)
@@ -45,17 +52,22 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
         throw new QpdfConversionError("scale must be greater than 0");
     }
 
+    const pdfjs = await pdfjsPromise;
+    if (!pdfjs) {
+        throw new QpdfConversionError('pdfjs-dist is required for pdfToJpg. Install it with: npm install pdfjs-dist');
+    }
+
     const inputBuffer = normalizeBuffer(input);
     const nodeCreateCanvas = await nodeCanvasPromise;
 
     try {
-        const loadingTask = getDocument({ data: inputBuffer });
-        const pdf = await loadingTask.promise;
+        const loadingTask = pdfjs.getDocument({ data: inputBuffer });
+        const pdf: PDFDocumentProxy = await loadingTask.promise;
 
         const pages: PdfPageJpg[] = [];
 
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-            const page = await pdf.getPage(pageNum);
+            const page: PDFPageProxy = await pdf.getPage(pageNum);
             const viewport = page.getViewport({ scale });
             const width = Math.round(viewport.width);
             const height = Math.round(viewport.height);
@@ -122,4 +134,3 @@ async function canvasToJpegBlob(canvas: OffscreenCanvas | HTMLCanvasElement | No
         (canvas as HTMLCanvasElement).toBlob((blob) => resolve(blob), "image/jpeg", quality);
     });
 }
-

@@ -88,7 +88,7 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
 }
 
 async function canvasToJpegBlob(canvas: OffscreenCanvas | HTMLCanvasElement | NodeCanvas, quality: number): Promise<Blob | null> {
-    if (canvas instanceof OffscreenCanvas) {
+    if (typeof OffscreenCanvas !== "undefined" && canvas instanceof OffscreenCanvas) {
         return canvas.convertToBlob({ type: "image/jpeg", quality });
     }
     // node-canvas (Canvas from the 'canvas' package) uses toBuffer instead of toBlob

@@ -561,7 +561,7 @@ export function initApp(): void {
                 if (skippedCount > 0) {
                     messageParts.push(`${skippedCount} skipped (unsupported filter or color space)`);
                 }
-                showStatus("images-status", messageParts.join(" Â· "), result.imageCount > 0 ? "success" : "info");
+                showStatus("images-status", messageParts.join(" · "), result.imageCount > 0 ? "success" : "info");
 
                 if (downloadAllImagesBtn) {
                     downloadAllImagesBtn.disabled = decodedCount === 0;
@@ -611,7 +611,7 @@ export function initApp(): void {
                 const meta = document.createElement("div");
                 meta.className = "image-card-meta";
                 const dims = document.createElement("div");
-                dims.innerHTML = `<strong>${image.width}--${image.height}</strong> · ${formatBytes(image.bytes.byteLength)}`;
+                dims.innerHTML = `<strong>${image.width}&#xD7;${image.height}</strong> · ${formatBytes(image.bytes.byteLength)}`;
                 const filterLine = document.createElement("div");
                 filterLine.className = "filter";
                 filterLine.textContent = `${image.filter} · page ${image.pageIndex + 1}`;
@@ -847,8 +847,6 @@ export function initApp(): void {
                 card.appendChild(meta);
                 card.appendChild(actions);
                 grid.appendChild(card);
-
-                void index;
             });
         }
 

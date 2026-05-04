@@ -42,22 +42,15 @@ interface CompressionOptions {
 export function CompressTool() {
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
-    const [compressionLevel, setCompressionLevel] = useState(6);
-    const [decodeLevel, setDecodeLevel] = useState<DecodeLevel>("generalized");
-    const [objectStreams, setObjectStreams] = useState<ObjectStreamMode>("generate");
-    const [recompressFlate, setRecompressFlate] = useState(true);
-    const [compressPages, setCompressPages] = useState(false);
-    const [removeUnreferencedResources, setRemoveUnreferencedResources] = useState(false);
+    const [compressionOptions, setCompressionOptions] = useState<CompressionOptions>({
+        compressionLevel: 6,
+        decodeLevel: "generalized",
+        objectStreams: "generate",
+        recompressFlate: true,
+        compressPages: false,
+        removeUnreferencedResources: false,
+    });
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<CompressionResult>();
-
-    const compressionOptions = {
-        compressionLevel,
-        decodeLevel,
-        objectStreams,
-        recompressFlate,
-        compressPages,
-        removeUnreferencedResources,
-    };
 
     const processFile = async (nextFile: File, options: CompressionOptions = compressionOptions) => {
         await runJob({
@@ -68,9 +61,7 @@ export function CompressTool() {
             },
             errorMessage: "Failed to compress PDF.",
             successStatus: (nextResult) =>
-                nextResult.savedBytes >= 0
-                    ? { tone: "success", message: `Saved ${formatBytes(nextResult.savedBytes)}.` }
-                    : { tone: "info", message: "Result is slightly larger." },
+                nextResult.savedBytes >= 0 ? { tone: "success", message: `Saved ${formatBytes(nextResult.savedBytes)}.` } : { tone: "info", message: "Result is slightly larger." },
         });
     };
 
@@ -78,6 +69,13 @@ export function CompressTool() {
         if (file) {
             void processFile(file, options);
         }
+    };
+
+    const updateCompressionOptions = (patch: Partial<CompressionOptions>) => {
+        const nextOptions = { ...compressionOptions, ...patch };
+
+        setCompressionOptions(nextOptions);
+        processCurrentFile(nextOptions);
     };
 
     const handleFiles = (files: File[]) => {
@@ -93,61 +91,33 @@ export function CompressTool() {
         void processFile(nextFile);
     };
 
-    const handleCompressionLevelChange = (nextCompressionLevel: number) => {
-        const options = { ...compressionOptions, compressionLevel: nextCompressionLevel };
-
-        setCompressionLevel(nextCompressionLevel);
-        processCurrentFile(options);
-    };
-
-    const handleDecodeLevelChange = (nextDecodeLevel: DecodeLevel) => {
-        const options = { ...compressionOptions, decodeLevel: nextDecodeLevel };
-
-        setDecodeLevel(nextDecodeLevel);
-        processCurrentFile(options);
-    };
-
-    const handleObjectStreamsChange = (nextObjectStreams: ObjectStreamMode) => {
-        const options = { ...compressionOptions, objectStreams: nextObjectStreams };
-
-        setObjectStreams(nextObjectStreams);
-        processCurrentFile(options);
-    };
-
-    const handleRecompressFlateChange = (nextRecompressFlate: boolean) => {
-        const options = { ...compressionOptions, recompressFlate: nextRecompressFlate };
-
-        setRecompressFlate(nextRecompressFlate);
-        processCurrentFile(options);
-    };
-
-    const handleCompressPagesChange = (nextCompressPages: boolean) => {
-        const options = { ...compressionOptions, compressPages: nextCompressPages };
-
-        setCompressPages(nextCompressPages);
-        processCurrentFile(options);
-    };
-
-    const handleRemoveUnreferencedResourcesChange = (nextRemoveUnreferencedResources: boolean) => {
-        const options = { ...compressionOptions, removeUnreferencedResources: nextRemoveUnreferencedResources };
-
-        setRemoveUnreferencedResources(nextRemoveUnreferencedResources);
-        processCurrentFile(options);
-    };
-
     const sidebar = (
         <Sidebar>
             <SidebarSection>
                 <SidebarHeader>Compression</SidebarHeader>
                 <SidebarContent>
                     <SidebarField label="Level">
-                        <SidebarRange max={9} min={1} value={compressionLevel} valueLabel={compressionLevel} onValueChange={handleCompressionLevelChange} />
+                        <SidebarRange
+                            max={9}
+                            min={1}
+                            value={compressionOptions.compressionLevel}
+                            valueLabel={compressionOptions.compressionLevel}
+                            onValueChange={(compressionLevel) => updateCompressionOptions({ compressionLevel })}
+                        />
                     </SidebarField>
                     <SidebarField label="Decode">
-                        <SidebarSelect options={decodeLevelOptions} value={decodeLevel} onValueChange={handleDecodeLevelChange} />
+                        <SidebarSelect
+                            options={decodeLevelOptions}
+                            value={compressionOptions.decodeLevel}
+                            onValueChange={(decodeLevel) => updateCompressionOptions({ decodeLevel })}
+                        />
                     </SidebarField>
                     <SidebarField label="Object streams">
-                        <SidebarSelect options={objectStreamOptions} value={objectStreams} onValueChange={handleObjectStreamsChange} />
+                        <SidebarSelect
+                            options={objectStreamOptions}
+                            value={compressionOptions.objectStreams}
+                            onValueChange={(objectStreams) => updateCompressionOptions({ objectStreams })}
+                        />
                     </SidebarField>
                 </SidebarContent>
             </SidebarSection>
@@ -155,12 +125,20 @@ export function CompressTool() {
             <SidebarSection>
                 <SidebarHeader>Stream Options</SidebarHeader>
                 <SidebarContent>
-                    <SidebarCheckbox checked={recompressFlate} label="Recompress flate" onChange={(event) => handleRecompressFlateChange(event.currentTarget.checked)} />
-                    <SidebarCheckbox checked={compressPages} label="Compress pages" onChange={(event) => handleCompressPagesChange(event.currentTarget.checked)} />
                     <SidebarCheckbox
-                        checked={removeUnreferencedResources}
+                        checked={compressionOptions.recompressFlate}
+                        label="Recompress flate"
+                        onChange={(event) => updateCompressionOptions({ recompressFlate: event.currentTarget.checked })}
+                    />
+                    <SidebarCheckbox
+                        checked={compressionOptions.compressPages}
+                        label="Compress pages"
+                        onChange={(event) => updateCompressionOptions({ compressPages: event.currentTarget.checked })}
+                    />
+                    <SidebarCheckbox
+                        checked={compressionOptions.removeUnreferencedResources}
                         label="Remove unused"
-                        onChange={(event) => handleRemoveUnreferencedResourcesChange(event.currentTarget.checked)}
+                        onChange={(event) => updateCompressionOptions({ removeUnreferencedResources: event.currentTarget.checked })}
                     />
                 </SidebarContent>
             </SidebarSection>

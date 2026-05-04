@@ -36,12 +36,20 @@ interface SplitJobResult {
 
 type ZipCompressionMode = "store" | "compress";
 
+interface SplitSettings {
+    outputPattern: string;
+    archiveName: string;
+    zipCompressionMode: ZipCompressionMode;
+}
+
 export function SplitTool() {
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
-    const [outputPattern, setOutputPattern] = useState("{basename}_page_{page}");
-    const [archiveName, setArchiveName] = useState("{basename}_pages.zip");
-    const [zipCompressionMode, setZipCompressionMode] = useState<ZipCompressionMode>("store");
+    const [splitSettings, setSplitSettings] = useState<SplitSettings>({
+        outputPattern: "{basename}_page_{page}",
+        archiveName: "{basename}_pages.zip",
+        zipCompressionMode: "store",
+    });
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<SplitJobResult>();
 
     const pages = result?.pages ?? [];
@@ -74,7 +82,11 @@ export function SplitTool() {
         void processFile(nextFile);
     };
 
-    const makePageName = (pageIndex: number) => makePagePdfName(outputPattern, pdfBaseName(file), pageIndex);
+    const updateSplitSettings = (patch: Partial<SplitSettings>) => {
+        setSplitSettings((currentSettings) => ({ ...currentSettings, ...patch }));
+    };
+
+    const makePageName = (pageIndex: number) => makePagePdfName(splitSettings.outputPattern, pdfBaseName(file), pageIndex);
 
     const handleDownloadAll = async () => {
         if (pages.length === 0 || !file) {
@@ -83,9 +95,9 @@ export function SplitTool() {
 
         try {
             await downloadZip(
-                buildSplitPageEntries(pages, outputPattern, pdfBaseName(file)),
-                makeArchiveName(archiveName, pdfBaseName(file)),
-                zipCompressionMode === "store" ? 0 : 6,
+                buildSplitPageEntries(pages, splitSettings.outputPattern, pdfBaseName(file)),
+                makeArchiveName(splitSettings.archiveName, pdfBaseName(file)),
+                splitSettings.zipCompressionMode === "store" ? 0 : 6,
             );
         } catch (error) {
             setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not create ZIP." });
@@ -98,17 +110,17 @@ export function SplitTool() {
                 <SidebarHeader>Split Settings</SidebarHeader>
                 <SidebarContent>
                     <SidebarField label="Pattern">
-                        <SidebarInput value={outputPattern} onChange={(event) => setOutputPattern(event.currentTarget.value)} />
+                        <SidebarInput value={splitSettings.outputPattern} onChange={(event) => updateSplitSettings({ outputPattern: event.currentTarget.value })} />
                     </SidebarField>
                     <SidebarField label="Archive">
-                        <SidebarInput value={archiveName} onChange={(event) => setArchiveName(event.currentTarget.value)} />
+                        <SidebarInput value={splitSettings.archiveName} onChange={(event) => updateSplitSettings({ archiveName: event.currentTarget.value })} />
                     </SidebarField>
                     <SidebarField label="ZIP">
                         <SidebarToggleGroup>
-                            <SidebarToggle isActive={zipCompressionMode === "store"} onClick={() => setZipCompressionMode("store")}>
+                            <SidebarToggle isActive={splitSettings.zipCompressionMode === "store"} onClick={() => updateSplitSettings({ zipCompressionMode: "store" })}>
                                 Store
                             </SidebarToggle>
-                            <SidebarToggle isActive={zipCompressionMode === "compress"} onClick={() => setZipCompressionMode("compress")}>
+                            <SidebarToggle isActive={splitSettings.zipCompressionMode === "compress"} onClick={() => updateSplitSettings({ zipCompressionMode: "compress" })}>
                                 Compress
                             </SidebarToggle>
                         </SidebarToggleGroup>

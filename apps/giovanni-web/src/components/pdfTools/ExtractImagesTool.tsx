@@ -30,6 +30,11 @@ import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
 
 const EMPTY_IMAGES: ExtractedImage[] = [];
 
+interface ExtractImagesSettings {
+    archiveName: string;
+    includeRawStreams: boolean;
+}
+
 function getImageBlob(image: ExtractedImage) {
     return image.blob;
 }
@@ -37,8 +42,10 @@ function getImageBlob(image: ExtractedImage) {
 export function ExtractImagesTool() {
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
-    const [archiveName, setArchiveName] = useState("{basename}_images.zip");
-    const [includeRawStreams, setIncludeRawStreams] = useState(false);
+    const [extractImagesSettings, setExtractImagesSettings] = useState<ExtractImagesSettings>({
+        archiveName: "{basename}_images.zip",
+        includeRawStreams: false,
+    });
     const { result, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<ExtractImagesResult>();
     const images = result?.images ?? EMPTY_IMAGES;
     const previewUrls = useObjectUrls(images, getImageBlob);
@@ -96,6 +103,10 @@ export function ExtractImagesTool() {
         void processFile(nextFile);
     };
 
+    const updateExtractImagesSettings = (patch: Partial<ExtractImagesSettings>) => {
+        setExtractImagesSettings((currentSettings) => ({ ...currentSettings, ...patch }));
+    };
+
     const downloadImage = (image: ExtractedImage, index: number) => {
         const name = imageDownloadName(pdfBaseName(file), index, image);
 
@@ -112,15 +123,18 @@ export function ExtractImagesTool() {
             return;
         }
 
-        const entries = await buildExtractedImageEntries(images, pdfBaseName(file), { includeRawStreams });
+        const entries = await buildExtractedImageEntries(images, pdfBaseName(file), { includeRawStreams: extractImagesSettings.includeRawStreams });
 
         if (Object.keys(entries).length === 0) {
-            setStatus({ tone: "error", message: includeRawStreams ? "No images are available to bundle." : "No browser-ready images are available to bundle." });
+            setStatus({
+                tone: "error",
+                message: extractImagesSettings.includeRawStreams ? "No images are available to bundle." : "No browser-ready images are available to bundle.",
+            });
             return;
         }
 
         try {
-            await downloadZip(entries, makeArchiveName(archiveName, pdfBaseName(file)));
+            await downloadZip(entries, makeArchiveName(extractImagesSettings.archiveName, pdfBaseName(file)));
         } catch (error) {
             setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not create ZIP." });
         }
@@ -132,9 +146,13 @@ export function ExtractImagesTool() {
                 <SidebarHeader>Export Settings</SidebarHeader>
                 <SidebarContent>
                     <SidebarField label="Archive">
-                        <SidebarInput value={archiveName} onChange={(event) => setArchiveName(event.currentTarget.value)} />
+                        <SidebarInput value={extractImagesSettings.archiveName} onChange={(event) => updateExtractImagesSettings({ archiveName: event.currentTarget.value })} />
                     </SidebarField>
-                    <SidebarCheckbox checked={includeRawStreams} label="Include raw" onChange={(event) => setIncludeRawStreams(event.currentTarget.checked)} />
+                    <SidebarCheckbox
+                        checked={extractImagesSettings.includeRawStreams}
+                        label="Include raw"
+                        onChange={(event) => updateExtractImagesSettings({ includeRawStreams: event.currentTarget.checked })}
+                    />
                 </SidebarContent>
             </SidebarSection>
         </Sidebar>
@@ -168,7 +186,9 @@ export function ExtractImagesTool() {
                     ...(rawCount > 0 ? [{ label: "Raw", value: rawCount }] : []),
                 ]}
                 primaryAction={
-                    file ? { label: "Download ZIP", disabled: images.length === 0 || (!includeRawStreams && decodedCount === 0), onClick: handleDownloadAll } : undefined
+                    file
+                        ? { label: "Download ZIP", disabled: images.length === 0 || (!extractImagesSettings.includeRawStreams && decodedCount === 0), onClick: handleDownloadAll }
+                        : undefined
                 }
                 secondaryActions={[{ label: "Replace", onClick: () => inputRef.current?.click() }]}
                 status={isWorking ? { tone: "info", message: "Extracting images..." } : status}

@@ -266,3 +266,25 @@ jobs:
                               body,
                           });
                       }
+
+                      if (aliasUrl || previewUrl) {
+                          const prMarker = "<!-- pdfly-cf-preview -->";
+                          const prLink = aliasUrl || previewUrl;
+                          const prLine = `${prMarker}\n<sup>☁️ [PR Preview](${prLink}) · [\`${shortSha}\`](https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${sha})</sup>\n`;
+                          const pr = await github.rest.pulls.get({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              pull_number: context.issue.number,
+                          });
+                          const prBody = pr.data.body || "";
+                          const idx = prBody.indexOf(prMarker);
+                          const newPrBody = idx !== -1
+                              ? prBody.substring(0, idx).trimEnd() + "\n\n" + prLine + "\n" + prBody.substring(idx).split("\n").slice(2).join("\n").trimStart()
+                              : prBody.trimEnd() + "\n\n" + prLine;
+                          await github.rest.pulls.update({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              pull_number: context.issue.number,
+                              body: newPrBody.trimEnd(),
+                          });
+                      }

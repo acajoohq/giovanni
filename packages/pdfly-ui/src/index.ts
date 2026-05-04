@@ -332,7 +332,7 @@ export function initApp(): void {
         const listPageCount = Math.ceil(totalItemCount / SPLIT_LIST_PAGE_SIZE);
         const rangeStart = splitListPageIndex * SPLIT_LIST_PAGE_SIZE + 1;
         const rangeEnd = Math.min((splitListPageIndex + 1) * SPLIT_LIST_PAGE_SIZE, totalItemCount);
-        info.textContent = `Showing ${rangeStart}-${rangeEnd} of ${totalItemCount} Â· list ${splitListPageIndex + 1} / ${listPageCount}`;
+        info.textContent = `Showing ${rangeStart}-${rangeEnd} of ${totalItemCount} · list ${splitListPageIndex + 1} / ${listPageCount}`;
 
         previousButton.disabled = splitListPageIndex <= 0;
         nextButton.disabled = splitListPageIndex >= listPageCount - 1;
@@ -506,7 +506,7 @@ export function initApp(): void {
         }
     }
 
-    // extract images tab (optional markup â€” e.g. pdfly-web includes it, pdfly-desktop may not)
+    // extract images tab (optional markup - e.g. pdfly-web includes it, pdfly-desktop may not)
     const imagesUploadCandidate = document.getElementById("images-upload");
     const imagesInputCandidate = document.getElementById("images-input");
     if (imagesUploadCandidate instanceof HTMLButtonElement && imagesInputCandidate instanceof HTMLInputElement) {
@@ -611,10 +611,10 @@ export function initApp(): void {
                 const meta = document.createElement("div");
                 meta.className = "image-card-meta";
                 const dims = document.createElement("div");
-                dims.innerHTML = `<strong>${image.width}Ã--${image.height}</strong> Â· ${formatBytes(image.bytes.byteLength)}`;
+                dims.innerHTML = `<strong>${image.width}--${image.height}</strong> · ${formatBytes(image.bytes.byteLength)}`;
                 const filterLine = document.createElement("div");
                 filterLine.className = "filter";
-                filterLine.textContent = `${image.filter} Â· page ${image.pageIndex + 1}`;
+                filterLine.textContent = `${image.filter} · page ${image.pageIndex + 1}`;
                 meta.appendChild(dims);
                 meta.appendChild(filterLine);
 

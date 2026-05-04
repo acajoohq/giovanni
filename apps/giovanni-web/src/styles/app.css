@@ -151,7 +151,7 @@
     --color-app-border-stronger: var(--app-border-stronger);
     --color-app-text: var(--app-text);
     --color-app-text-muted: var(--app-text-muted);
-    
+
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);

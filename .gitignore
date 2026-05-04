@@ -50,3 +50,4 @@ lerna-debug.log*
 vendor/qpdf/
 packages/pdfly-wasm/wasm/cmake-build/
 .claude/settings.local.json
+dogfood-output/

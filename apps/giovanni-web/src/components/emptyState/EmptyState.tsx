@@ -24,6 +24,7 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, i
     const handleDragEnter = (event: React.DragEvent) => {
         if (!onFiles) return;
         event.preventDefault();
+        event.stopPropagation();
         dragCounterRef.current += 1;
         setIsDragOver(true);
     };
@@ -31,6 +32,7 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, i
     const handleDragLeave = (event: React.DragEvent) => {
         if (!onFiles) return;
         event.preventDefault();
+        event.stopPropagation();
         dragCounterRef.current -= 1;
         if (dragCounterRef.current === 0) setIsDragOver(false);
     };
@@ -38,12 +40,14 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, i
     const handleDragOver = (event: React.DragEvent) => {
         if (!onFiles) return;
         event.preventDefault();
+        event.stopPropagation();
         event.dataTransfer.dropEffect = "copy";
     };
 
     const handleDrop = (event: React.DragEvent) => {
         if (!onFiles) return;
         event.preventDefault();
+        event.stopPropagation();
         dragCounterRef.current = 0;
         setIsDragOver(false);
         handleFiles(event.dataTransfer.files);

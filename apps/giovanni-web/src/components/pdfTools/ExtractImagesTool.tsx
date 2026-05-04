@@ -14,11 +14,13 @@ import { ImageThumb } from "@/components/pdfTools/ImageThumb";
 import { PdfPreview } from "@/components/pdfTools/PdfPreview";
 import { ToolResultTray } from "@/components/pdfTools/ToolResultTray";
 
+const EMPTY_IMAGES: ExtractedImage[] = [];
+
 export function ExtractImagesTool() {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [file, setFile] = React.useState<File | null>(null);
     const { result, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<ExtractImagesResult>();
-    const images = result?.images ?? [];
+    const images = result?.images ?? EMPTY_IMAGES;
     const getImageBlob = React.useCallback((image: ExtractedImage) => image.blob, []);
     const previewUrls = useObjectUrls(images, getImageBlob);
 
@@ -115,7 +117,7 @@ export function ExtractImagesTool() {
     );
 
     const imagesOutput = images.length > 0 && (
-        <div className="h-full w-full overflow-y-auto p-4">
+        <div className="h-full w-full overflow-y-auto p-4 pb-24">
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                 {images.map((image, index) => (
                     <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2">

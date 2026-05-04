@@ -118,7 +118,7 @@ export function MergeTool() {
                         Add PDFs
                     </Button>
                 </div>
-                <div className="flex-1 overflow-y-auto p-3">
+                <div className="flex-1 overflow-y-auto p-3 pb-24">
                     <FilesList files={files} onMove={handleMove} onRemove={handleRemove} />
                 </div>
             </div>

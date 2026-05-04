@@ -4,6 +4,11 @@ export function useObjectUrls<TItem>(items: TItem[], getBlob: (item: TItem) => B
     const [urls, setUrls] = React.useState<Array<string | null>>([]);
 
     React.useEffect(() => {
+        if (items.length === 0) {
+            setUrls((currentUrls) => (currentUrls.length === 0 ? currentUrls : []));
+            return;
+        }
+
         const nextUrls = items.map((item) => {
             const blob = getBlob(item);
 

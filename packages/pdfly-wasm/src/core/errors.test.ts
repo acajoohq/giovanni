@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { QpdfCompressionError, QpdfError, QpdfInitError, QpdfMergeError, QpdfSplitError, QpdfValidationError } from "./errors.js";
+import { QpdfCompressionError, QpdfError, QpdfInitError, QpdfMergeError, QpdfSplitError, QpdfValidationError, QpdfConversionError } from "./errors.js";
 
 describe("Error Classes", () => {
     describe("QpdfError", () => {
@@ -66,6 +66,15 @@ describe("Error Classes", () => {
             expect(error).toBeInstanceOf(QpdfValidationError);
             expect(error).toBeInstanceOf(QpdfError);
             expect(error.name).toBe("QpdfValidationError");
+        });
+    });
+
+    describe("QpdfConversionError", () => {
+        it("should create conversion error", () => {
+            const error = new QpdfConversionError("conversion failed");
+            expect(error).toBeInstanceOf(QpdfConversionError);
+            expect(error).toBeInstanceOf(QpdfError);
+            expect(error.name).toBe("QpdfConversionError");
         });
     });
 });

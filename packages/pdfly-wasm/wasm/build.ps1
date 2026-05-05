@@ -178,7 +178,7 @@ $qpdfSource = [System.IO.Path]::GetFullPath($qpdfSource)
 
 if (-not (Test-Path -Path $qpdfSource -PathType Container)) {
     Write-Host "Error: qpdf source not found at $qpdfSource" -ForegroundColor Red
-    Write-Host "Expected directory structure:" 
+    Write-Host "Expected directory structure:"
     Write-Host "  C:\\path\\to\\qpdf-wasm\\vendor\\qpdf\\"
     Write-Host "  C:\\path\\to\\qpdf-wasm\\packages\\pdfly-wasm\\wasm\\"
     exit 1
@@ -231,11 +231,11 @@ try {
     $jobs = if ($env:NUMBER_OF_PROCESSORS) { [int]$env:NUMBER_OF_PROCESSORS } else { 4 }
 
     Run-Step -Label 'Compiling WASM (this may take a few minutes)...' -Action {
-        Invoke-Tool -Name 'emmake' -Args @('make', "-j$jobs")
+        Invoke-Tool -Name 'cmake' -Args @('--build', '.', '--parallel', "$jobs")
     }
 
     Run-Step -Label 'Installing artifacts...' -Action {
-        Invoke-Tool -Name 'emmake' -Args @('make', 'install')
+        Invoke-Tool -Name 'cmake' -Args @('--install', '.')
     }
 }
 finally {

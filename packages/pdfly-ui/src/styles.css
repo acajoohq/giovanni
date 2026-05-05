@@ -699,3 +699,14 @@ select {
 .image-card-actions .button {
     width: 100%;
 }
+
+/* -- PDF to JPG tab ----------------------------------------- */
+
+.jpg-results {
+    display: none;
+    margin-top: 30px;
+}
+
+.jpg-results.show {
+    display: block;
+}

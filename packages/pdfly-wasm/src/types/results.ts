@@ -149,3 +149,43 @@ export interface ExtractImagesResult {
     images: ExtractedImage[];
     imageCount: number;
 }
+
+/**
+ * A single JPG-converted page from a PDF
+ */
+export interface PdfPageJpg {
+    /**
+     * Zero-based page index in the source PDF
+     */
+    pageIndex: number;
+
+    /**
+     * JPG image as a browser Blob (image/jpeg)
+     */
+    blob: Blob;
+
+    /**
+     * Pixel width of the image
+     */
+    width: number;
+
+    /**
+     * Pixel height of the image
+     */
+    height: number;
+}
+
+/**
+ * Result of a PDF to JPG conversion operation
+ */
+export interface PdfToJpgResult {
+    /**
+     * Array of converted pages, ordered by pageIndex
+     */
+    pages: PdfPageJpg[];
+
+    /**
+     * Number of pages that produced at least one JPG image
+     */
+    convertedPageCount: number;
+}

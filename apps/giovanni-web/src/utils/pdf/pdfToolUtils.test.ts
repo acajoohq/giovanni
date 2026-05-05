@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import type { ExtractedImage } from "@pdfly/wasm";
+import type { ExtractedImage, PdfPageJpg } from "@pdfly/wasm";
 import {
     buildBrowserReadyImageEntries,
     buildExtractedImageEntries,
+    buildJpgPageEntries,
     buildSplitPageEntries,
     ensureFileExtension,
     ensurePdfExtension,
@@ -11,6 +12,7 @@ import {
     imageDownloadName,
     isPdfFile,
     makeArchiveName,
+    makePageJpgName,
     makePagePdfName,
 } from "./pdfToolUtils";
 
@@ -49,6 +51,22 @@ describe("pdfToolUtils", () => {
         expect(buildSplitPageEntries([firstPage, secondPage], "{basename}_page_{page}", "source")).toEqual({
             "source_page_1.pdf": firstPage,
             "source_page_2.pdf": secondPage,
+        });
+    });
+
+    it("builds JPG page names and entries", async () => {
+        const firstPageBytes = new Uint8Array([1, 2, 3]);
+        const secondPageBytes = new Uint8Array([4, 5, 6]);
+        const pages: PdfPageJpg[] = [
+            { pageIndex: 0, blob: new Blob([firstPageBytes as BlobPart], { type: "image/jpeg" }), width: 800, height: 1000 },
+            { pageIndex: 1, blob: new Blob([secondPageBytes as BlobPart], { type: "image/jpeg" }), width: 800, height: 1000 },
+        ];
+
+        expect(makePageJpgName("{basename}_page_{page}", "source", 1)).toBe("source_page_002.jpg");
+        expect(makePageJpgName("{basename}_{page}.jpeg", "source", 0)).toBe("source_001.jpg");
+        expect(await buildJpgPageEntries(pages, "{basename}_page_{page}", "source")).toEqual({
+            "source_page_001.jpg": firstPageBytes,
+            "source_page_002.jpg": secondPageBytes,
         });
     });
 

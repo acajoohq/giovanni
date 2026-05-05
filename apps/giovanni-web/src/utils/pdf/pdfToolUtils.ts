@@ -1,4 +1,4 @@
-import { formatBytes, type ExtractedImage } from "@pdfly/wasm";
+import { formatBytes, type ExtractedImage, type PdfPageJpg } from "@pdfly/wasm";
 import { zip } from "fflate";
 
 export function isPdfFile(file: File): boolean {
@@ -43,8 +43,26 @@ export function makePagePdfName(pattern: string, baseName: string, pageIndex: nu
         .concat(".pdf");
 }
 
+export function makePageJpgName(pattern: string, baseName: string, pageIndex: number): string {
+    return pattern
+        .replaceAll("{basename}", baseName)
+        .replaceAll("{page}", String(pageIndex + 1).padStart(3, "0"))
+        .replace(/\.jpe?g$/i, "")
+        .concat(".jpg");
+}
+
 export function buildSplitPageEntries(pages: Uint8Array[], pattern: string, baseName: string): Record<string, Uint8Array> {
     return Object.fromEntries(pages.map((page, index) => [makePagePdfName(pattern, baseName, index), page]));
+}
+
+export async function buildJpgPageEntries(pages: PdfPageJpg[], pattern: string, baseName: string): Promise<Record<string, Uint8Array>> {
+    const entries: Record<string, Uint8Array> = {};
+
+    for (const page of pages) {
+        entries[makePageJpgName(pattern, baseName, page.pageIndex)] = new Uint8Array(await page.blob.arrayBuffer());
+    }
+
+    return entries;
 }
 
 export function formatDuration(ms: number): string {

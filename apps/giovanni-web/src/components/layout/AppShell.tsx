@@ -8,6 +8,7 @@ const navigationItems = [
     { label: "Split", to: "/split" },
     { label: "Merge", to: "/merge" },
     { label: "Extract Images", to: "/extract-images" },
+    { label: "PDF to JPG", to: "/pdf-to-jpg" },
 ] as const;
 
 export function AppShell() {

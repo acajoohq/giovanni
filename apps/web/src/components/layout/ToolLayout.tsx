@@ -23,8 +23,8 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
 
     const handleDragLeave = (e: DragEvent) => {
         e.preventDefault();
-        dragCounter.current--;
-        if (dragCounter.current === 0) setIsDragOver(false);
+        dragCounter.current = Math.max(0, dragCounter.current - 1);
+        if (dragCounter.current < 1) setIsDragOver(false);
     };
 
     const handleDragOver = (e: DragEvent) => {

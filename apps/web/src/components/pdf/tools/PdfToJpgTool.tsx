@@ -14,6 +14,7 @@ import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { EmptyPdfToJpg } from "@/components/pdf/emptyState/EmptyPdfToJpg";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
 import { useObjectUrls } from "@/hooks/pdf/useObjectUrls";
 import {
@@ -27,6 +28,8 @@ import {
     makePageJpgName,
     pdfBaseName,
 } from "@/utils/pdf/pdfToolUtils";
+
+const CONVERSION_DEBOUNCE_MS = 350;
 
 interface PdfToJpgSettings {
     qualityPercent: number;
@@ -73,16 +76,23 @@ export function PdfToJpgTool() {
         });
     };
 
-    const processCurrentFile = (nextSettings: PdfToJpgSettings) => {
-        if (file) {
-            void processFile(file, nextSettings);
+    const debouncedProcessFile = useDebouncedCallback((nextFile: File, nextSettings: PdfToJpgSettings) => {
+        void processFile(nextFile, nextSettings);
+    }, CONVERSION_DEBOUNCE_MS);
+
+    const scheduleCurrentFileProcessing = (nextSettings: PdfToJpgSettings) => {
+        if (!file) {
+            debouncedProcessFile.cancel();
+            return;
         }
+
+        debouncedProcessFile(file, nextSettings);
     };
 
     const updateConversionSettings = (patch: Partial<Pick<PdfToJpgSettings, "qualityPercent" | "scale">>) => {
         const nextSettings = { ...settings, ...patch };
         setSettings(nextSettings);
-        processCurrentFile(nextSettings);
+        scheduleCurrentFileProcessing(nextSettings);
     };
 
     const updateExportSettings = (patch: Partial<Pick<PdfToJpgSettings, "outputPattern" | "archiveName">>) => {
@@ -98,6 +108,7 @@ export function PdfToJpgTool() {
         }
 
         reset();
+        debouncedProcessFile.cancel();
         setFile(nextFile);
         void processFile(nextFile);
     };

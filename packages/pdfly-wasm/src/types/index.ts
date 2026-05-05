@@ -10,5 +10,6 @@ export type {
     SplitResult,
     PdfPageJpg,
     PdfToJpgResult,
+    OrganizeResult,
 } from "./results.js";
 export type { QpdfWasmModule, CreateQpdfModule } from "./wasm-module.js";

@@ -37,6 +37,7 @@ export { splitPages } from "./core/split.js";
 export { mergePdfs } from "./core/merge.js";
 export { extractImages } from "./core/extract-images.js";
 export { pdfToJpg } from "./core/pdf-to-jpg.js";
+export { reorganizePages } from "./core/organize.js";
 
 // advanced api
 export { QPDF } from "./core/qpdf.js";
@@ -52,6 +53,7 @@ export {
     QpdfValidationError,
     QpdfImageExtractionError,
     QpdfConversionError,
+    QpdfOrganizeError,
 } from "./core/errors.js";
 
 // types
@@ -68,6 +70,7 @@ export type {
     PdfPageJpg,
     PdfToJpgResult,
     PdfToJpgOptions,
+    OrganizeResult,
 } from "./types/index.js";
 
 // utility functions

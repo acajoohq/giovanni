@@ -8,7 +8,7 @@ interface AboutDialogProps {
 }
 
 const CONTRIBUTORS = [
-    { name: "Edward Brunetiere", github: "EdwardBrunetiere", initials: "EB", color: "#4f8ef7" },
+    { name: "Edward Brunetiere", github: "P4tt4te", initials: "EB", color: "#4f8ef7" },
     { name: "Mattèo Gauthier", github: "matteogauthier", initials: "MG", color: "var(--brand)" },
 ] as const;
 

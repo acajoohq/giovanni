@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
+import babel from "@rolldown/plugin-babel";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import viteReact from "@vitejs/plugin-react";
+import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { codeInspectorPlugin } from "code-inspector-plugin";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
@@ -62,6 +63,7 @@ export default defineConfig(({ mode }) => {
                 },
             }),
             viteReact(),
+            babel({ presets: [reactCompilerPreset()] }),
         ],
         optimizeDeps: {
             exclude: ["pdfjs-dist"],
@@ -73,6 +75,24 @@ export default defineConfig(({ mode }) => {
         },
         worker: {
             format: "es",
+        },
+        environments: {
+            // `@pdfly/wasm` is a workspace package so TanStack Start marks it
+            // `noExternal` (bundled for SSR). Its `pdf-to-jpg.ts` lazily loads
+            // the optional `canvas` peer via `import("canvas")`. Rolldown follows
+            // the CommonJS chain into `canvas/lib/bindings.js` which requires the
+            // native `canvas.node` binary — an unreadable blob that causes an
+            // [UNLOADABLE_DEPENDENCY] build error. Setting `external` here stops
+            // Rolldown at the package boundary for SSR. At prerender time the SSR
+            // runner can load it natively; in the deployed Cloudflare build it is
+            // never reached because the `isBrowser` guard short-circuits first.
+            ssr: {
+                build: {
+                    rollupOptions: {
+                        external: ["canvas", /\.node$/],
+                    },
+                },
+            },
         },
     };
 });

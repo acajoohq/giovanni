@@ -1,6 +1,6 @@
 import { formatBytes, mergePdfs } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -19,6 +19,7 @@ import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
 import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/utils/pdf/pdfToolUtils";
 
 export function MergeTool() {
+    const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [files, setFiles] = useState<File[]>([]);
     const [outputName, setOutputName] = useState("merged.pdf");
@@ -140,11 +141,9 @@ export function MergeTool() {
             </div>
         ) : (
             <EmptyState
-                accept="application/pdf,.pdf"
                 badgeIcon={<RiAddLine className="size-5" />}
                 description="Select multiple PDFs to merge into one."
-                inputRef={inputRef}
-                isMultiple
+                fileInputId={fileInputId}
                 onFiles={handleFiles}
                 title="Drop PDFs to merge"
                 visual={<EmptyMerge />}
@@ -154,6 +153,7 @@ export function MergeTool() {
     return (
         <>
             <input
+                id={fileInputId}
                 ref={inputRef}
                 hidden
                 multiple

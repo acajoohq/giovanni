@@ -1,4 +1,4 @@
-import { useRef, useState, type DragEvent, type HTMLAttributes, type ReactNode, type Ref } from "react";
+import { useRef, useState, type DragEvent, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
@@ -6,13 +6,11 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, "t
     description: ReactNode;
     badgeIcon?: ReactNode;
     visual: ReactNode;
-    isMultiple?: boolean;
-    accept?: string;
-    inputRef?: Ref<HTMLInputElement>;
+    fileInputId: string;
     onFiles?: (files: File[]) => void;
 }
 
-export const EmptyState = ({ className, title, description, badgeIcon, visual, isMultiple, accept, inputRef, onFiles, ...props }: EmptyStateProps) => {
+export const EmptyState = ({ className, title, description, badgeIcon, visual, fileInputId, onFiles, ...props }: EmptyStateProps) => {
     const [isDragOver, setIsDragOver] = useState(false);
     const dragCounterRef = useRef(0);
 
@@ -64,18 +62,7 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, i
         >
             {isDragOver && <div className="pointer-events-none absolute inset-4 rounded-xl border-2 border-dashed border-brand/40" />}
 
-            <label className="group relative flex cursor-pointer flex-col items-center">
-                <input
-                    ref={inputRef}
-                    type="file"
-                    className="hidden"
-                    multiple={isMultiple}
-                    accept={accept}
-                    onChange={(event) => {
-                        handleFiles(event.currentTarget.files);
-                        event.currentTarget.value = "";
-                    }}
-                />
+            <label className="group relative flex cursor-pointer flex-col items-center" htmlFor={fileInputId}>
                 <div className="relative mb-10 flex size-32 items-center justify-center">{visual}</div>
 
                 {badgeIcon && (

@@ -1,6 +1,6 @@
 import { extractImages, formatBytes, type ExtractedImage, type ExtractImagesResult } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import { useState, useRef } from "react";
+import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -32,6 +32,7 @@ function getImageBlob(image: ExtractedImage) {
 }
 
 export function ExtractImagesTool() {
+    const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
     const [extractImagesSettings, setExtractImagesSettings] = useState<ExtractImagesSettings>({
@@ -188,10 +189,9 @@ export function ExtractImagesTool() {
         </div>
     ) : (
         <EmptyState
-            accept="application/pdf,.pdf"
             badgeIcon={<RiAddLine className="size-5" />}
             description="Every embedded raster image, decoded by the browser."
-            inputRef={inputRef}
+            fileInputId={fileInputId}
             onFiles={handleFiles}
             title="Drop a PDF to extract images"
             visual={<EmptyExtractImages />}
@@ -201,6 +201,7 @@ export function ExtractImagesTool() {
     return (
         <>
             <input
+                id={fileInputId}
                 ref={inputRef}
                 hidden
                 accept="application/pdf,.pdf"

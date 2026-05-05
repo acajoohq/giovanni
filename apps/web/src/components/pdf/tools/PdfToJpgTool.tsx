@@ -1,6 +1,6 @@
 import { formatBytes, pdfToJpg, type PdfPageJpg, type PdfToJpgResult } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -14,6 +14,7 @@ import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { EmptyPdfToJpg } from "@/components/pdf/emptyState/EmptyPdfToJpg";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
+import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
 import { useObjectUrls } from "@/hooks/pdf/useObjectUrls";
@@ -29,8 +30,6 @@ import {
     pdfBaseName,
 } from "@/utils/pdf/pdfToolUtils";
 
-const CONVERSION_DEBOUNCE_MS = 350;
-
 interface PdfToJpgSettings {
     qualityPercent: number;
     scale: number;
@@ -43,6 +42,7 @@ function getPageBlob(page: PdfPageJpg) {
 }
 
 export function PdfToJpgTool() {
+    const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
     const [settings, setSettings] = useState<PdfToJpgSettings>({
@@ -78,7 +78,7 @@ export function PdfToJpgTool() {
 
     const debouncedProcessFile = useDebouncedCallback((nextFile: File, nextSettings: PdfToJpgSettings) => {
         void processFile(nextFile, nextSettings);
-    }, CONVERSION_DEBOUNCE_MS);
+    }, PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS);
 
     const scheduleCurrentFileProcessing = (nextSettings: PdfToJpgSettings) => {
         if (!file) {
@@ -209,10 +209,9 @@ export function PdfToJpgTool() {
         </div>
     ) : (
         <EmptyState
-            accept="application/pdf,.pdf"
             badgeIcon={<RiAddLine className="size-5" />}
             description="Each page is converted to a JPG image."
-            inputRef={inputRef}
+            fileInputId={fileInputId}
             onFiles={handleFiles}
             title="Drop a PDF to convert"
             visual={<EmptyPdfToJpg />}
@@ -222,6 +221,7 @@ export function PdfToJpgTool() {
     return (
         <>
             <input
+                id={fileInputId}
                 ref={inputRef}
                 hidden
                 accept="application/pdf,.pdf"

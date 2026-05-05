@@ -1,0 +1,1 @@
+export const PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS = 350;

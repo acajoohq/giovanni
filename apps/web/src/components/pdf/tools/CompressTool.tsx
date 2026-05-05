@@ -1,6 +1,6 @@
 import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel, type ObjectStreamMode } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import { useState, useRef } from "react";
+import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { ComparisonSlider } from "@/components/viewer/ComparisonSlider";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -14,6 +14,8 @@ import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { EmptyCompress } from "@/components/pdf/emptyState/EmptyCompress";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
+import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce";
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
 import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdf/pdfToolUtils";
 
@@ -40,6 +42,7 @@ interface CompressionOptions {
 }
 
 export function CompressTool() {
+    const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
     const [compressionOptions, setCompressionOptions] = useState<CompressionOptions>({
@@ -65,16 +68,23 @@ export function CompressTool() {
         });
     };
 
-    const processCurrentFile = (options: CompressionOptions) => {
-        if (file) {
-            void processFile(file, options);
+    const debouncedProcessFile = useDebouncedCallback((nextFile: File, nextOptions: CompressionOptions) => {
+        void processFile(nextFile, nextOptions);
+    }, PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS);
+
+    const scheduleRecompress = (nextOptions: CompressionOptions) => {
+        if (!file) {
+            debouncedProcessFile.cancel();
+            return;
         }
+
+        debouncedProcessFile(file, nextOptions);
     };
 
     const updateCompressionOptions = (patch: Partial<CompressionOptions>) => {
         const nextOptions = { ...compressionOptions, ...patch };
         setCompressionOptions(nextOptions);
-        processCurrentFile(nextOptions);
+        scheduleRecompress(nextOptions);
     };
 
     const handleFiles = (files: File[]) => {
@@ -86,6 +96,7 @@ export function CompressTool() {
         }
 
         reset();
+        debouncedProcessFile.cancel();
         setFile(nextFile);
         void processFile(nextFile);
     };
@@ -173,10 +184,9 @@ export function CompressTool() {
         </div>
     ) : (
         <EmptyState
-            accept="application/pdf,.pdf"
             badgeIcon={<RiAddLine className="size-5" />}
             description="Secure, offline processing."
-            inputRef={inputRef}
+            fileInputId={fileInputId}
             onFiles={handleFiles}
             title="Drop a PDF to compress"
             visual={<EmptyCompress />}
@@ -186,6 +196,7 @@ export function CompressTool() {
     return (
         <>
             <input
+                id={fileInputId}
                 ref={inputRef}
                 hidden
                 accept="application/pdf,.pdf"

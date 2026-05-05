@@ -6,7 +6,7 @@
     "scripts": {
         "build": "turbo build",
         "clean": "turbo clean",
-        "dev": "turbo dev --filter=giovanni-web",
+        "dev": "turbo dev --filter=web",
         "format": "oxfmt --write .",
         "format:check": "oxfmt --check .",
         "lint": "turbo lint",

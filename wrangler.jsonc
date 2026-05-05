@@ -3,6 +3,6 @@
     "name": "morning-bar-2e0b", // keep it like that
     "compatibility_date": "2026-04-26",
     "assets": {
-        "directory": "./apps/giovanni-web/dist/client",
+        "directory": "./apps/web/dist/client",
     },
 }

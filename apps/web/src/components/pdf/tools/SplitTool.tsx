@@ -14,6 +14,7 @@ import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { SidebarToggle } from "@/components/sidebar/SidebarToggle";
 import { SidebarToggleGroup } from "@/components/sidebar/SidebarToggleGroup";
 import { EmptySplit } from "@/components/pdf/emptyState/EmptySplit";
+import { PdfPageThumbnail } from "@/components/pdf/PdfPageThumbnail";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
@@ -138,7 +139,7 @@ export function SplitTool() {
                     {pages.map((page, index) => (
                         <div key={index} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:260px]">
                             <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
-                                <PdfPreview data={page} />
+                                <PdfPageThumbnail data={page} />
                             </div>
                             <span className="truncate text-center text-[10px] text-neutral-500">Page {index + 1}</span>
                             <Button className="h-6 text-[10px]" size="sm" variant="secondary" type="button" onClick={() => downloadPdf(page, makePageName(index))}>

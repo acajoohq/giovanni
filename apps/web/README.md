@@ -37,9 +37,9 @@ Use the `@/*` alias for source imports instead of long relative paths. The alias
 Examples:
 
 ```ts
-import { ToolLayout } from "@/components/layout/ToolLayout"
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob"
-import { filterPdfFiles } from "@/utils/pdf/pdfToolUtils"
+import { ToolLayout } from "@/components/layout/ToolLayout";
+import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
+import { filterPdfFiles } from "@/utils/pdf/pdfToolUtils";
 ```
 
 ## Styling

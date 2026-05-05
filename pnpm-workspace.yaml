@@ -1,9 +1,9 @@
 packages:
-  - apps/*
-  - packages/*
+    - apps/*
+    - packages/*
 allowBuilds:
-  canvas: true
-  esbuild: true
-  msw: true
-  sharp: true
-  workerd: true
+    canvas: true
+    esbuild: true
+    msw: true
+    sharp: true
+    workerd: true

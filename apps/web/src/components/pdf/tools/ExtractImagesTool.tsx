@@ -48,7 +48,7 @@ export function ExtractImagesTool() {
 
         for (const image of images) {
             if (image.blob) {
-                decodedImages += 1;
+                decodedImages++;
             }
         }
 
@@ -67,7 +67,7 @@ export function ExtractImagesTool() {
                 let nextDecodedCount = 0;
                 for (const image of nextResult.images) {
                     if (image.blob) {
-                        nextDecodedCount += 1;
+                        nextDecodedCount++;
                     }
                 }
                 const nextRawCount = nextResult.imageCount - nextDecodedCount;

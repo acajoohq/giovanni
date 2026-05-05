@@ -14,7 +14,7 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, f
     const [isDragOver, setIsDragOver] = useState(false);
     const dragCounterRef = useRef(0);
 
-    const handleFiles = (files: FileList | null) => {
+    const handleFiles = (files?: FileList) => {
         if (!files || files.length === 0) return;
         onFiles?.(Array.from(files));
     };
@@ -31,8 +31,8 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, f
         if (!onFiles) return;
         event.preventDefault();
         event.stopPropagation();
-        dragCounterRef.current -= 1;
-        if (dragCounterRef.current === 0) setIsDragOver(false);
+        dragCounterRef.current = Math.max(0, dragCounterRef.current - 1);
+        if (dragCounterRef.current < 1) setIsDragOver(false);
     };
 
     const handleDragOver = (event: DragEvent) => {

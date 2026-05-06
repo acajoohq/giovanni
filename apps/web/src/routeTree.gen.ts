@@ -11,10 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SplitRouteImport } from './routes/split'
 import { Route as PdfToJpgRouteImport } from './routes/pdf-to-jpg'
-<<<<<<< HEAD
 import { Route as OrganizeRouteImport } from './routes/organize'
-=======
->>>>>>> master
 import { Route as MergeRouteImport } from './routes/merge'
 import { Route as ExtractImagesRouteImport } from './routes/extract-images'
 import { Route as CompressRouteImport } from './routes/compress'
@@ -30,14 +27,11 @@ const PdfToJpgRoute = PdfToJpgRouteImport.update({
   path: '/pdf-to-jpg',
   getParentRoute: () => rootRouteImport,
 } as any)
-<<<<<<< HEAD
 const OrganizeRoute = OrganizeRouteImport.update({
   id: '/organize',
   path: '/organize',
   getParentRoute: () => rootRouteImport,
 } as any)
-=======
->>>>>>> master
 const MergeRoute = MergeRouteImport.update({
   id: '/merge',
   path: '/merge',
@@ -64,10 +58,7 @@ export interface FileRoutesByFullPath {
   '/compress': typeof CompressRoute
   '/extract-images': typeof ExtractImagesRoute
   '/merge': typeof MergeRoute
-<<<<<<< HEAD
   '/organize': typeof OrganizeRoute
-=======
->>>>>>> master
   '/pdf-to-jpg': typeof PdfToJpgRoute
   '/split': typeof SplitRoute
 }
@@ -76,10 +67,7 @@ export interface FileRoutesByTo {
   '/compress': typeof CompressRoute
   '/extract-images': typeof ExtractImagesRoute
   '/merge': typeof MergeRoute
-<<<<<<< HEAD
   '/organize': typeof OrganizeRoute
-=======
->>>>>>> master
   '/pdf-to-jpg': typeof PdfToJpgRoute
   '/split': typeof SplitRoute
 }
@@ -89,10 +77,7 @@ export interface FileRoutesById {
   '/compress': typeof CompressRoute
   '/extract-images': typeof ExtractImagesRoute
   '/merge': typeof MergeRoute
-<<<<<<< HEAD
   '/organize': typeof OrganizeRoute
-=======
->>>>>>> master
   '/pdf-to-jpg': typeof PdfToJpgRoute
   '/split': typeof SplitRoute
 }
@@ -103,10 +88,7 @@ export interface FileRouteTypes {
     | '/compress'
     | '/extract-images'
     | '/merge'
-<<<<<<< HEAD
     | '/organize'
-=======
->>>>>>> master
     | '/pdf-to-jpg'
     | '/split'
   fileRoutesByTo: FileRoutesByTo
@@ -115,10 +97,7 @@ export interface FileRouteTypes {
     | '/compress'
     | '/extract-images'
     | '/merge'
-<<<<<<< HEAD
     | '/organize'
-=======
->>>>>>> master
     | '/pdf-to-jpg'
     | '/split'
   id:
@@ -127,10 +106,7 @@ export interface FileRouteTypes {
     | '/compress'
     | '/extract-images'
     | '/merge'
-<<<<<<< HEAD
     | '/organize'
-=======
->>>>>>> master
     | '/pdf-to-jpg'
     | '/split'
   fileRoutesById: FileRoutesById
@@ -140,10 +116,7 @@ export interface RootRouteChildren {
   CompressRoute: typeof CompressRoute
   ExtractImagesRoute: typeof ExtractImagesRoute
   MergeRoute: typeof MergeRoute
-<<<<<<< HEAD
   OrganizeRoute: typeof OrganizeRoute
-=======
->>>>>>> master
   PdfToJpgRoute: typeof PdfToJpgRoute
   SplitRoute: typeof SplitRoute
 }
@@ -164,7 +137,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PdfToJpgRouteImport
       parentRoute: typeof rootRouteImport
     }
-<<<<<<< HEAD
     '/organize': {
       id: '/organize'
       path: '/organize'
@@ -172,8 +144,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizeRouteImport
       parentRoute: typeof rootRouteImport
     }
-=======
->>>>>>> master
     '/merge': {
       id: '/merge'
       path: '/merge'
@@ -210,10 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   CompressRoute: CompressRoute,
   ExtractImagesRoute: ExtractImagesRoute,
   MergeRoute: MergeRoute,
-<<<<<<< HEAD
   OrganizeRoute: OrganizeRoute,
-=======
->>>>>>> master
   PdfToJpgRoute: PdfToJpgRoute,
   SplitRoute: SplitRoute,
 }

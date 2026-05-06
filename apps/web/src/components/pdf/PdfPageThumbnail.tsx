@@ -114,9 +114,8 @@ export function PdfPageThumbnail({ data }: PdfPageThumbnailProps) {
                 if (!cancelled) {
                     setIsRendered(true);
                 }
-            } catch {
-                // Silently swallow render errors; the spinner is replaced by an
-                // empty canvas, which is acceptable for a thumbnail.
+            } catch (error) {
+                console.error("Failed to render PDF thumbnail", error);
             }
         };
 

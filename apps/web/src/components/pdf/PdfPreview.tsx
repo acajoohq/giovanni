@@ -88,8 +88,9 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
                     setRenderer(pdfRenderer);
                     setPdfDoc(doc);
                 }
-            } catch {
+            } catch (error) {
                 if (!cancelled) {
+                    console.error("Failed to load PDF preview", error);
                     setPdfDoc(null);
                 }
             } finally {

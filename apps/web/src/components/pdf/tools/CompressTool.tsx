@@ -101,6 +101,15 @@ export function CompressTool() {
         void processFile(nextFile);
     };
 
+    const handleDownload = (data: Uint8Array, fileName: string) => {
+        try {
+            downloadPdf(data, fileName);
+        } catch (error) {
+            console.error("Failed to download compressed PDF", error);
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not download PDF." });
+        }
+    };
+
     const sidebar = (
         <Sidebar>
             <SidebarSection>
@@ -174,7 +183,7 @@ export function CompressTool() {
                     result
                         ? {
                               label: "Download PDF",
-                              onClick: () => downloadPdf(result.data, `${pdfBaseName(file)}_compressed.pdf`),
+                              onClick: () => handleDownload(result.data, `${pdfBaseName(file)}_compressed.pdf`),
                           }
                         : undefined
                 }

@@ -82,6 +82,15 @@ export function MergeTool() {
         updateFiles(nextFiles);
     };
 
+    const handleDownload = (data: Uint8Array, fileName: string) => {
+        try {
+            downloadPdf(data, fileName);
+        } catch (error) {
+            console.error("Failed to download merged PDF", error);
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not download PDF." });
+        }
+    };
+
     const normalizedOutputName = ensurePdfExtension(outputName);
 
     const sidebar = (
@@ -134,7 +143,7 @@ export function MergeTool() {
                         { label: "Files", value: files.length, tone: files.length > 1 ? "accent" : "neutral" },
                         ...(mergedData ? [{ label: "Output", value: formatBytes(mergedData.byteLength) }] : []),
                     ]}
-                    primaryAction={mergedData ? { label: "Download PDF", onClick: () => downloadPdf(mergedData, normalizedOutputName) } : undefined}
+                    primaryAction={mergedData ? { label: "Download PDF", onClick: () => handleDownload(mergedData, normalizedOutputName) } : undefined}
                     secondaryActions={[{ label: "Add PDFs", onClick: () => inputRef.current?.click() }]}
                     status={isWorking ? { tone: "info", message: "Merging PDFs..." } : status}
                 />

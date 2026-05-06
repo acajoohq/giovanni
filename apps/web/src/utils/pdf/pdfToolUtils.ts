@@ -1,5 +1,6 @@
 import { formatBytes, type ExtractedImage, type PdfPageJpg } from "@pdfly/wasm";
 import { zip } from "fflate";
+import { copyPdfBytes, copyPdfEntries } from "./pdfBytes";
 
 export function isPdfFile(file: File): boolean {
     return file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf");
@@ -82,19 +83,23 @@ export function downloadBlob(blob: Blob, fileName: string): void {
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = fileName;
+    anchor.style.display = "none";
+    document.body.append(anchor);
     anchor.click();
+    anchor.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 
 export function downloadPdf(data: Uint8Array, fileName: string): void {
-    downloadBlob(new Blob([data as BlobPart], { type: "application/pdf" }), fileName);
+    downloadBlob(new Blob([copyPdfBytes(data) as BlobPart], { type: "application/pdf" }), fileName);
 }
 
 type ZipLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export async function downloadZip(entries: Record<string, Uint8Array>, fileName: string, level: ZipLevel = 6): Promise<void> {
+    const ownedEntries = copyPdfEntries(entries);
     const zipped = await new Promise<Uint8Array>((resolve, reject) => {
-        zip(entries, { level }, (error, data) => {
+        zip(ownedEntries, { level }, (error, data) => {
             if (error) {
                 reject(error);
                 return;

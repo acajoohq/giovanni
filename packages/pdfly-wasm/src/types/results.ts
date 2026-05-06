@@ -190,7 +190,6 @@ export interface PdfToJpgResult {
     convertedPageCount: number;
 }
 
-
 /**
  * Result of a PDF page reorganization operation
  */

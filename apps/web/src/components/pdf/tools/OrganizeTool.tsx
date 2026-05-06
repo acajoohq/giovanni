@@ -34,13 +34,7 @@ export function OrganizeTool() {
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
     const [outputName, setOutputName] = useState("organized.pdf");
 
-    const {
-        result: splitResult,
-        status: splitStatus,
-        isWorking: isSplitting,
-        reset: resetSplit,
-        runJob: runSplitJob,
-    } = useAsyncToolJob<SplitJobResult>();
+    const { result: splitResult, status: splitStatus, isWorking: isSplitting, reset: resetSplit, runJob: runSplitJob } = useAsyncToolJob<SplitJobResult>();
 
     const {
         result: reorganizedData,
@@ -190,9 +184,7 @@ export function OrganizeTool() {
                             </div>
                             <span className="truncate text-center text-[10px] text-neutral-500">
                                 Page {currentIndex + 1}
-                                {originalIndex !== currentIndex && (
-                                    <span className="ml-1 text-neutral-700">(was {originalIndex + 1})</span>
-                                )}
+                                {originalIndex !== currentIndex && <span className="ml-1 text-neutral-700">(was {originalIndex + 1})</span>}
                             </span>
                         </div>
                     ))}

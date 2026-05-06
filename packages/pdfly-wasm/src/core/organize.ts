@@ -21,10 +21,7 @@ import type { OrganizeResult } from "../types/index.js";
  * // Remove the second page of a 3-page PDF
  * const result = await reorganizePages(pdfBytes, [0, 2]);
  */
-export async function reorganizePages(
-    input: Uint8Array | ArrayBuffer,
-    pageOrder: number[],
-): Promise<OrganizeResult> {
+export async function reorganizePages(input: Uint8Array | ArrayBuffer, pageOrder: number[]): Promise<OrganizeResult> {
     if (pageOrder.length === 0) {
         throw new QpdfOrganizeError("pageOrder must contain at least one page index");
     }
@@ -35,9 +32,7 @@ export async function reorganizePages(
 
         for (const index of pageOrder) {
             if (!Number.isInteger(index) || index < 0 || index >= pageCount) {
-                throw new QpdfOrganizeError(
-                    `Invalid page index ${index}: must be an integer between 0 and ${pageCount - 1}`,
-                );
+                throw new QpdfOrganizeError(`Invalid page index ${index}: must be an integer between 0 and ${pageCount - 1}`);
             }
         }
 

@@ -1,8 +1,8 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "morning-bar-2e0b",
+    "name": "morning-bar-2e0b", // keep it like that
     "compatibility_date": "2026-04-26",
     "assets": {
-        "directory": "./apps/pdfly-web/dist",
+        "directory": "./apps/web/dist/client",
     },
 }

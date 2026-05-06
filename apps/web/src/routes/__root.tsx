@@ -1,0 +1,57 @@
+import { createRootRoute, HeadContent, Link, Scripts } from "@tanstack/react-router";
+import type { ReactNode } from "react";
+import { createSeoMeta } from "@/lib/seo";
+import appCss from "@/styles/app.css?url";
+import { AppShell } from "@/components/layout/AppShell";
+
+export const Route = createRootRoute({
+    head: () => ({
+        meta: [
+            { charSet: "utf-8" },
+            { name: "viewport", content: "width=device-width, initial-scale=1" },
+            ...createSeoMeta({
+                title: "Giovanni",
+                description: "PDF tools in your browser.",
+            }),
+        ],
+        links: [
+            { rel: "stylesheet", href: appCss },
+            { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+        ],
+    }),
+    component: RootComponent,
+    notFoundComponent: NotFoundPage,
+});
+
+function RootComponent() {
+    return (
+        <RootDocument>
+            <AppShell />
+        </RootDocument>
+    );
+}
+
+function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+    return (
+        <html className="dark bg-[#0a0a0a] antialiased" lang="en">
+            <head>
+                <HeadContent />
+            </head>
+            <body>
+                {children}
+                <Scripts />
+            </body>
+        </html>
+    );
+}
+
+function NotFoundPage() {
+    return (
+        <main className="mx-auto max-w-lg p-8">
+            <h1 className="text-2xl font-semibold tracking-tight text-white">Not found</h1>
+            <Link className="mt-4 inline-flex text-[#eb5a3f] hover:underline" to="/">
+                Back home
+            </Link>
+        </main>
+    );
+}

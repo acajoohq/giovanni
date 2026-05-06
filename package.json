@@ -1,12 +1,12 @@
 {
-    "name": "pdfly",
+    "name": "giovanni",
     "version": "0.1.0",
     "private": true,
     "type": "module",
     "scripts": {
         "build": "turbo build",
         "clean": "turbo clean",
-        "dev": "turbo dev --filter=pdfly-web",
+        "dev": "turbo dev --filter=web",
         "format": "oxfmt --write .",
         "format:check": "oxfmt --check .",
         "lint": "turbo lint",
@@ -17,22 +17,13 @@
         "validate": "turbo validate"
     },
     "devDependencies": {
-        "@arethetypeswrong/cli": "^0.18.2",
-        "@arethetypeswrong/core": "^0.18.2",
-        "@types/node": "^25.6.0",
-        "@typescript/native-preview": "7.0.0-dev.20260421.2",
-        "@vitest/coverage-v8": "^4.1.5",
-        "oxfmt": "^0.46.0",
-        "oxlint": "^1.61.0",
-        "publint": "^0.3.18",
-        "tsdown": "^0.21.10",
-        "turbo": "^2.9.6",
-        "vite": "^8.0.10",
-        "vitest": "^4.1.5",
-        "wrangler": "^4.85.0"
+        "oxfmt": "^0.48.0",
+        "oxlint": "^1.63.0",
+        "turbo": "^2.9.9",
+        "wrangler": "^4.88.0"
     },
     "engines": {
         "node": ">=24.0.0"
     },
-    "packageManager": "pnpm@10.33.0"
+    "packageManager": "pnpm@10.33.3"
 }

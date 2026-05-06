@@ -1,0 +1,20 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "noEmit": true,
+        "types": ["vite/client"],
+        "paths": {
+            "@/*": ["./src/*"],
+            "@/components/*": ["./src/components/*"],
+            "@/hooks/*": ["./src/hooks/*"],
+            "@/lib/*": ["./src/lib/*"],
+            "@/routes/*": ["./src/routes/*"],
+            "@/styles/*": ["./src/styles/*"],
+            "@/utils/*": ["./src/utils/*"],
+            "@pdfly/wasm": ["../../packages/pdfly-wasm/src/index.ts"]
+        }
+    },
+    "include": ["src", "@pdfly", "vite.config.ts"]
+}

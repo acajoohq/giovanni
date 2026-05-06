@@ -213,51 +213,17 @@ jobs:
                   DEPLOYMENT_ALIAS_URL: ${{ steps.cf_preview.outputs.deployment-alias-url }}
                   VERSION_ID: ${{ steps.cf_preview.outputs.version-id }}
                   COMMAND_OUTPUT: ${{ steps.cf_preview.outputs.command-output }}
+                  SOURCE_SHA: ${{ env.SOURCE_SHA }}
               with:
                   script: |
-                      const marker = "<!-- pdfly-cf-worker-preview -->";
-                      const env = (k) => (process.env[k] ?? "").trim();
-                      const cmdOut = env("COMMAND_OUTPUT");
-                      const pick = (re) => cmdOut.match(re)?.[1]?.trim() ?? "";
-                      const vid = env("VERSION_ID") || pick(/Worker Version ID:\s*(\S+)/i);
-                      const previewUrl = env("DEPLOYMENT_URL") || pick(/Version Preview URL:\s*(\S+)/i);
-                      const aliasUrl = env("DEPLOYMENT_ALIAS_URL") || pick(/Version Preview Alias URL:\s*(\S+)/i);
-                      const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-                      const idCell = vid ? `\`${vid.replace(/`/g, "'")}\`` : "—";
-                      const previewCell = previewUrl
-                          ? `[Open Last Commit Preview](${previewUrl})`
-                          : "—";
-
-                      const aliasCell = aliasUrl
-                          ? `[Open PR Preview](${aliasUrl})`
-                          : "—";
-
-                      const body =
-                          !vid && !previewUrl && !aliasUrl
-                              ? `${marker}\n\n> **Worker preview** — CI did not report a version or URLs. Run: ${runUrl}\n`
-                              : `${marker}\n\n### ☁️ Worker preview\n\nFrom the latest successful **versions upload** on this PR:\n\n| 🔖 Version | 🌐 This upload | 📌 Stable preview |\n| :--- | :--- | :--- |\n| ${idCell} | ${previewCell} | ${aliasCell} |\n\n`;
-                      const bot = "github-actions[bot]";
-                      const comments = await github.paginate(github.rest.issues.listComments, {
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          issue_number: context.issue.number,
-                      });
-                      const ours = comments.filter(
-                          (c) => c.user?.login === bot && typeof c.body === "string" && c.body.includes(marker),
+                      const fs = require("fs");
+                      const path = require("path");
+                      const scriptPath = path.join(process.env.GITHUB_WORKSPACE, ".github/scripts/post-preview-comment.js");
+                      const body = fs.readFileSync(scriptPath, "utf8");
+                      const run = new Function(
+                          "github",
+                          "context",
+                          "core",
+                          "return (async function () {\n" + body + "\n})();",
                       );
-                      const existing = ours.length ? ours.reduce((a, b) => (a.id > b.id ? a : b)) : null;
-                      if (existing) {
-                          await github.rest.issues.updateComment({
-                              owner: context.repo.owner,
-                              repo: context.repo.repo,
-                              comment_id: existing.id,
-                              body,
-                          });
-                      } else {
-                          await github.rest.issues.createComment({
-                              owner: context.repo.owner,
-                              repo: context.repo.repo,
-                              issue_number: context.issue.number,
-                              body,
-                          });
-                      }
+                      await run(github, context, core);

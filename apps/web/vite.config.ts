@@ -14,16 +14,17 @@ const appDirectory = dirname(fileURLToPath(import.meta.url));
 const rootDirectory = resolve(appDirectory, "../..");
 const appVersion = appPackage.version;
 const gitCommit = getGitCommit();
+const SHORT_GIT_SHA_LENGTH = 7;
 
 function getGitCommit(): string {
     const envCommit = process.env.CF_PAGES_COMMIT_SHA ?? process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GITHUB_SHA;
 
     if (envCommit) {
-        return envCommit.slice(0, 12);
+        return envCommit.slice(0, SHORT_GIT_SHA_LENGTH);
     }
 
     try {
-        return execFileSync("git", ["rev-parse", "--short=12", "HEAD"], { cwd: rootDirectory, encoding: "utf8" }).trim();
+        return execFileSync("git", ["rev-parse", `--short=${SHORT_GIT_SHA_LENGTH}`, "HEAD"], { cwd: rootDirectory, encoding: "utf8" }).trim();
     } catch {
         return "unknown";
     }

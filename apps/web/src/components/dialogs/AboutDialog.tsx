@@ -12,6 +12,9 @@ const CONTRIBUTORS = [
     { name: "Mattèo Gauthier", github: "matteogauthier", initials: "MG", color: "var(--brand)" },
 ] as const;
 
+const APP_VERSION = import.meta.env.VITE_APP_VERSION;
+const GIT_COMMIT = import.meta.env.VITE_GIT_COMMIT;
+
 function Avatar({ name, github, initials, color }: (typeof CONTRIBUTORS)[number]) {
     const [failed, setFailed] = useState(false);
     const fallbackBackground = `color-mix(in oklab, ${color} 12%, transparent)`;
@@ -70,12 +73,15 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                 </div>
 
                 <div className="px-6 py-3.5">
-                    <p className="text-pretty text-center text-[11px] leading-relaxed text-neutral-600">
+                    <p className="text-balance text-center text-[11px] leading-relaxed text-neutral-600">
                         Powered by{" "}
                         <a className="text-neutral-400 transition-colors hover:text-brand" href="https://github.com/qpdf/qpdf" rel="noopener noreferrer" target="_blank">
                             qpdf
                         </a>{" "}
                         compiled to WebAssembly. No files leave your browser.
+                    </p>
+                    <p className="mt-2 text-center font-mono text-[9px] text-neutral-700">
+                        v{APP_VERSION} · {GIT_COMMIT}
                     </p>
                 </div>
             </DialogContent>

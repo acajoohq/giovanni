@@ -1,5 +1,5 @@
 import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel, type ObjectStreamMode } from "@pdfly/wasm";
-import { RiAddLine } from "@remixicon/react";
+import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { ComparisonSlider } from "@/components/viewer/ComparisonSlider";
@@ -45,6 +45,8 @@ export function CompressTool() {
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
+    const [previewPage, setPreviewPage] = useState(1);
+    const [previewPageCount, setPreviewPageCount] = useState(0);
     const [compressionOptions, setCompressionOptions] = useState<CompressionOptions>({
         compressionLevel: 6,
         decodeLevel: "generalized",
@@ -97,8 +99,28 @@ export function CompressTool() {
 
         reset();
         debouncedProcessFile.cancel();
+        setPreviewPage(1);
+        setPreviewPageCount(0);
         setFile(nextFile);
         void processFile(nextFile);
+    };
+
+    const updatePreviewPage = (nextPage: number | ((currentPage: number) => number)) => {
+        setPreviewPage((currentPage) => {
+            const resolvedPage = typeof nextPage === "function" ? nextPage(currentPage) : nextPage;
+            const maxPage = previewPageCount > 0 ? previewPageCount : 1;
+
+            return Math.max(1, Math.min(maxPage, resolvedPage));
+        });
+    };
+
+    const handleDownload = (data: Uint8Array, fileName: string) => {
+        try {
+            downloadPdf(data, fileName);
+        } catch (error) {
+            console.error("Failed to download compressed PDF", error);
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not download PDF." });
+        }
     };
 
     const sidebar = (
@@ -157,7 +179,34 @@ export function CompressTool() {
 
     const centerContent = file ? (
         <div className="relative h-full w-full">
-            <ComparisonSlider after={result ? <PdfPreview data={result.data} /> : undefined} before={<PdfPreview file={file} />} isProcessing={isWorking} />
+            <ComparisonSlider
+                after={result ? <PdfPreview data={result.data} page={previewPage} showControls={false} onPageChange={updatePreviewPage} /> : undefined}
+                before={<PdfPreview file={file} page={previewPage} showControls={false} onPageChange={updatePreviewPage} onPageCountChange={setPreviewPageCount} />}
+                isProcessing={isWorking}
+            />
+            {previewPageCount > 1 && (
+                <div className="absolute bottom-30 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-md border border-app-border bg-app-panel px-2 py-1 md:bottom-24">
+                    <button
+                        className="flex size-6 items-center justify-center rounded text-neutral-400 transition-colors hover:bg-app-control-hover hover:text-white disabled:opacity-30"
+                        disabled={previewPage === 1}
+                        type="button"
+                        onClick={() => updatePreviewPage((currentPage) => currentPage - 1)}
+                    >
+                        <RiArrowLeftSLine className="size-4" />
+                    </button>
+                    <span className="min-w-[52px] text-center text-[11px] font-medium text-neutral-400">
+                        {previewPage} / {previewPageCount}
+                    </span>
+                    <button
+                        className="flex size-6 items-center justify-center rounded text-neutral-400 transition-colors hover:bg-app-control-hover hover:text-white disabled:opacity-30"
+                        disabled={previewPage === previewPageCount}
+                        type="button"
+                        onClick={() => updatePreviewPage((currentPage) => currentPage + 1)}
+                    >
+                        <RiArrowRightSLine className="size-4" />
+                    </button>
+                </div>
+            )}
             <ResultTray
                 fileName={file.name}
                 fileSize={formatBytes(file.size)}
@@ -174,7 +223,7 @@ export function CompressTool() {
                     result
                         ? {
                               label: "Download PDF",
-                              onClick: () => downloadPdf(result.data, `${pdfBaseName(file)}_compressed.pdf`),
+                              onClick: () => handleDownload(result.data, `${pdfBaseName(file)}_compressed.pdf`),
                           }
                         : undefined
                 }

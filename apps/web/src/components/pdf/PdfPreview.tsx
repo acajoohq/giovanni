@@ -10,18 +10,23 @@ const loadPdfRenderer = createClientOnlyFn(async () => import("@/utils/pdf/pdfRe
 interface PdfPreviewProps {
     data?: Uint8Array | null;
     file?: File | null;
+    page?: number;
+    onPageChange?: (page: number) => void;
+    onPageCountChange?: (pageCount: number) => void;
     placeholder?: ReactNode;
+    showControls?: boolean;
 }
 
-export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
+export function PdfPreview({ data, file, page: controlledPage, onPageChange, onPageCountChange, placeholder, showControls = true }: PdfPreviewProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const renderGenerationRef = useRef(0);
     const [renderer, setRenderer] = useState<PdfRendererClient | null>(null);
     const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [page, setPage] = useState(1);
+    const [internalPage, setInternalPage] = useState(1);
     const [containerSize, setContainerSize] = useState<{ width: number; height: number } | null>(null);
+    const page = controlledPage ?? internalPage;
 
     useEffect(() => {
         const element = containerRef.current;
@@ -72,7 +77,7 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
 
                 return null;
             });
-            setPage(1);
+            setInternalPage(1);
 
             try {
                 const source = data ?? (file ? await file.arrayBuffer() : null);
@@ -88,8 +93,9 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
                     setRenderer(pdfRenderer);
                     setPdfDoc(doc);
                 }
-            } catch {
+            } catch (error) {
                 if (!cancelled) {
+                    console.error("Failed to load PDF preview", error);
                     setPdfDoc(null);
                 }
             } finally {
@@ -112,6 +118,20 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
             });
         };
     }, [data, file]);
+
+    useEffect(() => {
+        if (!pdfDoc || page <= pdfDoc.numPages) {
+            return;
+        }
+
+        const nextPage = Math.max(1, pdfDoc.numPages);
+
+        if (controlledPage === undefined) {
+            setInternalPage(nextPage);
+        } else {
+            onPageChange?.(nextPage);
+        }
+    }, [controlledPage, onPageChange, page, pdfDoc]);
 
     useEffect(() => {
         let cancelled = false;
@@ -154,6 +174,20 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
     const totalPages = pdfDoc?.numPages ?? 0;
     const hasSource = Boolean(data ?? file);
 
+    useEffect(() => {
+        onPageCountChange?.(totalPages);
+    }, [onPageCountChange, totalPages]);
+
+    const setPage = (nextPage: number | ((currentPage: number) => number)) => {
+        const resolvedPage = typeof nextPage === "function" ? nextPage(page) : nextPage;
+
+        if (controlledPage === undefined) {
+            setInternalPage(resolvedPage);
+        } else {
+            onPageChange?.(resolvedPage);
+        }
+    };
+
     return (
         <div ref={containerRef} className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-app-bg">
             {!hasSource && (
@@ -177,8 +211,8 @@ export function PdfPreview({ data, file, placeholder }: PdfPreviewProps) {
 
                     <canvas ref={canvasRef} className="block max-h-full max-w-full" style={{ filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.6))" }} />
 
-                    {totalPages > 1 && (
-                        <div className="mt-3 flex shrink-0 items-center gap-2 rounded-md border border-app-border bg-app-panel px-2 py-1">
+                    {showControls && totalPages > 1 && (
+                        <div className="relative z-30 mt-3 flex shrink-0 items-center gap-2 rounded-md border border-app-border bg-app-panel px-2 py-1">
                             <button
                                 className="flex size-6 items-center justify-center rounded text-neutral-400 transition-colors hover:bg-app-control-hover hover:text-white disabled:opacity-30"
                                 disabled={page === 1}

@@ -123,6 +123,7 @@ export function useAsyncToolJob<TResult>() {
             return nextResult;
         } catch (error) {
             if (jobIdRef.current === jobId) {
+                console.error(errorMessage, error);
                 dispatch({ type: "failed", status: { tone: "error", message: error instanceof Error ? error.message : errorMessage } });
                 onError?.(error);
             }

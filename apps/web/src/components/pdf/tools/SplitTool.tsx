@@ -90,6 +90,15 @@ export function SplitTool() {
 
     const makePageName = (pageIndex: number) => makePagePdfName(splitSettings.outputPattern, pdfBaseName(file), pageIndex);
 
+    const handleDownloadPage = (page: Uint8Array, pageIndex: number) => {
+        try {
+            downloadPdf(page, makePageName(pageIndex));
+        } catch (error) {
+            console.error("Failed to download split page", error);
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not download PDF." });
+        }
+    };
+
     const handleDownloadAll = async () => {
         if (pages.length === 0 || !file) {
             return;
@@ -102,6 +111,7 @@ export function SplitTool() {
                 splitSettings.zipCompressionMode === "store" ? 0 : 6,
             );
         } catch (error) {
+            console.error("Failed to download split ZIP", error);
             setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not create ZIP." });
         }
     };
@@ -142,7 +152,7 @@ export function SplitTool() {
                                 <PdfPageThumbnail data={page} />
                             </div>
                             <span className="truncate text-center text-[10px] text-neutral-500">Page {index + 1}</span>
-                            <Button className="h-6 text-[10px]" size="sm" variant="secondary" type="button" onClick={() => downloadPdf(page, makePageName(index))}>
+                            <Button className="h-6 text-[10px]" size="sm" variant="secondary" type="button" onClick={() => handleDownloadPage(page, index)}>
                                 Download
                             </Button>
                         </div>

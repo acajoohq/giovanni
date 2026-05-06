@@ -17,6 +17,14 @@ const SHORT_GIT_SHA_LENGTH = 7;
 const gitCommit = getGitCommit();
 
 function getGitCommit(): string {
+    console.log({
+        SOURCE_SHA: process.env.SOURCE_SHA,
+        CF_PAGES_COMMIT_SHA: process.env.CF_PAGES_COMMIT_SHA,
+        VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA,
+        GITHUB_SHA: process.env.GITHUB_SHA,
+    })
+    
+    
     const envCommit = process.env.SOURCE_SHA ?? process.env.CF_PAGES_COMMIT_SHA ?? process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GITHUB_SHA;
 
     if (envCommit) {

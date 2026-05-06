@@ -3,13 +3,31 @@ import babel from "@rolldown/plugin-babel";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { codeInspectorPlugin } from "code-inspector-plugin";
+import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig, type Plugin } from "vite";
+import appPackage from "./package.json";
 
 const appDirectory = dirname(fileURLToPath(import.meta.url));
 const rootDirectory = resolve(appDirectory, "../..");
+const appVersion = appPackage.version;
+const gitCommit = getGitCommit();
+
+function getGitCommit(): string {
+    const envCommit = process.env.CF_PAGES_COMMIT_SHA ?? process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GITHUB_SHA;
+
+    if (envCommit) {
+        return envCommit.slice(0, 12);
+    }
+
+    try {
+        return execFileSync("git", ["rev-parse", "--short=12", "HEAD"], { cwd: rootDirectory, encoding: "utf8" }).trim();
+    } catch {
+        return "unknown";
+    }
+}
 
 /**
  * Emits `qpdf.wasm` into the client build's assets directory so that the
@@ -75,6 +93,10 @@ export default defineConfig(({ mode }) => {
         },
         worker: {
             format: "es",
+        },
+        define: {
+            "import.meta.env.VITE_APP_VERSION": JSON.stringify(appVersion),
+            "import.meta.env.VITE_GIT_COMMIT": JSON.stringify(gitCommit),
         },
         environments: {
             // `@pdfly/wasm` is a workspace package so TanStack Start marks it

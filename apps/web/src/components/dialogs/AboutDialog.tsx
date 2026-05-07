@@ -32,8 +32,8 @@ function Avatar({ name, github, initials, color }: (typeof CONTRIBUTORS)[number]
             ) : (
                 <img
                     alt={name}
-                    className="size-12 rounded-full border border-white/10 bg-app-surface-muted"
                     src={`https://github.com/${github}.png?size=96`}
+                    className="size-12 rounded-full border border-white/10 bg-app-surface-muted"
                     onError={() => setFailed(true)}
                 />
             )}

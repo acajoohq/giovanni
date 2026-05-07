@@ -11,6 +11,7 @@ The user-facing routes are stable:
 - `/split`
 - `/merge`
 - `/extract-images`
+- `/pdf-to-jpg`
 
 Route files stay thin and bind URLs to tool screens.
 

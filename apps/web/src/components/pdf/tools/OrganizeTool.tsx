@@ -141,10 +141,7 @@ export function OrganizeTool() {
 
     // dragOverIndex is the insert-before position (0..n); null means no active drop target.
     // A position is a no-op when it would leave the dragged item in the same slot.
-    const isNoOp =
-        draggedIndex !== null &&
-        dragOverIndex !== null &&
-        (dragOverIndex === draggedIndex || dragOverIndex === draggedIndex + 1);
+    const isNoOp = draggedIndex !== null && dragOverIndex !== null && (dragOverIndex === draggedIndex || dragOverIndex === draggedIndex + 1);
     const showDropIndicator = draggedIndex !== null && dragOverIndex !== null && !isNoOp;
 
     const thumbnailGrid =

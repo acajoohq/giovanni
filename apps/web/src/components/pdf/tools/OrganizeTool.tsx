@@ -1,4 +1,4 @@
-import { formatBytes, mergePdfs, splitPages } from "@pdfly/wasm";
+﻿import { formatBytes, mergePdfs, splitPages } from "@pdfly/wasm";
 import { RiAddLine, RiArrowDownLine, RiArrowUpLine, RiDragMove2Line } from "@remixicon/react";
 import { useEffect, useId, useRef, useState, DragEvent } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
@@ -85,20 +85,22 @@ export function OrganizeTool() {
 
     const handleDragOver = (e: DragEvent<HTMLDivElement>, index: number) => {
         e.preventDefault();
-        if (draggedIndex !== null && draggedIndex !== index) {
-            setDragOverIndex(index);
-        }
+        if (draggedIndex === null) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const insertBefore = e.clientY < rect.top + rect.height / 2 ? index : index + 1;
+        setDragOverIndex(insertBefore);
     };
 
-    const handleDrop = (dropIndex: number) => {
-        if (draggedIndex === null || draggedIndex === dropIndex) {
+    const handleDrop = () => {
+        if (draggedIndex === null || dragOverIndex === null) {
             setDraggedIndex(null);
             setDragOverIndex(null);
             return;
         }
         const newOrder = [...pageOrder];
         const [item] = newOrder.splice(draggedIndex, 1);
-        newOrder.splice(dropIndex, 0, item as number);
+        const insertAt = draggedIndex < dragOverIndex ? dragOverIndex - 1 : dragOverIndex;
+        newOrder.splice(insertAt, 0, item as number);
         setPageOrder(newOrder);
         resetReorganize();
         setDraggedIndex(null);
@@ -137,56 +139,89 @@ export function OrganizeTool() {
     const isOrderChanged = pageOrder.length > 0 && !pageOrder.every((v, i) => v === i);
     const activeStatus = reorganizeStatus ?? splitStatus;
 
+    // dragOverIndex is the insert-before position (0..n); null means no active drop target.
+    // A position is a no-op when it would leave the dragged item in the same slot.
+    const isNoOp =
+        draggedIndex !== null &&
+        dragOverIndex !== null &&
+        (dragOverIndex === draggedIndex || dragOverIndex === draggedIndex + 1);
+    const showDropIndicator = draggedIndex !== null && dragOverIndex !== null && !isNoOp;
+
     const thumbnailGrid =
         pages.length > 0 ? (
             <div className="h-full w-full overflow-y-auto p-3 pb-24">
                 <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-                    {pageOrder.map((originalIndex, currentIndex) => (
-                        <div
-                            key={originalIndex}
-                            draggable
-                            className={cn(
-                                "group/card flex flex-col gap-1.5 cursor-grab active:cursor-grabbing transition-opacity [content-visibility:auto] [contain-intrinsic-size:240px]",
-                                draggedIndex === currentIndex && "opacity-30",
-                                dragOverIndex === currentIndex && draggedIndex !== currentIndex && "outline outline-offset-2 outline-brand rounded-md",
-                            )}
-                            onDragStart={() => handleDragStart(currentIndex)}
-                            onDragOver={(e) => handleDragOver(e, currentIndex)}
-                            onDrop={() => handleDrop(currentIndex)}
-                            onDragEnd={handleDragEnd}
-                        >
-                            <div className="relative aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
-                                <PdfPageThumbnail data={pages[originalIndex] as Uint8Array} />
-                                <div className="absolute right-1 top-1 flex gap-0.5 opacity-0 transition-opacity group-hover/card:opacity-100">
-                                    <button
-                                        aria-label={`Move page ${currentIndex + 1} up`}
-                                        className="flex h-5 w-5 items-center justify-center rounded bg-black/60 text-neutral-300 hover:bg-black/80 hover:text-white disabled:opacity-30"
-                                        disabled={currentIndex === 0}
-                                        type="button"
-                                        onClick={() => handleMove(currentIndex, -1)}
-                                    >
-                                        <RiArrowUpLine className="size-3" />
-                                    </button>
-                                    <button
-                                        aria-label={`Move page ${currentIndex + 1} down`}
-                                        className="flex h-5 w-5 items-center justify-center rounded bg-black/60 text-neutral-300 hover:bg-black/80 hover:text-white disabled:opacity-30"
-                                        disabled={currentIndex === pageOrder.length - 1}
-                                        type="button"
-                                        onClick={() => handleMove(currentIndex, 1)}
-                                    >
-                                        <RiArrowDownLine className="size-3" />
-                                    </button>
-                                </div>
-                                <div className="pointer-events-none absolute bottom-1 left-1 flex h-5 w-5 items-center justify-center rounded bg-black/50">
-                                    <RiDragMove2Line className="size-3 text-neutral-400" />
-                                </div>
-                            </div>
-                            <span className="truncate text-center text-[10px] text-neutral-500">
-                                Page {currentIndex + 1}
-                                {originalIndex !== currentIndex && <span className="ml-1 text-neutral-700">(was {originalIndex + 1})</span>}
-                            </span>
-                        </div>
-                    ))}
+                    {(() => {
+                        const items: React.ReactNode[] = [];
+                        pageOrder.forEach((originalIndex, currentIndex) => {
+                            if (showDropIndicator && dragOverIndex === currentIndex) {
+                                items.push(
+                                    <div
+                                        key="drop-indicator"
+                                        className="aspect-3/4 rounded-md border-2 border-dashed border-brand bg-brand/10"
+                                        onDragOver={(e) => e.preventDefault()}
+                                        onDrop={handleDrop}
+                                    />,
+                                );
+                            }
+                            items.push(
+                                <div
+                                    key={originalIndex}
+                                    draggable
+                                    className={cn(
+                                        "group/card flex flex-col gap-1.5 cursor-grab active:cursor-grabbing transition-opacity [content-visibility:auto] [contain-intrinsic-size:240px]",
+                                        draggedIndex === currentIndex && "opacity-30",
+                                    )}
+                                    onDragStart={() => handleDragStart(currentIndex)}
+                                    onDragOver={(e) => handleDragOver(e, currentIndex)}
+                                    onDrop={handleDrop}
+                                    onDragEnd={handleDragEnd}
+                                >
+                                    <div className="relative aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
+                                        <PdfPageThumbnail data={pages[originalIndex] as Uint8Array} />
+                                        <div className="absolute right-1 top-1 flex gap-0.5 opacity-0 transition-opacity group-hover/card:opacity-100">
+                                            <button
+                                                aria-label={`Move page ${currentIndex + 1} up`}
+                                                className="flex h-5 w-5 items-center justify-center rounded bg-black/60 text-neutral-300 hover:bg-black/80 hover:text-white disabled:opacity-30"
+                                                disabled={currentIndex === 0}
+                                                type="button"
+                                                onClick={() => handleMove(currentIndex, -1)}
+                                            >
+                                                <RiArrowUpLine className="size-3" />
+                                            </button>
+                                            <button
+                                                aria-label={`Move page ${currentIndex + 1} down`}
+                                                className="flex h-5 w-5 items-center justify-center rounded bg-black/60 text-neutral-300 hover:bg-black/80 hover:text-white disabled:opacity-30"
+                                                disabled={currentIndex === pageOrder.length - 1}
+                                                type="button"
+                                                onClick={() => handleMove(currentIndex, 1)}
+                                            >
+                                                <RiArrowDownLine className="size-3" />
+                                            </button>
+                                        </div>
+                                        <div className="pointer-events-none absolute bottom-1 left-1 flex h-5 w-5 items-center justify-center rounded bg-black/50">
+                                            <RiDragMove2Line className="size-3 text-neutral-400" />
+                                        </div>
+                                    </div>
+                                    <span className="truncate text-center text-[10px] text-neutral-500">
+                                        Page {currentIndex + 1}
+                                        {originalIndex !== currentIndex && <span className="ml-1 text-neutral-700">(was {originalIndex + 1})</span>}
+                                    </span>
+                                </div>,
+                            );
+                        });
+                        if (showDropIndicator && dragOverIndex === pageOrder.length) {
+                            items.push(
+                                <div
+                                    key="drop-indicator"
+                                    className="aspect-3/4 rounded-md border-2 border-dashed border-brand bg-brand/10"
+                                    onDragOver={(e) => e.preventDefault()}
+                                    onDrop={handleDrop}
+                                />,
+                            );
+                        }
+                        return items;
+                    })()}
                 </div>
             </div>
         ) : null;

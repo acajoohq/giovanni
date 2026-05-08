@@ -1,10 +1,9 @@
 import { formatBytes, mergePdfs, splitPages } from "@pdfly/wasm";
 import { RiAddLine, RiArrowDownLine, RiArrowUpLine, RiDragMove2Line } from "@remixicon/react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, DragEvent } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
-import { Button } from "@/components/ui/shadcn/Button";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { SidebarContent } from "@/components/sidebar/SidebarContent";
 import { SidebarField } from "@/components/sidebar/SidebarField";
@@ -84,7 +83,7 @@ export function OrganizeTool() {
         setDraggedIndex(index);
     };
 
-    const handleDragOver = (e: React.DragEvent, index: number) => {
+    const handleDragOver = (e: DragEvent<HTMLDivElement>, index: number) => {
         e.preventDefault();
         if (draggedIndex !== null && draggedIndex !== index) {
             setDragOverIndex(index);
@@ -144,12 +143,12 @@ export function OrganizeTool() {
                 <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
                     {pageOrder.map((originalIndex, currentIndex) => (
                         <div
-                            key={`${originalIndex}-${currentIndex}`}
+                            key={originalIndex}
                             draggable
                             className={cn(
                                 "group/card flex flex-col gap-1.5 cursor-grab active:cursor-grabbing transition-opacity [content-visibility:auto] [contain-intrinsic-size:240px]",
                                 draggedIndex === currentIndex && "opacity-30",
-                                dragOverIndex === currentIndex && draggedIndex !== currentIndex && "outline outline-2 outline-offset-2 outline-brand rounded-md",
+                                dragOverIndex === currentIndex && draggedIndex !== currentIndex && "outline outline-offset-2 outline-brand rounded-md",
                             )}
                             onDragStart={() => handleDragStart(currentIndex)}
                             onDragOver={(e) => handleDragOver(e, currentIndex)}

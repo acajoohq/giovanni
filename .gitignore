@@ -12,6 +12,7 @@ packages/*/dist/
 packages/*/build/
 apps/*/.turbo/
 packages/*/.turbo/
+packages/*/python/
 
 # Coverage
 coverage/

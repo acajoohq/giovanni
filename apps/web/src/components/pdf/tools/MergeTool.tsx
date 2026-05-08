@@ -110,7 +110,7 @@ export function MergeTool() {
         files.length > 0 ? (
             <div className="flex h-full flex-col overflow-hidden">
                 <div className="flex shrink-0 items-center justify-between border-b border-app-border-subtle px-4 py-2">
-                    <span className="text-[11px] font-medium text-neutral-500">
+                    <span className="text-[11px] font-medium text-muted-foreground">
                         {files.length} {files.length === 1 ? "file" : "files"}
                     </span>
                     <Button size="sm" variant="secondary" type="button" onClick={() => inputRef.current?.click()}>
@@ -126,7 +126,7 @@ export function MergeTool() {
     const afterContent =
         files.length < 2 ? (
             <div className="flex h-full items-center justify-center">
-                <span className="text-[12px] text-neutral-700">Add at least 2 PDFs to merge</span>
+                <span className="text-[12px] text-app-text-subtle">Add at least 2 PDFs to merge</span>
             </div>
         ) : mergedData ? (
             <PdfPreview data={mergedData} />

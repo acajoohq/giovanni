@@ -131,7 +131,7 @@ function ToolSidebar({ sidebar, title }: { sidebar: ReactNode; title: string }) 
     return (
         <aside className="flex h-full flex-col border-l border-app-border bg-app-panel shadow-sidebar max-lg:border-l-0 max-lg:shadow-none">
             <div className="shrink-0 border-b border-app-border bg-app-panel-strong px-4 py-2">
-                <h2 className="text-[12px] font-semibold tracking-wide text-neutral-300">{title}</h2>
+                <h2 className="text-[12px] font-semibold tracking-wide text-app-text-muted">{title}</h2>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto">{sidebar}</div>

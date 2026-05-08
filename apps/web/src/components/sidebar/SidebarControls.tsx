@@ -6,7 +6,7 @@ import { Slider } from "@/components/ui/shadcn/Slider";
 export function SidebarInput({ className, ...props }: ComponentProps<typeof Input>) {
     return (
         <Input
-            className={cn("h-7 rounded-[4px] border-app-border bg-app-control px-2 text-[12px] text-white shadow-inner focus-visible:ring-1 focus-visible:ring-brand", className)}
+            className={cn("h-7 rounded-[4px] border-app-border bg-app-control px-2 text-[12px] text-foreground shadow-inner focus-visible:ring-1 focus-visible:ring-brand", className)}
             {...props}
         />
     );
@@ -27,7 +27,7 @@ export function SidebarSelect<TValue extends string>({ className, options, value
     return (
         <select
             className={cn(
-                "h-7 w-full appearance-none rounded-[4px] border border-app-border bg-app-control px-2 py-0 pr-7 text-[12px] leading-none text-white shadow-inner focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand",
+                "h-7 w-full appearance-none rounded-[4px] border border-app-border bg-app-control px-2 py-0 pr-7 text-[12px] leading-none text-foreground shadow-inner focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand",
                 className,
             )}
             value={value}
@@ -45,7 +45,7 @@ export function SidebarSelect<TValue extends string>({ className, options, value
 
 export function SidebarReadonlyValue({ children, className }: { children: ReactNode; className?: string }) {
     return (
-        <div className={cn("flex h-7 items-center rounded-[4px] border border-app-border bg-app-control px-2 text-[12px] leading-none text-neutral-300 shadow-inner", className)}>
+        <div className={cn("flex h-7 items-center rounded-[4px] border border-app-border bg-app-control px-2 text-[12px] leading-none text-app-text-muted shadow-inner", className)}>
             {children}
         </div>
     );
@@ -60,12 +60,12 @@ interface SidebarRangeProps extends Omit<ComponentProps<typeof Slider>, "classNa
 export function SidebarRange({ className, label, valueLabel, ...props }: SidebarRangeProps) {
     return (
         <div className={cn("grid items-center gap-2", label ? "grid-cols-[64px_minmax(0,1fr)_44px]" : "grid-cols-[1fr_44px]")}>
-            {label && <div className="justify-self-end text-right text-[12px] leading-none text-neutral-400">{label}</div>}
+            {label && <div className="justify-self-end text-right text-[12px] leading-none text-muted-foreground">{label}</div>}
             <div className="flex h-7 items-center px-1">
                 <Slider className={cn("min-w-0 flex-1", className)} {...props} />
             </div>
             {valueLabel && (
-                <div className="flex h-7 items-center justify-end rounded-[3px] border border-black bg-[#151515] px-2 text-[12px] font-semibold leading-none text-neutral-100 shadow-[inset_0_1px_2px_rgba(0,0,0,0.95),0_1px_0_rgba(255,255,255,0.07)]">
+                <div className="flex h-7 items-center justify-end rounded-[3px] border border-app-border-strong bg-app-control px-2 text-[12px] font-semibold leading-none text-foreground shadow-[inset_0_1px_2px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.07)]">
                     {valueLabel}
                 </div>
             )}

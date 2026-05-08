@@ -151,7 +151,7 @@ export function SplitTool() {
                             <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
                                 <PdfPageThumbnail data={page} />
                             </div>
-                            <span className="truncate text-center text-[10px] text-neutral-500">Page {index + 1}</span>
+                            <span className="truncate text-center text-[10px] text-muted-foreground">Page {index + 1}</span>
                             <Button className="h-6 text-[10px]" size="sm" variant="secondary" type="button" onClick={() => handleDownloadPage(page, index)}>
                                 Download
                             </Button>

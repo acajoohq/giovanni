@@ -179,7 +179,7 @@ export function PdfToJpgTool() {
                             <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
                                 {pageUrls[index] ? <img alt={`Converted JPG page ${page.pageIndex + 1}`} className="h-full w-full object-contain" src={pageUrls[index]} /> : null}
                             </div>
-                            <span className="truncate text-center text-[10px] text-neutral-500">
+                            <span className="truncate text-center text-[10px] text-muted-foreground">
                                 Page {page.pageIndex + 1} · {page.width}x{page.height}
                             </span>
                             <Button className="h-6 text-[10px]" size="sm" variant="secondary" type="button" onClick={() => downloadPage(page)}>

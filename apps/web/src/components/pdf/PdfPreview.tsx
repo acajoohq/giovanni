@@ -191,7 +191,7 @@ export function PdfPreview({ data, file, page: controlledPage, onPageChange, onP
     return (
         <div ref={containerRef} className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-app-bg">
             {!hasSource && (
-                <div className="flex flex-col items-center gap-2 text-neutral-600">
+                <div className="flex flex-col items-center gap-2 text-app-text-subtle">
                     {placeholder ?? (
                         <>
                             <RiFilePdf2Line className="size-12 opacity-20" />
@@ -205,7 +205,7 @@ export function PdfPreview({ data, file, page: controlledPage, onPageChange, onP
                 <>
                     {isLoading && (
                         <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30">
-                            <div className="size-5 animate-spin rounded-full border-2 border-neutral-600 border-t-neutral-300" />
+                            <div className="size-5 animate-spin rounded-full border-2 border-muted-foreground border-t-app-text-muted" />
                         </div>
                     )}
 
@@ -214,18 +214,18 @@ export function PdfPreview({ data, file, page: controlledPage, onPageChange, onP
                     {showControls && totalPages > 1 && (
                         <div className="relative z-30 mt-3 flex shrink-0 items-center gap-2 rounded-md border border-app-border bg-app-panel px-2 py-1">
                             <button
-                                className="flex size-6 items-center justify-center rounded text-neutral-400 transition-colors hover:bg-app-control-hover hover:text-white disabled:opacity-30"
+                                className="flex size-6 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-app-control-hover hover:text-foreground disabled:opacity-30"
                                 disabled={page === 1}
                                 type="button"
                                 onClick={() => setPage((currentPage) => currentPage - 1)}
                             >
                                 <RiArrowLeftSLine className="size-4" />
                             </button>
-                            <span className="min-w-[52px] text-center text-[11px] font-medium text-neutral-400">
+                            <span className="min-w-[52px] text-center text-[11px] font-medium text-muted-foreground">
                                 {page} / {totalPages}
                             </span>
                             <button
-                                className="flex size-6 items-center justify-center rounded text-neutral-400 transition-colors hover:bg-app-control-hover hover:text-white disabled:opacity-30"
+                                className="flex size-6 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-app-control-hover hover:text-foreground disabled:opacity-30"
                                 disabled={page === totalPages}
                                 type="button"
                                 onClick={() => setPage((currentPage) => currentPage + 1)}

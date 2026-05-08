@@ -11,8 +11,8 @@ export function PdfFilesList({ files, onRemove, onMove }: { files: File[]; onRem
                         <RiFilePdf2Line className="size-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                        <div className="truncate text-[12px] font-medium text-neutral-100">{file.name}</div>
-                        <div className="text-[11px] text-neutral-500">{formatBytes(file.size)}</div>
+                        <div className="truncate text-[12px] font-medium text-foreground">{file.name}</div>
+                        <div className="text-[11px] text-muted-foreground">{formatBytes(file.size)}</div>
                     </div>
                     {onMove && (
                         <div className="flex items-center gap-1">

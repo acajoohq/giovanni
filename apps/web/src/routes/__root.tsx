@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { createSeoMeta } from "@/lib/seo";
 import appCss from "@/styles/app.css?url";
 import { AppShell } from "@/components/layout/AppShell";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const Route = createRootRoute({
     head: () => ({
@@ -33,12 +34,14 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     return (
-        <html className="dark bg-[#0a0a0a] antialiased" lang="en">
+        <html className="antialiased" lang="en" suppressHydrationWarning>
             <head>
                 <HeadContent />
             </head>
             <body>
-                {children}
+                <ThemeProvider defaultTheme="light" storageKey="theme">
+                    {children}
+                </ThemeProvider>
                 <Scripts />
             </body>
         </html>
@@ -48,8 +51,8 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 function NotFoundPage() {
     return (
         <main className="mx-auto max-w-lg p-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Not found</h1>
-            <Link className="mt-4 inline-flex text-[#eb5a3f] hover:underline" to="/">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Not found</h1>
+            <Link className="mt-4 inline-flex text-brand hover:underline" to="/">
                 Back home
             </Link>
         </main>

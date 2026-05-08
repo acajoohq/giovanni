@@ -131,7 +131,7 @@ export function PdfPageThumbnail({ data }: PdfPageThumbnailProps) {
             <canvas ref={canvasRef} className="block max-h-full max-w-full" />
             {!isRendered && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="size-4 animate-spin rounded-full border-2 border-neutral-600 border-t-neutral-300" />
+                    <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-app-text-muted" />
                 </div>
             )}
         </div>

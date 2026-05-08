@@ -33,13 +33,13 @@ function Avatar({ name, github, initials, color }: (typeof CONTRIBUTORS)[number]
                 <img
                     alt={name}
                     src={`https://github.com/${github}.png?size=96`}
-                    className="size-12 rounded-full border border-white/10 bg-app-surface-muted"
+                    className="size-12 rounded-full border border-foreground/10 bg-app-surface-muted"
                     onError={() => setFailed(true)}
                 />
             )}
             <div className="text-center">
-                <div className="text-[12px] font-medium leading-tight text-neutral-200">{name}</div>
-                <a className="text-[11px] text-neutral-500 transition-colors hover:text-brand" href={`https://github.com/${github}`} rel="noopener noreferrer" target="_blank">
+                <div className="text-[12px] font-medium leading-tight text-app-text">{name}</div>
+                <a className="text-[11px] text-muted-foreground transition-colors hover:text-brand" href={`https://github.com/${github}`} rel="noopener noreferrer" target="_blank">
                     @{github}
                 </a>
             </div>
@@ -52,19 +52,19 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
             <DialogContent showCloseButton={false} className="max-w-[400px] gap-0 overflow-hidden p-0">
                 <div className="relative px-6 pb-5 pt-7 text-center">
-                    <DialogClose className="absolute right-3 top-3 flex size-7 items-center justify-center rounded-md text-neutral-600 outline-none transition-colors hover:bg-white/5 hover:text-neutral-300">
+                    <DialogClose className="absolute right-3 top-3 flex size-7 items-center justify-center rounded-md text-app-text-subtle outline-none transition-colors hover:bg-foreground/5 hover:text-app-text-muted">
                         <RiCloseLine className="size-4" />
                     </DialogClose>
 
                     <div className="mx-auto mb-3 flex size-11 items-center justify-center rounded-xl border border-brand/20 bg-brand/10">
                         <RiFilePdfLine className="size-5 text-brand" />
                     </div>
-                    <DialogTitle className="text-[15px] font-semibold text-white">Giovanni</DialogTitle>
-                    <p className="mt-1 text-[11px] text-neutral-500">PDF tools · offline &amp; private</p>
+                    <DialogTitle className="text-[15px] font-semibold text-foreground">Giovanni</DialogTitle>
+                    <p className="mt-1 text-[11px] text-muted-foreground">PDF tools · offline &amp; private</p>
                 </div>
 
-                <div className="border-y border-white/5 bg-white/2 px-6 py-5">
-                    <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-widest text-neutral-600">Made by</p>
+                <div className="border-y border-foreground/5 bg-foreground/2 px-6 py-5">
+                    <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-widest text-app-text-subtle">Made by</p>
                     <div className="flex justify-center gap-10">
                         {CONTRIBUTORS.map((c) => (
                             <Avatar key={c.github} {...c} />
@@ -73,14 +73,14 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                 </div>
 
                 <div className="px-6 py-3.5">
-                    <p className="text-balance text-center text-[11px] leading-relaxed text-neutral-600">
+                    <p className="text-balance text-center text-[11px] leading-relaxed text-app-text-subtle">
                         Powered by{" "}
-                        <a className="text-neutral-400 transition-colors hover:text-brand" href="https://github.com/qpdf/qpdf" rel="noopener noreferrer" target="_blank">
+                        <a className="text-muted-foreground transition-colors hover:text-brand" href="https://github.com/qpdf/qpdf" rel="noopener noreferrer" target="_blank">
                             qpdf
                         </a>{" "}
                         compiled to WebAssembly. No files leave your browser.
                     </p>
-                    <p className="mt-2 text-center font-mono text-[9px] text-neutral-700">
+                    <p className="mt-2 text-center font-mono text-[9px] text-app-text-subtle">
                         v{APP_VERSION} · {GIT_COMMIT}
                     </p>
                 </div>

@@ -268,7 +268,13 @@ export function OrganizeTool() {
                     ...(reorganizedData ? [{ label: t("organize.actions.reApply"), onClick: handleApply, disabled: isReorganizing }] : []),
                     { label: file ? t("common.replace") : t("organize.actions.addPdf"), onClick: () => inputRef.current?.click() },
                 ]}
-                status={isReorganizing ? { tone: "info", message: t("organize.status.reorganizing") } : isSplitting ? { tone: "info", message: t("organize.status.loading") } : activeStatus}
+                status={
+                    isReorganizing
+                        ? { tone: "info", message: t("organize.status.reorganizing") }
+                        : isSplitting
+                          ? { tone: "info", message: t("organize.status.loading") }
+                          : activeStatus
+                }
             />
         </div>
     ) : (

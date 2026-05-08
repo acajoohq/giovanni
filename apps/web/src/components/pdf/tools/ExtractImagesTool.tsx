@@ -131,9 +131,7 @@ export function ExtractImagesTool() {
         if (Object.keys(entries).length === 0) {
             setStatus({
                 tone: "error",
-                message: extractImagesSettings.includeRawStreams
-                    ? t("extractImages.status.noImagesToBundle")
-                    : t("extractImages.status.noBrowserReadyImages"),
+                message: extractImagesSettings.includeRawStreams ? t("extractImages.status.noImagesToBundle") : t("extractImages.status.noBrowserReadyImages"),
             });
             return;
         }
@@ -192,7 +190,11 @@ export function ExtractImagesTool() {
                 ]}
                 primaryAction={
                     file
-                        ? { label: t("common.downloadZip"), disabled: images.length === 0 || (!extractImagesSettings.includeRawStreams && decodedCount === 0), onClick: handleDownloadAll }
+                        ? {
+                              label: t("common.downloadZip"),
+                              disabled: images.length === 0 || (!extractImagesSettings.includeRawStreams && decodedCount === 0),
+                              onClick: handleDownloadAll,
+                          }
                         : undefined
                 }
                 secondaryActions={[{ label: t("common.replace"), onClick: () => inputRef.current?.click() }]}

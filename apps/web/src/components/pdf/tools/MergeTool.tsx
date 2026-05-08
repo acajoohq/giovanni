@@ -112,9 +112,7 @@ export function MergeTool() {
         files.length > 0 ? (
             <div className="flex h-full flex-col overflow-hidden">
                 <div className="flex shrink-0 items-center justify-between border-b border-app-border-subtle px-4 py-2">
-                    <span className="text-[11px] font-medium text-neutral-500">
-                        {t("merge.fileCount", { count: files.length })}
-                    </span>
+                    <span className="text-[11px] font-medium text-neutral-500">{t("merge.fileCount", { count: files.length })}</span>
                     <Button size="sm" variant="secondary" type="button" onClick={() => inputRef.current?.click()}>
                         {t("merge.actions.addPdfs")}
                     </Button>

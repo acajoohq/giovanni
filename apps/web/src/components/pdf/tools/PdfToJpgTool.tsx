@@ -70,10 +70,7 @@ export function PdfToJpgTool() {
             errorMessage: t("pdfToJpg.status.failed"),
             successStatus: (nextResult) => ({
                 tone: nextResult.convertedPageCount > 0 ? "success" : "info",
-                message:
-                    nextResult.convertedPageCount === 0
-                        ? t("pdfToJpg.status.noPages")
-                        : t("pdfToJpg.status.converted", { count: nextResult.convertedPageCount }),
+                message: nextResult.convertedPageCount === 0 ? t("pdfToJpg.status.noPages") : t("pdfToJpg.status.converted", { count: nextResult.convertedPageCount }),
             }),
         });
     };
@@ -180,11 +177,7 @@ export function PdfToJpgTool() {
                         <div key={page.pageIndex} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:230px]">
                             <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
                                 {pageUrls[index] ? (
-                                    <img
-                                        alt={t("pdfToJpg.jpgAlt", { page: page.pageIndex + 1 })}
-                                        className="h-full w-full object-contain"
-                                        src={pageUrls[index]}
-                                    />
+                                    <img alt={t("pdfToJpg.jpgAlt", { page: page.pageIndex + 1 })} className="h-full w-full object-contain" src={pageUrls[index]} />
                                 ) : null}
                             </div>
                             <span className="truncate text-center text-[10px] text-neutral-500">

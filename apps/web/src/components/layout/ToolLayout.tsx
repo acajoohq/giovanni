@@ -15,7 +15,10 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
     const [isDragOver, setIsDragOver] = useState(false);
     const dragCounter = useRef(0);
 
+    const hasDragFiles = (e: DragEvent) => Array.from(e.dataTransfer.types).includes("Files");
+
     const handleDragEnter = (e: DragEvent) => {
+        if (!hasDragFiles(e)) return;
         e.preventDefault();
         dragCounter.current++;
         if (dragCounter.current === 1) setIsDragOver(true);

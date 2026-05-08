@@ -189,3 +189,23 @@ export interface PdfToJpgResult {
      */
     convertedPageCount: number;
 }
+
+/**
+ * Result of a PDF page reorganization operation
+ */
+export interface OrganizeResult {
+    /**
+     * Reorganized PDF as a single Uint8Array
+     */
+    data: Uint8Array;
+
+    /**
+     * Number of pages in the output PDF
+     */
+    pageCount: number;
+
+    /**
+     * Number of pages in the original PDF
+     */
+    originalPageCount: number;
+}

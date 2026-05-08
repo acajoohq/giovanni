@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { QpdfCompressionError, QpdfError, QpdfInitError, QpdfMergeError, QpdfSplitError, QpdfValidationError, QpdfConversionError } from "./errors.js";
+import { QpdfCompressionError, QpdfError, QpdfInitError, QpdfMergeError, QpdfSplitError, QpdfValidationError, QpdfConversionError, QpdfOrganizeError } from "./errors.js";
 
 describe("Error Classes", () => {
     describe("QpdfError", () => {
@@ -75,6 +75,15 @@ describe("Error Classes", () => {
             expect(error).toBeInstanceOf(QpdfConversionError);
             expect(error).toBeInstanceOf(QpdfError);
             expect(error.name).toBe("QpdfConversionError");
+        });
+    });
+
+    describe("QpdfOrganizeError", () => {
+        it("should create organize error", () => {
+            const error = new QpdfOrganizeError("organize failed");
+            expect(error).toBeInstanceOf(QpdfOrganizeError);
+            expect(error).toBeInstanceOf(QpdfError);
+            expect(error.name).toBe("QpdfOrganizeError");
         });
     });
 });

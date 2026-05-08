@@ -27,7 +27,11 @@ export async function splitPages(input: Uint8Array | ArrayBuffer): Promise<Split
             );
         }
         const inputBuffer = normalizeBuffer(input);
-        const pages: Uint8Array[] = module.splitPages(inputBuffer);
+        const rawPages: Uint8Array[] = module.splitPages(inputBuffer);
+        // Copy each page out of WASM memory immediately. The Uint8Arrays returned by
+        // the WASM module are views into the shared WASM heap. Any subsequent WASM
+        // call (e.g. mergePdfs) may reallocate that heap, invalidating the views.
+        const pages = rawPages.map((page) => page.slice());
 
         return {
             pages,

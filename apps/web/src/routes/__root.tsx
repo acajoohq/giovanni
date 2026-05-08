@@ -1,5 +1,6 @@
-import { createRootRoute, HeadContent, Link, Scripts } from "@tanstack/react-router";
+﻿import { createRootRoute, HeadContent, Link, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { createSeoMeta } from "@/lib/seo";
 import appCss from "@/styles/app.css?url";
 import { AppShell } from "@/components/layout/AppShell";
@@ -46,11 +47,12 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 }
 
 function NotFoundPage() {
+    const { t } = useTranslation();
     return (
         <main className="mx-auto max-w-lg p-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Not found</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">{t("notFound.title")}</h1>
             <Link className="mt-4 inline-flex text-[#eb5a3f] hover:underline" to="/">
-                Back home
+                {t("notFound.backHome")}
             </Link>
         </main>
     );

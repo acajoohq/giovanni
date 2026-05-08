@@ -1,5 +1,6 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { RiCloseLine, RiFilePdfLine } from "@remixicon/react";
+import { Trans, useTranslation } from "react-i18next";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/shadcn/Dialog";
 
 interface AboutDialogProps {
@@ -9,7 +10,7 @@ interface AboutDialogProps {
 
 const CONTRIBUTORS = [
     { name: "Edward Brunetiere", github: "P4tt4te", initials: "EB", color: "#4f8ef7" },
-    { name: "Mattèo Gauthier", github: "matteogauthier", initials: "MG", color: "var(--brand)" },
+    { name: "Matteo Gauthier", github: "matteogauthier", initials: "MG", color: "var(--brand)" },
 ] as const;
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION;
@@ -48,6 +49,8 @@ function Avatar({ name, github, initials, color }: (typeof CONTRIBUTORS)[number]
 }
 
 export function AboutDialog({ open, onClose }: AboutDialogProps) {
+    const { t } = useTranslation();
+
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
             <DialogContent showCloseButton={false} className="max-w-[400px] gap-0 overflow-hidden p-0">
@@ -60,11 +63,11 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                         <RiFilePdfLine className="size-5 text-brand" />
                     </div>
                     <DialogTitle className="text-[15px] font-semibold text-white">Giovanni</DialogTitle>
-                    <p className="mt-1 text-[11px] text-neutral-500">PDF tools · offline &amp; private</p>
+                    <p className="mt-1 text-[11px] text-neutral-500">{t("about.tagline")}</p>
                 </div>
 
                 <div className="border-y border-white/5 bg-white/2 px-6 py-5">
-                    <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-widest text-neutral-600">Made by</p>
+                    <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-widest text-neutral-600">{t("about.madeBy")}</p>
                     <div className="flex justify-center gap-10">
                         {CONTRIBUTORS.map((c) => (
                             <Avatar key={c.github} {...c} />
@@ -74,11 +77,21 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
 
                 <div className="px-6 py-3.5">
                     <p className="text-balance text-center text-[11px] leading-relaxed text-neutral-600">
-                        Powered by{" "}
-                        <a className="text-neutral-400 transition-colors hover:text-brand" href="https://github.com/qpdf/qpdf" rel="noopener noreferrer" target="_blank">
-                            qpdf
-                        </a>{" "}
-                        compiled to WebAssembly. No files leave your browser.
+                        <Trans
+                            i18nKey="about.poweredBy"
+                            components={{
+                                qpdf: (
+                                    <a
+                                        className="text-neutral-400 transition-colors hover:text-brand"
+                                        href="https://github.com/qpdf/qpdf"
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                    >
+                                        qpdf
+                                    </a>
+                                ),
+                            }}
+                        />
                     </p>
                     <p className="mt-2 text-center font-mono text-[9px] text-neutral-700">
                         v{APP_VERSION} · {GIT_COMMIT}

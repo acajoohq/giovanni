@@ -1,0 +1,200 @@
+﻿export const en = {
+    nav: {
+        compress: "Compress",
+        split: "Split",
+        merge: "Merge",
+        extractImages: "Extract Images",
+        pdfToJpg: "PDF to JPG",
+        aboutAriaLabel: "About Giovanni",
+    },
+    notFound: {
+        title: "Not found",
+        backHome: "Back home",
+    },
+    about: {
+        tagline: "PDF tools \u00b7 offline & private",
+        madeBy: "Made by",
+        poweredBy: "Powered by <qpdf>qpdf</qpdf> compiled to WebAssembly. No files leave your browser.",
+    },
+    common: {
+        replace: "Replace",
+        downloadPdf: "Download PDF",
+        downloadZip: "Download ZIP",
+        download: "Download",
+        downloadRaw: "Download Raw",
+        selectPdf: "Please select a PDF file.",
+        couldNotDownload: "Could not download PDF.",
+        couldNotCreateZip: "Could not create ZIP.",
+        metrics: {
+            output: "Output",
+            time: "Time",
+            pages: "Pages",
+            throughput: "Throughput",
+        },
+        sidebar: {
+            outputSettings: "Output Settings",
+            filename: "Filename",
+        },
+    },
+    compress: {
+        toolTitle: "Compress PDF",
+        emptyTitle: "Drop a PDF to compress",
+        emptyDescription: "Secure, offline processing.",
+        sidebar: {
+            compression: "Compression",
+            level: "Level",
+            decode: "Decode",
+            objectStreams: "Object streams",
+            streamOptions: "Stream Options",
+            recompressFlate: "Recompress flate",
+            compressPages: "Compress pages",
+            removeUnused: "Remove unused",
+        },
+        decodeLevel: {
+            none: "None",
+            generalized: "Generalized",
+            specialized: "Specialized",
+            all: "All",
+        },
+        objectStreamMode: {
+            generate: "Generate",
+            preserve: "Preserve",
+            disable: "Disable",
+        },
+        metrics: {
+            saved: "Saved",
+        },
+        actions: {
+            replace: "Replace",
+        },
+        status: {
+            compressing: "Compressing PDF...",
+            savedBytes: "Saved {{bytes}}.",
+            slightlyLarger: "Result is slightly larger.",
+            failed: "Failed to compress PDF.",
+        },
+    },
+    merge: {
+        toolTitle: "Merge",
+        emptyTitle: "Drop PDFs to merge",
+        emptyDescription: "Select multiple PDFs to merge into one.",
+        fileCount_one: "{{count}} file",
+        fileCount_other: "{{count}} files",
+        pdfCount_one: "{{count}} PDF",
+        pdfCount_other: "{{count}} PDFs",
+        actions: {
+            addPdfs: "Add PDFs",
+        },
+        minPdfsHint: "Add at least 2 PDFs to merge",
+        metrics: {
+            files: "Files",
+        },
+        status: {
+            merging: "Merging PDFs...",
+            merged_one: "Merged {{count}} PDF.",
+            merged_other: "Merged {{count}} PDFs.",
+            failed: "Failed to merge PDFs.",
+            pleaseSelectPdf: "Please select PDF files only.",
+        },
+    },
+    split: {
+        toolTitle: "Split Pages",
+        emptyTitle: "Drop a PDF to split",
+        emptyDescription: "Each page becomes a downloadable PDF.",
+        pageLabel: "Page {{page}}",
+        sidebar: {
+            splitSettings: "Split Settings",
+            pattern: "Pattern",
+            archive: "Archive",
+            zip: "ZIP",
+            store: "Store",
+            compress: "Compress",
+        },
+        status: {
+            splitting: "Splitting pages...",
+            extracted_one: "Extracted {{count}} page.",
+            extracted_other: "Extracted {{count}} pages.",
+            failed: "Failed to split PDF.",
+        },
+    },
+    extractImages: {
+        toolTitle: "Extract Images",
+        emptyTitle: "Drop a PDF to extract images",
+        emptyDescription: "Every embedded raster image, decoded by the browser.",
+        sidebar: {
+            exportSettings: "Export Settings",
+            archive: "Archive",
+            includeRaw: "Include raw",
+        },
+        metrics: {
+            images: "Images",
+            decoded: "Decoded",
+            raw: "Raw",
+        },
+        status: {
+            extracting: "Extracting images...",
+            noImages: "No embedded raster images were found.",
+            extracted_one: "Extracted {{count}} browser-ready image.",
+            extracted_other: "Extracted {{count}} browser-ready images.",
+            extractedWithRaw_one: "Extracted {{count}} browser-ready image and {{raw}} raw streams.",
+            extractedWithRaw_other: "Extracted {{count}} browser-ready images and {{raw}} raw streams.",
+            failed: "Failed to extract images.",
+            noImagesToBundle: "No images are available to bundle.",
+            noBrowserReadyImages: "No browser-ready images are available to bundle.",
+        },
+    },
+    pdfToJpg: {
+        toolTitle: "PDF to JPG",
+        emptyTitle: "Drop a PDF to convert",
+        emptyDescription: "Each page is converted to a JPG image.",
+        pageLabel: "Page {{page}} \u00b7 {{width}}x{{height}}",
+        jpgAlt: "Converted JPG page {{page}}",
+        sidebar: {
+            conversion: "Conversion",
+            quality: "Quality",
+            scale: "Scale",
+            exportSettings: "Export Settings",
+            pattern: "Pattern",
+            archive: "Archive",
+        },
+        status: {
+            converting: "Converting PDF to JPG...",
+            converted_one: "Converted {{count}} page.",
+            converted_other: "Converted {{count}} pages.",
+            noPages: "No pages were converted.",
+            failed: "Failed to convert PDF to JPG.",
+        },
+    },
+    organize: {
+        toolTitle: "Organize Pages",
+        emptyTitle: "Drop a PDF to organize",
+        emptyDescription: "Drag and drop pages to reorder them.",
+        pageLabel: "Page {{current}}",
+        pageLabelWas: "(was {{original}})",
+        moveUp: "Move page {{page}} up",
+        moveDown: "Move page {{page}} down",
+        actions: {
+            applyOrder: "Apply Order",
+            applyNoChanges: "Apply (no changes)",
+            reApply: "Re-apply",
+            addPdf: "Add PDF",
+        },
+        status: {
+            reorganizing: "Reorganizing pages...",
+            loading: "Loading pages...",
+            loaded_one: "Loaded {{count}} page.",
+            loaded_other: "Loaded {{count}} pages.",
+            reorganized: "PDF reorganized successfully.",
+            failedLoad: "Failed to load PDF.",
+            failedReorganize: "Failed to reorganize PDF.",
+        },
+    },
+} as const;
+
+type DeepString<T> = {
+    [K in keyof T]: T[K] extends Record<string, unknown> ? DeepString<T[K]> : string;
+};
+
+export type Translations = DeepString<typeof en>;
+
+

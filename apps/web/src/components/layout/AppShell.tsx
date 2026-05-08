@@ -1,19 +1,20 @@
-import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
+﻿import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AboutDialog } from "@/components/dialogs/AboutDialog";
 
-const navigationItems = [
-    { label: "Compress", to: "/compress" },
-    { label: "Split", to: "/split" },
-    { label: "Merge", to: "/merge" },
-    { label: "Organize", to: "/organize" },
-    { label: "Extract Images", to: "/extract-images" },
-    { label: "PDF to JPG", to: "/pdf-to-jpg" },
-] as const;
-
 export function AppShell() {
+    const { t } = useTranslation();
     const [aboutOpen, setAboutOpen] = useState(false);
+
+    const navigationItems = [
+        { label: t("nav.compress"), to: "/compress" },
+        { label: t("nav.split"), to: "/split" },
+        { label: t("nav.merge"), to: "/merge" },
+        { label: t("nav.extractImages"), to: "/extract-images" },
+        { label: t("nav.pdfToJpg"), to: "/pdf-to-jpg" },
+    ] as const;
 
     return (
         <div className="flex h-dvh w-screen min-w-0 flex-col overflow-hidden bg-app-bg font-sans text-neutral-200">
@@ -37,7 +38,7 @@ export function AppShell() {
                 </div>
 
                 <button
-                    aria-label="About Giovanni"
+                    aria-label={t("nav.aboutAriaLabel")}
                     className="absolute right-3 top-2 flex size-7 items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-app-border-subtle hover:text-white sm:static"
                     onClick={() => setAboutOpen(true)}
                     type="button"

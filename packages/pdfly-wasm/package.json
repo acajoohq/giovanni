@@ -40,6 +40,16 @@
                 "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
             }
+        },
+        "./render": {
+            "import": {
+                "types": "./dist/render.d.mts",
+                "default": "./dist/render.mjs"
+            },
+            "require": {
+                "types": "./dist/render.d.cts",
+                "default": "./dist/render.cjs"
+            }
         }
     },
     "scripts": {

@@ -11,22 +11,33 @@ pnpm add @pdfly/wasm
 ## Usage
 
 ```ts
-import { compressPdf, splitPages } from "@pdfly/wasm";
+import { inspectPdf, optimizePdf, splitPdf } from "@pdfly/wasm";
 
 const input = await fetch("document.pdf").then((response) => response.arrayBuffer());
 
-const compressed = await compressPdf(input, {
+const info = await inspectPdf(input);
+
+const optimized = await optimizePdf(input, {
     compressionLevel: 9,
     decodeLevel: "all",
     recompressFlate: true,
+    linearize: true,
 });
 
-const pages = await splitPages(compressed.data);
+const pages = await splitPdf(optimized.data);
 ```
 
-## Compression defaults
+## QPDF Scope
 
-Omitted options use the defaults in `CompressionOptions` (see TypeScript types). Notably, **`objectStreams` defaults to `generate`**, which usually improves size by rewriting object streams; set **`preserve`** if you need output structure closer to the input (e.g. compatibility or structural diffs).
+QPDF is a lossless PDF structural tool. It is a good fit for rewriting PDFs, object streams, flate recompression, linearization, inspection, validation, splitting, merging, and page organization. It does not resample or re-encode images, so it is not an aggressive lossy image compressor.
+
+Omitted optimization options use the defaults in `OptimizeOptions` (see TypeScript types). Notably, **`objectStreams` defaults to `generate`**, which usually improves size by rewriting object streams; set **`preserve`** if you need output structure closer to the input (e.g. compatibility or structural diffs).
+
+PDF.js-backed page rendering is intentionally separate from the main QPDF API:
+
+```ts
+import { renderPdfPagesToJpg } from "@pdfly/wasm/render";
+```
 
 ## Development
 

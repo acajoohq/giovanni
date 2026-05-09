@@ -28,6 +28,8 @@ const nodeCanvasPromise: Promise<((w: number, h: number) => NodeCanvas) | null> 
     ? Promise.resolve(null)
     : import("canvas").then(({ createCanvas }) => createCanvas as (w: number, h: number) => NodeCanvas).catch(() => null);
 
+// TODO : See if we should externalize this rendering to some other package or keep it here
+
 /**
  * Convert a PDF to JPG images by rendering each page via PDF.js.
  *

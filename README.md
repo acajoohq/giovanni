@@ -66,5 +66,9 @@ pnpm clean
 - [ ] Merge/fuse PDFs
 - [ ] Lots of fixture tests (runned on demand
 - [ ] Rename to Giovanni
+- [ ] Performance
+    - [ ] Add module-level side-effect import of `pdfRenderer.client` in PDF tool routes (start pdfjs-dist download at chunk parse time, not on component mount)
+    - [ ] Preload `qpdf.wasm` via `<link rel="preload" as="fetch">` in PDF tool route heads (fixed path, no hash)
+    - [ ] Merge sub-1KB shared chunks into consumers
 - [ ] Open Question
     - [ ] Should we rename the wasm build to as it's doing more on top of qpdf?

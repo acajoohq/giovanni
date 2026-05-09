@@ -1,10 +1,22 @@
 /**
  * Base error class for all qpdf-related errors
  */
+export type QpdfErrorCode = "init_failed" | "invalid_input" | "parse_failed" | "write_failed" | "operation_failed";
+
+export interface QpdfErrorOptions extends ErrorOptions {
+    code?: QpdfErrorCode;
+    operation?: string;
+}
+
 export class QpdfError extends Error {
-    constructor(message: string, options?: ErrorOptions) {
+    readonly code: QpdfErrorCode;
+    readonly operation?: string;
+
+    constructor(message: string, options?: QpdfErrorOptions) {
         super(message, options);
         this.name = "QpdfError";
+        this.code = options?.code ?? "operation_failed";
+        this.operation = options?.operation;
 
         // maintain proper stack traces in runtimes that expose captureStackTrace
         const errorWithCapture = Error as ErrorConstructor & {
@@ -17,6 +29,10 @@ export class QpdfError extends Error {
         // fix prototype chain for instanceof checks
         Object.setPrototypeOf(this, new.target.prototype);
     }
+}
+
+export function isQpdfError(error: unknown): error is QpdfError {
+    return error instanceof QpdfError;
 }
 
 /**

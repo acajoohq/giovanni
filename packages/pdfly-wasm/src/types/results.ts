@@ -1,11 +1,21 @@
 /**
- * Result of a PDF compression operation
+ * Caller-owned PDF bytes.
  */
-export interface CompressionResult {
+export interface PdfData {
     /**
-     * Compressed PDF data
+     * PDF data.
      */
     data: Uint8Array;
+}
+
+/**
+ * Result of a PDF optimization operation.
+ */
+export interface OptimizeResult extends PdfData {
+    /**
+     * Optimization preset used for this output.
+     */
+    preset: string;
 
     /**
      * Original file size in bytes
@@ -36,7 +46,7 @@ export interface CompressionResult {
 /**
  * PDF metadata information
  */
-export interface QPDFInfo {
+export interface QpdfDocumentInfo {
     /**
      * Number of pages in the PDF
      */
@@ -77,6 +87,16 @@ export interface QPDFInfo {
      */
     creator?: string;
 }
+
+/**
+ * Result of a qpdf check operation.
+ */
+export interface QpdfCheckResult {
+    info: QpdfDocumentInfo;
+    isValid: boolean;
+    warnings: string[];
+}
+
 /**
  * Result of a PDF split operation
  */
@@ -95,12 +115,7 @@ export interface SplitResult {
 /**
  * Result of a PDF merge operation
  */
-export interface MergeResult {
-    /**
-     * Merged PDF as a single Uint8Array
-     */
-    data: Uint8Array;
-
+export interface MergeResult extends PdfData {
     /**
      * Number of PDFs that were merged
      */
@@ -178,7 +193,7 @@ export interface PdfPageJpg {
 /**
  * Result of a PDF to JPG conversion operation
  */
-export interface PdfToJpgResult {
+export interface RenderPdfPagesToJpgResult {
     /**
      * Array of converted pages, ordered by pageIndex
      */
@@ -193,12 +208,7 @@ export interface PdfToJpgResult {
 /**
  * Result of a PDF page reorganization operation
  */
-export interface OrganizeResult {
-    /**
-     * Reorganized PDF as a single Uint8Array
-     */
-    data: Uint8Array;
-
+export interface OrganizeResult extends PdfData {
     /**
      * Number of pages in the output PDF
      */

@@ -10,6 +10,7 @@ export interface WasmCompressionOptions {
     objectStreams: string;
     compressPages: boolean;
     removeUnreferencedResources: boolean;
+    linearize: boolean;
 }
 
 export interface WasmQPDFWrapper {
@@ -27,13 +28,12 @@ export interface WasmQPDFWrapper {
 }
 
 export interface WasmQPDFWriter {
+    setCompressStreams(value: boolean): void;
     setCompressionLevel(level: number): void;
     setDecodeLevel(level: string): void;
     setRecompressFlate(value: boolean): void;
     setObjectStreamMode(mode: string): void;
-    // advanced writer options are optional depending on the embind build
-    setCompressPages?(value: boolean): void;
-    setRemoveUnreferencedResources?(value: boolean): void;
+    setLinearization?(value: boolean): void;
     write(): void;
     getBuffer(): Uint8Array;
     delete(): void;

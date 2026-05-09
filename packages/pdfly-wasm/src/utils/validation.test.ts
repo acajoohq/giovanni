@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { QpdfValidationError } from "../core/errors.js";
-import type { CompressionOptions } from "../types/options.js";
-import { normalizeBuffer, validateCompressionOptions } from "./validation.js";
+import type { OptimizeOptions } from "../types/options.js";
+import { normalizeBuffer, validateOptimizeOptions } from "./validation.js";
 
 describe("Validation Utilities", () => {
     describe("normalizeBuffer", () => {
@@ -23,9 +23,9 @@ describe("Validation Utilities", () => {
         });
     });
 
-    describe("validateCompressionOptions", () => {
+    describe("validateOptimizeOptions", () => {
         it("should return defaults for undefined options", () => {
-            const result = validateCompressionOptions();
+            const result = validateOptimizeOptions();
             expect(result).toEqual({
                 compressionLevel: 6,
                 decodeLevel: "generalized",
@@ -33,51 +33,58 @@ describe("Validation Utilities", () => {
                 objectStreams: "generate",
                 compressPages: false,
                 removeUnreferencedResources: false,
+                linearize: false,
             });
         });
 
         it("should accept valid compression level", () => {
-            const result = validateCompressionOptions({ compressionLevel: 9 });
+            const result = validateOptimizeOptions({ compressionLevel: 9 });
             expect(result.compressionLevel).toBe(9);
         });
 
         it("should reject invalid compression level", () => {
-            expect(() => validateCompressionOptions({ compressionLevel: 0 })).toThrow(QpdfValidationError);
+            expect(() => validateOptimizeOptions({ compressionLevel: 0 })).toThrow(QpdfValidationError);
 
-            expect(() => validateCompressionOptions({ compressionLevel: 10 })).toThrow(QpdfValidationError);
+            expect(() => validateOptimizeOptions({ compressionLevel: 10 })).toThrow(QpdfValidationError);
 
-            expect(() => validateCompressionOptions({ compressionLevel: 5.5 })).toThrow(QpdfValidationError);
+            expect(() => validateOptimizeOptions({ compressionLevel: 5.5 })).toThrow(QpdfValidationError);
         });
 
         it("should accept valid decode level", () => {
-            const result = validateCompressionOptions({ decodeLevel: "all" });
+            const result = validateOptimizeOptions({ decodeLevel: "all" });
             expect(result.decodeLevel).toBe("all");
         });
 
         it("should reject invalid decode level", () => {
-            expect(() => validateCompressionOptions({ decodeLevel: "invalid" } as unknown as CompressionOptions)).toThrow(QpdfValidationError);
+            expect(() => validateOptimizeOptions({ decodeLevel: "invalid" } as unknown as OptimizeOptions)).toThrow(QpdfValidationError);
         });
 
         it("should accept valid object streams mode", () => {
-            const result = validateCompressionOptions({ objectStreams: "generate" });
+            const result = validateOptimizeOptions({ objectStreams: "generate" });
             expect(result.objectStreams).toBe("generate");
         });
 
         it("should reject invalid object streams mode", () => {
             expect(() =>
-                validateCompressionOptions({
+                validateOptimizeOptions({
                     objectStreams: "invalid",
-                } as unknown as CompressionOptions),
+                } as unknown as OptimizeOptions),
             ).toThrow(QpdfValidationError);
         });
 
         it("should coerce boolean values", () => {
-            const result = validateCompressionOptions({
+            const result = validateOptimizeOptions({
                 recompressFlate: 1,
                 compressPages: "true",
-            } as unknown as CompressionOptions);
+            } as unknown as OptimizeOptions);
             expect(result.recompressFlate).toBe(true);
             expect(result.compressPages).toBe(true);
+        });
+
+        it("applies the web preset", () => {
+            const result = validateOptimizeOptions({ preset: "web" });
+            expect(result.linearize).toBe(true);
+            expect(result.objectStreams).toBe("generate");
         });
     });
 });

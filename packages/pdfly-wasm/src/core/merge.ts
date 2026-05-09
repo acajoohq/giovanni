@@ -29,7 +29,7 @@ export async function mergePdfs(inputs: Array<Uint8Array | ArrayBuffer>): Promis
         }
 
         const normalizedInputs = inputs.map(normalizeBuffer);
-        const data: Uint8Array = module.mergePdfs(normalizedInputs);
+        const data: Uint8Array = module.mergePdfs(normalizedInputs).slice();
 
         return {
             data,

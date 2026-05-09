@@ -1,4 +1,9 @@
 /**
+ * PDF input accepted by qpdf-backed APIs.
+ */
+export type PdfInput = Uint8Array | ArrayBuffer;
+
+/**
  * Compression decode level - controls how aggressively to decode streams
  */
 export type DecodeLevel = "none" | "generalized" | "specialized" | "all";
@@ -9,9 +14,20 @@ export type DecodeLevel = "none" | "generalized" | "specialized" | "all";
 export type ObjectStreamMode = "preserve" | "disable" | "generate";
 
 /**
- * Compression options for PDF optimization
+ * Preset for qpdf's lossless writer pipeline.
  */
-export interface CompressionOptions {
+export type QpdfOptimizePreset = "default" | "web" | "archive";
+
+/**
+ * Shared qpdf writer options.
+ */
+export interface WriteOptions {
+    /**
+     * Whether to produce a linearized PDF for byte-range web delivery.
+     * @default false
+     */
+    linearize?: boolean;
+
     /**
      * Compression level (1-9)
      * 1 = fastest, least compression
@@ -59,9 +75,61 @@ export interface CompressionOptions {
 }
 
 /**
- * Options for PDF to JPG conversion
+ * Options for PDF optimization.
  */
-export interface PdfToJpgOptions {
+export interface OptimizeOptions extends WriteOptions {
+    /**
+     * Named lossless optimization preset.
+     * @default "default"
+     */
+    preset?: QpdfOptimizePreset;
+}
+
+/**
+ * Options for opening an encrypted PDF.
+ */
+export interface OpenDocumentOptions {
+    /**
+     * Password for encrypted PDFs.
+     */
+    password?: string;
+}
+
+/**
+ * Options for splitting a PDF.
+ */
+export interface SplitOptions extends OpenDocumentOptions {}
+
+/**
+ * Options for merging PDFs.
+ */
+export interface MergeOptions extends WriteOptions {}
+
+/**
+ * Options for organizing pages.
+ */
+export interface OrganizeOptions extends OpenDocumentOptions, WriteOptions {
+    /**
+     * Zero-based page indices for the output PDF.
+     * Duplicates copy pages; omitted indices remove pages.
+     */
+    pages: number[];
+}
+
+/**
+ * Options for inspecting a PDF.
+ */
+export interface InspectOptions extends OpenDocumentOptions {}
+
+/**
+ * Options for checking a PDF.
+ */
+export interface CheckOptions extends OpenDocumentOptions {}
+
+/**
+ * Options for rendering PDF pages to JPG.
+ */
+export interface RenderPdfPagesToJpgOptions {
     /**
      * JPEG quality (0-1], where 1 is best quality)
      * @default 0.92

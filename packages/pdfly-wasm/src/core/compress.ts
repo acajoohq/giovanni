@@ -1,12 +1,12 @@
 import { initQpdfModule } from "./module-loader.js";
 import { QpdfCompressionError } from "./errors.js";
-import { normalizeBuffer, validateCompressionOptions } from "../utils/validation.js";
+import { getOptimizePreset, normalizeBuffer, validateOptimizeOptions } from "../utils/validation.js";
 import { calculateSavings } from "../utils/format.js";
-import type { CompressionOptions, CompressionResult } from "../types/index.js";
+import type { OptimizeOptions, OptimizeResult } from "../types/index.js";
 
 /**
  * Initialize the qpdf WASM module
- * This is called automatically by compressPdf, but can be called manually
+ * This is called automatically by qpdf operations, but can be called manually
  * to preload the module before compression
  */
 export async function initQpdf(): Promise<void> {
@@ -16,24 +16,24 @@ export async function initQpdf(): Promise<void> {
 /**
  * Get the qpdf library version
  */
-export async function getVersion(): Promise<string> {
+export async function getQpdfVersion(): Promise<string> {
     const module = await initQpdfModule();
     return module.getVersion();
 }
 
 /**
- * Compress a PDF file with the specified options
+ * Optimize a PDF file with qpdf's lossless writer pipeline.
  *
- * Defaults match {@link CompressionOptions}: including `objectStreams: "generate"` when unset (smaller files; use `"preserve"` to stay closer to the input structure).
+ * Defaults match {@link OptimizeOptions}: including `objectStreams: "generate"` when unset (smaller files; use `"preserve"` to stay closer to the input structure).
  *
  * @param input - PDF file as Uint8Array or ArrayBuffer
- * @param options - Compression options
- * @returns Compression result with compressed data and statistics
+ * @param options - Optimization options
+ * @returns Optimization result with output data and statistics
  *
  * @example
  * ```typescript
  * const pdfBytes = await fetch('document.pdf').then(r => r.arrayBuffer());
- * const result = await compressPdf(pdfBytes, {
+ * const result = await optimizePdf(pdfBytes, {
  *   compressionLevel: 9,
  *   decodeLevel: 'all',
  *   recompressFlate: true
@@ -45,25 +45,26 @@ export async function getVersion(): Promise<string> {
  * const url = URL.createObjectURL(blob);
  * ```
  */
-export async function compressPdf(input: Uint8Array | ArrayBuffer, options?: CompressionOptions): Promise<CompressionResult> {
+export async function optimizePdf(input: Uint8Array | ArrayBuffer, options?: OptimizeOptions): Promise<OptimizeResult> {
     try {
         // initialize module
         const module = await initQpdfModule();
 
         // normalize and validate input
         const inputBuffer = normalizeBuffer(input);
-        const validatedOptions = validateCompressionOptions(options);
+        const validatedOptions = validateOptimizeOptions(options);
 
-        // perform compression
-        const compressedBuffer = module.compressPdf(inputBuffer, validatedOptions);
+        // perform optimization
+        const optimizedBuffer = module.compressPdf(inputBuffer, validatedOptions).slice();
 
         // calculate statistics
         const originalSize = inputBuffer.byteLength;
-        const compressedSize = compressedBuffer.byteLength;
+        const compressedSize = optimizedBuffer.byteLength;
         const { savedBytes, compressionRatio, percentageSaved } = calculateSavings(originalSize, compressedSize);
 
         return {
-            data: compressedBuffer,
+            data: optimizedBuffer,
+            preset: getOptimizePreset(options),
             originalSize,
             compressedSize,
             compressionRatio,
@@ -74,6 +75,10 @@ export async function compressPdf(input: Uint8Array | ArrayBuffer, options?: Com
         if (error instanceof QpdfCompressionError) {
             throw error;
         }
-        throw new QpdfCompressionError("Failed to compress PDF", { cause: error });
+        throw new QpdfCompressionError("Failed to optimize PDF", { cause: error });
     }
+}
+
+export async function linearizePdf(input: Uint8Array | ArrayBuffer, options?: Omit<OptimizeOptions, "linearize">): Promise<OptimizeResult> {
+    return optimizePdf(input, { ...options, linearize: true });
 }

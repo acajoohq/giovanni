@@ -1,15 +1,30 @@
-export type { DecodeLevel, ObjectStreamMode, CompressionOptions, PdfToJpgOptions } from "./options.js";
+export type {
+    CheckOptions,
+    DecodeLevel,
+    InspectOptions,
+    MergeOptions,
+    ObjectStreamMode,
+    OpenDocumentOptions,
+    OptimizeOptions,
+    OrganizeOptions,
+    PdfInput,
+    QpdfOptimizePreset,
+    RenderPdfPagesToJpgOptions,
+    SplitOptions,
+    WriteOptions,
+} from "./options.js";
 export type {
     ColorComponentCount,
-    CompressionResult,
     ExtractedImage,
     ExtractImagesResult,
     MergeResult,
+    OptimizeResult,
+    PdfData,
     PixelColorModel,
-    QPDFInfo,
+    QpdfCheckResult,
+    QpdfDocumentInfo,
     SplitResult,
     PdfPageJpg,
-    PdfToJpgResult,
+    RenderPdfPagesToJpgResult,
     OrganizeResult,
 } from "./results.js";
-export type { QpdfWasmModule, CreateQpdfModule } from "./wasm-module.js";

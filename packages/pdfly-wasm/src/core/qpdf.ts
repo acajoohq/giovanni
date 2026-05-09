@@ -1,28 +1,36 @@
 import { initQpdfModule } from "./module-loader.js";
 import { QpdfCompressionError, QpdfInitError, QpdfValidationError } from "./errors.js";
-import { normalizeBuffer } from "../utils/validation.js";
-import type { QPDFInfo } from "../types/results.js";
+import { normalizeBuffer, validateWriteOptions } from "../utils/validation.js";
+import type { OpenDocumentOptions, QpdfDocumentInfo, WriteOptions } from "../types/index.js";
 import type { WasmQPDFWrapper } from "../types/wasm-module.js";
 
 /**
- * Advanced QPDF class for fine-grained PDF manipulation
+ * Advanced qpdf document for reusable workflows.
  *
  * @example
  * ```typescript
- * const qpdf = new QPDF();
- * await qpdf.processMemoryFile(pdfBytes);
+ * const document = await QpdfDocument.open(pdfBytes);
  *
- * console.log(`Pages: ${qpdf.getNumPages()}`);
- * console.log(`Version: ${qpdf.getPDFVersion()}`);
- * console.log(`Encrypted: ${qpdf.isEncrypted()}`);
+ * console.log(`Pages: ${document.pageCount}`);
+ * console.log(`Version: ${document.pdfVersion}`);
+ * console.log(`Encrypted: ${document.isEncrypted}`);
  *
- * const info = qpdf.getInfo();
+ * const info = document.info();
  * console.log('PDF Info:', info);
+ *
+ * document.dispose();
  * ```
  */
-export class QPDF {
+export class QpdfDocument {
     private wasmInstance: WasmQPDFWrapper | null = null;
     private initialized = false;
+
+    static async open(input: Uint8Array | ArrayBuffer, options?: OpenDocumentOptions): Promise<QpdfDocument> {
+        const document = new QpdfDocument();
+        await document.open(input, options);
+
+        return document;
+    }
 
     /**
      * Load a PDF from memory
@@ -30,16 +38,17 @@ export class QPDF {
      * @param input - PDF file as Uint8Array or ArrayBuffer
      * @param password - Optional password for encrypted PDFs
      */
-    async processMemoryFile(input: Uint8Array | ArrayBuffer, password?: string): Promise<void> {
+    async open(input: Uint8Array | ArrayBuffer, options?: OpenDocumentOptions): Promise<void> {
         try {
             const module = await initQpdfModule();
             const inputBuffer = normalizeBuffer(input);
 
+            this.dispose();
             this.wasmInstance = new module.QPDFWrapper();
-            this.wasmInstance.processMemoryFile(inputBuffer, password ?? "");
+            this.wasmInstance.processMemoryFile(inputBuffer, options?.password ?? "");
             this.initialized = true;
         } catch (error) {
-            this.cleanup();
+            this.dispose();
             if (error instanceof QpdfValidationError || error instanceof QpdfInitError || error instanceof QpdfCompressionError) {
                 throw error;
             }
@@ -50,7 +59,7 @@ export class QPDF {
     /**
      * Get the number of pages in the PDF
      */
-    getNumPages(): number {
+    get pageCount(): number {
         this.ensureInitialized();
         return this.wasmInstance!.getNumPages();
     }
@@ -58,7 +67,7 @@ export class QPDF {
     /**
      * Get the PDF version (e.g., "1.4", "1.7")
      */
-    getPDFVersion(): string {
+    get pdfVersion(): string {
         this.ensureInitialized();
         return this.wasmInstance!.getPDFVersion();
     }
@@ -66,7 +75,7 @@ export class QPDF {
     /**
      * Check if the PDF is encrypted
      */
-    isEncrypted(): boolean {
+    get isEncrypted(): boolean {
         this.ensureInitialized();
         return this.wasmInstance!.isEncrypted();
     }
@@ -74,7 +83,7 @@ export class QPDF {
     /**
      * Check if the PDF is linearized (optimized for web viewing)
      */
-    isLinearized(): boolean {
+    get isLinearized(): boolean {
         this.ensureInitialized();
         return this.wasmInstance!.isLinearized();
     }
@@ -82,14 +91,14 @@ export class QPDF {
     /**
      * Get comprehensive PDF metadata
      */
-    getInfo(): QPDFInfo {
+    info(): QpdfDocumentInfo {
         this.ensureInitialized();
 
-        const info: QPDFInfo = {
-            numPages: this.getNumPages(),
-            pdfVersion: this.getPDFVersion(),
-            isEncrypted: this.isEncrypted(),
-            isLinearized: this.isLinearized(),
+        const info: QpdfDocumentInfo = {
+            numPages: this.pageCount,
+            pdfVersion: this.pdfVersion,
+            isEncrypted: this.isEncrypted,
+            isLinearized: this.isLinearized,
         };
 
         // metadata accessors are optional depending on the WASM bindings build
@@ -109,8 +118,44 @@ export class QPDF {
         return info;
     }
 
+    async write(options?: WriteOptions): Promise<Uint8Array> {
+        this.ensureInitialized();
+
+        try {
+            const module = await initQpdfModule();
+            const writer = new module.QPDFWriter(this.wasmInstance!);
+            const writeOptions = validateWriteOptions(options);
+
+            try {
+                writer.setCompressStreams(true);
+                writer.setCompressionLevel(writeOptions.compressionLevel);
+                writer.setDecodeLevel(writeOptions.decodeLevel);
+                writer.setRecompressFlate(writeOptions.recompressFlate);
+                writer.setObjectStreamMode(writeOptions.objectStreams);
+
+                if (writeOptions.linearize) {
+                    if (typeof writer.setLinearization !== "function") {
+                        throw new QpdfValidationError("linearize is not available in this WASM build");
+                    }
+                    writer.setLinearization(true);
+                }
+
+                writer.write();
+
+                return writer.getBuffer().slice();
+            } finally {
+                writer.delete();
+            }
+        } catch (error) {
+            if (error instanceof QpdfValidationError || error instanceof QpdfCompressionError) {
+                throw error;
+            }
+            throw new QpdfCompressionError("Failed to write PDF", { cause: error });
+        }
+    }
+
     /**
-     * Get the internal WASM instance (for use with QPDFWriter)
+     * Get the internal WASM instance for package-internal writer plumbing.
      * @internal
      */
     getWasmInstance(): WasmQPDFWrapper {
@@ -121,7 +166,7 @@ export class QPDF {
     /**
      * Clean up WASM resources
      */
-    cleanup(): void {
+    dispose(): void {
         if (this.wasmInstance) {
             this.wasmInstance.delete();
             this.wasmInstance = null;
@@ -134,7 +179,7 @@ export class QPDF {
      */
     private ensureInitialized(): void {
         if (!this.initialized || !this.wasmInstance) {
-            throw new QpdfValidationError("QPDF instance not initialized. Call processMemoryFile() first.");
+            throw new QpdfValidationError("QpdfDocument is not open. Call QpdfDocument.open() first.");
         }
     }
 }

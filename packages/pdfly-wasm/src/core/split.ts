@@ -11,14 +11,14 @@ import type { SplitResult } from "../types/index.js";
  *
  * @example
  * const pdfBytes = await fetch('document.pdf').then(r => r.arrayBuffer());
- * const result = await splitPages(pdfBytes);
+ * const result = await splitPdf(pdfBytes);
  * console.log(`Split into ${result.pageCount} pages`);
  * result.pages.forEach((page, i) => {
  *   const blob = new Blob([page], { type: 'application/pdf' });
  *   // save or process each page
  * });
  */
-export async function splitPages(input: Uint8Array | ArrayBuffer): Promise<SplitResult> {
+export async function splitPdf(input: Uint8Array | ArrayBuffer): Promise<SplitResult> {
     try {
         const module = await initQpdfModule();
         if (typeof module.splitPages !== "function") {

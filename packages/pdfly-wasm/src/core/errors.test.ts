@@ -1,5 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { QpdfCompressionError, QpdfError, QpdfInitError, QpdfMergeError, QpdfSplitError, QpdfValidationError, QpdfConversionError, QpdfOrganizeError } from "./errors.js";
+import {
+    isQpdfError,
+    QpdfCompressionError,
+    QpdfError,
+    QpdfInitError,
+    QpdfMergeError,
+    QpdfSplitError,
+    QpdfValidationError,
+    QpdfConversionError,
+    QpdfOrganizeError,
+} from "./errors.js";
 
 describe("Error Classes", () => {
     describe("QpdfError", () => {
@@ -17,10 +27,17 @@ describe("Error Classes", () => {
             expect(error.cause).toBe(cause);
         });
 
+        it("should expose structured error metadata", () => {
+            const error = new QpdfError("test error", { code: "write_failed", operation: "optimize" });
+            expect(error.code).toBe("write_failed");
+            expect(error.operation).toBe("optimize");
+        });
+
         it("should work with instanceof", () => {
             const error = new QpdfError("test");
             expect(error instanceof QpdfError).toBe(true);
             expect(error instanceof Error).toBe(true);
+            expect(isQpdfError(error)).toBe(true);
         });
     });
 

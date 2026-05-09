@@ -1,5 +1,5 @@
 import { QpdfValidationError } from "../core/errors.js";
-import type { CompressionOptions, DecodeLevel, ObjectStreamMode } from "../types/options.js";
+import type { DecodeLevel, ObjectStreamMode, OptimizeOptions, QpdfOptimizePreset, WriteOptions } from "../types/options.js";
 import type { WasmCompressionOptions } from "../types/wasm-module.js";
 
 /**
@@ -15,26 +15,53 @@ export function normalizeBuffer(input: Uint8Array | ArrayBuffer): Uint8Array {
     throw new QpdfValidationError("Input must be a Uint8Array or ArrayBuffer");
 }
 
-/**
- * Validate and normalize compression options
- */
-export function validateCompressionOptions(options?: CompressionOptions): WasmCompressionOptions {
-    const defaults: WasmCompressionOptions = {
-        compressionLevel: 6,
-        decodeLevel: "generalized",
+const WRITE_DEFAULTS: WasmCompressionOptions = {
+    compressionLevel: 6,
+    decodeLevel: "generalized",
+    recompressFlate: true,
+    objectStreams: "generate",
+    compressPages: false,
+    removeUnreferencedResources: false,
+    linearize: false,
+};
+
+const OPTIMIZE_PRESETS = {
+    default: {},
+    web: {
+        linearize: true,
+        objectStreams: "generate",
+    },
+    archive: {
+        decodeLevel: "all",
         recompressFlate: true,
         objectStreams: "generate",
-        compressPages: false,
-        removeUnreferencedResources: false,
-    };
+        removeUnreferencedResources: true,
+    },
+} satisfies Record<QpdfOptimizePreset, WriteOptions>;
 
-    if (!options) {
-        return defaults;
+/**
+ * Validate and normalize qpdf optimize options.
+ */
+export function validateOptimizeOptions(options?: OptimizeOptions): WasmCompressionOptions {
+    const presetName = options?.preset ?? "default";
+    const preset = OPTIMIZE_PRESETS[presetName];
+
+    if (!preset) {
+        throw new QpdfValidationError(`preset must be one of: ${Object.keys(OPTIMIZE_PRESETS).join(", ")}`);
     }
 
-    const result = { ...defaults };
+    return validateWriteOptions({ ...preset, ...options });
+}
 
-    // TODO use zod schema validation instead
+/**
+ * Validate and normalize qpdf writer options.
+ */
+export function validateWriteOptions(options?: WriteOptions): WasmCompressionOptions {
+    const result = { ...WRITE_DEFAULTS };
+
+    if (!options) {
+        return result;
+    }
 
     if (options.compressionLevel !== undefined) {
         if (!Number.isInteger(options.compressionLevel) || options.compressionLevel < 1 || options.compressionLevel > 9) {
@@ -71,5 +98,13 @@ export function validateCompressionOptions(options?: CompressionOptions): WasmCo
         result.removeUnreferencedResources = Boolean(options.removeUnreferencedResources);
     }
 
+    if (options.linearize !== undefined) {
+        result.linearize = Boolean(options.linearize);
+    }
+
     return result;
+}
+
+export function getOptimizePreset(options?: OptimizeOptions): QpdfOptimizePreset {
+    return options?.preset ?? "default";
 }

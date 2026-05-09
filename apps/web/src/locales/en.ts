@@ -198,4 +198,3 @@ type DeepString<T> = {
 };
 
 export type Translations = DeepString<typeof en>;
-

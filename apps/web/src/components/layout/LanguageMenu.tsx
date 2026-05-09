@@ -24,9 +24,7 @@ export function LanguageMenu() {
             <Menu.Portal>
                 <Menu.Positioner side="bottom" align="end" sideOffset={6}>
                     <Menu.Popup className="z-50 min-w-[120px] overflow-hidden rounded-lg border border-app-border bg-app-surface-raised p-1 shadow-lg outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
-                        <p className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-neutral-600">
-                            {t("nav.languageLabel")}
-                        </p>
+                        <p className="px-2 py-1.5 text-[9px] font-medium uppercase tracking-widest text-neutral-600">{t("nav.languageLabel")}</p>
                         {LANGUAGES.map(({ code, label }) => (
                             <Menu.Item
                                 key={code}
@@ -37,9 +35,7 @@ export function LanguageMenu() {
                                 )}
                                 onClick={() => i18n.changeLanguage(code)}
                             >
-                                <RiCheckLine
-                                    className={cn("size-3 shrink-0", current.startsWith(code) ? "text-brand" : "opacity-0")}
-                                />
+                                <RiCheckLine className={cn("size-3 shrink-0", current.startsWith(code) ? "text-brand" : "opacity-0")} />
                                 {label}
                             </Menu.Item>
                         ))}

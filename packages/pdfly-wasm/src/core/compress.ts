@@ -60,6 +60,20 @@ export async function compressPdf(input: Uint8Array | ArrayBuffer, options?: Com
         // calculate statistics
         const originalSize = inputBuffer.byteLength;
         const compressedSize = compressedBuffer.byteLength;
+
+        // fall back to the original PDF when compression made the file larger
+        if (compressedSize >= originalSize) {
+            return {
+                data: inputBuffer,
+                originalSize,
+                compressedSize: originalSize,
+                compressionRatio: 1,
+                savedBytes: 0,
+                percentageSaved: 0,
+                wasCompressed: false,
+            };
+        }
+
         const { savedBytes, compressionRatio, percentageSaved } = calculateSavings(originalSize, compressedSize);
 
         return {
@@ -69,6 +83,7 @@ export async function compressPdf(input: Uint8Array | ArrayBuffer, options?: Com
             compressionRatio,
             savedBytes,
             percentageSaved,
+            wasCompressed: true,
         };
     } catch (error) {
         if (error instanceof QpdfCompressionError) {

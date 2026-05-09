@@ -3,7 +3,7 @@
  */
 export interface CompressionResult {
     /**
-     * Compressed PDF data
+     * PDF data — the compressed PDF when `wasCompressed` is true, otherwise the original unmodified PDF
      */
     data: Uint8Array;
 
@@ -13,24 +13,30 @@ export interface CompressionResult {
     originalSize: number;
 
     /**
-     * Compressed file size in bytes
+     * Output file size in bytes (equals `originalSize` when `wasCompressed` is false)
      */
     compressedSize: number;
 
     /**
-     * Compression ratio (0-1, where 0.5 = 50% reduction)
+     * Compression ratio (0-1, where 0.5 = 50% reduction; equals 1 when `wasCompressed` is false)
      */
     compressionRatio: number;
 
     /**
-     * Space saved in bytes
+     * Space saved in bytes (0 when `wasCompressed` is false)
      */
     savedBytes: number;
 
     /**
-     * Percentage of space saved, negative when output is larger
+     * Percentage of space saved, 0 when `wasCompressed` is false
      */
     percentageSaved: number;
+
+    /**
+     * Whether the compression actually reduced the file size.
+     * When false the original unmodified PDF is returned in `data`.
+     */
+    wasCompressed: boolean;
 }
 
 /**

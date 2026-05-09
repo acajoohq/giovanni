@@ -1,4 +1,4 @@
-﻿import { formatBytes, mergePdfs, splitPages } from "@pdfly/wasm";
+﻿import { formatBytes, organizePdf, splitPdf } from "@pdfly/wasm";
 import { RiAddLine, RiArrowDownLine, RiArrowUpLine, RiDragMove2Line } from "@remixicon/react";
 import { useEffect, useId, useRef, useState, DragEvent } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
@@ -55,7 +55,7 @@ export function OrganizeTool() {
         await runSplitJob({
             execute: async () => {
                 const buffer = await nextFile.arrayBuffer();
-                return splitPages(buffer);
+                return splitPdf(buffer);
             },
             errorMessage: "Failed to load PDF.",
             successStatus: (result) => ({
@@ -123,11 +123,11 @@ export function OrganizeTool() {
     };
 
     const handleApply = async () => {
-        if (pages.length === 0 || pageOrder.length === 0) return;
+        if (!file || pages.length === 0 || pageOrder.length === 0) return;
         await runReorganizeJob({
             execute: async () => {
-                const reorderedPages = pageOrder.map((i) => pages[i] as Uint8Array);
-                const result = await mergePdfs(reorderedPages);
+                const buffer = await file.arrayBuffer();
+                const result = await organizePdf(buffer, { pages: pageOrder });
                 return result.data;
             },
             errorMessage: "Failed to reorganize PDF.",

@@ -1,4 +1,5 @@
-import { formatBytes, pdfToJpg, type PdfPageJpg, type PdfToJpgResult } from "@pdfly/wasm";
+import { formatBytes } from "@pdfly/wasm";
+import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@pdfly/wasm/render";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
@@ -30,7 +31,7 @@ import {
     pdfBaseName,
 } from "@/utils/pdf/pdfToolUtils";
 
-interface PdfToJpgSettings {
+interface RenderPagesToJpgSettings {
     qualityPercent: number;
     scale: number;
     outputPattern: string;
@@ -45,22 +46,22 @@ export function PdfToJpgTool() {
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
-    const [settings, setSettings] = useState<PdfToJpgSettings>({
+    const [settings, setSettings] = useState<RenderPagesToJpgSettings>({
         qualityPercent: 92,
         scale: 2,
         outputPattern: "{basename}_page_{page}",
         archiveName: "{basename}_jpg.zip",
     });
-    const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<PdfToJpgResult>();
+    const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<RenderPdfPagesToJpgResult>();
     const pages = result?.pages ?? [];
     const pageUrls = useObjectUrls(pages, getPageBlob);
 
-    const processFile = async (nextFile: File, nextSettings: PdfToJpgSettings = settings) => {
+    const processFile = async (nextFile: File, nextSettings: RenderPagesToJpgSettings = settings) => {
         await runJob({
             execute: async () => {
                 const buffer = await nextFile.arrayBuffer();
 
-                return pdfToJpg(buffer, {
+                return renderPdfPagesToJpg(buffer, {
                     quality: nextSettings.qualityPercent / 100,
                     scale: nextSettings.scale,
                 });
@@ -76,11 +77,11 @@ export function PdfToJpgTool() {
         });
     };
 
-    const debouncedProcessFile = useDebouncedCallback((nextFile: File, nextSettings: PdfToJpgSettings) => {
+    const debouncedProcessFile = useDebouncedCallback((nextFile: File, nextSettings: RenderPagesToJpgSettings) => {
         void processFile(nextFile, nextSettings);
     }, PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS);
 
-    const scheduleCurrentFileProcessing = (nextSettings: PdfToJpgSettings) => {
+    const scheduleCurrentFileProcessing = (nextSettings: RenderPagesToJpgSettings) => {
         if (!file) {
             debouncedProcessFile.cancel();
             return;
@@ -89,13 +90,13 @@ export function PdfToJpgTool() {
         debouncedProcessFile(file, nextSettings);
     };
 
-    const updateConversionSettings = (patch: Partial<Pick<PdfToJpgSettings, "qualityPercent" | "scale">>) => {
+    const updateConversionSettings = (patch: Partial<Pick<RenderPagesToJpgSettings, "qualityPercent" | "scale">>) => {
         const nextSettings = { ...settings, ...patch };
         setSettings(nextSettings);
         scheduleCurrentFileProcessing(nextSettings);
     };
 
-    const updateExportSettings = (patch: Partial<Pick<PdfToJpgSettings, "outputPattern" | "archiveName">>) => {
+    const updateExportSettings = (patch: Partial<Pick<RenderPagesToJpgSettings, "outputPattern" | "archiveName">>) => {
         setSettings((currentSettings) => ({ ...currentSettings, ...patch }));
     };
 

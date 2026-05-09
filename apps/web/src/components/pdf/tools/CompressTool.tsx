@@ -1,4 +1,4 @@
-import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel, type ObjectStreamMode } from "@pdfly/wasm";
+import { formatBytes, optimizePdf, type OptimizeResult, type DecodeLevel, type ObjectStreamMode } from "@pdfly/wasm";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
@@ -55,14 +55,14 @@ export function CompressTool() {
         compressPages: false,
         removeUnreferencedResources: false,
     });
-    const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<CompressionResult>();
+    const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<OptimizeResult>();
 
     const processFile = async (nextFile: File, options: CompressionOptions = compressionOptions) => {
         await runJob({
             execute: async () => {
                 const buffer = await nextFile.arrayBuffer();
 
-                return compressPdf(buffer, options);
+                return optimizePdf(buffer, options);
             },
             errorMessage: "Failed to compress PDF.",
             successStatus: (nextResult) =>

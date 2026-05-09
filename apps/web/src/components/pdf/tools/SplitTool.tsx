@@ -1,4 +1,4 @@
-import { formatBytes, splitPages } from "@pdfly/wasm";
+import { formatBytes, splitPdf } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
@@ -61,7 +61,7 @@ export function SplitTool() {
             execute: async () => {
                 const buffer = await nextFile.arrayBuffer();
 
-                return splitPages(buffer);
+                return splitPdf(buffer);
             },
             errorMessage: "Failed to split PDF.",
             successStatus: (nextResult) => ({

@@ -241,7 +241,3 @@ export function PdfPreview({ data, file, page: controlledPage, onPageChange, onP
         </div>
     );
 }
-
-
-
-

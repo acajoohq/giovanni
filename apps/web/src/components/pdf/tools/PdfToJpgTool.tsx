@@ -16,8 +16,8 @@ import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { useObjectUrls } from "@/hooks/pdf/useObjectUrls";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import { useObjectUrls } from "@/hooks/useObjectUrls";
 import {
     buildJpgPageEntries,
     downloadBlob,
@@ -28,7 +28,7 @@ import {
     makeArchiveName,
     makePageJpgName,
     pdfBaseName,
-} from "@/utils/pdf/pdfToolUtils";
+} from "@/utils/pdfToolUtils";
 
 interface PdfToJpgSettings {
     qualityPercent: number;

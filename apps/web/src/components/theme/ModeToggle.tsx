@@ -1,5 +1,6 @@
 import { RiComputerLine, RiMoonLine, RiSunLine } from "@remixicon/react";
-import { type Theme, useTheme } from "@/components/theme-provider";
+import type { Theme } from "@/types/theme";
+import { useTheme } from "@/providers/ThemeProvider";
 
 const CYCLE: Theme[] = ["light", "dark", "system"];
 

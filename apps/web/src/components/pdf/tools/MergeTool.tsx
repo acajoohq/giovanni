@@ -15,8 +15,8 @@ import { PdfFilesList } from "@/components/pdf/PdfFilesList";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { EmptyMerge } from "@/components/pdf/emptyState/EmptyMerge";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/utils/pdf/pdfToolUtils";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/utils/pdfToolUtils";
 
 export function MergeTool() {
     const fileInputId = useId();

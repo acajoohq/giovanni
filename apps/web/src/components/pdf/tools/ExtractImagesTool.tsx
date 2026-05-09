@@ -16,9 +16,9 @@ import { EmptyExtractImages } from "@/components/pdf/emptyState/EmptyExtractImag
 import { ExtractedImageCard } from "@/components/pdf/ExtractedImageCard";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { useObjectUrls } from "@/hooks/pdf/useObjectUrls";
-import { buildExtractedImageEntries, downloadBlob, downloadZip, findFirstPdfFile, imageDownloadName, makeArchiveName, pdfBaseName } from "@/utils/pdf/pdfToolUtils";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import { useObjectUrls } from "@/hooks/useObjectUrls";
+import { buildExtractedImageEntries, downloadBlob, downloadZip, findFirstPdfFile, imageDownloadName, makeArchiveName, pdfBaseName } from "@/utils/pdfToolUtils";
 
 const EMPTY_IMAGES: ExtractedImage[] = [];
 

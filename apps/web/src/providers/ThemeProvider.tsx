@@ -1,7 +1,6 @@
 import { createContext, use, useEffect, useState } from "react";
 import { ScriptOnce } from "@tanstack/react-router";
-
-type Theme = "dark" | "light" | "system";
+import type { Theme } from "@/types/theme";
 
 type ThemeProviderProps = {
     children: React.ReactNode;
@@ -14,11 +13,21 @@ type ThemeProviderState = {
     setTheme: (theme: Theme) => void;
 };
 
-// TODO Curious how can we improve this, as I find it unsafe, but it's in the tanstack docs
-function getThemeScript(storageKey: string, defaultTheme: Theme) {
-    const key = JSON.stringify(storageKey);
-    const fallback = JSON.stringify(defaultTheme);
-    return `(function(){try{var t=localStorage.getItem(${key});if(t!=='light'&&t!=='dark'&&t!=='system'){t=${fallback}}var d=matchMedia('(prefers-color-scheme: dark)').matches;var r=t==='system'?(d?'dark':'light'):t;var e=document.documentElement;e.classList.add(r);e.style.colorScheme=r}catch(e){}})();`;
+type ThemeScriptParam = { storageKey: string; defaultTheme: string };
+
+function FunctionOnce<T>({ fn, param }: { fn: (param: NoInfer<T>) => void; param: T }) {
+    return <ScriptOnce>{`(${fn.toString()})(${JSON.stringify(param)})`}</ScriptOnce>;
+}
+
+function initThemeScript({ storageKey, defaultTheme }: ThemeScriptParam) {
+    try {
+        const stored = localStorage.getItem(storageKey);
+        const theme = stored === "light" || stored === "dark" || stored === "system" ? stored : defaultTheme;
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const resolved = theme === "system" ? (dark ? "dark" : "light") : theme;
+        document.documentElement.classList.add(resolved);
+        document.documentElement.style.colorScheme = resolved;
+    } catch {}
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined);
@@ -57,7 +66,7 @@ export function ThemeProvider({ children, defaultTheme = "system", storageKey = 
 
     return (
         <ThemeProviderContext value={{ theme, setTheme }}>
-            <ScriptOnce>{getThemeScript(storageKey, defaultTheme)}</ScriptOnce>
+            <FunctionOnce fn={initThemeScript} param={{ storageKey, defaultTheme }} />
             {children}
         </ThemeProviderContext>
     );

@@ -16,8 +16,8 @@ import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdf/pdfToolUtils";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdfToolUtils";
 
 const decodeLevelOptions: Array<{ label: string; value: DecodeLevel }> = [
     { label: "None", value: "none" },

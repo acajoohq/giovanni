@@ -17,7 +17,7 @@ import { EmptySplit } from "@/components/pdf/emptyState/EmptySplit";
 import { PdfPageThumbnail } from "@/components/pdf/PdfPageThumbnail";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import {
     buildSplitPageEntries,
     downloadPdf,
@@ -28,7 +28,7 @@ import {
     makeArchiveName,
     makePagePdfName,
     pdfBaseName,
-} from "@/utils/pdf/pdfToolUtils";
+} from "@/utils/pdfToolUtils";
 
 interface SplitJobResult {
     pages: Uint8Array[];

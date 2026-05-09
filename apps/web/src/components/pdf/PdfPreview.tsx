@@ -1,11 +1,11 @@
 import { RiArrowLeftSLine, RiArrowRightSLine, RiFilePdf2Line } from "@remixicon/react";
 import { createClientOnlyFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { PDFDocumentProxy } from "@/utils/pdf/pdfRenderer.client";
+import type { PDFDocumentProxy } from "@/utils/pdfRenderer.client";
 
-type PdfRendererClient = typeof import("@/utils/pdf/pdfRenderer.client");
+type PdfRendererClient = typeof import("@/utils/pdfRenderer.client");
 
-const loadPdfRenderer = createClientOnlyFn(async () => import("@/utils/pdf/pdfRenderer.client"));
+const loadPdfRenderer = createClientOnlyFn(async () => import("@/utils/pdfRenderer.client"));
 
 interface PdfPreviewProps {
     data?: Uint8Array | null;

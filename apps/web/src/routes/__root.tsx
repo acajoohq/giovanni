@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { createSeoMeta } from "@/lib/seo";
 import appCss from "@/styles/app.css?url";
 import { AppShell } from "@/components/layout/AppShell";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
 export const Route = createRootRoute({
     head: () => ({

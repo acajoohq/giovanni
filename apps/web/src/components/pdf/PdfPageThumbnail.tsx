@@ -1,7 +1,7 @@
 import { createClientOnlyFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 
-const loadPdfRenderer = createClientOnlyFn(async () => import("@/utils/pdf/pdfRenderer.client"));
+const loadPdfRenderer = createClientOnlyFn(async () => import("@/utils/pdfRenderer.client"));
 
 /**
  * Fixed thumbnail width in CSS pixels. Avoids a ResizeObserver per card —

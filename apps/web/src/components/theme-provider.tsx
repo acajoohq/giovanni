@@ -14,6 +14,8 @@ type ThemeProviderState = {
     setTheme: (theme: Theme) => void;
 };
 
+
+// TODO Curious how can we improve this, as I find it unsafe, but it's in the tanstack docs
 function getThemeScript(storageKey: string, defaultTheme: Theme) {
     const key = JSON.stringify(storageKey);
     const fallback = JSON.stringify(defaultTheme);

@@ -6,6 +6,8 @@
         extractImages: "Extract Images",
         pdfToJpg: "PDF to JPG",
         aboutAriaLabel: "About Giovanni",
+        languageAriaLabel: "Change language",
+        languageLabel: "Language",
     },
     notFound: {
         title: "Not found",
@@ -196,3 +198,4 @@ type DeepString<T> = {
 };
 
 export type Translations = DeepString<typeof en>;
+

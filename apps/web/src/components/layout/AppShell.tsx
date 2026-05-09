@@ -3,6 +3,7 @@ import { Link, Outlet } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AboutDialog } from "@/components/dialogs/AboutDialog";
+import { LanguageMenu } from "@/components/layout/LanguageMenu";
 
 export function AppShell() {
     const { t } = useTranslation();
@@ -37,14 +38,17 @@ export function AppShell() {
                     </nav>
                 </div>
 
-                <button
-                    aria-label={t("nav.aboutAriaLabel")}
-                    className="absolute right-3 top-2 flex size-7 items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-app-border-subtle hover:text-white sm:static"
-                    onClick={() => setAboutOpen(true)}
-                    type="button"
-                >
-                    <RiInformationLine className="size-4" />
-                </button>
+                <div className="absolute right-3 top-2 flex items-center gap-1 sm:static">
+                    <LanguageMenu />
+                    <button
+                        aria-label={t("nav.aboutAriaLabel")}
+                        className="flex size-7 items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-app-border-subtle hover:text-white"
+                        onClick={() => setAboutOpen(true)}
+                        type="button"
+                    >
+                        <RiInformationLine className="size-4" />
+                    </button>
+                </div>
             </header>
 
             <main className="relative min-h-0 flex-1 overflow-hidden">

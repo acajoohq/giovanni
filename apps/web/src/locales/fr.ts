@@ -8,6 +8,8 @@ export const fr: Translations = {
         extractImages: "Extraire images",
         pdfToJpg: "PDF en JPG",
         aboutAriaLabel: "À propos de Giovanni",
+        languageAriaLabel: "Changer la langue",
+        languageLabel: "Langue",
     },
     notFound: {
         title: "Page introuvable",
@@ -192,3 +194,4 @@ export const fr: Translations = {
         },
     },
 };
+

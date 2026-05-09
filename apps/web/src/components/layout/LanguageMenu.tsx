@@ -18,10 +18,7 @@ export function LanguageMenu() {
     const switchLocale = (newLocale: string) => {
         // Replace the current locale segment in the pathname with the new one
         // e.g. /en/compress -> /fr/compress
-        const newPathname = location.pathname.replace(
-            new RegExp(`^/${locale}(/|$)`),
-            `/${newLocale}$1`,
-        );
+        const newPathname = location.pathname.replace(new RegExp(`^/${locale}(/|$)`), `/${newLocale}$1`);
         navigate({ to: newPathname, replace: true });
     };
 

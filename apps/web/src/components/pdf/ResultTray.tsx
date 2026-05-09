@@ -25,7 +25,10 @@ interface ResultTrayProps {
     secondaryActions?: ToolResultAction[];
 }
 
-export function ResultTray({ fileName, fileSize, metrics = [], primaryAction, secondaryActions = [], status }: ResultTrayProps) {
+const EMPTY_METRICS: ToolResultMetric[] = [];
+const EMPTY_SECONDARY_ACTIONS: ToolResultAction[] = [];
+
+export function ResultTray({ fileName, fileSize, metrics = EMPTY_METRICS, primaryAction, secondaryActions = EMPTY_SECONDARY_ACTIONS, status }: ResultTrayProps) {
     if (!fileName && !status && metrics.length === 0 && !primaryAction && secondaryActions.length === 0) {
         return null;
     }
@@ -38,7 +41,7 @@ export function ResultTray({ fileName, fileSize, metrics = [], primaryAction, se
                         <div className="flex min-w-0 items-center gap-2 rounded-[6px] border border-foreground/8 bg-foreground/[0.03] px-2.5 py-1.5">
                             <RiFilePdf2Line className="size-4 shrink-0 text-brand" />
                             <span className="max-w-[180px] truncate text-[11px] font-medium text-app-text lg:max-w-[240px]">{fileName}</span>
-                            {fileSize && <span className="shrink-0 text-[10px] text-muted-foreground">{fileSize}</span>}
+                            {fileSize ? <span className="shrink-0 text-[10px] text-muted-foreground">{fileSize}</span> : null}
                         </div>
                     )}
 

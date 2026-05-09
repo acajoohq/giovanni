@@ -9,7 +9,7 @@ export function EmptyCompress() {
             </div>
             <div className="relative z-10 flex h-20 w-16 flex-col items-center justify-center rounded-xl border border-brand-soft bg-linear-to-br from-brand to-brand-dark shadow-brand-card transition-all duration-500 group-hover:w-14 group-hover:scale-95">
                 <RiFileZipLine className="size-6 text-white/90 drop-shadow-md" />
-                <div className="absolute right-0 top-0 h-4 w-4 rounded-bl-lg bg-linear-to-bl from-white/40 to-transparent shadow-sm" />
+                <div className="absolute right-0 top-0 size-4 rounded-bl-lg bg-linear-to-bl from-white/40 to-transparent shadow-sm" />
             </div>
         </>
     );

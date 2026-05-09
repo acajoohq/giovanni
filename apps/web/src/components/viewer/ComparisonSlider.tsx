@@ -49,7 +49,7 @@ export function ComparisonSlider({ before, after, isProcessing }: ComparisonSlid
                     }}
                 >
                     <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/40" />
-                    <div className="pointer-events-none absolute left-1/2 top-1/2 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/70 shadow-lg">
+                    <div className="pointer-events-none absolute left-1/2 top-1/2 flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/70 shadow-lg">
                         <svg className="size-3.5 text-white/60" fill="none" viewBox="0 0 14 14">
                             <path d="M5 3L2 7l3 4M9 3l3 4-3 4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
                         </svg>

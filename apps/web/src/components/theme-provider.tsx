@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, use, useEffect, useState } from "react"
 import { ScriptOnce } from "@tanstack/react-router"
 
 type Theme = "dark" | "light" | "system"
@@ -43,31 +43,23 @@ export function ThemeProvider({
     defaultTheme = "system",
     storageKey = "theme",
 }: ThemeProviderProps) {
-    const [theme, setThemeState] = useState<Theme>(defaultTheme)
-    const [mounted, setMounted] = useState(false)
-
-    useEffect(() => {
+    const [theme, setThemeState] = useState<Theme>(() => {
+        if (typeof window === "undefined") return defaultTheme
         const stored = localStorage.getItem(storageKey)
-        setThemeState(
-            stored === "light" || stored === "dark" || stored === "system"
-                ? stored
-                : defaultTheme
-        )
-        setMounted(true)
-    }, [defaultTheme, storageKey])
+        return stored === "light" || stored === "dark" || stored === "system" ? stored : defaultTheme
+    })
 
     useEffect(() => {
-        if (!mounted) return
         applyTheme(theme)
-    }, [theme, mounted])
+    }, [theme])
 
     useEffect(() => {
-        if (!mounted || theme !== "system") return
+        if (theme !== "system") return
         const media = window.matchMedia("(prefers-color-scheme: dark)")
         const onChange = () => applyTheme("system")
         media.addEventListener("change", onChange)
         return () => media.removeEventListener("change", onChange)
-    }, [theme, mounted])
+    }, [theme])
 
     const setTheme = (next: Theme) => {
         localStorage.setItem(storageKey, next)
@@ -83,7 +75,7 @@ export function ThemeProvider({
 }
 
 export function useTheme() {
-    const context = useContext(ThemeProviderContext)
+    const context = use(ThemeProviderContext)
     if (context === undefined)
         throw new Error("useTheme must be used within a ThemeProvider")
     return context

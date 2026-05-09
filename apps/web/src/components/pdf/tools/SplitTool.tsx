@@ -147,7 +147,7 @@ export function SplitTool() {
             <div className="h-full w-full overflow-y-auto p-3 pb-24">
                 <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
                     {pages.map((page, index) => (
-                        <div key={index} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:260px]">
+                        <div key={`page-${index}`} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:260px]">
                             <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
                                 <PdfPageThumbnail data={page} />
                             </div>

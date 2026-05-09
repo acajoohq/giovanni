@@ -156,7 +156,7 @@ export function ExtractImagesTool() {
             <div className="h-full w-full overflow-y-auto p-4 pb-24">
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                     {images.map((image, index) => (
-                        <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2 [content-visibility:auto] [contain-intrinsic-size:210px]">
+                        <div key={`${image.objectKey}-${image.xobjectKey}`} className="space-y-2 [content-visibility:auto] [contain-intrinsic-size:210px]">
                             <ExtractedImageCard image={image} index={index} url={previewUrls[index] ?? null} />
                             <Button className="w-full" size="sm" variant="secondary" type="button" onClick={() => downloadImage(image, index)}>
                                 {image.blob ? "Download" : "Download Raw"}

@@ -10,7 +10,7 @@ const wasmFile = join(wasmDir, "qpdf.wasm");
 const jsFile = join(wasmDir, "qpdf.js");
 
 if (!process.env.FORCE_WASM_BUILD && existsSync(wasmFile) && existsSync(jsFile)) {
-    console.log("WASM artifacts already exist, skipping build. Set FORCE_WASM_BUILD=1 to force a rebuild.");
+    process.stderr.write("WASM artifacts already exist, skipping build. Set FORCE_WASM_BUILD=1 to force a rebuild.\n");
     process.exit(0);
 }
 

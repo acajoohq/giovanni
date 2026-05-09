@@ -15,13 +15,18 @@ Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF
 - Bash (WASM build script); on Windows use `packages/pdfly-wasm/wasm/build.ps1`
 - Rust for Tauri desktop build
 
+## Add node and emsdk with mise-en-place
+
+```bash
+mise plugins install emsdk https://github.com/RobLoach/asdf-emsdk.git
+mise install
+```
+
 ## Getting started
 
 ```bash
 pnpm install
 git clone https://github.com/qpdf/qpdf.git vendor/qpdf
-# Install Emscripten (https://github.com/emscripten-core/emsdk), then:
-source /path/to/emsdk/emsdk_env.sh
 pnpm -F @pdfly/wasm build   # or: pnpm build
 pnpm dev
 ```

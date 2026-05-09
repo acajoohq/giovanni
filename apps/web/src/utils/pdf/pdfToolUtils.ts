@@ -117,18 +117,18 @@ interface BuildExtractedImageEntriesOptions {
 }
 
 export async function buildExtractedImageEntries(images: ExtractedImage[], baseName: string, options: BuildExtractedImageEntriesOptions = {}): Promise<Record<string, Uint8Array>> {
-    const entries: Record<string, Uint8Array> = {};
-    await Promise.all(
-        [...images.entries()].map(async ([index, image]) => {
+    const tuples = await Promise.all(
+        [...images.entries()].map(async ([index, image]): Promise<[string, Uint8Array] | null> => {
             const name = imageDownloadName(baseName, index, image);
             if (image.blob) {
-                entries[name] = new Uint8Array(await image.blob.arrayBuffer());
+                return [name, new Uint8Array(await image.blob.arrayBuffer())];
             } else if (options.includeRawStreams) {
-                entries[name] = image.bytes;
+                return [name, image.bytes];
             }
+            return null;
         }),
     );
-    return entries;
+    return Object.fromEntries(tuples.filter((t): t is [string, Uint8Array] => t !== null));
 }
 
 export async function buildBrowserReadyImageEntries(images: ExtractedImage[], baseName: string): Promise<Record<string, Uint8Array>> {

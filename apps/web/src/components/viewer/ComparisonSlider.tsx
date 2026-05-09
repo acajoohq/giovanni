@@ -1,4 +1,4 @@
-import { use, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { ProcessingPlaceholder } from "@/components/viewer/ProcessingPlaceholder";
 import { useTranslation } from "react-i18next";
 

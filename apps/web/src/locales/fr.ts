@@ -5,6 +5,7 @@ export const fr: Translations = {
         compress: "Compresser",
         split: "Diviser",
         merge: "Fusionner",
+        organize: "Organiser",
         extractImages: "Extraire images",
         pdfToJpg: "PDF en JPG",
         aboutAriaLabel: "À propos de Giovanni",

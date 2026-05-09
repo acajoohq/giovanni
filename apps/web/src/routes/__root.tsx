@@ -1,9 +1,10 @@
 ﻿import { createRootRoute, HeadContent, Link, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { useTranslation } from "react-i18next";
+import { I18nextProvider, useTranslation } from "react-i18next";
+import { AppShell } from "@/components/layout/AppShell";
+import i18n from "@/lib/i18n";
 import { createSeoMeta } from "@/lib/seo";
 import appCss from "@/styles/app.css?url";
-import { AppShell } from "@/components/layout/AppShell";
 
 export const Route = createRootRoute({
     head: () => ({
@@ -26,15 +27,17 @@ export const Route = createRootRoute({
 
 function RootComponent() {
     return (
-        <RootDocument>
-            <AppShell />
-        </RootDocument>
+        <I18nextProvider i18n={i18n}>
+            <RootDocument>
+                <AppShell />
+            </RootDocument>
+        </I18nextProvider>
     );
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     return (
-        <html className="dark bg-[#0a0a0a] antialiased" lang="en">
+        <html className="dark bg-[#0a0a0a] antialiased">
             <head>
                 <HeadContent />
             </head>

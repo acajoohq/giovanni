@@ -3,6 +3,7 @@
         compress: "Compress",
         split: "Split",
         merge: "Merge",
+        organize: "Organize",
         extractImages: "Extract Images",
         pdfToJpg: "PDF to JPG",
         aboutAriaLabel: "About Giovanni",

@@ -13,6 +13,7 @@ export function AppShell() {
         { label: t("nav.compress"), to: "/compress" },
         { label: t("nav.split"), to: "/split" },
         { label: t("nav.merge"), to: "/merge" },
+        { label: t("nav.organize"), to: "/organize" },
         { label: t("nav.extractImages"), to: "/extract-images" },
         { label: t("nav.pdfToJpg"), to: "/pdf-to-jpg" },
     ] as const;

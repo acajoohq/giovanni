@@ -1,4 +1,4 @@
-﻿import { Menu } from "@base-ui/react/menu";
+import { Menu } from "@base-ui/react/menu";
 import { RiCheckLine, RiTranslate2 } from "@remixicon/react";
 import { useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -19,7 +19,7 @@ export function LanguageMenu() {
         // Replace the current locale segment in the pathname with the new one
         // e.g. /en/compress -> /fr/compress
         const newPathname = location.pathname.replace(new RegExp(`^/${locale}(/|$)`), `/${newLocale}$1`);
-        navigate({ to: newPathname, replace: true });
+        navigate({ to: newPathname + location.searchStr + location.hash, replace: true });
     };
 
     const current = locale ?? i18n.resolvedLanguage ?? "en";

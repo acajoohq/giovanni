@@ -15,7 +15,15 @@ import { Route as OrganizeRouteImport } from './routes/organize'
 import { Route as MergeRouteImport } from './routes/merge'
 import { Route as ExtractImagesRouteImport } from './routes/extract-images'
 import { Route as CompressRouteImport } from './routes/compress'
+import { Route as LocaleRouteImport } from './routes/$locale'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LocaleIndexRouteImport } from './routes/$locale/index'
+import { Route as LocaleSplitRouteImport } from './routes/$locale/split'
+import { Route as LocalePdfToJpgRouteImport } from './routes/$locale/pdf-to-jpg'
+import { Route as LocaleOrganizeRouteImport } from './routes/$locale/organize'
+import { Route as LocaleMergeRouteImport } from './routes/$locale/merge'
+import { Route as LocaleExtractImagesRouteImport } from './routes/$locale/extract-images'
+import { Route as LocaleCompressRouteImport } from './routes/$locale/compress'
 
 const SplitRoute = SplitRouteImport.update({
   id: '/split',
@@ -47,20 +55,68 @@ const CompressRoute = CompressRouteImport.update({
   path: '/compress',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleRoute = LocaleRouteImport.update({
+  id: '/$locale',
+  path: '/$locale',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleIndexRoute = LocaleIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LocaleRoute,
+} as any)
+const LocaleSplitRoute = LocaleSplitRouteImport.update({
+  id: '/split',
+  path: '/split',
+  getParentRoute: () => LocaleRoute,
+} as any)
+const LocalePdfToJpgRoute = LocalePdfToJpgRouteImport.update({
+  id: '/pdf-to-jpg',
+  path: '/pdf-to-jpg',
+  getParentRoute: () => LocaleRoute,
+} as any)
+const LocaleOrganizeRoute = LocaleOrganizeRouteImport.update({
+  id: '/organize',
+  path: '/organize',
+  getParentRoute: () => LocaleRoute,
+} as any)
+const LocaleMergeRoute = LocaleMergeRouteImport.update({
+  id: '/merge',
+  path: '/merge',
+  getParentRoute: () => LocaleRoute,
+} as any)
+const LocaleExtractImagesRoute = LocaleExtractImagesRouteImport.update({
+  id: '/extract-images',
+  path: '/extract-images',
+  getParentRoute: () => LocaleRoute,
+} as any)
+const LocaleCompressRoute = LocaleCompressRouteImport.update({
+  id: '/compress',
+  path: '/compress',
+  getParentRoute: () => LocaleRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$locale': typeof LocaleRouteWithChildren
   '/compress': typeof CompressRoute
   '/extract-images': typeof ExtractImagesRoute
   '/merge': typeof MergeRoute
   '/organize': typeof OrganizeRoute
   '/pdf-to-jpg': typeof PdfToJpgRoute
   '/split': typeof SplitRoute
+  '/$locale/compress': typeof LocaleCompressRoute
+  '/$locale/extract-images': typeof LocaleExtractImagesRoute
+  '/$locale/merge': typeof LocaleMergeRoute
+  '/$locale/organize': typeof LocaleOrganizeRoute
+  '/$locale/pdf-to-jpg': typeof LocalePdfToJpgRoute
+  '/$locale/split': typeof LocaleSplitRoute
+  '/$locale/': typeof LocaleIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,27 +126,50 @@ export interface FileRoutesByTo {
   '/organize': typeof OrganizeRoute
   '/pdf-to-jpg': typeof PdfToJpgRoute
   '/split': typeof SplitRoute
+  '/$locale/compress': typeof LocaleCompressRoute
+  '/$locale/extract-images': typeof LocaleExtractImagesRoute
+  '/$locale/merge': typeof LocaleMergeRoute
+  '/$locale/organize': typeof LocaleOrganizeRoute
+  '/$locale/pdf-to-jpg': typeof LocalePdfToJpgRoute
+  '/$locale/split': typeof LocaleSplitRoute
+  '/$locale': typeof LocaleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$locale': typeof LocaleRouteWithChildren
   '/compress': typeof CompressRoute
   '/extract-images': typeof ExtractImagesRoute
   '/merge': typeof MergeRoute
   '/organize': typeof OrganizeRoute
   '/pdf-to-jpg': typeof PdfToJpgRoute
   '/split': typeof SplitRoute
+  '/$locale/compress': typeof LocaleCompressRoute
+  '/$locale/extract-images': typeof LocaleExtractImagesRoute
+  '/$locale/merge': typeof LocaleMergeRoute
+  '/$locale/organize': typeof LocaleOrganizeRoute
+  '/$locale/pdf-to-jpg': typeof LocalePdfToJpgRoute
+  '/$locale/split': typeof LocaleSplitRoute
+  '/$locale/': typeof LocaleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$locale'
     | '/compress'
     | '/extract-images'
     | '/merge'
     | '/organize'
     | '/pdf-to-jpg'
     | '/split'
+    | '/$locale/compress'
+    | '/$locale/extract-images'
+    | '/$locale/merge'
+    | '/$locale/organize'
+    | '/$locale/pdf-to-jpg'
+    | '/$locale/split'
+    | '/$locale/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,19 +179,35 @@ export interface FileRouteTypes {
     | '/organize'
     | '/pdf-to-jpg'
     | '/split'
+    | '/$locale/compress'
+    | '/$locale/extract-images'
+    | '/$locale/merge'
+    | '/$locale/organize'
+    | '/$locale/pdf-to-jpg'
+    | '/$locale/split'
+    | '/$locale'
   id:
     | '__root__'
     | '/'
+    | '/$locale'
     | '/compress'
     | '/extract-images'
     | '/merge'
     | '/organize'
     | '/pdf-to-jpg'
     | '/split'
+    | '/$locale/compress'
+    | '/$locale/extract-images'
+    | '/$locale/merge'
+    | '/$locale/organize'
+    | '/$locale/pdf-to-jpg'
+    | '/$locale/split'
+    | '/$locale/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LocaleRoute: typeof LocaleRouteWithChildren
   CompressRoute: typeof CompressRoute
   ExtractImagesRoute: typeof ExtractImagesRoute
   MergeRoute: typeof MergeRoute
@@ -165,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompressRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale': {
+      id: '/$locale'
+      path: '/$locale'
+      fullPath: '/$locale'
+      preLoaderRoute: typeof LocaleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -172,11 +274,84 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/': {
+      id: '/$locale/'
+      path: '/'
+      fullPath: '/$locale/'
+      preLoaderRoute: typeof LocaleIndexRouteImport
+      parentRoute: typeof LocaleRoute
+    }
+    '/$locale/split': {
+      id: '/$locale/split'
+      path: '/split'
+      fullPath: '/$locale/split'
+      preLoaderRoute: typeof LocaleSplitRouteImport
+      parentRoute: typeof LocaleRoute
+    }
+    '/$locale/pdf-to-jpg': {
+      id: '/$locale/pdf-to-jpg'
+      path: '/pdf-to-jpg'
+      fullPath: '/$locale/pdf-to-jpg'
+      preLoaderRoute: typeof LocalePdfToJpgRouteImport
+      parentRoute: typeof LocaleRoute
+    }
+    '/$locale/organize': {
+      id: '/$locale/organize'
+      path: '/organize'
+      fullPath: '/$locale/organize'
+      preLoaderRoute: typeof LocaleOrganizeRouteImport
+      parentRoute: typeof LocaleRoute
+    }
+    '/$locale/merge': {
+      id: '/$locale/merge'
+      path: '/merge'
+      fullPath: '/$locale/merge'
+      preLoaderRoute: typeof LocaleMergeRouteImport
+      parentRoute: typeof LocaleRoute
+    }
+    '/$locale/extract-images': {
+      id: '/$locale/extract-images'
+      path: '/extract-images'
+      fullPath: '/$locale/extract-images'
+      preLoaderRoute: typeof LocaleExtractImagesRouteImport
+      parentRoute: typeof LocaleRoute
+    }
+    '/$locale/compress': {
+      id: '/$locale/compress'
+      path: '/compress'
+      fullPath: '/$locale/compress'
+      preLoaderRoute: typeof LocaleCompressRouteImport
+      parentRoute: typeof LocaleRoute
+    }
   }
 }
 
+interface LocaleRouteChildren {
+  LocaleCompressRoute: typeof LocaleCompressRoute
+  LocaleExtractImagesRoute: typeof LocaleExtractImagesRoute
+  LocaleMergeRoute: typeof LocaleMergeRoute
+  LocaleOrganizeRoute: typeof LocaleOrganizeRoute
+  LocalePdfToJpgRoute: typeof LocalePdfToJpgRoute
+  LocaleSplitRoute: typeof LocaleSplitRoute
+  LocaleIndexRoute: typeof LocaleIndexRoute
+}
+
+const LocaleRouteChildren: LocaleRouteChildren = {
+  LocaleCompressRoute: LocaleCompressRoute,
+  LocaleExtractImagesRoute: LocaleExtractImagesRoute,
+  LocaleMergeRoute: LocaleMergeRoute,
+  LocaleOrganizeRoute: LocaleOrganizeRoute,
+  LocalePdfToJpgRoute: LocalePdfToJpgRoute,
+  LocaleSplitRoute: LocaleSplitRoute,
+  LocaleIndexRoute: LocaleIndexRoute,
+}
+
+const LocaleRouteWithChildren =
+  LocaleRoute._addFileChildren(LocaleRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LocaleRoute: LocaleRouteWithChildren,
   CompressRoute: CompressRoute,
   ExtractImagesRoute: ExtractImagesRoute,
   MergeRoute: MergeRoute,

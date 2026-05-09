@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { CompressTool } from "@/components/pdf/tools/CompressTool";
+﻿import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/compress")({
-    component: CompressTool,
+    beforeLoad: () => {
+        throw redirect({ to: "/$locale/compress", params: { locale: "en" }, replace: true });
+    },
 });

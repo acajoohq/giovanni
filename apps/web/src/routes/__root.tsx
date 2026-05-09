@@ -1,4 +1,4 @@
-﻿import { createRootRoute, HeadContent, Link, Scripts } from "@tanstack/react-router";
+﻿import { createRootRoute, HeadContent, Link, Scripts, useParams } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import { AppShell } from "@/components/layout/AppShell";
@@ -26,18 +26,19 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+    const { locale = "en" } = useParams({ strict: false });
     return (
         <I18nextProvider i18n={i18n}>
-            <RootDocument>
+            <RootDocument lang={locale}>
                 <AppShell />
             </RootDocument>
         </I18nextProvider>
     );
 }
 
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+function RootDocument({ children, lang }: Readonly<{ children: ReactNode; lang: string }>) {
     return (
-        <html className="dark bg-[#0a0a0a] antialiased">
+        <html lang={lang} className="dark bg-[#0a0a0a] antialiased">
             <head>
                 <HeadContent />
             </head>
@@ -60,3 +61,4 @@ function NotFoundPage() {
         </main>
     );
 }
+

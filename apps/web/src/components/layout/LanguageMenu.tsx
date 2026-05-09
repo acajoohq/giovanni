@@ -1,16 +1,31 @@
 ﻿import { Menu } from "@base-ui/react/menu";
 import { RiCheckLine, RiTranslate2 } from "@remixicon/react";
+import { useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 const LANGUAGES = [
     { code: "en", label: "English" },
-    { code: "fr", label: "Français" },
+    { code: "fr", label: "Fran\u00e7ais" },
 ] as const;
 
 export function LanguageMenu() {
     const { t, i18n } = useTranslation();
-    const current = i18n.resolvedLanguage ?? i18n.language ?? "en";
+    const { locale = "en" } = useParams({ strict: false });
+    const navigate = useNavigate();
+    const location = useRouterState({ select: (s) => s.location });
+
+    const switchLocale = (newLocale: string) => {
+        // Replace the current locale segment in the pathname with the new one
+        // e.g. /en/compress -> /fr/compress
+        const newPathname = location.pathname.replace(
+            new RegExp(`^/${locale}(/|$)`),
+            `/${newLocale}$1`,
+        );
+        navigate({ to: newPathname, replace: true });
+    };
+
+    const current = locale ?? i18n.resolvedLanguage ?? "en";
 
     return (
         <Menu.Root>
@@ -33,7 +48,7 @@ export function LanguageMenu() {
                                     "text-neutral-400 hover:bg-app-border-subtle hover:text-white",
                                     "data-highlighted:bg-app-border-subtle data-highlighted:text-white",
                                 )}
-                                onClick={() => i18n.changeLanguage(code)}
+                                onClick={() => switchLocale(code)}
                             >
                                 <RiCheckLine className={cn("size-3 shrink-0", current.startsWith(code) ? "text-brand" : "opacity-0")} />
                                 {label}

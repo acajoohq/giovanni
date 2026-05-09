@@ -29,6 +29,13 @@
     --app-text-muted: #404040;
     --app-text-subtle: #717171;
 
+    --app-shadow-skeuo: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+    --app-shadow-skeuo-sm: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.03), 0px 1px 2px 0px rgba(0, 0, 0, 0.08);
+    --app-shadow-skeuo-inner: inset 0px 2px 6px 0px rgba(0, 0, 0, 0.12), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 1px 0px 0px rgba(255, 255, 255, 0.8);
+    --app-shadow-sidebar: -8px 0 24px rgba(0, 0, 0, 0.08);
+    --app-shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.1);
+    --app-shadow-pdf-page: 0 4px 16px rgba(0, 0, 0, 0.08);
+
     --background: oklch(1 0 0);
     --foreground: oklch(0.141 0.005 285.823);
     --card: oklch(1 0 0);
@@ -80,6 +87,13 @@
     --app-text: #ededed;
     --app-text-muted: #d4d4d4;
     --app-text-subtle: #858585;
+
+    --app-shadow-skeuo: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.15), 0px 2px 4px 0px rgba(0, 0, 0, 0.4);
+    --app-shadow-skeuo-sm: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+    --app-shadow-skeuo-inner: inset 0px 2px 6px 0px rgba(0, 0, 0, 0.75), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.4), 0px 1px 0px 0px rgba(255, 255, 255, 0.06);
+    --app-shadow-sidebar: -8px 0 24px rgba(0, 0, 0, 0.5);
+    --app-shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.62);
+    --app-shadow-pdf-page: 0 4px 16px rgba(0, 0, 0, 0.6);
 
     --background: oklch(0.141 0.005 285.823);
     --foreground: oklch(0.985 0 0);
@@ -179,15 +193,15 @@
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
 
-    /* Skeuomorphic utilities */
-    --shadow-skeuo: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.15), 0px 2px 4px 0px rgba(0, 0, 0, 0.4);
-    --shadow-skeuo-sm: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
-    --shadow-skeuo-inner: inset 0px 2px 6px 0px rgba(0, 0, 0, 0.75), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.4), 0px 1px 0px 0px rgba(255, 255, 255, 0.06);
-    --shadow-sidebar: -8px 0 24px rgba(0, 0, 0, 0.5);
-    --shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.62);
+    /* Skeuomorphic utilities — resolved from :root / .dark vars for theme-awareness */
+    --shadow-skeuo: var(--app-shadow-skeuo);
+    --shadow-skeuo-sm: var(--app-shadow-skeuo-sm);
+    --shadow-skeuo-inner: var(--app-shadow-skeuo-inner);
+    --shadow-sidebar: var(--app-shadow-sidebar);
+    --shadow-result-tray: var(--app-shadow-result-tray);
     --shadow-brand-glow: 0 0 48px rgba(235, 90, 63, 0.18);
     --shadow-brand-card: 0 10px 20px rgba(235, 90, 63, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-    --shadow-pdf-page: 0 4px 16px rgba(0, 0, 0, 0.6);
+    --shadow-pdf-page: var(--app-shadow-pdf-page);
 }
 
 @layer base {

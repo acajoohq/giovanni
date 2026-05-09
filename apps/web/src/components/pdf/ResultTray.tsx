@@ -90,7 +90,7 @@ export function ResultTray({ fileName, fileSize, metrics = EMPTY_METRICS, primar
                         ))}
                         {primaryAction && (
                             <Button
-                                className="h-7 rounded-[5px] border border-foreground/30 bg-brand px-3 text-[11px] font-semibold text-white shadow-sm hover:bg-brand-hover"
+                                className="h-7 rounded-[5px] border border-brand-dark/60 bg-brand px-3 text-[11px] font-semibold text-white shadow-skeuo hover:bg-brand-hover active:shadow-none active:translate-y-px"
                                 disabled={primaryAction.disabled}
                                 size="sm"
                                 type="button"

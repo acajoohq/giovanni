@@ -3,10 +3,15 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/shadcn/Input";
 import { Slider } from "@/components/ui/shadcn/Slider";
 
+const inputBase =
+    "h-7 rounded-[4px] border px-2 text-[12px] text-foreground " +
+    "border-neutral-300 bg-neutral-100 shadow-[inset_0_1px_2px_rgba(0,0,0,0.08)] " +
+    "dark:border-[#333] dark:bg-[#222] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]";
+
 export function SidebarInput({ className, ...props }: ComponentProps<typeof Input>) {
     return (
         <Input
-            className={cn("h-7 rounded-[4px] border-app-border bg-app-control px-2 text-[12px] text-foreground shadow-inner focus-visible:ring-1 focus-visible:ring-brand", className)}
+            className={cn(inputBase, "focus-visible:ring-1 focus-visible:ring-brand", className)}
             {...props}
         />
     );
@@ -27,7 +32,8 @@ export function SidebarSelect<TValue extends string>({ className, options, value
     return (
         <select
             className={cn(
-                "h-7 w-full appearance-none rounded-[4px] border border-app-border bg-app-control px-2 py-0 pr-7 text-[12px] leading-none text-foreground shadow-inner focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand",
+                inputBase,
+                "w-full appearance-none py-0 pr-7 leading-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand",
                 className,
             )}
             value={value}
@@ -45,7 +51,7 @@ export function SidebarSelect<TValue extends string>({ className, options, value
 
 export function SidebarReadonlyValue({ children, className }: { children: ReactNode; className?: string }) {
     return (
-        <div className={cn("flex h-7 items-center rounded-[4px] border border-app-border bg-app-control px-2 text-[12px] leading-none text-app-text-muted shadow-inner", className)}>
+        <div className={cn(inputBase, "flex items-center leading-none text-app-text-muted", className)}>
             {children}
         </div>
     );
@@ -65,7 +71,14 @@ export function SidebarRange({ className, label, valueLabel, ...props }: Sidebar
                 <Slider className={cn("min-w-0 flex-1", className)} {...props} />
             </div>
             {valueLabel && (
-                <div className="flex h-7 items-center justify-end rounded-[3px] border border-app-border-strong bg-app-control px-2 text-[12px] font-semibold leading-none text-foreground shadow-[inset_0_1px_2px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.07)]">
+                <div
+                    className={cn(
+                        "flex h-7 items-center justify-end rounded-[3px] border px-2",
+                        "text-[12px] font-semibold leading-none text-foreground",
+                        "border-neutral-300 bg-neutral-200 shadow-[inset_0_1px_2px_rgba(0,0,0,0.12),0_1px_0_rgba(255,255,255,0.8)]",
+                        "dark:border-[#444] dark:bg-[#111] dark:text-neutral-200 dark:shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]",
+                    )}
+                >
                     {valueLabel}
                 </div>
             )}

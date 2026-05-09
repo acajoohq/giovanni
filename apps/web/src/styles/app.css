@@ -182,7 +182,7 @@
     /* Skeuomorphic utilities */
     --shadow-skeuo: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.15), 0px 2px 4px 0px rgba(0, 0, 0, 0.4);
     --shadow-skeuo-sm: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
-    --shadow-skeuo-inner: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.5), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 1px 0px 0px rgba(255, 255, 255, 0.05);
+    --shadow-skeuo-inner: inset 0px 2px 6px 0px rgba(0, 0, 0, 0.75), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.4), 0px 1px 0px 0px rgba(255, 255, 255, 0.06);
     --shadow-sidebar: -8px 0 24px rgba(0, 0, 0, 0.5);
     --shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.62);
     --shadow-brand-glow: 0 0 48px rgba(235, 90, 63, 0.18);

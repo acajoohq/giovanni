@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { createSeoMeta } from "@/lib/seo";
 import appCss from "@/styles/app.css?url";
 import { AppShell } from "@/components/layout/AppShell";
-import { ThemeProvider } from "@/components/theme-provider";
+import { getThemeScript, ThemeProvider } from "@/components/theme-provider";
 
 export const Route = createRootRoute({
     head: () => ({
@@ -36,10 +36,12 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     return (
         <html className="antialiased" lang="en" suppressHydrationWarning>
             <head>
+                {/* Must run before CSS to avoid flash — reads localStorage/OS preference and applies class before first paint */}
+                <script dangerouslySetInnerHTML={{ __html: getThemeScript("theme", "system") }} />
                 <HeadContent />
             </head>
             <body>
-                <ThemeProvider defaultTheme="light" storageKey="theme">
+                <ThemeProvider defaultTheme="system" storageKey="theme">
                     {children}
                 </ThemeProvider>
                 <Scripts />

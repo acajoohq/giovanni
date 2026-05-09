@@ -1,12 +1,12 @@
-﻿import { createRootRoute, HeadContent, Link, Scripts, useParams } from "@tanstack/react-router";
+﻿import { createRootRouteWithContext, HeadContent, Link, Scripts, useParams } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import { AppShell } from "@/components/layout/AppShell";
-import i18n from "@/lib/i18n";
 import { createSeoMeta } from "@/lib/seo";
+import type { RouterContext } from "@/router";
 import appCss from "@/styles/app.css?url";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
     head: () => ({
         meta: [
             { charSet: "utf-8" },
@@ -26,6 +26,7 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+    const { i18n } = Route.useRouteContext();
     const { locale = "en" } = useParams({ strict: false });
     return (
         <I18nextProvider i18n={i18n}>

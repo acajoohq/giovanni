@@ -1,6 +1,6 @@
-﻿import { formatBytes, mergePdfs, splitPages } from "@pdfly/wasm";
-import { RiAddLine, RiArrowDownLine, RiArrowUpLine, RiDragMove2Line } from "@remixicon/react";
-import { useEffect, useId, useRef, useState, DragEvent } from "react";
+import { formatBytes, mergePdfs, splitPages } from "@pdfly/wasm";
+import { RiAddLine } from "@remixicon/react";
+import { Fragment, type DragEvent, useEffect, useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -11,12 +11,12 @@ import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { SidebarInput } from "@/components/sidebar/SidebarControls";
 import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { EmptyOrganize } from "@/components/pdf/emptyState/EmptyOrganize";
-import { PdfPageThumbnail } from "@/components/pdf/PdfPageThumbnail";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
-import { cn } from "@/lib/utils";
 import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, formatThroughput, pdfBaseName } from "@/utils/pdfToolUtils.utils";
+import { OrganizeDropIndicator } from "./OrganizeDropIndicator";
+import { OrganizePageCard } from "./OrganizePageCard";
 
 interface SplitJobResult {
     pages: Uint8Array[];
@@ -139,89 +139,63 @@ export function OrganizeTool() {
     const isOrderChanged = pageOrder.length > 0 && !pageOrder.every((v, i) => v === i);
     const activeStatus = reorganizeStatus ?? splitStatus;
 
-    // dragOverIndex is the insert-before position (0..n); null means no active drop target.
-    // A position is a no-op when it would leave the dragged item in the same slot.
+    // dragOverIndex: insert-before slot in 0..n, null when there is no active drop target
+    // no-op when the slot would not move the dragged item (dragOverIndex is draggedIndex or draggedIndex + 1)
     const isNoOp = draggedIndex !== null && dragOverIndex !== null && (dragOverIndex === draggedIndex || dragOverIndex === draggedIndex + 1);
     const showDropIndicator = draggedIndex !== null && dragOverIndex !== null && !isNoOp;
-
-    const thumbnailItems = () => {
-        const items: React.ReactNode[] = [];
-        pageOrder.forEach((originalIndex, currentIndex) => {
-            if (showDropIndicator && dragOverIndex === currentIndex) {
-                items.push(
-                    <div
-                        key="drop-indicator"
-                        className="aspect-3/4 rounded-md border-2 border-dashed border-brand bg-brand/10"
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={handleDrop}
-                    />,
-                );
-            }
-            items.push(
-                <div
-                    key={originalIndex}
-                    draggable
-                    className={cn(
-                        "group/card flex flex-col gap-1.5 cursor-grab active:cursor-grabbing transition-opacity [content-visibility:auto] [contain-intrinsic-size:240px]",
-                        draggedIndex === currentIndex && "opacity-30",
-                    )}
-                    onDragStart={() => handleDragStart(currentIndex)}
-                    onDragOver={(e) => handleDragOver(e, currentIndex)}
-                    onDrop={handleDrop}
-                    onDragEnd={handleDragEnd}
-                >
-                    <div className="relative aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
-                        <PdfPageThumbnail data={pages[originalIndex] as Uint8Array} />
-                        <div className="absolute right-1 top-1 flex gap-0.5 opacity-0 transition-opacity group-hover/card:opacity-100">
-                            <button
-                                aria-label={`Move page ${currentIndex + 1} up`}
-                                className="flex h-5 w-5 items-center justify-center rounded bg-black/60 text-neutral-300 hover:bg-black/80 hover:text-white disabled:opacity-30"
-                                disabled={currentIndex === 0}
-                                type="button"
-                                onClick={() => handleMove(currentIndex, -1)}
-                            >
-                                <RiArrowUpLine className="size-3" />
-                            </button>
-                            <button
-                                aria-label={`Move page ${currentIndex + 1} down`}
-                                className="flex h-5 w-5 items-center justify-center rounded bg-black/60 text-neutral-300 hover:bg-black/80 hover:text-white disabled:opacity-30"
-                                disabled={currentIndex === pageOrder.length - 1}
-                                type="button"
-                                onClick={() => handleMove(currentIndex, 1)}
-                            >
-                                <RiArrowDownLine className="size-3" />
-                            </button>
-                        </div>
-                        <div className="pointer-events-none absolute bottom-1 left-1 flex h-5 w-5 items-center justify-center rounded bg-black/50">
-                            <RiDragMove2Line className="size-3 text-neutral-400" />
-                        </div>
-                    </div>
-                    <span className="truncate text-center text-[10px] text-neutral-500">
-                        Page {currentIndex + 1}
-                        {originalIndex !== currentIndex && <span className="ml-1 text-neutral-700">(was {originalIndex + 1})</span>}
-                    </span>
-                </div>,
-            );
-        });
-        if (showDropIndicator && dragOverIndex === pageOrder.length) {
-            items.push(
-                <div
-                    key="drop-indicator"
-                    className="aspect-3/4 rounded-md border-2 border-dashed border-brand bg-brand/10"
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={handleDrop}
-                />,
-            );
-        }
-        return items;
-    };
 
     const thumbnailGrid =
         pages.length > 0 ? (
             <div className="h-full w-full overflow-y-auto p-3 pb-24">
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">{thumbnailItems()}</div>
+                <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                    {pageOrder.map((originalIndex, currentIndex) => (
+                        <Fragment key={originalIndex}>
+                            {showDropIndicator && dragOverIndex === currentIndex ? <OrganizeDropIndicator onDrop={handleDrop} /> : null}
+                            <OrganizePageCard
+                                currentIndex={currentIndex}
+                                originalIndex={originalIndex}
+                                pageCount={pageOrder.length}
+                                pageData={pages[originalIndex] as Uint8Array}
+                                isDragSource={draggedIndex === currentIndex}
+                                onDragEnd={handleDragEnd}
+                                onDragOver={(e) => handleDragOver(e, currentIndex)}
+                                onDragStart={() => handleDragStart(currentIndex)}
+                                onDrop={handleDrop}
+                                onMove={(dir) => handleMove(currentIndex, dir)}
+                            />
+                        </Fragment>
+                    ))}
+                    {showDropIndicator && dragOverIndex === pageOrder.length ? <OrganizeDropIndicator onDrop={handleDrop} /> : null}
+                </div>
             </div>
         ) : null;
+
+    const resultMetrics = [
+        ...(pages.length > 0 ? [{ label: "Pages", value: pages.length, tone: "accent" as const }] : []),
+        ...(reorganizedData && elapsedMs !== null ? [{ label: "Time", value: formatDuration(elapsedMs) }] : []),
+        ...(file && reorganizedData && elapsedMs !== null ? [{ label: "Throughput", value: formatThroughput(file.size, elapsedMs) }] : []),
+    ];
+
+    const resultPrimaryAction = reorganizedData
+        ? { label: "Download PDF", onClick: () => downloadPdf(reorganizedData, normalizedOutputName) }
+        : pages.length > 0
+          ? {
+                label: isOrderChanged ? "Apply Order" : "Apply (no changes)",
+                onClick: handleApply,
+                disabled: isReorganizing,
+            }
+          : undefined;
+
+    const resultSecondaryActions = [
+        ...(reorganizedData ? [{ label: "Re-apply", onClick: handleApply, disabled: isReorganizing }] : []),
+        { label: "Replace", onClick: () => inputRef.current?.click() },
+    ];
+
+    const resultTrayStatus = isReorganizing
+        ? { tone: "info" as const, message: "Reorganizing pages..." }
+        : isSplitting
+          ? { tone: "info" as const, message: "Loading pages..." }
+          : activeStatus;
 
     const sidebar = (
         <Sidebar>
@@ -246,27 +220,10 @@ export function OrganizeTool() {
             <ResultTray
                 fileName={file.name}
                 fileSize={formatBytes(file.size)}
-                metrics={[
-                    ...(pages.length > 0 ? [{ label: "Pages", value: pages.length, tone: "accent" as const }] : []),
-                    ...(reorganizedData && elapsedMs !== null ? [{ label: "Time", value: formatDuration(elapsedMs) }] : []),
-                    ...(reorganizedData && elapsedMs !== null ? [{ label: "Throughput", value: formatThroughput(file.size, elapsedMs) }] : []),
-                ]}
-                primaryAction={
-                    reorganizedData
-                        ? { label: "Download PDF", onClick: () => downloadPdf(reorganizedData, normalizedOutputName) }
-                        : pages.length > 0
-                          ? {
-                                label: isOrderChanged ? "Apply Order" : "Apply (no changes)",
-                                onClick: handleApply,
-                                disabled: isReorganizing,
-                            }
-                          : undefined
-                }
-                secondaryActions={[
-                    ...(reorganizedData ? [{ label: "Re-apply", onClick: handleApply, disabled: isReorganizing }] : []),
-                    { label: file ? "Replace" : "Add PDF", onClick: () => inputRef.current?.click() },
-                ]}
-                status={isReorganizing ? { tone: "info", message: "Reorganizing pages..." } : isSplitting ? { tone: "info", message: "Loading pages..." } : activeStatus}
+                metrics={resultMetrics}
+                primaryAction={resultPrimaryAction}
+                secondaryActions={resultSecondaryActions}
+                status={resultTrayStatus}
             />
         </div>
     ) : (

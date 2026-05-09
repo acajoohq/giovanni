@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
     instance.use(LanguageDetector);
 }
 
-instance.init({
+export const i18nReady = instance.init({
     resources: {
         en: { translation: en },
         fr: { translation: fr },

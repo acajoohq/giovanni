@@ -10,7 +10,8 @@
         "moduleDetection": "force",
         "paths": {
             "@pdfly/ui": ["./packages/pdfly-ui/src/index.ts"],
-            "@pdfly/wasm": ["./packages/pdfly-wasm/src/index.ts"]
+            "@pdfly/wasm": ["./packages/pdfly-wasm/src/index.ts"],
+            "@pdfly/wasm/render": ["./packages/pdfly-wasm/src/render.ts"]
         },
         "skipLibCheck": true,
         "strict": true,

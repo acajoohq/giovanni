@@ -1,7 +1,9 @@
 import "./styles.css";
 import { zip } from "fflate";
-import type { ExtractedImage, PdfPageJpg } from "@pdfly/wasm";
-import { compressPdf, extractImages, formatBytes, getVersion, mergePdfs, pdfToJpg, splitPages } from "@pdfly/wasm";
+import type { ExtractedImage } from "@pdfly/wasm";
+import type { PdfPageJpg } from "@pdfly/wasm/render";
+import { extractImages, formatBytes, getQpdfVersion, mergePdfs, optimizePdf, splitPdf } from "@pdfly/wasm";
+import { renderPdfPagesToJpg } from "@pdfly/wasm/render";
 
 export function initApp(): void {
     const SPLIT_LIST_PAGE_SIZE = 10;
@@ -81,7 +83,7 @@ export function initApp(): void {
         });
     }
 
-    getVersion()
+    getQpdfVersion()
         .then((version) => setText("version", `qpdf ${version}`))
         .catch(() => setText("version", "qpdf version unavailable"));
 
@@ -134,7 +136,7 @@ export function initApp(): void {
             };
 
             const startTime = performance.now();
-            const result = await compressPdf(arrayBuffer, options);
+            const result = await optimizePdf(arrayBuffer, options);
             const elapsedSeconds = (performance.now() - startTime) / 1000;
             const savingsPercent = ((result.savedBytes / result.originalSize) * 100).toFixed(1);
 
@@ -234,7 +236,7 @@ export function initApp(): void {
             const arrayBuffer = await file.arrayBuffer();
             setText(SPLIT_LOADER.labelId, "Splitting pages...");
             const startTime = performance.now();
-            const result = await splitPages(arrayBuffer);
+            const result = await splitPdf(arrayBuffer);
             const elapsedSeconds = (performance.now() - startTime) / 1000;
 
             const label = result.pageCount === 1 ? "page" : "pages";
@@ -762,7 +764,7 @@ export function initApp(): void {
                 const scale = jpgScaleSliderEl ? parseFloat(jpgScaleSliderEl.value) : 2.0;
 
                 const startTime = performance.now();
-                const result = await pdfToJpg(arrayBuffer, { quality, scale });
+                const result = await renderPdfPagesToJpg(arrayBuffer, { quality, scale });
                 const elapsedSeconds = (performance.now() - startTime) / 1000;
 
                 jpgPages = result.pages;

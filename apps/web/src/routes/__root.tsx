@@ -1,6 +1,6 @@
 ﻿import { createRootRouteWithContext, HeadContent, Link, Scripts, useParams } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { I18nextProvider, useTranslation } from "react-i18next";
+import { I18nextProvider } from "react-i18next";
 import { AppShell } from "@/components/layout/AppShell";
 import { createSeoMeta } from "@/lib/seo";
 import type { RouterContext } from "@/router";
@@ -22,7 +22,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         ],
     }),
     component: RootComponent,
-    notFoundComponent: NotFoundPage,
+    // This only triggers for truly malformed paths that bypass $locale entirely.
+    // It renders outside RootComponent so it must be self-contained.
+    notFoundComponent: RootNotFoundPage,
 });
 
 function RootComponent() {
@@ -51,14 +53,26 @@ function RootDocument({ children, lang }: Readonly<{ children: ReactNode; lang: 
     );
 }
 
-function NotFoundPage() {
-    const { t } = useTranslation();
+/**
+ * Standalone fallback — renders outside RootComponent (no I18nextProvider,
+ * no AppShell). Must not call useTranslation() or any router context hook.
+ */
+function RootNotFoundPage() {
     return (
-        <main className="mx-auto max-w-lg p-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-white">{t("notFound.title")}</h1>
-            <Link className="mt-4 inline-flex text-[#eb5a3f] hover:underline" to="/">
-                {t("notFound.backHome")}
-            </Link>
-        </main>
+        <html className="dark bg-[#0a0a0a] antialiased">
+            <head>
+                <HeadContent />
+            </head>
+            <body>
+                <main className="mx-auto max-w-lg p-8">
+                    <h1 className="text-2xl font-semibold tracking-tight text-white">Not found</h1>
+                    <Link className="mt-4 inline-flex text-[#eb5a3f] hover:underline" to="/">
+                        Back home
+                    </Link>
+                </main>
+                <Scripts />
+            </body>
+        </html>
     );
 }
+

@@ -1,4 +1,4 @@
-﻿import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/$locale")({
         await context.i18n.changeLanguage(params.locale);
     },
     component: LocaleLayout,
+    notFoundComponent: LocaleNotFoundPage,
 });
 
 function LocaleLayout() {
@@ -33,4 +34,21 @@ function LocaleLayout() {
     }, [locale, i18n]);
 
     return <Outlet />;
+}
+
+function LocaleNotFoundPage() {
+    const { locale } = Route.useParams();
+    const { t } = useTranslation();
+    return (
+        <main className="mx-auto max-w-lg p-8">
+            <h1 className="text-2xl font-semibold tracking-tight text-white">{t("notFound.title")}</h1>
+            <Link
+                className="mt-4 inline-flex text-[#eb5a3f] hover:underline"
+                to="/$locale"
+                params={{ locale }}
+            >
+                {t("notFound.backHome")}
+            </Link>
+        </main>
+    );
 }

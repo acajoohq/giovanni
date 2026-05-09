@@ -1,4 +1,4 @@
-﻿import type { Translations } from "./en";
+﻿import type { Translations } from "./locales.types";
 
 export const fr: Translations = {
     nav: {
@@ -203,4 +203,4 @@ export const fr: Translations = {
             failedReorganize: "Échec de la réorganisation du PDF.",
         },
     },
-};
+} as const;

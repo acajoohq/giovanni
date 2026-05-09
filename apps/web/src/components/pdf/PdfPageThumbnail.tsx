@@ -45,10 +45,16 @@ export function PdfPageThumbnail({ data }: PdfPageThumbnailProps) {
                 if (!renderer || cancelled) return;
 
                 const doc = await renderer.loadPdfDocument(data);
-                if (cancelled) { void doc.destroy(); return; }
+                if (cancelled) {
+                    void doc.destroy();
+                    return;
+                }
 
                 const pdfPage = await doc.getPage(1);
-                if (cancelled) { void doc.destroy(); return; }
+                if (cancelled) {
+                    void doc.destroy();
+                    return;
+                }
 
                 const baseViewport = pdfPage.getViewport({ scale: 1 });
                 const scale = THUMBNAIL_WIDTH_PX / baseViewport.width;
@@ -69,7 +75,9 @@ export function PdfPageThumbnail({ data }: PdfPageThumbnailProps) {
 
         if (typeof IntersectionObserver === "undefined") {
             void render();
-            return () => { cancelled = true; };
+            return () => {
+                cancelled = true;
+            };
         }
 
         const observer = new IntersectionObserver(

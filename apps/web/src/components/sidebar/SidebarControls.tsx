@@ -9,12 +9,7 @@ const inputBase =
     "dark:border-[#333] dark:bg-[#222] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]";
 
 export function SidebarInput({ className, ...props }: ComponentProps<typeof Input>) {
-    return (
-        <Input
-            className={cn(inputBase, "focus-visible:ring-1 focus-visible:ring-brand", className)}
-            {...props}
-        />
-    );
+    return <Input className={cn(inputBase, "focus-visible:ring-1 focus-visible:ring-brand", className)} {...props} />;
 }
 
 interface SidebarSelectOption<TValue extends string> {
@@ -31,11 +26,7 @@ interface SidebarSelectProps<TValue extends string> extends Omit<SelectHTMLAttri
 export function SidebarSelect<TValue extends string>({ className, options, value, onValueChange, ...props }: SidebarSelectProps<TValue>) {
     return (
         <select
-            className={cn(
-                inputBase,
-                "w-full appearance-none py-0 pr-7 leading-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand",
-                className,
-            )}
+            className={cn(inputBase, "w-full appearance-none py-0 pr-7 leading-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand", className)}
             value={value}
             onChange={(event) => onValueChange(event.currentTarget.value as TValue)}
             {...props}
@@ -50,11 +41,7 @@ export function SidebarSelect<TValue extends string>({ className, options, value
 }
 
 export function SidebarReadonlyValue({ children, className }: { children: ReactNode; className?: string }) {
-    return (
-        <div className={cn(inputBase, "flex items-center leading-none text-app-text-muted", className)}>
-            {children}
-        </div>
-    );
+    return <div className={cn(inputBase, "flex items-center leading-none text-app-text-muted", className)}>{children}</div>;
 }
 
 interface SidebarRangeProps extends Omit<ComponentProps<typeof Slider>, "className"> {

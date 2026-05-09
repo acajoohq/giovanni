@@ -8,6 +8,7 @@ const navigationItems = [
     { label: "Compress", to: "/compress" },
     { label: "Split", to: "/split" },
     { label: "Merge", to: "/merge" },
+    { label: "Organize", to: "/organize" },
     { label: "Extract Images", to: "/extract-images" },
     { label: "PDF to JPG", to: "/pdf-to-jpg" },
 ] as const;

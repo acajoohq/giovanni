@@ -88,3 +88,13 @@ export class QpdfConversionError extends QpdfError {
         this.name = "QpdfConversionError";
     }
 }
+
+/**
+ * Error thrown when PDF page reorganization fails
+ */
+export class QpdfOrganizeError extends QpdfError {
+    constructor(message: string, options?: ErrorOptions) {
+        super(message, options);
+        this.name = "QpdfOrganizeError";
+    }
+}

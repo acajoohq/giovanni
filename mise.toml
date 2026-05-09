@@ -1,2 +1,3 @@
 [tools]
 emsdk = "latest"
+node = "24"

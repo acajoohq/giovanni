@@ -1,6 +1,7 @@
-import { RiArrowLeftSLine, RiArrowRightSLine, RiFilePdf2Line } from "@remixicon/react";
+﻿import { RiArrowLeftSLine, RiArrowRightSLine, RiFilePdf2Line } from "@remixicon/react";
 import { createClientOnlyFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import type { PDFDocumentProxy } from "@/utils/pdf/pdfRenderer.client";
 
 type PdfRendererClient = typeof import("@/utils/pdf/pdfRenderer.client");
@@ -18,6 +19,7 @@ interface PdfPreviewProps {
 }
 
 export function PdfPreview({ data, file, page: controlledPage, onPageChange, onPageCountChange, placeholder, showControls = true }: PdfPreviewProps) {
+    const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const renderGenerationRef = useRef(0);
@@ -195,7 +197,7 @@ export function PdfPreview({ data, file, page: controlledPage, onPageChange, onP
                     {placeholder ?? (
                         <>
                             <RiFilePdf2Line className="size-12 opacity-20" />
-                            <span className="text-[12px]">No preview</span>
+                            <span className="text-[12px]">{t("common.viewer.noPreview")}</span>
                         </>
                     )}
                 </div>
@@ -239,3 +241,7 @@ export function PdfPreview({ data, file, page: controlledPage, onPageChange, onP
         </div>
     );
 }
+
+
+
+

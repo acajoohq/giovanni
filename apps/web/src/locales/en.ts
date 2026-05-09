@@ -37,6 +37,15 @@
             outputSettings: "Output Settings",
             filename: "Filename",
         },
+        viewer: {
+            vertical: "Vertical",
+            horizontal: "Horizontal",
+            input: "Input",
+            output: "Output",
+            outputPlaceholder: "Output will appear here",
+            noPreview: "No preview",
+            processing: "Processing…",
+        },
     },
     compress: {
         toolTitle: "Compress PDF",
@@ -198,3 +207,4 @@ type DeepString<T> = {
 };
 
 export type Translations = DeepString<typeof en>;
+

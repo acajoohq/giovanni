@@ -10,7 +10,7 @@ interface AboutDialogProps {
 
 const CONTRIBUTORS = [
     { name: "Edward Brunetiere", github: "P4tt4te", initials: "EB", color: "#4f8ef7" },
-    { name: "Matteo Gauthier", github: "matteogauthier", initials: "MG", color: "var(--brand)" },
+    { name: "Mattèo Gauthier", github: "matteogauthier", initials: "MG", color: "var(--brand)" },
 ] as const;
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION;

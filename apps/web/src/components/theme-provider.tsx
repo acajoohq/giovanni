@@ -1,4 +1,5 @@
 import { createContext, use, useEffect, useState } from "react";
+import { ScriptOnce } from "@tanstack/react-router";
 
 type Theme = "dark" | "light" | "system";
 
@@ -13,7 +14,7 @@ type ThemeProviderState = {
     setTheme: (theme: Theme) => void;
 };
 
-export function getThemeScript(storageKey: string, defaultTheme: Theme) {
+function getThemeScript(storageKey: string, defaultTheme: Theme) {
     const key = JSON.stringify(storageKey);
     const fallback = JSON.stringify(defaultTheme);
     return `(function(){try{var t=localStorage.getItem(${key});if(t!=='light'&&t!=='dark'&&t!=='system'){t=${fallback}}var d=matchMedia('(prefers-color-scheme: dark)').matches;var r=t==='system'?(d?'dark':'light'):t;var e=document.documentElement;e.classList.add(r);e.style.colorScheme=r}catch(e){}})();`;
@@ -55,6 +56,7 @@ export function ThemeProvider({ children, defaultTheme = "system", storageKey = 
 
     return (
         <ThemeProviderContext value={{ theme, setTheme }}>
+            <ScriptOnce>{getThemeScript(storageKey, defaultTheme)}</ScriptOnce>
             {children}
         </ThemeProviderContext>
     );

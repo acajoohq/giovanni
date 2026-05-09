@@ -100,19 +100,12 @@ export default defineConfig(({ mode }) => {
             "import.meta.env.VITE_GIT_COMMIT": JSON.stringify(gitCommit),
         },
         environments: {
-            // `@pdfly/wasm` is a workspace package so TanStack Start marks it
-            // `noExternal` (bundled for SSR). Its `pdf-to-jpg.ts` lazily loads
-            // the optional `canvas` peer via `import("canvas")`. Rolldown follows
-            // the CommonJS chain into `canvas/lib/bindings.js` which requires the
-            // native `canvas.node` binary — an unreadable blob that causes an
-            // [UNLOADABLE_DEPENDENCY] build error. Setting `external` here stops
-            // Rolldown at the package boundary for SSR. At prerender time the SSR
-            // runner can load it natively; in the deployed Cloudflare build it is
-            // never reached because the `isBrowser` guard short-circuits first.
+            // `canvas` and `.node` binaries are pulled in by `@pdfly/wasm` (noExternal by TanStack Start) but can't be bundled by Rolldown.
+            // `pdfjs-dist` uses DOM/Canvas APIs unavailable in Node.js — loading it during prerender crashes the SSR process.
             ssr: {
                 build: {
                     rollupOptions: {
-                        external: ["canvas", /\.node$/],
+                        external: ["canvas", /\.node$/, "pdfjs-dist"],
                     },
                 },
             },

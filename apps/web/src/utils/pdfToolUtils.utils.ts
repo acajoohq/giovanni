@@ -1,6 +1,6 @@
 import { formatBytes, type ExtractedImage, type PdfPageJpg } from "@pdfly/wasm";
 import { zip } from "fflate";
-import { copyPdfBytes, copyPdfEntries } from "./pdfBytes";
+import { copyPdfBytes, copyPdfEntries } from "./pdfBytes.utils";
 
 export function isPdfFile(file: File): boolean {
     return file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf");

@@ -14,7 +14,7 @@ import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { EmptyPdfToJpg } from "@/components/pdf/emptyState/EmptyPdfToJpg";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
-import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce";
+import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce.constants";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { useObjectUrls } from "@/hooks/useObjectUrls";
@@ -28,7 +28,7 @@ import {
     makeArchiveName,
     makePageJpgName,
     pdfBaseName,
-} from "@/utils/pdfToolUtils";
+} from "@/utils/pdfToolUtils.utils";
 
 interface PdfToJpgSettings {
     qualityPercent: number;

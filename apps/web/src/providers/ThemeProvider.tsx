@@ -1,6 +1,6 @@
 import { createContext, use, useEffect, useState } from "react";
 import { ScriptOnce } from "@tanstack/react-router";
-import type { Theme } from "@/types/theme";
+import type { Theme } from "@/types/theme.types";
 
 type ThemeProviderProps = {
     children: React.ReactNode;

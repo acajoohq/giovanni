@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { RiCheckboxCircleLine, RiCloseCircleLine, RiFilePdf2Line, RiInformationLine } from "@remixicon/react";
 import { cn } from "@/lib/utils";
-import type { ToolStatus } from "@/types/toolStatus";
+import type { ToolStatus } from "@/types/toolStatus.types";
 import { Button } from "@/components/ui/shadcn/Button";
 
 interface ToolResultMetric {

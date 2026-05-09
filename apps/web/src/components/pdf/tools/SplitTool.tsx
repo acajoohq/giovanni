@@ -28,7 +28,7 @@ import {
     makeArchiveName,
     makePagePdfName,
     pdfBaseName,
-} from "@/utils/pdfToolUtils";
+} from "@/utils/pdfToolUtils.utils";
 
 interface SplitJobResult {
     pages: Uint8Array[];

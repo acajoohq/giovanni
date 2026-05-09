@@ -14,7 +14,7 @@ import {
     makeArchiveName,
     makePageJpgName,
     makePagePdfName,
-} from "./pdfToolUtils";
+} from "./pdfToolUtils.utils";
 
 function makeFile(name: string, type = "application/octet-stream") {
     return new File(["content"], name, { type });

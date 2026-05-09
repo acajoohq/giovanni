@@ -16,18 +16,7 @@ interface OrganizePageCardProps {
     onMove: (direction: -1 | 1) => void;
 }
 
-export function OrganizePageCard({
-    originalIndex,
-    currentIndex,
-    pageCount,
-    pageData,
-    isDragSource,
-    onDragStart,
-    onDragOver,
-    onDrop,
-    onDragEnd,
-    onMove,
-}: OrganizePageCardProps) {
+export function OrganizePageCard({ originalIndex, currentIndex, pageCount, pageData, isDragSource, onDragStart, onDragOver, onDrop, onDragEnd, onMove }: OrganizePageCardProps) {
     const orderChanged = originalIndex !== currentIndex;
 
     return (

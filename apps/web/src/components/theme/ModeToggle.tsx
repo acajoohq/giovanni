@@ -1,7 +1,7 @@
 import { RiComputerLine, RiMoonLine, RiSunLine } from "@remixicon/react";
-import { useTheme } from "@/components/theme-provider";
+import { type Theme, useTheme } from "@/components/theme-provider";
 
-const CYCLE: Array<"light" | "dark" | "system"> = ["light", "dark", "system"];
+const CYCLE: Theme[] = ["light", "dark", "system"];
 
 const ICONS = {
     light: RiSunLine,
@@ -18,7 +18,7 @@ const LABELS = {
 export function ModeToggle() {
     const { theme, setTheme } = useTheme();
 
-    const current = (theme as "light" | "dark" | "system") ?? "light";
+    const current: Theme = theme ?? "light";
     const Icon = ICONS[current];
 
     const cycle = () => {

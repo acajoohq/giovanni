@@ -49,3 +49,25 @@ pnpm validate
 ## License
 
 [@pdfly/wasm](packages/pdfly-wasm) is **Apache-2.0** ([LICENSE](packages/pdfly-wasm/LICENSE)). **Repo:** [github.com/MatteoGauthier/qpdf-wasm](https://github.com/MatteoGauthier/qpdf-wasm)
+
+## Todo
+
+- [x] Setup repo (Matteo)
+- [ ] CLI
+- [ ] Find a strategy for updates of the qpdf library
+- [x] CI
+- [x] CD (Wrangler)
+- [ ] Open source it
+- [ ] Documentation
+    - [ ] How to use it with Vite chunking
+    - [ ] Extract image from PDF
+- [ ] Review the code
+    - [ ] WASM build
+    - [ ] Library design
+- [ ] Publish package
+- [x] Tauri (desktop app)
+- [ ] Merge/fuse PDFs
+- [ ] Lots of fixture tests (runned on demand
+- [ ] Rename to Giovanni
+- [ ] Open Question
+    - [ ] Should we rename the wasm build to as it's doing more on top of qpdf?

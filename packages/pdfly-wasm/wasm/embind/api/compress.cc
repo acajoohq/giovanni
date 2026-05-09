@@ -32,6 +32,9 @@ emscripten::val compressPdf(const emscripten::val& inputArray, const Compression
         writer.setRecompressFlate(options.recompressFlate);
         writer.setDecodeLevel(getDecodeLevel(options.decodeLevel));
         writer.setObjectStreamMode(getObjectStreamMode(options.objectStreams));
+        if (options.linearize) {
+            writer.setLinearization(true);
+        }
         writer.write();
 
         std::shared_ptr<Buffer> buffer = writer.getBufferSharedPointer();

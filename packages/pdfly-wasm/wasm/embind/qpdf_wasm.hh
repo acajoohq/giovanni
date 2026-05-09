@@ -19,6 +19,7 @@ struct CompressionOptions {
     std::string objectStreams = "generate";
     bool compressPages = false;
     bool removeUnreferencedResources = false;
+    bool linearize = false;
 
     CompressionOptions() = default;
 };
@@ -65,6 +66,7 @@ public:
     void setDecodeLevel(const std::string& level);
     void setCompressionLevel(int level);
     void setObjectStreamMode(const std::string& mode);
+    void setLinearization(bool linearize);
     void write();
     emscripten::val getBuffer();
 

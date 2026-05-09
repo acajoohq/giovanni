@@ -9,7 +9,7 @@ qpdf_stream_decode_level_e getDecodeLevel(const std::string& level) {
     if (level == "specialized") return qpdf_dl_specialized;
     if (level == "all") return qpdf_dl_all;
 
-    return qpdf_dl_generalized;
+    throw std::runtime_error("Invalid decode level: " + level);
 }
 
 qpdf_object_stream_e getObjectStreamMode(const std::string& mode) {
@@ -17,7 +17,7 @@ qpdf_object_stream_e getObjectStreamMode(const std::string& mode) {
     if (mode == "preserve") return qpdf_o_preserve;
     if (mode == "generate") return qpdf_o_generate;
 
-    return qpdf_o_preserve;
+    throw std::runtime_error("Invalid object stream mode: " + mode);
 }
 
 std::string getQpdfVersion() {

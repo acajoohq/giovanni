@@ -12,7 +12,8 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
         .field("decodeLevel", &CompressionOptions::decodeLevel)
         .field("objectStreams", &CompressionOptions::objectStreams)
         .field("compressPages", &CompressionOptions::compressPages)
-        .field("removeUnreferencedResources", &CompressionOptions::removeUnreferencedResources);
+        .field("removeUnreferencedResources", &CompressionOptions::removeUnreferencedResources)
+        .field("linearize", &CompressionOptions::linearize);
 
     function("compressPdf", &compressPdf, allow_raw_pointers());
     function("splitPages", &splitPages);
@@ -37,6 +38,7 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
         .function("setDecodeLevel", &QPDFWriterWrapper::setDecodeLevel)
         .function("setCompressionLevel", &QPDFWriterWrapper::setCompressionLevel)
         .function("setObjectStreamMode", &QPDFWriterWrapper::setObjectStreamMode)
+        .function("setLinearization", &QPDFWriterWrapper::setLinearization)
         .function("write", &QPDFWriterWrapper::write)
         .function("getBuffer", &QPDFWriterWrapper::getBuffer);
 }

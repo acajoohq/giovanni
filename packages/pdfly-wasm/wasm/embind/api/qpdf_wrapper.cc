@@ -84,6 +84,10 @@ void QPDFWriterWrapper::setObjectStreamMode(const std::string& mode) {
     writer->setObjectStreamMode(getObjectStreamMode(mode));
 }
 
+void QPDFWriterWrapper::setLinearization(bool linearize) {
+    writer->setLinearization(linearize);
+}
+
 void QPDFWriterWrapper::write() {
     Pl_Flate::setCompressionLevel(compressionLevel);
     writer->write();

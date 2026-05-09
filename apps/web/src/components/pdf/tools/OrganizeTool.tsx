@@ -14,9 +14,9 @@ import { EmptyOrganize } from "@/components/pdf/emptyState/EmptyOrganize";
 import { PdfPageThumbnail } from "@/components/pdf/PdfPageThumbnail";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { cn } from "@/lib/utils";
-import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, formatThroughput, pdfBaseName } from "@/utils/pdf/pdfToolUtils";
+import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, formatThroughput, pdfBaseName } from "@/utils/pdfToolUtils.utils";
 
 interface SplitJobResult {
     pages: Uint8Array[];

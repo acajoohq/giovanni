@@ -1,3 +1,5 @@
+import type { QpdfOptimizePreset } from "./options.js";
+
 /**
  * Caller-owned PDF bytes.
  */
@@ -15,7 +17,7 @@ export interface OptimizeResult extends PdfData {
     /**
      * Optimization preset used for this output.
      */
-    preset: string;
+    preset: QpdfOptimizePreset;
 
     /**
      * Original file size in bytes

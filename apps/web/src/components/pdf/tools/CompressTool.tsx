@@ -1,4 +1,4 @@
-import { formatBytes, optimizePdf, type DecodeLevel, type ObjectStreamMode, type OptimizeResult, type QpdfOptimizePreset } from "@pdfly/wasm";
+import { formatBytes, optimizePdf, PRESETS, type DecodeLevel, type ObjectStreamMode, type OptimizeResult, type QpdfOptimizePreset, type WriteOptions } from "@pdfly/wasm";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
@@ -46,45 +46,7 @@ const PRESET_DESCRIPTIONS: Record<QpdfOptimizePreset, string> = {
     archive: "Deep structural cleanup",
 };
 
-interface OptimizeSettings {
-    preset: QpdfOptimizePreset;
-    compressionLevel: number;
-    decodeLevel: DecodeLevel;
-    objectStreams: ObjectStreamMode;
-    recompressFlate: boolean;
-    compressPages: boolean;
-    removeUnreferencedResources: boolean;
-    linearize: boolean;
-}
-
-const PRESET_DEFAULTS: Record<QpdfOptimizePreset, Omit<OptimizeSettings, "preset" | "compressionLevel">> = {
-    default: {
-        linearize: false,
-        decodeLevel: "generalized",
-        objectStreams: "generate",
-        recompressFlate: true,
-        compressPages: false,
-        removeUnreferencedResources: false,
-    },
-    web: {
-        linearize: true,
-        decodeLevel: "generalized",
-        objectStreams: "generate",
-        recompressFlate: true,
-        compressPages: false,
-        removeUnreferencedResources: false,
-    },
-    archive: {
-        linearize: false,
-        decodeLevel: "generalized",
-        objectStreams: "generate",
-        recompressFlate: true,
-        compressPages: true,
-        removeUnreferencedResources: true,
-    },
-};
-
-const PRESETS = ["default", "web", "archive"] as const;
+type OptimizeSettings = { preset: QpdfOptimizePreset } & Required<WriteOptions>;
 
 export function CompressTool() {
     const fileInputId = useId();
@@ -92,11 +54,7 @@ export function CompressTool() {
     const [file, setFile] = useState<File | null>(null);
     const [previewPage, setPreviewPage] = useState(1);
     const [previewPageCount, setPreviewPageCount] = useState(0);
-    const [settings, setSettings] = useState<OptimizeSettings>({
-        preset: "default",
-        compressionLevel: 6,
-        ...PRESET_DEFAULTS.default,
-    });
+    const [settings, setSettings] = useState<OptimizeSettings>({ preset: "default", ...PRESETS.default });
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<OptimizeResult>();
 
     const processFile = async (nextFile: File, options: OptimizeSettings = settings) => {
@@ -141,7 +99,7 @@ export function CompressTool() {
     };
 
     const selectPreset = (preset: QpdfOptimizePreset) => {
-        updateSettings({ preset, ...PRESET_DEFAULTS[preset] });
+        updateSettings({ preset, ...PRESETS[preset] });
     };
 
     const handleFiles = (files: File[]) => {
@@ -184,7 +142,7 @@ export function CompressTool() {
                 <SidebarHeader>Preset</SidebarHeader>
                 <SidebarContent>
                     <SidebarToggleGroup>
-                        {PRESETS.map((preset) => (
+                        {(Object.keys(PRESETS) as QpdfOptimizePreset[]).map((preset) => (
                             <SidebarToggle key={preset} isActive={settings.preset === preset} title={PRESET_DESCRIPTIONS[preset]} onClick={() => selectPreset(preset)}>
                                 {PRESET_LABELS[preset]}
                             </SidebarToggle>
@@ -273,7 +231,7 @@ export function CompressTool() {
                         ? [
                               { label: "Saved", value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
                               { label: "Output", value: formatBytes(result.compressedSize) },
-                              { label: "Preset", value: PRESET_LABELS[result.preset as QpdfOptimizePreset] ?? result.preset },
+                              { label: "Preset", value: PRESET_LABELS[result.preset] },
                               ...(elapsedMs !== null ? [{ label: "Time", value: formatDuration(elapsedMs) }] : []),
                           ]
                         : []

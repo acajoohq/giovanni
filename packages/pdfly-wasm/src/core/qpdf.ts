@@ -123,8 +123,17 @@ export class QpdfDocument {
 
         try {
             const module = await initQpdfModule();
-            const writer = new module.QPDFWriter(this.wasmInstance!);
+            const wasm = this.getWasmInstance();
             const writeOptions = validateWriteOptions(options);
+
+            if (writeOptions.compressPages) {
+                wasm.coalesceContentStreams();
+            }
+            if (writeOptions.removeUnreferencedResources) {
+                wasm.removeUnreferencedResources();
+            }
+
+            const writer = new module.QPDFWriter(wasm);
 
             try {
                 writer.setCompressStreams(true);
@@ -160,7 +169,10 @@ export class QpdfDocument {
      */
     getWasmInstance(): WasmQPDFWrapper {
         this.ensureInitialized();
-        return this.wasmInstance!;
+        if (!this.wasmInstance) {
+            throw new QpdfValidationError("QpdfDocument is not open. Call QpdfDocument.open() first.");
+        }
+        return this.wasmInstance;
     }
 
     /**

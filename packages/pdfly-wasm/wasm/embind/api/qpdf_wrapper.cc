@@ -2,6 +2,7 @@
 
 #include "../qpdf_wasm.hh"
 #include <qpdf/Pl_Flate.hh>
+#include <qpdf/QPDFPageDocumentHelper.hh>
 #include <stdexcept>
 
 QPDFWrapper::QPDFWrapper() : initialized(false) {}
@@ -47,6 +48,25 @@ bool QPDFWrapper::isLinearized() {
     }
 
     return pdf.isLinearized();
+}
+
+void QPDFWrapper::coalesceContentStreams() {
+    if (!initialized) {
+        throw std::runtime_error("QPDF not initialized. Call processMemoryFile first.");
+    }
+
+    auto pages = pdf.getAllPages();
+    for (auto& page : pages) {
+        page.coalesceContentStreams();
+    }
+}
+
+void QPDFWrapper::removeUnreferencedResources() {
+    if (!initialized) {
+        throw std::runtime_error("QPDF not initialized. Call processMemoryFile first.");
+    }
+
+    QPDFPageDocumentHelper(pdf).removeUnreferencedResources();
 }
 
 QPDF& QPDFWrapper::getQPDF() {

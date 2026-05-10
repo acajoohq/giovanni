@@ -29,7 +29,9 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
         .function("getNumPages", &QPDFWrapper::getNumPages)
         .function("getPDFVersion", &QPDFWrapper::getPDFVersion)
         .function("isEncrypted", &QPDFWrapper::isEncrypted)
-        .function("isLinearized", &QPDFWrapper::isLinearized);
+        .function("isLinearized", &QPDFWrapper::isLinearized)
+        .function("coalesceContentStreams", &QPDFWrapper::coalesceContentStreams)
+        .function("removeUnreferencedResources", &QPDFWrapper::removeUnreferencedResources);
 
     class_<QPDFWriterWrapper>("QPDFWriter")
         .constructor<QPDFWrapper&>()

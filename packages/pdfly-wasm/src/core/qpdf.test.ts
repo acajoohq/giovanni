@@ -13,6 +13,8 @@ type FakeWrapper = {
     getPDFVersion: ReturnType<typeof vi.fn<() => string>>;
     isEncrypted: ReturnType<typeof vi.fn<() => boolean>>;
     isLinearized: ReturnType<typeof vi.fn<() => boolean>>;
+    coalesceContentStreams: ReturnType<typeof vi.fn<() => void>>;
+    removeUnreferencedResources: ReturnType<typeof vi.fn<() => void>>;
     delete: ReturnType<typeof vi.fn<() => void>>;
 };
 
@@ -34,6 +36,8 @@ function makeFakeWrapper(): FakeWrapper {
         getPDFVersion: vi.fn<() => string>().mockReturnValue("1.7"),
         isEncrypted: vi.fn<() => boolean>().mockReturnValue(false),
         isLinearized: vi.fn<() => boolean>().mockReturnValue(true),
+        coalesceContentStreams: vi.fn<() => void>(),
+        removeUnreferencedResources: vi.fn<() => void>(),
         delete: vi.fn<() => void>(),
     };
 }
@@ -236,6 +240,81 @@ describe("QpdfDocument", () => {
             const doc = await QpdfDocument.open(new Uint8Array());
 
             await expect(doc.write()).rejects.toBeInstanceOf(QpdfCompressionError);
+            doc.dispose();
+        });
+
+        it("calls coalesceContentStreams() when compressPages is true", async () => {
+            const wrapper = makeFakeWrapper();
+            mockInitQpdfModule.mockResolvedValue(makeFakeModule(wrapper) as never);
+
+            const doc = await QpdfDocument.open(new Uint8Array());
+            await doc.write({ compressPages: true });
+
+            expect(wrapper.coalesceContentStreams).toHaveBeenCalledOnce();
+            doc.dispose();
+        });
+
+        it("does not call coalesceContentStreams() when compressPages is false", async () => {
+            const wrapper = makeFakeWrapper();
+            mockInitQpdfModule.mockResolvedValue(makeFakeModule(wrapper) as never);
+
+            const doc = await QpdfDocument.open(new Uint8Array());
+            await doc.write({ compressPages: false });
+
+            expect(wrapper.coalesceContentStreams).not.toHaveBeenCalled();
+            doc.dispose();
+        });
+
+        it("calls removeUnreferencedResources() when removeUnreferencedResources is true", async () => {
+            const wrapper = makeFakeWrapper();
+            mockInitQpdfModule.mockResolvedValue(makeFakeModule(wrapper) as never);
+
+            const doc = await QpdfDocument.open(new Uint8Array());
+            await doc.write({ removeUnreferencedResources: true });
+
+            expect(wrapper.removeUnreferencedResources).toHaveBeenCalledOnce();
+            doc.dispose();
+        });
+
+        it("does not call removeUnreferencedResources() when removeUnreferencedResources is false", async () => {
+            const wrapper = makeFakeWrapper();
+            mockInitQpdfModule.mockResolvedValue(makeFakeModule(wrapper) as never);
+
+            const doc = await QpdfDocument.open(new Uint8Array());
+            await doc.write({ removeUnreferencedResources: false });
+
+            expect(wrapper.removeUnreferencedResources).not.toHaveBeenCalled();
+            doc.dispose();
+        });
+
+        it("calls both coalesceContentStreams() and removeUnreferencedResources() for archive preset options", async () => {
+            const wrapper = makeFakeWrapper();
+            mockInitQpdfModule.mockResolvedValue(makeFakeModule(wrapper) as never);
+
+            const doc = await QpdfDocument.open(new Uint8Array());
+            await doc.write({ compressPages: true, removeUnreferencedResources: true });
+
+            expect(wrapper.coalesceContentStreams).toHaveBeenCalledOnce();
+            expect(wrapper.removeUnreferencedResources).toHaveBeenCalledOnce();
+            doc.dispose();
+        });
+
+        it("calls coalesceContentStreams() before constructing the writer", async () => {
+            const wrapper = makeFakeWrapper();
+            const callOrder: string[] = [];
+            wrapper.coalesceContentStreams.mockImplementation(() => { callOrder.push("coalesce"); });
+            const mod = makeFakeModule(wrapper);
+            const originalWriterCtor = mod.QPDFWriter;
+            mod.QPDFWriter = vi.fn<() => FakeWriter>().mockImplementation(function (...args) {
+                callOrder.push("writerCtor");
+                return originalWriterCtor(...args);
+            });
+            mockInitQpdfModule.mockResolvedValue(mod as never);
+
+            const doc = await QpdfDocument.open(new Uint8Array());
+            await doc.write({ compressPages: true });
+
+            expect(callOrder).toEqual(["coalesce", "writerCtor"]);
             doc.dispose();
         });
 

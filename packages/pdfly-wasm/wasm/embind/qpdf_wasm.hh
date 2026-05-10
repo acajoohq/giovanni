@@ -51,6 +51,8 @@ public:
     std::string getPDFVersion();
     bool isEncrypted();
     bool isLinearized();
+    void coalesceContentStreams();
+    void removeUnreferencedResources();
     QPDF& getQPDF();
 
 private:

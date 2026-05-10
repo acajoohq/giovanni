@@ -19,6 +19,8 @@ export interface WasmQPDFWrapper {
     getPDFVersion(): string;
     isEncrypted(): boolean;
     isLinearized(): boolean;
+    coalesceContentStreams(): void;
+    removeUnreferencedResources(): void;
     // metadata accessors are optional because minimal WASM builds may omit them
     getTitle?(): string;
     getAuthor?(): string;

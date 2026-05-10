@@ -1,5 +1,5 @@
 import { QpdfDocument } from "./qpdf.js";
-import { QpdfError, QpdfValidationError } from "./errors.js";
+import { QpdfError, QpdfInitError, QpdfValidationError } from "./errors.js";
 import type { CheckOptions, InspectOptions, QpdfCheckResult, QpdfDocumentInfo } from "../types/index.js";
 
 export async function inspectPdf(input: Uint8Array | ArrayBuffer, options?: InspectOptions): Promise<QpdfDocumentInfo> {
@@ -22,7 +22,7 @@ export async function checkPdf(input: Uint8Array | ArrayBuffer, options?: CheckO
             warnings: [],
         };
     } catch (error) {
-        if (error instanceof QpdfValidationError) {
+        if (error instanceof QpdfValidationError || error instanceof QpdfInitError) {
             throw error;
         }
         if (error instanceof QpdfError) {

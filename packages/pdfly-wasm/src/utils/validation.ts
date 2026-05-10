@@ -32,9 +32,14 @@ const OPTIMIZE_PRESETS = {
         objectStreams: "generate",
     },
     archive: {
-        decodeLevel: "all",
+        // "generalized" recompresses LZW/predictor/zlib streams without
+        // touching DCTDecode (JPEG) or other specialized encoders.
+        // "all" would decode JPEG to raw pixels and re-encode as Flate,
+        // which is always larger for photographic content.
+        decodeLevel: "generalized",
         recompressFlate: true,
         objectStreams: "generate",
+        compressPages: true,
         removeUnreferencedResources: true,
     },
 } satisfies Record<QpdfOptimizePreset, WriteOptions>;

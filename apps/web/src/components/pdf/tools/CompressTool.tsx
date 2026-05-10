@@ -5,7 +5,19 @@ import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { ComparisonSlider } from "@/components/viewer/ComparisonSlider";
 import { EmptyState } from "@/components/emptyState/EmptyState";
-import { Sidebar, SidebarCheckbox, SidebarCollapsibleSection, SidebarContent, SidebarField, SidebarHeader, SidebarRange, SidebarSection, SidebarSelect, SidebarToggle, SidebarToggleGroup } from "@/components/sidebar";
+import {
+    Sidebar,
+    SidebarCheckbox,
+    SidebarCollapsibleSection,
+    SidebarContent,
+    SidebarField,
+    SidebarHeader,
+    SidebarRange,
+    SidebarSection,
+    SidebarSelect,
+    SidebarToggle,
+    SidebarToggleGroup,
+} from "@/components/sidebar";
 import { EmptyCompress } from "@/components/pdf/emptyState/EmptyCompress";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";

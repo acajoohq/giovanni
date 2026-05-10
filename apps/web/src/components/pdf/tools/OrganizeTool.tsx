@@ -1,4 +1,4 @@
-﻿import { formatBytes, organizePdf, splitPdf } from "@pdfly/wasm";
+import { formatBytes, organizePdf, splitPdf } from "@pdfly/wasm";
 import { RiAddLine, RiArrowDownLine, RiArrowUpLine, RiDragMove2Line } from "@remixicon/react";
 import { useEffect, useId, useRef, useState, DragEvent } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";

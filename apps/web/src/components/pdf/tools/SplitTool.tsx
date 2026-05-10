@@ -12,6 +12,7 @@ import { SidebarField } from "@/components/sidebar/SidebarField";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { SidebarInput } from "@/components/sidebar/SidebarControls";
 import { SidebarSection } from "@/components/sidebar/SidebarSection";
+import { SidebarCollapsibleSection } from "@/components/sidebar/SidebarCollapsibleSection";
 import { SidebarToggle } from "@/components/sidebar/SidebarToggle";
 import { SidebarToggleGroup } from "@/components/sidebar/SidebarToggleGroup";
 import { EmptySplit } from "@/components/pdf/emptyState/EmptySplit";
@@ -123,12 +124,6 @@ export function SplitTool() {
             <SidebarSection>
                 <SidebarHeader>{t("split.sidebar.splitSettings")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label={t("split.sidebar.pattern")}>
-                        <SidebarInput value={splitSettings.outputPattern} onChange={(event) => updateSplitSettings({ outputPattern: event.currentTarget.value })} />
-                    </SidebarField>
-                    <SidebarField label={t("split.sidebar.archive")}>
-                        <SidebarInput value={splitSettings.archiveName} onChange={(event) => updateSplitSettings({ archiveName: event.currentTarget.value })} />
-                    </SidebarField>
                     <SidebarField label={t("split.sidebar.zip")}>
                         <SidebarToggleGroup>
                             <SidebarToggle isActive={splitSettings.zipCompressionMode === "store"} onClick={() => updateSplitSettings({ zipCompressionMode: "store" })}>
@@ -141,6 +136,16 @@ export function SplitTool() {
                     </SidebarField>
                 </SidebarContent>
             </SidebarSection>
+            <SidebarCollapsibleSection title="Advanced">
+                <SidebarContent>
+                    <SidebarField label={t("split.sidebar.pattern")}>
+                        <SidebarInput value={splitSettings.outputPattern} onChange={(event) => updateSplitSettings({ outputPattern: event.currentTarget.value })} />
+                    </SidebarField>
+                    <SidebarField label={t("split.sidebar.archive")}>
+                        <SidebarInput value={splitSettings.archiveName} onChange={(event) => updateSplitSettings({ archiveName: event.currentTarget.value })} />
+                    </SidebarField>
+                </SidebarContent>
+            </SidebarCollapsibleSection>
         </Sidebar>
     );
 

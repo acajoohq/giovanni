@@ -13,6 +13,7 @@ import { SidebarField } from "@/components/sidebar/SidebarField";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { SidebarInput } from "@/components/sidebar/SidebarControls";
 import { SidebarSection } from "@/components/sidebar/SidebarSection";
+import { SidebarCollapsibleSection } from "@/components/sidebar/SidebarCollapsibleSection";
 import { EmptyExtractImages } from "@/components/pdf/emptyState/EmptyExtractImages";
 import { ExtractedImageCard } from "@/components/pdf/ExtractedImageCard";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
@@ -151,13 +152,17 @@ export function ExtractImagesTool() {
                     <SidebarField label={t("extractImages.sidebar.archive")}>
                         <SidebarInput value={extractImagesSettings.archiveName} onChange={(event) => updateExtractImagesSettings({ archiveName: event.currentTarget.value })} />
                     </SidebarField>
+                </SidebarContent>
+            </SidebarSection>
+            <SidebarCollapsibleSection title="Advanced">
+                <SidebarContent>
                     <SidebarCheckbox
                         checked={extractImagesSettings.includeRawStreams}
                         label={t("extractImages.sidebar.includeRaw")}
                         onChange={(event) => updateExtractImagesSettings({ includeRawStreams: event.currentTarget.checked })}
                     />
                 </SidebarContent>
-            </SidebarSection>
+            </SidebarCollapsibleSection>
         </Sidebar>
     );
 

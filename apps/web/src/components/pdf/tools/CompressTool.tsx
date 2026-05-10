@@ -12,6 +12,7 @@ import { SidebarField } from "@/components/sidebar/SidebarField";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { SidebarRange, SidebarSelect } from "@/components/sidebar/SidebarControls";
 import { SidebarSection } from "@/components/sidebar/SidebarSection";
+import { SidebarCollapsibleSection } from "@/components/sidebar/SidebarCollapsibleSection";
 import { SidebarToggle } from "@/components/sidebar/SidebarToggle";
 import { SidebarToggleGroup } from "@/components/sidebar/SidebarToggleGroup";
 import { EmptyCompress } from "@/components/pdf/emptyState/EmptyCompress";
@@ -147,8 +148,7 @@ export function CompressTool() {
                 </SidebarContent>
             </SidebarSection>
 
-            <SidebarSection>
-                <SidebarHeader>Advanced</SidebarHeader>
+            <SidebarCollapsibleSection title="Advanced">
                 <SidebarContent>
                     <SidebarField label={t("compress.sidebar.level")}>
                         <SidebarRange
@@ -166,10 +166,9 @@ export function CompressTool() {
                         <SidebarSelect options={objectStreamOptions} value={settings.objectStreams} onValueChange={(objectStreams) => updateSettings({ objectStreams })} />
                     </SidebarField>
                 </SidebarContent>
-            </SidebarSection>
+            </SidebarCollapsibleSection>
 
-            <SidebarSection>
-                <SidebarHeader>{t("compress.sidebar.streamOptions")}</SidebarHeader>
+            <SidebarCollapsibleSection title={t("compress.sidebar.streamOptions")}>
                 <SidebarContent>
                     <SidebarCheckbox checked={settings.linearize} label="Linearize" onChange={(event) => updateSettings({ linearize: event.currentTarget.checked })} />
                     <SidebarCheckbox
@@ -188,7 +187,7 @@ export function CompressTool() {
                         onChange={(event) => updateSettings({ removeUnreferencedResources: event.currentTarget.checked })}
                     />
                 </SidebarContent>
-            </SidebarSection>
+            </SidebarCollapsibleSection>
         </Sidebar>
     );
 

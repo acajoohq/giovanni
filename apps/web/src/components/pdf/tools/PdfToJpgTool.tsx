@@ -13,6 +13,7 @@ import { SidebarField } from "@/components/sidebar/SidebarField";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { SidebarInput, SidebarRange } from "@/components/sidebar/SidebarControls";
 import { SidebarSection } from "@/components/sidebar/SidebarSection";
+import { SidebarCollapsibleSection } from "@/components/sidebar/SidebarCollapsibleSection";
 import { EmptyPdfToJpg } from "@/components/pdf/emptyState/EmptyPdfToJpg";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
@@ -156,8 +157,7 @@ export function PdfToJpgTool() {
                 </SidebarContent>
             </SidebarSection>
 
-            <SidebarSection>
-                <SidebarHeader>{t("pdfToJpg.sidebar.exportSettings")}</SidebarHeader>
+            <SidebarCollapsibleSection title={t("pdfToJpg.sidebar.exportSettings")}>
                 <SidebarContent>
                     <SidebarField label={t("pdfToJpg.sidebar.pattern")}>
                         <SidebarInput value={settings.outputPattern} onChange={(event) => updateExportSettings({ outputPattern: event.currentTarget.value })} />
@@ -166,7 +166,7 @@ export function PdfToJpgTool() {
                         <SidebarInput value={settings.archiveName} onChange={(event) => updateExportSettings({ archiveName: event.currentTarget.value })} />
                     </SidebarField>
                 </SidebarContent>
-            </SidebarSection>
+            </SidebarCollapsibleSection>
         </Sidebar>
     );
 

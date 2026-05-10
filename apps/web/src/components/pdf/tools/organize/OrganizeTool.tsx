@@ -1,6 +1,6 @@
 import { formatBytes, mergePdfs, splitPages } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import { Fragment, type DragEvent, useEffect, useId, useRef, useState } from "react";
+import { type DragEvent, useEffect, useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -15,8 +15,7 @@ import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, formatThroughput, pdfBaseName } from "@/utils/pdfToolUtils.utils";
-import { OrganizeDropIndicator } from "./OrganizeDropIndicator";
-import { OrganizePageCard } from "./OrganizePageCard";
+import { OrganizeThumbnailGrid } from "./OrganizeThumbnailGrid";
 
 interface SplitJobResult {
     pages: Uint8Array[];
@@ -146,28 +145,18 @@ export function OrganizeTool() {
 
     const thumbnailGrid =
         pages.length > 0 ? (
-            <div className="h-full w-full overflow-y-auto p-3 pb-24">
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-                    {pageOrder.map((originalIndex, currentIndex) => (
-                        <Fragment key={originalIndex}>
-                            {showDropIndicator && dragOverIndex === currentIndex ? <OrganizeDropIndicator onDrop={handleDrop} /> : null}
-                            <OrganizePageCard
-                                currentIndex={currentIndex}
-                                originalIndex={originalIndex}
-                                pageCount={pageOrder.length}
-                                pageData={pages[originalIndex] as Uint8Array}
-                                isDragSource={draggedIndex === currentIndex}
-                                onDragEnd={handleDragEnd}
-                                onDragOver={(e) => handleDragOver(e, currentIndex)}
-                                onDragStart={() => handleDragStart(currentIndex)}
-                                onDrop={handleDrop}
-                                onMove={(dir) => handleMove(currentIndex, dir)}
-                            />
-                        </Fragment>
-                    ))}
-                    {showDropIndicator && dragOverIndex === pageOrder.length ? <OrganizeDropIndicator onDrop={handleDrop} /> : null}
-                </div>
-            </div>
+            <OrganizeThumbnailGrid
+                draggedIndex={draggedIndex}
+                dragOverIndex={dragOverIndex}
+                pageOrder={pageOrder}
+                pages={pages}
+                showDropIndicator={showDropIndicator}
+                onDragEnd={handleDragEnd}
+                onDragOver={handleDragOver}
+                onDragStart={handleDragStart}
+                onDrop={handleDrop}
+                onMove={handleMove}
+            />
         ) : null;
 
     const resultMetrics = [

@@ -1,0 +1,3 @@
+[tools]
+emsdk = "5.0.7"
+node = "24"

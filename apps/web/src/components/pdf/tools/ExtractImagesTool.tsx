@@ -17,9 +17,9 @@ import { EmptyExtractImages } from "@/components/pdf/emptyState/EmptyExtractImag
 import { ExtractedImageCard } from "@/components/pdf/ExtractedImageCard";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { useObjectUrls } from "@/hooks/pdf/useObjectUrls";
-import { buildExtractedImageEntries, downloadBlob, downloadZip, findFirstPdfFile, imageDownloadName, makeArchiveName, pdfBaseName } from "@/utils/pdf/pdfToolUtils";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import { useObjectUrls } from "@/hooks/useObjectUrls";
+import { buildExtractedImageEntries, downloadBlob, downloadZip, findFirstPdfFile, imageDownloadName, makeArchiveName, pdfBaseName } from "@/utils/pdfToolUtils.utils";
 
 const EMPTY_IMAGES: ExtractedImage[] = [];
 
@@ -166,7 +166,7 @@ export function ExtractImagesTool() {
             <div className="h-full w-full overflow-y-auto p-4 pb-24">
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                     {images.map((image, index) => (
-                        <div key={`${image.objectKey}-${image.xobjectKey}-${index}`} className="space-y-2 [content-visibility:auto] [contain-intrinsic-size:210px]">
+                        <div key={`${image.objectKey}-${image.xobjectKey}`} className="space-y-2 [content-visibility:auto] [contain-intrinsic-size:210px]">
                             <ExtractedImageCard image={image} index={index} url={previewUrls[index] ?? null} />
                             <Button className="w-full" size="sm" variant="secondary" type="button" onClick={() => downloadImage(image, index)}>
                                 {image.blob ? t("common.download") : t("common.downloadRaw")}

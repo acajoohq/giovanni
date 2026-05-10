@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
 import { AppShell } from "@/components/layout/AppShell";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import { createSeoMeta } from "@/lib/seo";
 import type { RouterContext } from "@/router";
 import appCss from "@/styles/app.css?url";
@@ -41,12 +42,14 @@ function RootComponent() {
 
 function RootDocument({ children, lang }: Readonly<{ children: ReactNode; lang: string }>) {
     return (
-        <html lang={lang} className="dark bg-[#0a0a0a] antialiased">
+        <html lang={lang} className="antialiased" suppressHydrationWarning>
             <head>
                 <HeadContent />
             </head>
             <body>
-                {children}
+                <ThemeProvider defaultTheme="system" storageKey="theme">
+                    {children}
+                </ThemeProvider>
                 <Scripts />
             </body>
         </html>
@@ -65,8 +68,8 @@ function RootNotFoundPage() {
             </head>
             <body>
                 <main className="mx-auto max-w-lg p-8">
-                    <h1 className="text-2xl font-semibold tracking-tight text-white">Not found</h1>
-                    <Link className="mt-4 inline-flex text-[#eb5a3f] hover:underline" to="/">
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Not found</h1>
+                    <Link className="mt-4 inline-flex text-brand hover:underline" to="/">
                         Back home
                     </Link>
                 </main>

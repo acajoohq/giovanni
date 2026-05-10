@@ -1,7 +1,7 @@
 import { createClientOnlyFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 
-const loadPdfRenderer = createClientOnlyFn(async () => import("@/utils/pdf/pdfRenderer.client"));
+const loadPdfRenderer = createClientOnlyFn(async () => import("@/utils/pdfRenderer.client.utils"));
 
 /**
  * Fixed thumbnail width in CSS pixels. Avoids a ResizeObserver per card —
@@ -28,71 +28,29 @@ interface PdfPageThumbnailProps {
 export function PdfPageThumbnail({ data }: PdfPageThumbnailProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
     const [isRendered, setIsRendered] = useState(false);
 
-    // Step 1: observe the container and flip `isVisible` once it enters the viewport.
     useEffect(() => {
         const element = containerRef.current;
-
-        if (!element) {
-            return;
-        }
-
-        if (typeof IntersectionObserver === "undefined") {
-            // SSR / old browsers: render immediately.
-            setIsVisible(true);
-            return;
-        }
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry?.isIntersecting) {
-                    setIsVisible(true);
-                    observer.disconnect();
-                }
-            },
-            { rootMargin: "150px" },
-        );
-
-        observer.observe(element);
-
-        return () => {
-            observer.disconnect();
-        };
-    }, []);
-
-    // Step 2: once visible, load and render page 1 at a fixed thumbnail scale.
-    useEffect(() => {
-        if (!isVisible) {
-            return;
-        }
+        if (!element) return;
 
         let cancelled = false;
 
         const render = async () => {
             const canvas = canvasRef.current;
-
-            if (!canvas) {
-                return;
-            }
+            if (!canvas) return;
 
             try {
                 const renderer = await loadPdfRenderer();
-
-                if (!renderer || cancelled) {
-                    return;
-                }
+                if (!renderer || cancelled) return;
 
                 const doc = await renderer.loadPdfDocument(data);
-
                 if (cancelled) {
                     void doc.destroy();
                     return;
                 }
 
                 const pdfPage = await doc.getPage(1);
-
                 if (cancelled) {
                     void doc.destroy();
                     return;
@@ -108,30 +66,44 @@ export function PdfPageThumbnail({ data }: PdfPageThumbnailProps) {
                     shouldCommit: () => !cancelled,
                 });
 
-                // Free memory — thumbnails are static, no further interaction needed.
                 void doc.destroy();
-
-                if (!cancelled) {
-                    setIsRendered(true);
-                }
+                if (!cancelled) setIsRendered(true);
             } catch (error) {
                 console.error("Failed to render PDF thumbnail", error);
             }
         };
 
-        void render();
+        if (typeof IntersectionObserver === "undefined") {
+            void render();
+            return () => {
+                cancelled = true;
+            };
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry?.isIntersecting) {
+                    observer.disconnect();
+                    void render();
+                }
+            },
+            { rootMargin: "150px" },
+        );
+
+        observer.observe(element);
 
         return () => {
             cancelled = true;
+            observer.disconnect();
         };
-    }, [isVisible, data]);
+    }, [data]);
 
     return (
         <div ref={containerRef} className="relative flex h-full w-full items-center justify-center overflow-hidden bg-app-bg">
             <canvas ref={canvasRef} className="block max-h-full max-w-full" />
             {!isRendered && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="size-4 animate-spin rounded-full border-2 border-neutral-600 border-t-neutral-300" />
+                    <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-app-text-muted" />
                 </div>
             )}
         </div>

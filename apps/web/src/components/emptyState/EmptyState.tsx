@@ -66,13 +66,13 @@ export const EmptyState = ({ className, title, description, badgeIcon, visual, f
                 <div className="relative mb-10 flex size-32 items-center justify-center">{visual}</div>
 
                 {badgeIcon && (
-                    <div className="absolute left-[calc(50%+34px)] top-[86px] z-30 flex size-10 items-center justify-center rounded-full border border-app-border-strong bg-app-surface-muted text-neutral-400 shadow-[0_4px_12px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] transition-colors group-hover:text-white">
+                    <div className="absolute left-[calc(50%+34px)] top-[86px] z-30 flex size-10 items-center justify-center rounded-full border border-app-border-strong bg-app-surface-muted text-muted-foreground shadow-[0_4px_12px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] transition-colors group-hover:text-foreground">
                         {badgeIcon}
                     </div>
                 )}
 
-                <h2 className="mb-1.5 text-[15px] font-medium tracking-tight text-white transition-colors group-hover:text-brand">{title}</h2>
-                <p className="text-[12px] text-neutral-500">{description}</p>
+                <h2 className="mb-1.5 text-[15px] font-medium tracking-tight text-foreground transition-colors group-hover:text-brand">{title}</h2>
+                <p className="text-[12px] text-muted-foreground">{description}</p>
             </label>
         </div>
     );

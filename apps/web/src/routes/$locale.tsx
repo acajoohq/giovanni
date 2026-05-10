@@ -41,8 +41,8 @@ function LocaleNotFoundPage() {
     const { t } = useTranslation();
     return (
         <main className="mx-auto max-w-lg p-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-white">{t("notFound.title")}</h1>
-            <Link className="mt-4 inline-flex text-[#eb5a3f] hover:underline" to="/$locale" params={{ locale }}>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t("notFound.title")}</h1>
+            <Link className="mt-4 inline-flex text-brand hover:underline" to="/$locale" params={{ locale }}>
                 {t("notFound.backHome")}
             </Link>
         </main>

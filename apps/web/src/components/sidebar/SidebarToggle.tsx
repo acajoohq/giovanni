@@ -6,7 +6,9 @@ export const SidebarToggle = ({ className, isActive, children, ...props }: Butto
         type="button"
         className={cn(
             "flex-1 py-1 rounded-[3px] text-[11px] font-medium transition-all",
-            isActive ? "bg-app-border-strong shadow-sm text-white" : "text-neutral-500 hover:text-white",
+            isActive
+                ? "bg-white shadow-skeuo-sm text-foreground dark:bg-[#303030] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] dark:text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             className,
         )}
         {...props}

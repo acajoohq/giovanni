@@ -1,4 +1,4 @@
-export type ToolStatusTone = "info" | "success" | "error";
+type ToolStatusTone = "info" | "success" | "error";
 
 export interface ActiveToolStatus {
     tone: ToolStatusTone;

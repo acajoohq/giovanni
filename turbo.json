@@ -36,6 +36,10 @@
             "dependsOn": ["^typecheck"],
             "inputs": ["$TURBO_DEFAULT$"]
         },
+        "check": {
+            "dependsOn": ["^check", "^build"],
+            "inputs": ["$TURBO_DEFAULT$"]
+        },
         "validate": {
             "dependsOn": ["build"]
         }

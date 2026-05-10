@@ -207,18 +207,10 @@ export function CompressTool() {
                         />
                     </SidebarField>
                     <SidebarField label="Decode">
-                        <SidebarSelect
-                            options={decodeLevelOptions}
-                            value={settings.decodeLevel}
-                            onValueChange={(decodeLevel) => updateSettings({ decodeLevel })}
-                        />
+                        <SidebarSelect options={decodeLevelOptions} value={settings.decodeLevel} onValueChange={(decodeLevel) => updateSettings({ decodeLevel })} />
                     </SidebarField>
                     <SidebarField label="Object streams">
-                        <SidebarSelect
-                            options={objectStreamOptions}
-                            value={settings.objectStreams}
-                            onValueChange={(objectStreams) => updateSettings({ objectStreams })}
-                        />
+                        <SidebarSelect options={objectStreamOptions} value={settings.objectStreams} onValueChange={(objectStreams) => updateSettings({ objectStreams })} />
                     </SidebarField>
                 </SidebarContent>
             </SidebarSection>
@@ -226,21 +218,13 @@ export function CompressTool() {
             <SidebarSection>
                 <SidebarHeader>Stream Options</SidebarHeader>
                 <SidebarContent>
-                    <SidebarCheckbox
-                        checked={settings.linearize}
-                        label="Linearize"
-                        onChange={(event) => updateSettings({ linearize: event.currentTarget.checked })}
-                    />
+                    <SidebarCheckbox checked={settings.linearize} label="Linearize" onChange={(event) => updateSettings({ linearize: event.currentTarget.checked })} />
                     <SidebarCheckbox
                         checked={settings.recompressFlate}
                         label="Recompress flate"
                         onChange={(event) => updateSettings({ recompressFlate: event.currentTarget.checked })}
                     />
-                    <SidebarCheckbox
-                        checked={settings.compressPages}
-                        label="Compress pages"
-                        onChange={(event) => updateSettings({ compressPages: event.currentTarget.checked })}
-                    />
+                    <SidebarCheckbox checked={settings.compressPages} label="Compress pages" onChange={(event) => updateSettings({ compressPages: event.currentTarget.checked })} />
                     <SidebarCheckbox
                         checked={settings.removeUnreferencedResources}
                         label="Remove unused"

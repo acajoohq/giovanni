@@ -86,10 +86,7 @@ describe("linearizePdf", () => {
 
         await linearizePdf(new Uint8Array());
 
-        expect(fakeModule.compressPdf).toHaveBeenCalledWith(
-            expect.any(Uint8Array),
-            expect.objectContaining({ linearize: true }),
-        );
+        expect(fakeModule.compressPdf).toHaveBeenCalledWith(expect.any(Uint8Array), expect.objectContaining({ linearize: true }));
     });
 
     it("includes preset in the result", async () => {

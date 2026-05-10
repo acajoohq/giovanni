@@ -36,9 +36,7 @@ describe("splitPdf", () => {
     it("copies pages out of WASM heap via slice()", async () => {
         const wasmPage = new Uint8Array([1, 2, 3]);
         const sliceSpy = vi.spyOn(wasmPage, "slice");
-        mockInitQpdfModule.mockResolvedValue(
-            makeFakeModule(vi.fn<() => Uint8Array[]>(() => [wasmPage])) as never,
-        );
+        mockInitQpdfModule.mockResolvedValue(makeFakeModule(vi.fn<() => Uint8Array[]>(() => [wasmPage])) as never);
 
         await splitPdf(new Uint8Array());
 
@@ -61,9 +59,7 @@ describe("splitPdf", () => {
     });
 
     it("accepts ArrayBuffer input", async () => {
-        mockInitQpdfModule.mockResolvedValue(
-            makeFakeModule(vi.fn<() => Uint8Array[]>(() => [new Uint8Array([1])])) as never,
-        );
+        mockInitQpdfModule.mockResolvedValue(makeFakeModule(vi.fn<() => Uint8Array[]>(() => [new Uint8Array([1])])) as never);
 
         const result = await splitPdf(new ArrayBuffer(4));
 

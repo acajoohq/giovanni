@@ -78,4 +78,3 @@ pnpm clean
     - [ ] Quality preset UI — `Lossless / Balanced / Small` once a lossy image pipeline exists
 - [ ] Open Question
     - [ ] Should we rename the wasm build to as it's doing more on top of qpdf?
-

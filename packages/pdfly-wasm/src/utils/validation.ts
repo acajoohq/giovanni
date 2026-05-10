@@ -8,7 +8,7 @@ export function normalizeBuffer(input: Uint8Array | ArrayBuffer): Uint8Array {
     throw new QpdfValidationError("Input must be a Uint8Array or ArrayBuffer");
 }
 
-export const PRESETS = {
+export const OPTIMIZE_PRESETS = {
     default: {
         compressionLevel: 6,
         decodeLevel: "generalized",
@@ -42,15 +42,15 @@ export const PRESETS = {
 
 export function validateOptimizeOptions(options?: OptimizeOptions): WasmCompressionOptions {
     const presetName = options?.preset ?? "default";
-    const preset = PRESETS[presetName];
+    const preset = OPTIMIZE_PRESETS[presetName];
     if (!preset) {
-        throw new QpdfValidationError(`preset must be one of: ${Object.keys(PRESETS).join(", ")}`);
+        throw new QpdfValidationError(`preset must be one of: ${Object.keys(OPTIMIZE_PRESETS).join(", ")}`);
     }
     return validateWriteOptions({ ...preset, ...options });
 }
 
 export function validateWriteOptions(options?: WriteOptions): WasmCompressionOptions {
-    const result: WasmCompressionOptions = { ...PRESETS.default };
+    const result: WasmCompressionOptions = { ...OPTIMIZE_PRESETS.default };
 
     if (!options) return result;
 

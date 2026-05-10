@@ -1,4 +1,4 @@
-import { formatBytes, optimizePdf, PRESETS, type DecodeLevel, type ObjectStreamMode, type OptimizeResult, type QpdfOptimizePreset, type WriteOptions } from "@pdfly/wasm";
+import { formatBytes, optimizePdf, OPTIMIZE_PRESETS, type DecodeLevel, type ObjectStreamMode, type OptimizeResult, type QpdfOptimizePreset, type WriteOptions } from "@pdfly/wasm";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { ToolLayout } from "@/components/layout/ToolLayout";
@@ -54,7 +54,7 @@ export function CompressTool() {
     const [file, setFile] = useState<File | null>(null);
     const [previewPage, setPreviewPage] = useState(1);
     const [previewPageCount, setPreviewPageCount] = useState(0);
-    const [settings, setSettings] = useState<OptimizeSettings>({ preset: "default", ...PRESETS.default });
+    const [settings, setSettings] = useState<OptimizeSettings>({ preset: "default", ...OPTIMIZE_PRESETS.default });
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<OptimizeResult>();
 
     const processFile = async (nextFile: File, options: OptimizeSettings = settings) => {
@@ -99,7 +99,7 @@ export function CompressTool() {
     };
 
     const selectPreset = (preset: QpdfOptimizePreset) => {
-        updateSettings({ preset, ...PRESETS[preset] });
+        updateSettings({ preset, ...OPTIMIZE_PRESETS[preset] });
     };
 
     const handleFiles = (files: File[]) => {
@@ -142,7 +142,7 @@ export function CompressTool() {
                 <SidebarHeader>Preset</SidebarHeader>
                 <SidebarContent>
                     <SidebarToggleGroup>
-                        {(Object.keys(PRESETS) as QpdfOptimizePreset[]).map((preset) => (
+                        {(Object.keys(OPTIMIZE_PRESETS) as QpdfOptimizePreset[]).map((preset) => (
                             <SidebarToggle key={preset} isActive={settings.preset === preset} title={PRESET_DESCRIPTIONS[preset]} onClick={() => selectPreset(preset)}>
                                 {PRESET_LABELS[preset]}
                             </SidebarToggle>

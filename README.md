@@ -66,6 +66,7 @@ pnpm clean
 - [ ] Merge/fuse PDFs
 - [ ] Lots of fixture tests (runned on demand
 - [ ] Rename to Giovanni
+- [ ] Make sure we cache heavily big assets.
 - [ ] Fix the inconsistencies in qpdf wasm package and options of each methods, also the writerpattern is not consisten accross tool. We should make it better by having a clear optimized pipeline.
 - [ ] Performance
     - [ ] Add module-level side-effect import of `pdfRenderer.client` in PDF tool routes (start pdfjs-dist download at chunk parse time, not on component mount)

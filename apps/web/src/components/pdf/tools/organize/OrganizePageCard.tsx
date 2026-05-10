@@ -54,12 +54,12 @@ export function OrganizePageCard({ originalIndex, currentIndex, pageCount, pageD
                     </button>
                 </div>
                 <div className="pointer-events-none absolute bottom-1 left-1 flex h-5 w-5 items-center justify-center rounded bg-black/50">
-                    <RiDragMove2Line className="size-3 text-neutral-400" />
+                    <RiDragMove2Line className="size-3 text-white/50" />
                 </div>
             </div>
-            <span className="truncate text-center text-[10px] text-neutral-500">
+            <span className="truncate text-center text-[10px] text-muted-foreground">
                 Page {currentIndex + 1}
-                {orderChanged && <span className="ml-1 text-neutral-700">(was {originalIndex + 1})</span>}
+                {orderChanged && <span className="ml-1 text-app-text-subtle">(was {originalIndex + 1})</span>}
             </span>
         </div>
     );

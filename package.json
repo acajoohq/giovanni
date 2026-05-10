@@ -17,9 +17,11 @@
         "validate": "turbo validate"
     },
     "devDependencies": {
+        "@typescript/native-preview": "7.0.0-dev.20260505.1",
         "oxfmt": "^0.48.0",
         "oxlint": "^1.63.0",
         "turbo": "^2.9.9",
+        "typescript": "^6.0.3",
         "wrangler": "^4.88.0"
     },
     "engines": {

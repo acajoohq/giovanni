@@ -66,8 +66,8 @@ pnpm validate
     - [ ] Library design
 - [ ] Publish package
 - [x] Tauri (desktop app)
-- [ ] Merge/fuse PDFs
-- [ ] Lots of fixture tests (runned on demand
+- [x] Merge/fuse PDFs
+- [ ] Lots of fixture tests
 - [ ] Rename to Giovanni
 - [ ] Open Question
     - [ ] Should we rename the wasm build to as it's doing more on top of qpdf?

@@ -22,22 +22,22 @@ import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdfToolUtils.utils";
 
-const PRESET_LABELS: Record<QpdfOptimizePreset, string> = {
-    default: "Default",
-    web: "Web",
-    archive: "Archive",
-};
-
-const PRESET_DESCRIPTIONS: Record<QpdfOptimizePreset, string> = {
-    default: "Safe lossless rewrite",
-    web: "Linearize for streaming",
-    archive: "Deep structural cleanup",
-};
-
 type OptimizeSettings = { preset: QpdfOptimizePreset } & Required<WriteOptions>;
 
 export function CompressTool() {
     const { t } = useTranslation();
+
+    const presetLabels: Record<QpdfOptimizePreset, string> = {
+        default: t("compress.preset.default.label"),
+        web: t("compress.preset.web.label"),
+        archive: t("compress.preset.archive.label"),
+    };
+
+    const presetDescriptions: Record<QpdfOptimizePreset, string> = {
+        default: t("compress.preset.default.description"),
+        web: t("compress.preset.web.description"),
+        archive: t("compress.preset.archive.description"),
+    };
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -64,16 +64,7 @@ export function CompressTool() {
             execute: async () => {
                 const buffer = await nextFile.arrayBuffer();
 
-                return optimizePdf(buffer, {
-                    preset: options.preset,
-                    compressionLevel: options.compressionLevel,
-                    decodeLevel: options.decodeLevel,
-                    objectStreams: options.objectStreams,
-                    recompressFlate: options.recompressFlate,
-                    compressPages: options.compressPages,
-                    removeUnreferencedResources: options.removeUnreferencedResources,
-                    linearize: options.linearize,
-                });
+                return optimizePdf(buffer, options);
             },
             errorMessage: t("compress.status.failed"),
             successStatus: (nextResult) =>
@@ -143,16 +134,16 @@ export function CompressTool() {
     const sidebar = (
         <Sidebar>
             <SidebarSection>
-                <SidebarHeader>Preset</SidebarHeader>
+                <SidebarHeader>{t("compress.preset.header")}</SidebarHeader>
                 <SidebarContent>
                     <SidebarToggleGroup>
                         {(Object.keys(OPTIMIZE_PRESETS) as QpdfOptimizePreset[]).map((preset) => (
-                            <SidebarToggle key={preset} isActive={settings.preset === preset} title={PRESET_DESCRIPTIONS[preset]} onClick={() => selectPreset(preset)}>
-                                {PRESET_LABELS[preset]}
+                            <SidebarToggle key={preset} isActive={settings.preset === preset} title={presetDescriptions[preset]} onClick={() => selectPreset(preset)}>
+                                {presetLabels[preset]}
                             </SidebarToggle>
                         ))}
                     </SidebarToggleGroup>
-                    <p className="mt-1.5 text-[11px] text-neutral-500">{PRESET_DESCRIPTIONS[settings.preset]}</p>
+                    <p className="mt-1.5 text-[11px] text-neutral-500">{presetDescriptions[settings.preset]}</p>
                 </SidebarContent>
             </SidebarSection>
 
@@ -239,7 +230,7 @@ export function CompressTool() {
                         ? [
                               { label: t("compress.metrics.saved"), value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
                               { label: t("common.metrics.output"), value: formatBytes(result.compressedSize) },
-                              { label: "Preset", value: PRESET_LABELS[result.preset] },
+                              { label: t("compress.preset.header"), value: presetLabels[result.preset] },
                               ...(elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
                           ]
                         : []

@@ -54,6 +54,12 @@ export const fr: Translations = {
         toolTitle: "Compresser PDF",
         emptyTitle: "Déposez un PDF à compresser",
         emptyDescription: "Traitement sécurisé et hors ligne.",
+        preset: {
+            header: "Preset",
+            default: { label: "Défaut", description: "Réécriture sans perte" },
+            web: { label: "Web", description: "Linéariser pour le streaming" },
+            archive: { label: "Archive", description: "Nettoyage structurel approfondi" },
+        },
         sidebar: {
             compression: "Compression",
             level: "Niveau",

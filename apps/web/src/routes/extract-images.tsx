@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ExtractImagesTool } from "@/components/pdf/tools/ExtractImagesTool";
+﻿import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/extract-images")({
-    component: ExtractImagesTool,
+    beforeLoad: () => {
+        throw redirect({ to: "/$locale/extract-images", params: { locale: "en" }, replace: true });
+    },
 });

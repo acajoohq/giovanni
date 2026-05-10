@@ -1,6 +1,7 @@
-import { formatBytes, mergePdfs } from "@pdfly/wasm";
+﻿import { formatBytes, mergePdfs } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -19,6 +20,7 @@ import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
 import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/utils/pdf/pdfToolUtils";
 
 export function MergeTool() {
+    const { t } = useTranslation();
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [files, setFiles] = useState<File[]>([]);
@@ -40,8 +42,8 @@ export function MergeTool() {
 
                 return result.data;
             },
-            errorMessage: "Failed to merge PDFs.",
-            successStatus: () => ({ tone: "success", message: `Merged ${nextFiles.length} PDFs.` }),
+            errorMessage: t("merge.status.failed"),
+            successStatus: () => ({ tone: "success", message: t("merge.status.merged", { count: nextFiles.length }) }),
         });
     };
 
@@ -54,7 +56,7 @@ export function MergeTool() {
         const pdfs = filterPdfFiles(nextFiles);
 
         if (pdfs.length === 0) {
-            setStatus({ tone: "error", message: "Please select PDF files only." });
+            setStatus({ tone: "error", message: t("merge.status.pleaseSelectPdf") });
             return;
         }
 
@@ -87,7 +89,7 @@ export function MergeTool() {
             downloadPdf(data, fileName);
         } catch (error) {
             console.error("Failed to download merged PDF", error);
-            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not download PDF." });
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : t("common.couldNotDownload") });
         }
     };
 
@@ -96,9 +98,9 @@ export function MergeTool() {
     const sidebar = (
         <Sidebar>
             <SidebarSection>
-                <SidebarHeader>Output Settings</SidebarHeader>
+                <SidebarHeader>{t("common.sidebar.outputSettings")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Filename">
+                    <SidebarField label={t("common.sidebar.filename")}>
                         <SidebarInput value={outputName} onChange={(event) => setOutputName(event.currentTarget.value)} />
                     </SidebarField>
                 </SidebarContent>
@@ -110,11 +112,9 @@ export function MergeTool() {
         files.length > 0 ? (
             <div className="flex h-full flex-col overflow-hidden">
                 <div className="flex shrink-0 items-center justify-between border-b border-app-border-subtle px-4 py-2">
-                    <span className="text-[11px] font-medium text-neutral-500">
-                        {files.length} {files.length === 1 ? "file" : "files"}
-                    </span>
+                    <span className="text-[11px] font-medium text-neutral-500">{t("merge.fileCount", { count: files.length })}</span>
                     <Button size="sm" variant="secondary" type="button" onClick={() => inputRef.current?.click()}>
-                        Add PDFs
+                        {t("merge.actions.addPdfs")}
                     </Button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-3 pb-24">
@@ -126,7 +126,7 @@ export function MergeTool() {
     const afterContent =
         files.length < 2 ? (
             <div className="flex h-full items-center justify-center">
-                <span className="text-[12px] text-neutral-700">Add at least 2 PDFs to merge</span>
+                <span className="text-[12px] text-neutral-700">{t("merge.minPdfsHint")}</span>
             </div>
         ) : mergedData ? (
             <PdfPreview data={mergedData} />
@@ -137,24 +137,24 @@ export function MergeTool() {
             <div className="relative h-full w-full">
                 <BeforeAfterView after={afterContent} before={beforeContent} isProcessing={isWorking && files.length >= 2} />
                 <ResultTray
-                    fileName={`${files.length} ${files.length === 1 ? "PDF" : "PDFs"} selected`}
+                    fileName={t("merge.pdfCount", { count: files.length })}
                     fileSize={formatBytes(totalInputBytes)}
                     metrics={[
-                        { label: "Files", value: files.length, tone: files.length > 1 ? "accent" : "neutral" },
-                        ...(mergedData ? [{ label: "Output", value: formatBytes(mergedData.byteLength) }] : []),
+                        { label: t("merge.metrics.files"), value: files.length, tone: files.length > 1 ? "accent" : "neutral" },
+                        ...(mergedData ? [{ label: t("common.metrics.output"), value: formatBytes(mergedData.byteLength) }] : []),
                     ]}
-                    primaryAction={mergedData ? { label: "Download PDF", onClick: () => handleDownload(mergedData, normalizedOutputName) } : undefined}
-                    secondaryActions={[{ label: "Add PDFs", onClick: () => inputRef.current?.click() }]}
-                    status={isWorking ? { tone: "info", message: "Merging PDFs..." } : status}
+                    primaryAction={mergedData ? { label: t("common.downloadPdf"), onClick: () => handleDownload(mergedData, normalizedOutputName) } : undefined}
+                    secondaryActions={[{ label: t("merge.actions.addPdfs"), onClick: () => inputRef.current?.click() }]}
+                    status={isWorking ? { tone: "info", message: t("merge.status.merging") } : status}
                 />
             </div>
         ) : (
             <EmptyState
                 badgeIcon={<RiAddLine className="size-5" />}
-                description="Select multiple PDFs to merge into one."
+                description={t("merge.emptyDescription")}
                 fileInputId={fileInputId}
                 onFiles={handleFiles}
-                title="Drop PDFs to merge"
+                title={t("merge.emptyTitle")}
                 visual={<EmptyMerge />}
             />
         );
@@ -173,7 +173,7 @@ export function MergeTool() {
                     event.currentTarget.value = "";
                 }}
             />
-            <ToolLayout isMultiple onFiles={handleFiles} sidebar={sidebar} title="Merge">
+            <ToolLayout isMultiple onFiles={handleFiles} sidebar={sidebar} title={t("merge.toolTitle")}>
                 {centerContent}
             </ToolLayout>
         </>

@@ -1,6 +1,7 @@
-import { formatBytes, pdfToJpg, type PdfPageJpg, type PdfToJpgResult } from "@pdfly/wasm";
+﻿import { formatBytes, pdfToJpg, type PdfPageJpg, type PdfToJpgResult } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -42,6 +43,7 @@ function getPageBlob(page: PdfPageJpg) {
 }
 
 export function PdfToJpgTool() {
+    const { t } = useTranslation();
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -65,13 +67,10 @@ export function PdfToJpgTool() {
                     scale: nextSettings.scale,
                 });
             },
-            errorMessage: "Failed to convert PDF to JPG.",
+            errorMessage: t("pdfToJpg.status.failed"),
             successStatus: (nextResult) => ({
                 tone: nextResult.convertedPageCount > 0 ? "success" : "info",
-                message:
-                    nextResult.convertedPageCount === 0
-                        ? "No pages were converted."
-                        : `Converted ${nextResult.convertedPageCount} ${nextResult.convertedPageCount === 1 ? "page" : "pages"}.`,
+                message: nextResult.convertedPageCount === 0 ? t("pdfToJpg.status.noPages") : t("pdfToJpg.status.converted", { count: nextResult.convertedPageCount }),
             }),
         });
     };
@@ -103,7 +102,7 @@ export function PdfToJpgTool() {
         const nextFile = findFirstPdfFile(files);
 
         if (!nextFile) {
-            setStatus({ tone: "error", message: "Please select a PDF file." });
+            setStatus({ tone: "error", message: t("common.selectPdf") });
             return;
         }
 
@@ -125,16 +124,16 @@ export function PdfToJpgTool() {
         try {
             await downloadZip(await buildJpgPageEntries(pages, settings.outputPattern, pdfBaseName(file)), makeArchiveName(settings.archiveName, pdfBaseName(file)));
         } catch (error) {
-            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not create ZIP." });
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : t("common.couldNotCreateZip") });
         }
     };
 
     const sidebar = (
         <Sidebar>
             <SidebarSection>
-                <SidebarHeader>Conversion</SidebarHeader>
+                <SidebarHeader>{t("pdfToJpg.sidebar.conversion")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Quality">
+                    <SidebarField label={t("pdfToJpg.sidebar.quality")}>
                         <SidebarRange
                             max={100}
                             min={10}
@@ -143,7 +142,7 @@ export function PdfToJpgTool() {
                             onValueChange={(qualityPercent) => updateConversionSettings({ qualityPercent })}
                         />
                     </SidebarField>
-                    <SidebarField label="Scale">
+                    <SidebarField label={t("pdfToJpg.sidebar.scale")}>
                         <SidebarRange
                             max={4}
                             min={0.5}
@@ -157,12 +156,12 @@ export function PdfToJpgTool() {
             </SidebarSection>
 
             <SidebarSection>
-                <SidebarHeader>Export Settings</SidebarHeader>
+                <SidebarHeader>{t("pdfToJpg.sidebar.exportSettings")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Pattern">
+                    <SidebarField label={t("pdfToJpg.sidebar.pattern")}>
                         <SidebarInput value={settings.outputPattern} onChange={(event) => updateExportSettings({ outputPattern: event.currentTarget.value })} />
                     </SidebarField>
-                    <SidebarField label="Archive">
+                    <SidebarField label={t("pdfToJpg.sidebar.archive")}>
                         <SidebarInput value={settings.archiveName} onChange={(event) => updateExportSettings({ archiveName: event.currentTarget.value })} />
                     </SidebarField>
                 </SidebarContent>
@@ -177,13 +176,15 @@ export function PdfToJpgTool() {
                     {pages.map((page, index) => (
                         <div key={page.pageIndex} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:230px]">
                             <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
-                                {pageUrls[index] ? <img alt={`Converted JPG page ${page.pageIndex + 1}`} className="h-full w-full object-contain" src={pageUrls[index]} /> : null}
+                                {pageUrls[index] ? (
+                                    <img alt={t("pdfToJpg.jpgAlt", { page: page.pageIndex + 1 })} className="h-full w-full object-contain" src={pageUrls[index]} />
+                                ) : null}
                             </div>
                             <span className="truncate text-center text-[10px] text-neutral-500">
-                                Page {page.pageIndex + 1} · {page.width}x{page.height}
+                                {t("pdfToJpg.pageLabel", { page: page.pageIndex + 1, width: page.width, height: page.height })}
                             </span>
                             <Button className="h-6 text-[10px]" size="sm" variant="secondary" type="button" onClick={() => downloadPage(page)}>
-                                Download
+                                {t("common.download")}
                             </Button>
                         </div>
                     ))}
@@ -198,22 +199,22 @@ export function PdfToJpgTool() {
                 fileName={file.name}
                 fileSize={formatBytes(file.size)}
                 metrics={[
-                    ...(pages.length > 0 ? [{ label: "Pages", value: pages.length, tone: "accent" as const }] : []),
-                    ...(elapsedMs !== null ? [{ label: "Time", value: formatDuration(elapsedMs) }] : []),
-                    ...(pages.length > 0 && elapsedMs !== null ? [{ label: "Throughput", value: formatThroughput(file.size, elapsedMs) }] : []),
+                    ...(pages.length > 0 ? [{ label: t("common.metrics.pages"), value: pages.length, tone: "accent" as const }] : []),
+                    ...(elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
+                    ...(pages.length > 0 && elapsedMs !== null ? [{ label: t("common.metrics.throughput"), value: formatThroughput(file.size, elapsedMs) }] : []),
                 ]}
-                primaryAction={pages.length > 0 ? { label: "Download ZIP", onClick: handleDownloadAll } : undefined}
-                secondaryActions={[{ label: "Replace", onClick: () => inputRef.current?.click() }]}
-                status={isWorking ? { tone: "info", message: "Converting PDF to JPG..." } : status}
+                primaryAction={pages.length > 0 ? { label: t("common.downloadZip"), onClick: handleDownloadAll } : undefined}
+                secondaryActions={[{ label: t("common.replace"), onClick: () => inputRef.current?.click() }]}
+                status={isWorking ? { tone: "info", message: t("pdfToJpg.status.converting") } : status}
             />
         </div>
     ) : (
         <EmptyState
             badgeIcon={<RiAddLine className="size-5" />}
-            description="Each page is converted to a JPG image."
+            description={t("pdfToJpg.emptyDescription")}
             fileInputId={fileInputId}
             onFiles={handleFiles}
-            title="Drop a PDF to convert"
+            title={t("pdfToJpg.emptyTitle")}
             visual={<EmptyPdfToJpg />}
         />
     );
@@ -231,7 +232,7 @@ export function PdfToJpgTool() {
                     event.currentTarget.value = "";
                 }}
             />
-            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title="PDF to JPG">
+            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title={t("pdfToJpg.toolTitle")}>
                 {centerContent}
             </ToolLayout>
         </>

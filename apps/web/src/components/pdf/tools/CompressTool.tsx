@@ -1,6 +1,7 @@
-import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel, type ObjectStreamMode } from "@pdfly/wasm";
+﻿import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel, type ObjectStreamMode } from "@pdfly/wasm";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { ComparisonSlider } from "@/components/viewer/ComparisonSlider";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -19,19 +20,6 @@ import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
 import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdf/pdfToolUtils";
 
-const decodeLevelOptions: Array<{ label: string; value: DecodeLevel }> = [
-    { label: "None", value: "none" },
-    { label: "Generalized", value: "generalized" },
-    { label: "Specialized", value: "specialized" },
-    { label: "All", value: "all" },
-];
-
-const objectStreamOptions: Array<{ label: string; value: ObjectStreamMode }> = [
-    { label: "Generate", value: "generate" },
-    { label: "Preserve", value: "preserve" },
-    { label: "Disable", value: "disable" },
-];
-
 interface CompressionOptions {
     compressionLevel: number;
     decodeLevel: DecodeLevel;
@@ -42,6 +30,7 @@ interface CompressionOptions {
 }
 
 export function CompressTool() {
+    const { t } = useTranslation();
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -57,6 +46,19 @@ export function CompressTool() {
     });
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<CompressionResult>();
 
+    const decodeLevelOptions: Array<{ label: string; value: DecodeLevel }> = [
+        { label: t("compress.decodeLevel.none"), value: "none" },
+        { label: t("compress.decodeLevel.generalized"), value: "generalized" },
+        { label: t("compress.decodeLevel.specialized"), value: "specialized" },
+        { label: t("compress.decodeLevel.all"), value: "all" },
+    ];
+
+    const objectStreamOptions: Array<{ label: string; value: ObjectStreamMode }> = [
+        { label: t("compress.objectStreamMode.generate"), value: "generate" },
+        { label: t("compress.objectStreamMode.preserve"), value: "preserve" },
+        { label: t("compress.objectStreamMode.disable"), value: "disable" },
+    ];
+
     const processFile = async (nextFile: File, options: CompressionOptions = compressionOptions) => {
         await runJob({
             execute: async () => {
@@ -64,9 +66,11 @@ export function CompressTool() {
 
                 return compressPdf(buffer, options);
             },
-            errorMessage: "Failed to compress PDF.",
+            errorMessage: t("compress.status.failed"),
             successStatus: (nextResult) =>
-                nextResult.savedBytes >= 0 ? { tone: "success", message: `Saved ${formatBytes(nextResult.savedBytes)}.` } : { tone: "info", message: "Result is slightly larger." },
+                nextResult.savedBytes >= 0
+                    ? { tone: "success", message: t("compress.status.savedBytes", { bytes: formatBytes(nextResult.savedBytes) }) }
+                    : { tone: "info", message: t("compress.status.slightlyLarger") },
         });
     };
 
@@ -93,7 +97,7 @@ export function CompressTool() {
         const nextFile = findFirstPdfFile(files);
 
         if (!nextFile) {
-            setStatus({ tone: "error", message: "Please select a PDF file." });
+            setStatus({ tone: "error", message: t("common.selectPdf") });
             return;
         }
 
@@ -119,16 +123,16 @@ export function CompressTool() {
             downloadPdf(data, fileName);
         } catch (error) {
             console.error("Failed to download compressed PDF", error);
-            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not download PDF." });
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : t("common.couldNotDownload") });
         }
     };
 
     const sidebar = (
         <Sidebar>
             <SidebarSection>
-                <SidebarHeader>Compression</SidebarHeader>
+                <SidebarHeader>{t("compress.sidebar.compression")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Level">
+                    <SidebarField label={t("compress.sidebar.level")}>
                         <SidebarRange
                             max={9}
                             min={1}
@@ -137,14 +141,14 @@ export function CompressTool() {
                             onValueChange={(compressionLevel) => updateCompressionOptions({ compressionLevel })}
                         />
                     </SidebarField>
-                    <SidebarField label="Decode">
+                    <SidebarField label={t("compress.sidebar.decode")}>
                         <SidebarSelect
                             options={decodeLevelOptions}
                             value={compressionOptions.decodeLevel}
                             onValueChange={(decodeLevel) => updateCompressionOptions({ decodeLevel })}
                         />
                     </SidebarField>
-                    <SidebarField label="Object streams">
+                    <SidebarField label={t("compress.sidebar.objectStreams")}>
                         <SidebarSelect
                             options={objectStreamOptions}
                             value={compressionOptions.objectStreams}
@@ -155,21 +159,21 @@ export function CompressTool() {
             </SidebarSection>
 
             <SidebarSection>
-                <SidebarHeader>Stream Options</SidebarHeader>
+                <SidebarHeader>{t("compress.sidebar.streamOptions")}</SidebarHeader>
                 <SidebarContent>
                     <SidebarCheckbox
                         checked={compressionOptions.recompressFlate}
-                        label="Recompress flate"
+                        label={t("compress.sidebar.recompressFlate")}
                         onChange={(event) => updateCompressionOptions({ recompressFlate: event.currentTarget.checked })}
                     />
                     <SidebarCheckbox
                         checked={compressionOptions.compressPages}
-                        label="Compress pages"
+                        label={t("compress.sidebar.compressPages")}
                         onChange={(event) => updateCompressionOptions({ compressPages: event.currentTarget.checked })}
                     />
                     <SidebarCheckbox
                         checked={compressionOptions.removeUnreferencedResources}
-                        label="Remove unused"
+                        label={t("compress.sidebar.removeUnused")}
                         onChange={(event) => updateCompressionOptions({ removeUnreferencedResources: event.currentTarget.checked })}
                     />
                 </SidebarContent>
@@ -213,31 +217,31 @@ export function CompressTool() {
                 metrics={
                     result
                         ? [
-                              { label: "Saved", value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
-                              { label: "Output", value: formatBytes(result.compressedSize) },
-                              ...(elapsedMs !== null ? [{ label: "Time", value: formatDuration(elapsedMs) }] : []),
+                              { label: t("compress.metrics.saved"), value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
+                              { label: t("common.metrics.output"), value: formatBytes(result.compressedSize) },
+                              ...(elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
                           ]
                         : []
                 }
                 primaryAction={
                     result
                         ? {
-                              label: "Download PDF",
+                              label: t("common.downloadPdf"),
                               onClick: () => handleDownload(result.data, `${pdfBaseName(file)}_compressed.pdf`),
                           }
                         : undefined
                 }
-                secondaryActions={[{ label: "Replace", onClick: () => inputRef.current?.click() }]}
-                status={isWorking ? { tone: "info", message: "Compressing PDF..." } : status}
+                secondaryActions={[{ label: t("compress.actions.replace"), onClick: () => inputRef.current?.click() }]}
+                status={isWorking ? { tone: "info", message: t("compress.status.compressing") } : status}
             />
         </div>
     ) : (
         <EmptyState
             badgeIcon={<RiAddLine className="size-5" />}
-            description="Secure, offline processing."
+            description={t("compress.emptyDescription")}
             fileInputId={fileInputId}
             onFiles={handleFiles}
-            title="Drop a PDF to compress"
+            title={t("compress.emptyTitle")}
             visual={<EmptyCompress />}
         />
     );
@@ -255,7 +259,7 @@ export function CompressTool() {
                     event.currentTarget.value = "";
                 }}
             />
-            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title="Compress PDF">
+            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title={t("compress.toolTitle")}>
                 {centerContent}
             </ToolLayout>
         </>

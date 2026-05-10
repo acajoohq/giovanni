@@ -1,5 +1,6 @@
-import { useState, type ReactNode } from "react";
+﻿import { useState, type ReactNode } from "react";
 import { RiLayoutColumnLine, RiLayoutRowLine } from "@remixicon/react";
+import { useTranslation } from "react-i18next";
 import { ProcessingPlaceholder } from "@/components/viewer/ProcessingPlaceholder";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/shadcn/Resizable";
 
@@ -12,6 +13,7 @@ interface BeforeAfterViewProps {
 }
 
 export function BeforeAfterView({ before, after, isProcessing }: BeforeAfterViewProps) {
+    const { t } = useTranslation();
     const [direction, setDirection] = useState<Direction>("horizontal");
 
     return (
@@ -23,11 +25,11 @@ export function BeforeAfterView({ before, after, isProcessing }: BeforeAfterView
             >
                 {direction === "horizontal" ? (
                     <>
-                        <RiLayoutRowLine className="size-3" /> Vertical
+                        <RiLayoutRowLine className="size-3" /> {t("common.viewer.vertical")}
                     </>
                 ) : (
                     <>
-                        <RiLayoutColumnLine className="size-3" /> Horizontal
+                        <RiLayoutColumnLine className="size-3" /> {t("common.viewer.horizontal")}
                     </>
                 )}
             </button>
@@ -35,7 +37,7 @@ export function BeforeAfterView({ before, after, isProcessing }: BeforeAfterView
             <ResizablePanelGroup key={direction} className="h-full w-full" direction={direction}>
                 <ResizablePanel defaultSize={50} minSize={20}>
                     <div className="relative h-full overflow-hidden">
-                        <SectionBadge>Input</SectionBadge>
+                        <SectionBadge>{t("common.viewer.input")}</SectionBadge>
                         {before}
                     </div>
                 </ResizablePanel>
@@ -44,7 +46,7 @@ export function BeforeAfterView({ before, after, isProcessing }: BeforeAfterView
 
                 <ResizablePanel defaultSize={50} minSize={20}>
                     <div className="relative h-full overflow-hidden">
-                        <SectionBadge>Output</SectionBadge>
+                        <SectionBadge>{t("common.viewer.output")}</SectionBadge>
                         {isProcessing ? <ProcessingPlaceholder /> : (after ?? <OutputPlaceholder />)}
                     </div>
                 </ResizablePanel>
@@ -62,9 +64,10 @@ function SectionBadge({ children }: { children: ReactNode }) {
 }
 
 function OutputPlaceholder() {
+    const { t } = useTranslation();
     return (
         <div className="flex h-full w-full items-center justify-center">
-            <span className="text-[12px] text-neutral-700">Output will appear here</span>
+            <span className="text-[12px] text-neutral-700">{t("common.viewer.outputPlaceholder")}</span>
         </div>
     );
 }

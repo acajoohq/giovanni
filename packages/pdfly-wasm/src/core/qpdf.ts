@@ -60,40 +60,34 @@ export class QpdfDocument {
      * Get the number of pages in the PDF
      */
     get pageCount(): number {
-        this.ensureInitialized();
-        return this.wasmInstance!.getNumPages();
+        return this.getWasmInstance().getNumPages();
     }
 
     /**
      * Get the PDF version (e.g., "1.4", "1.7")
      */
     get pdfVersion(): string {
-        this.ensureInitialized();
-        return this.wasmInstance!.getPDFVersion();
+        return this.getWasmInstance().getPDFVersion();
     }
 
     /**
      * Check if the PDF is encrypted
      */
     get isEncrypted(): boolean {
-        this.ensureInitialized();
-        return this.wasmInstance!.isEncrypted();
+        return this.getWasmInstance().isEncrypted();
     }
 
     /**
      * Check if the PDF is linearized (optimized for web viewing)
      */
     get isLinearized(): boolean {
-        this.ensureInitialized();
-        return this.wasmInstance!.isLinearized();
+        return this.getWasmInstance().isLinearized();
     }
 
     /**
      * Get comprehensive PDF metadata
      */
     info(): QpdfDocumentInfo {
-        this.ensureInitialized();
-
         const info: QpdfDocumentInfo = {
             numPages: this.pageCount,
             pdfVersion: this.pdfVersion,
@@ -102,7 +96,7 @@ export class QpdfDocument {
         };
 
         // metadata accessors are optional depending on the WASM bindings build
-        const wasm = this.wasmInstance!;
+        const wasm = this.getWasmInstance();
         const title = typeof wasm.getTitle === "function" ? wasm.getTitle() : "";
         if (title) info.title = title;
 
@@ -119,8 +113,6 @@ export class QpdfDocument {
     }
 
     async write(options?: WriteOptions): Promise<Uint8Array> {
-        this.ensureInitialized();
-
         try {
             const module = await initQpdfModule();
             const wasm = this.getWasmInstance();

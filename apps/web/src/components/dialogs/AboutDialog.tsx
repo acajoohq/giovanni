@@ -1,5 +1,6 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { RiCloseLine, RiFilePdfLine } from "@remixicon/react";
+import { Trans, useTranslation } from "react-i18next";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/shadcn/Dialog";
 
 interface AboutDialogProps {
@@ -48,6 +49,8 @@ function Avatar({ name, github, initials, color }: (typeof CONTRIBUTORS)[number]
 }
 
 export function AboutDialog({ open, onClose }: AboutDialogProps) {
+    const { t } = useTranslation();
+
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
             <DialogContent showCloseButton={false} className="max-w-[400px] gap-0 overflow-hidden p-0">
@@ -60,11 +63,11 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                         <RiFilePdfLine className="size-5 text-brand" />
                     </div>
                     <DialogTitle className="text-[15px] font-semibold text-foreground">Giovanni</DialogTitle>
-                    <p className="mt-1 text-[11px] text-muted-foreground">PDF tools · offline &amp; private</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">{t("about.tagline")}</p>
                 </div>
 
                 <div className="border-y border-foreground/5 bg-foreground/2 px-6 py-5">
-                    <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-widest text-app-text-subtle">Made by</p>
+                    <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-widest text-app-text-subtle">{t("about.madeBy")}</p>
                     <div className="flex justify-center gap-10">
                         {CONTRIBUTORS.map((c) => (
                             <Avatar key={c.github} {...c} />
@@ -74,11 +77,21 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
 
                 <div className="px-6 py-3.5">
                     <p className="text-balance text-center text-[11px] leading-relaxed text-app-text-subtle">
-                        Powered by{" "}
-                        <a className="text-muted-foreground transition-colors hover:text-brand" href="https://github.com/qpdf/qpdf" rel="noopener noreferrer" target="_blank">
-                            qpdf
-                        </a>{" "}
-                        compiled to WebAssembly. No files leave your browser.
+                        <Trans
+                            i18nKey="about.poweredBy"
+                            components={{
+                                qpdf: (
+                                    <a
+                                        className="text-muted-foreground transition-colors hover:text-brand"
+                                        href="https://github.com/qpdf/qpdf"
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                    >
+                                        qpdf
+                                    </a>
+                                ),
+                            }}
+                        />
                     </p>
                     <p className="mt-2 text-center font-mono text-[9px] text-app-text-subtle">
                         v{APP_VERSION} · {GIT_COMMIT}

@@ -1,6 +1,7 @@
 import { formatBytes, mergePdfs, splitPages } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { type DragEvent, useEffect, useId, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -23,6 +24,7 @@ interface SplitJobResult {
 }
 
 export function OrganizeTool() {
+    const { t } = useTranslation();
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -56,10 +58,10 @@ export function OrganizeTool() {
                 const buffer = await nextFile.arrayBuffer();
                 return splitPages(buffer);
             },
-            errorMessage: "Failed to load PDF.",
+            errorMessage: t("organize.status.failedLoad"),
             successStatus: (result) => ({
                 tone: "success",
-                message: `Loaded ${result.pageCount} ${result.pageCount === 1 ? "page" : "pages"}.`,
+                message: t("organize.status.loaded", { count: result.pageCount }),
             }),
         });
     };
@@ -129,8 +131,8 @@ export function OrganizeTool() {
                 const result = await mergePdfs(reorderedPages);
                 return result.data;
             },
-            errorMessage: "Failed to reorganize PDF.",
-            successStatus: () => ({ tone: "success", message: "PDF reorganized successfully." }),
+            errorMessage: t("organize.status.failedReorganize"),
+            successStatus: () => ({ tone: "success", message: t("organize.status.reorganized") }),
         });
     };
 
@@ -160,38 +162,38 @@ export function OrganizeTool() {
         ) : null;
 
     const resultMetrics = [
-        ...(pages.length > 0 ? [{ label: "Pages", value: pages.length, tone: "accent" as const }] : []),
-        ...(reorganizedData && elapsedMs !== null ? [{ label: "Time", value: formatDuration(elapsedMs) }] : []),
-        ...(file && reorganizedData && elapsedMs !== null ? [{ label: "Throughput", value: formatThroughput(file.size, elapsedMs) }] : []),
+        ...(pages.length > 0 ? [{ label: t("common.metrics.pages"), value: pages.length, tone: "accent" as const }] : []),
+        ...(reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
+        ...(file && reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.throughput"), value: formatThroughput(file.size, elapsedMs) }] : []),
     ];
 
     const resultPrimaryAction = reorganizedData
-        ? { label: "Download PDF", onClick: () => downloadPdf(reorganizedData, normalizedOutputName) }
+        ? { label: t("common.downloadPdf"), onClick: () => downloadPdf(reorganizedData, normalizedOutputName) }
         : pages.length > 0
           ? {
-                label: isOrderChanged ? "Apply Order" : "Apply (no changes)",
+                label: isOrderChanged ? t("organize.actions.applyOrder") : t("organize.actions.applyNoChanges"),
                 onClick: handleApply,
                 disabled: isReorganizing,
             }
           : undefined;
 
     const resultSecondaryActions = [
-        ...(reorganizedData ? [{ label: "Re-apply", onClick: handleApply, disabled: isReorganizing }] : []),
-        { label: "Replace", onClick: () => inputRef.current?.click() },
+        ...(reorganizedData ? [{ label: t("organize.actions.reApply"), onClick: handleApply, disabled: isReorganizing }] : []),
+        { label: file ? t("common.replace") : t("organize.actions.addPdf"), onClick: () => inputRef.current?.click() },
     ];
 
     const resultTrayStatus = isReorganizing
-        ? { tone: "info" as const, message: "Reorganizing pages..." }
+        ? { tone: "info" as const, message: t("organize.status.reorganizing") }
         : isSplitting
-          ? { tone: "info" as const, message: "Loading pages..." }
+          ? { tone: "info" as const, message: t("organize.status.loading") }
           : activeStatus;
 
     const sidebar = (
         <Sidebar>
             <SidebarSection>
-                <SidebarHeader>Output Settings</SidebarHeader>
+                <SidebarHeader>{t("common.sidebar.outputSettings")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Filename">
+                    <SidebarField label={t("common.sidebar.filename")}>
                         <SidebarInput value={outputName} onChange={(event) => setOutputName(event.currentTarget.value)} />
                     </SidebarField>
                 </SidebarContent>
@@ -218,10 +220,10 @@ export function OrganizeTool() {
     ) : (
         <EmptyState
             badgeIcon={<RiAddLine className="size-5" />}
-            description="Drag and drop pages to reorder them."
+            description={t("organize.emptyDescription")}
             fileInputId={fileInputId}
             onFiles={handleFiles}
-            title="Drop a PDF to organize"
+            title={t("organize.emptyTitle")}
             visual={<EmptyOrganize />}
         />
     );
@@ -239,7 +241,7 @@ export function OrganizeTool() {
                     event.currentTarget.value = "";
                 }}
             />
-            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title="Organize Pages">
+            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title={t("organize.toolTitle")}>
                 {centerContent}
             </ToolLayout>
         </>

@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PdfToJpgTool } from "@/components/pdf/tools/PdfToJpgTool";
+﻿import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/pdf-to-jpg")({
-    component: PdfToJpgTool,
+    beforeLoad: () => {
+        throw redirect({ to: "/$locale/pdf-to-jpg", params: { locale: "en" }, replace: true });
+    },
 });

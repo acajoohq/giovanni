@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { OrganizeTool } from "@/components/pdf/tools/organize/OrganizeTool";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/organize")({
-    component: OrganizeTool,
+    beforeLoad: () => {
+        throw redirect({ to: "/$locale/organize", params: { locale: "en" }, replace: true });
+    },
 });

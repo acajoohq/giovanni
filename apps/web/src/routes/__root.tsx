@@ -1,11 +1,13 @@
-import { createRootRoute, HeadContent, Link, Scripts } from "@tanstack/react-router";
+﻿import { createRootRouteWithContext, HeadContent, Link, Scripts, useParams } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { createSeoMeta } from "@/lib/seo";
-import appCss from "@/styles/app.css?url";
+import { I18nextProvider } from "react-i18next";
 import { AppShell } from "@/components/layout/AppShell";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { createSeoMeta } from "@/lib/seo";
+import type { RouterContext } from "@/router";
+import appCss from "@/styles/app.css?url";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
     head: () => ({
         meta: [
             { charSet: "utf-8" },
@@ -21,20 +23,26 @@ export const Route = createRootRoute({
         ],
     }),
     component: RootComponent,
-    notFoundComponent: NotFoundPage,
+    // This only triggers for truly malformed paths that bypass $locale entirely.
+    // It renders outside RootComponent so it must be self-contained.
+    notFoundComponent: RootNotFoundPage,
 });
 
 function RootComponent() {
+    const { i18n } = Route.useRouteContext();
+    const { locale = "en" } = useParams({ strict: false });
     return (
-        <RootDocument>
-            <AppShell />
-        </RootDocument>
+        <I18nextProvider i18n={i18n}>
+            <RootDocument lang={locale}>
+                <AppShell />
+            </RootDocument>
+        </I18nextProvider>
     );
 }
 
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+function RootDocument({ children, lang }: Readonly<{ children: ReactNode; lang: string }>) {
     return (
-        <html className="antialiased" lang="en" suppressHydrationWarning>
+        <html lang={lang} className="antialiased" suppressHydrationWarning>
             <head>
                 <HeadContent />
             </head>
@@ -48,13 +56,25 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     );
 }
 
-function NotFoundPage() {
+/**
+ * Standalone fallback — renders outside RootComponent (no I18nextProvider,
+ * no AppShell). Must not call useTranslation() or any router context hook.
+ */
+function RootNotFoundPage() {
     return (
-        <main className="mx-auto max-w-lg p-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Not found</h1>
-            <Link className="mt-4 inline-flex text-brand hover:underline" to="/">
-                Back home
-            </Link>
-        </main>
+        <html className="dark bg-[#0a0a0a] antialiased">
+            <head>
+                <HeadContent />
+            </head>
+            <body>
+                <main className="mx-auto max-w-lg p-8">
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Not found</h1>
+                    <Link className="mt-4 inline-flex text-brand hover:underline" to="/">
+                        Back home
+                    </Link>
+                </main>
+                <Scripts />
+            </body>
+        </html>
     );
 }

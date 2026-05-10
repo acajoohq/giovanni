@@ -1,6 +1,7 @@
-import { extractImages, formatBytes, type ExtractedImage, type ExtractImagesResult } from "@pdfly/wasm";
+﻿import { extractImages, formatBytes, type ExtractedImage, type ExtractImagesResult } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -32,6 +33,7 @@ function getImageBlob(image: ExtractedImage) {
 }
 
 export function ExtractImagesTool() {
+    const { t } = useTranslation();
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -62,7 +64,7 @@ export function ExtractImagesTool() {
 
                 return extractImages(buffer);
             },
-            errorMessage: "Failed to extract images.",
+            errorMessage: t("extractImages.status.failed"),
             successStatus: (nextResult) => {
                 let nextDecodedCount = 0;
                 for (const image of nextResult.images) {
@@ -72,12 +74,20 @@ export function ExtractImagesTool() {
                 }
                 const nextRawCount = nextResult.imageCount - nextDecodedCount;
 
+                if (nextResult.imageCount === 0) {
+                    return { tone: "info", message: t("extractImages.status.noImages") };
+                }
+
+                if (nextRawCount > 0) {
+                    return {
+                        tone: "success",
+                        message: t("extractImages.status.extractedWithRaw", { count: nextDecodedCount, raw: nextRawCount }),
+                    };
+                }
+
                 return {
-                    tone: nextResult.imageCount > 0 ? "success" : "info",
-                    message:
-                        nextResult.imageCount === 0
-                            ? "No embedded raster images were found."
-                            : `Extracted ${nextDecodedCount} browser-ready ${nextDecodedCount === 1 ? "image" : "images"}${nextRawCount > 0 ? ` and ${nextRawCount} raw streams` : ""}.`,
+                    tone: "success",
+                    message: t("extractImages.status.extracted", { count: nextDecodedCount }),
                 };
             },
         });
@@ -87,7 +97,7 @@ export function ExtractImagesTool() {
         const nextFile = findFirstPdfFile(files);
 
         if (!nextFile) {
-            setStatus({ tone: "error", message: "Please select a PDF file." });
+            setStatus({ tone: "error", message: t("common.selectPdf") });
             return;
         }
 
@@ -121,7 +131,7 @@ export function ExtractImagesTool() {
         if (Object.keys(entries).length === 0) {
             setStatus({
                 tone: "error",
-                message: extractImagesSettings.includeRawStreams ? "No images are available to bundle." : "No browser-ready images are available to bundle.",
+                message: extractImagesSettings.includeRawStreams ? t("extractImages.status.noImagesToBundle") : t("extractImages.status.noBrowserReadyImages"),
             });
             return;
         }
@@ -129,21 +139,21 @@ export function ExtractImagesTool() {
         try {
             await downloadZip(entries, makeArchiveName(extractImagesSettings.archiveName, pdfBaseName(file)));
         } catch (error) {
-            setStatus({ tone: "error", message: error instanceof Error ? error.message : "Could not create ZIP." });
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : t("common.couldNotCreateZip") });
         }
     };
 
     const sidebar = (
         <Sidebar>
             <SidebarSection>
-                <SidebarHeader>Export Settings</SidebarHeader>
+                <SidebarHeader>{t("extractImages.sidebar.exportSettings")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Archive">
+                    <SidebarField label={t("extractImages.sidebar.archive")}>
                         <SidebarInput value={extractImagesSettings.archiveName} onChange={(event) => updateExtractImagesSettings({ archiveName: event.currentTarget.value })} />
                     </SidebarField>
                     <SidebarCheckbox
                         checked={extractImagesSettings.includeRawStreams}
-                        label="Include raw"
+                        label={t("extractImages.sidebar.includeRaw")}
                         onChange={(event) => updateExtractImagesSettings({ includeRawStreams: event.currentTarget.checked })}
                     />
                 </SidebarContent>
@@ -159,7 +169,7 @@ export function ExtractImagesTool() {
                         <div key={`${image.objectKey}-${image.xobjectKey}`} className="space-y-2 [content-visibility:auto] [contain-intrinsic-size:210px]">
                             <ExtractedImageCard image={image} index={index} url={previewUrls[index] ?? null} />
                             <Button className="w-full" size="sm" variant="secondary" type="button" onClick={() => downloadImage(image, index)}>
-                                {image.blob ? "Download" : "Download Raw"}
+                                {image.blob ? t("common.download") : t("common.downloadRaw")}
                             </Button>
                         </div>
                     ))}
@@ -174,26 +184,30 @@ export function ExtractImagesTool() {
                 fileName={file.name}
                 fileSize={formatBytes(file.size)}
                 metrics={[
-                    ...(images.length > 0 ? [{ label: "Images", value: images.length, tone: "accent" as const }] : []),
-                    ...(images.length > 0 ? [{ label: "Decoded", value: decodedCount }] : []),
-                    ...(rawCount > 0 ? [{ label: "Raw", value: rawCount }] : []),
+                    ...(images.length > 0 ? [{ label: t("extractImages.metrics.images"), value: images.length, tone: "accent" as const }] : []),
+                    ...(images.length > 0 ? [{ label: t("extractImages.metrics.decoded"), value: decodedCount }] : []),
+                    ...(rawCount > 0 ? [{ label: t("extractImages.metrics.raw"), value: rawCount }] : []),
                 ]}
                 primaryAction={
                     file
-                        ? { label: "Download ZIP", disabled: images.length === 0 || (!extractImagesSettings.includeRawStreams && decodedCount === 0), onClick: handleDownloadAll }
+                        ? {
+                              label: t("common.downloadZip"),
+                              disabled: images.length === 0 || (!extractImagesSettings.includeRawStreams && decodedCount === 0),
+                              onClick: handleDownloadAll,
+                          }
                         : undefined
                 }
-                secondaryActions={[{ label: "Replace", onClick: () => inputRef.current?.click() }]}
-                status={isWorking ? { tone: "info", message: "Extracting images..." } : status}
+                secondaryActions={[{ label: t("common.replace"), onClick: () => inputRef.current?.click() }]}
+                status={isWorking ? { tone: "info", message: t("extractImages.status.extracting") } : status}
             />
         </div>
     ) : (
         <EmptyState
             badgeIcon={<RiAddLine className="size-5" />}
-            description="Every embedded raster image, decoded by the browser."
+            description={t("extractImages.emptyDescription")}
             fileInputId={fileInputId}
             onFiles={handleFiles}
-            title="Drop a PDF to extract images"
+            title={t("extractImages.emptyTitle")}
             visual={<EmptyExtractImages />}
         />
     );
@@ -211,7 +225,7 @@ export function ExtractImagesTool() {
                     event.currentTarget.value = "";
                 }}
             />
-            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title="Extract Images">
+            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title={t("extractImages.toolTitle")}>
                 {centerContent}
             </ToolLayout>
         </>

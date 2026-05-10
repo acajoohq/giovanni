@@ -1,5 +1,6 @@
 import { useRef, useState, type ReactNode } from "react";
 import { ProcessingPlaceholder } from "@/components/viewer/ProcessingPlaceholder";
+import { useTranslation } from "react-i18next";
 
 interface ComparisonSliderProps {
     before: ReactNode;
@@ -8,6 +9,7 @@ interface ComparisonSliderProps {
 }
 
 export function ComparisonSlider({ before, after, isProcessing }: ComparisonSliderProps) {
+    const { t } = useTranslation();
     const [position, setPosition] = useState(50);
     const containerRef = useRef<HTMLDivElement>(null);
     const dragging = useRef(false);
@@ -61,10 +63,10 @@ export function ComparisonSlider({ before, after, isProcessing }: ComparisonSlid
             {showSlider && (
                 <>
                     <div className="pointer-events-none absolute left-2 top-2 z-10 rounded-full border border-white/10 bg-black/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-white/40">
-                        Input
+                        {t("common.viewer.input")}
                     </div>
                     <div className="pointer-events-none absolute right-2 top-2 z-10 rounded-full border border-white/10 bg-black/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-white/40">
-                        Output
+                        {t("common.viewer.output")}
                     </div>
                 </>
             )}

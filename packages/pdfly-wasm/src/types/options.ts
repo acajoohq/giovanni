@@ -96,19 +96,9 @@ export interface OpenDocumentOptions {
 }
 
 /**
- * Options for splitting a PDF.
- */
-export interface SplitOptions extends OpenDocumentOptions {}
-
-/**
- * Options for merging PDFs.
- */
-export interface MergeOptions extends WriteOptions {}
-
-/**
  * Options for organizing pages.
  */
-export interface OrganizeOptions extends OpenDocumentOptions, WriteOptions {
+export interface OrganizeOptions {
     /**
      * Zero-based page indices for the output PDF.
      * Duplicates copy pages; omitted indices remove pages.

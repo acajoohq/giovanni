@@ -2,7 +2,6 @@ export type {
     CheckOptions,
     DecodeLevel,
     InspectOptions,
-    MergeOptions,
     ObjectStreamMode,
     OpenDocumentOptions,
     OptimizeOptions,
@@ -10,7 +9,6 @@ export type {
     PdfInput,
     QpdfOptimizePreset,
     RenderPdfPagesToJpgOptions,
-    SplitOptions,
     WriteOptions,
 } from "./options.js";
 export type {

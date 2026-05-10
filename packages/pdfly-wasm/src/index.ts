@@ -32,7 +32,6 @@ export type {
     CheckOptions,
     DecodeLevel,
     InspectOptions,
-    MergeOptions,
     ObjectStreamMode,
     OpenDocumentOptions,
     OptimizeOptions,
@@ -53,3 +52,4 @@ export type {
 
 // utility functions
 export { formatBytes, calculateSavings, formatPercentage } from "./utils/format.js";
+export { PRESETS } from "./utils/validation.js";

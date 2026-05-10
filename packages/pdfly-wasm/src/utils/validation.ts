@@ -25,7 +25,7 @@ const WRITE_DEFAULTS: WasmCompressionOptions = {
     linearize: false,
 };
 
-const OPTIMIZE_PRESETS = {
+export const PRESETS = {
     default: {},
     web: {
         linearize: true,
@@ -49,10 +49,10 @@ const OPTIMIZE_PRESETS = {
  */
 export function validateOptimizeOptions(options?: OptimizeOptions): WasmCompressionOptions {
     const presetName = options?.preset ?? "default";
-    const preset = OPTIMIZE_PRESETS[presetName];
+    const preset = PRESETS[presetName];
 
     if (!preset) {
-        throw new QpdfValidationError(`preset must be one of: ${Object.keys(OPTIMIZE_PRESETS).join(", ")}`);
+        throw new QpdfValidationError(`preset must be one of: ${Object.keys(PRESETS).join(", ")}`);
     }
 
     return validateWriteOptions({ ...preset, ...options });

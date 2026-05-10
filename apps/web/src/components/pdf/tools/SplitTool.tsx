@@ -6,7 +6,17 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar, SidebarCollapsibleSection, SidebarContent, SidebarField, SidebarHeader, SidebarInput, SidebarSection, SidebarToggle, SidebarToggleGroup } from "@/components/sidebar";
+import {
+    Sidebar,
+    SidebarCollapsibleSection,
+    SidebarContent,
+    SidebarField,
+    SidebarHeader,
+    SidebarInput,
+    SidebarSection,
+    SidebarToggle,
+    SidebarToggleGroup,
+} from "@/components/sidebar";
 import { EmptySplit } from "@/components/pdf/emptyState/EmptySplit";
 import { PdfPageThumbnail } from "@/components/pdf/PdfPageThumbnail";
 import { PdfPreview } from "@/components/pdf/PdfPreview";

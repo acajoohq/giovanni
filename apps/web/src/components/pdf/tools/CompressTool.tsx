@@ -43,7 +43,7 @@ const PRESET_LABELS: Record<QpdfOptimizePreset, string> = {
 const PRESET_DESCRIPTIONS: Record<QpdfOptimizePreset, string> = {
     default: "Safe lossless rewrite",
     web: "Linearize for streaming",
-    archive: "Aggressive cleanup",
+    archive: "Deep structural cleanup",
 };
 
 interface OptimizeSettings {
@@ -76,10 +76,10 @@ const PRESET_DEFAULTS: Record<QpdfOptimizePreset, Omit<OptimizeSettings, "preset
     },
     archive: {
         linearize: false,
-        decodeLevel: "all",
+        decodeLevel: "generalized",
         objectStreams: "generate",
         recompressFlate: true,
-        compressPages: false,
+        compressPages: true,
         removeUnreferencedResources: true,
     },
 };

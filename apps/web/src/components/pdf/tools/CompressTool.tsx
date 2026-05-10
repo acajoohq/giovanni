@@ -186,7 +186,11 @@ export function CompressTool() {
                         label={t("compress.sidebar.recompressFlate")}
                         onChange={(event) => updateSettings({ recompressFlate: event.currentTarget.checked })}
                     />
-                    <SidebarCheckbox checked={settings.compressPages} label={t("compress.sidebar.compressPages")} onChange={(event) => updateSettings({ compressPages: event.currentTarget.checked })} />
+                    <SidebarCheckbox
+                        checked={settings.compressPages}
+                        label={t("compress.sidebar.compressPages")}
+                        onChange={(event) => updateSettings({ compressPages: event.currentTarget.checked })}
+                    />
                     <SidebarCheckbox
                         checked={settings.removeUnreferencedResources}
                         label={t("compress.sidebar.removeUnused")}

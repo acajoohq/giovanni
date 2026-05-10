@@ -302,7 +302,9 @@ describe("QpdfDocument", () => {
         it("calls coalesceContentStreams() before constructing the writer", async () => {
             const wrapper = makeFakeWrapper();
             const callOrder: string[] = [];
-            wrapper.coalesceContentStreams.mockImplementation(() => { callOrder.push("coalesce"); });
+            wrapper.coalesceContentStreams.mockImplementation(() => {
+                callOrder.push("coalesce");
+            });
             const mod = makeFakeModule(wrapper);
             const originalWriterCtor = mod.QPDFWriter;
             mod.QPDFWriter = vi.fn<() => FakeWriter>().mockImplementation(function (...args) {

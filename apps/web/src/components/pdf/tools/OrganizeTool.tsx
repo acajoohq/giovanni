@@ -1,6 +1,7 @@
 import { formatBytes, organizePdf, splitPdf } from "@pdfly/wasm";
 import { RiAddLine, RiArrowDownLine, RiArrowUpLine, RiDragMove2Line } from "@remixicon/react";
 import { useEffect, useId, useRef, useState, DragEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
@@ -24,6 +25,7 @@ interface SplitJobResult {
 }
 
 export function OrganizeTool() {
+    const { t } = useTranslation();
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -57,10 +59,10 @@ export function OrganizeTool() {
                 const buffer = await nextFile.arrayBuffer();
                 return splitPdf(buffer);
             },
-            errorMessage: "Failed to load PDF.",
+            errorMessage: t("organize.status.failedLoad"),
             successStatus: (result) => ({
                 tone: "success",
-                message: `Loaded ${result.pageCount} ${result.pageCount === 1 ? "page" : "pages"}.`,
+                message: t("organize.status.loaded", { count: result.pageCount }),
             }),
         });
     };
@@ -130,8 +132,8 @@ export function OrganizeTool() {
                 const result = await organizePdf(buffer, { pages: pageOrder });
                 return result.data;
             },
-            errorMessage: "Failed to reorganize PDF.",
-            successStatus: () => ({ tone: "success", message: "PDF reorganized successfully." }),
+            errorMessage: t("organize.status.failedReorganize"),
+            successStatus: () => ({ tone: "success", message: t("organize.status.reorganized") }),
         });
     };
 
@@ -226,9 +228,9 @@ export function OrganizeTool() {
     const sidebar = (
         <Sidebar>
             <SidebarSection>
-                <SidebarHeader>Output Settings</SidebarHeader>
+                <SidebarHeader>{t("common.sidebar.outputSettings")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label="Filename">
+                    <SidebarField label={t("common.sidebar.filename")}>
                         <SidebarInput value={outputName} onChange={(event) => setOutputName(event.currentTarget.value)} />
                     </SidebarField>
                 </SidebarContent>
@@ -247,35 +249,41 @@ export function OrganizeTool() {
                 fileName={file.name}
                 fileSize={formatBytes(file.size)}
                 metrics={[
-                    ...(pages.length > 0 ? [{ label: "Pages", value: pages.length, tone: "accent" as const }] : []),
-                    ...(reorganizedData && elapsedMs !== null ? [{ label: "Time", value: formatDuration(elapsedMs) }] : []),
-                    ...(reorganizedData && elapsedMs !== null ? [{ label: "Throughput", value: formatThroughput(file.size, elapsedMs) }] : []),
+                    ...(pages.length > 0 ? [{ label: t("common.metrics.pages"), value: pages.length, tone: "accent" as const }] : []),
+                    ...(reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
+                    ...(reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.throughput"), value: formatThroughput(file.size, elapsedMs) }] : []),
                 ]}
                 primaryAction={
                     reorganizedData
-                        ? { label: "Download PDF", onClick: () => downloadPdf(reorganizedData, normalizedOutputName) }
+                        ? { label: t("common.downloadPdf"), onClick: () => downloadPdf(reorganizedData, normalizedOutputName) }
                         : pages.length > 0
                           ? {
-                                label: isOrderChanged ? "Apply Order" : "Apply (no changes)",
+                                label: isOrderChanged ? t("organize.actions.applyOrder") : t("organize.actions.applyNoChanges"),
                                 onClick: handleApply,
                                 disabled: isReorganizing,
                             }
                           : undefined
                 }
                 secondaryActions={[
-                    ...(reorganizedData ? [{ label: "Re-apply", onClick: handleApply, disabled: isReorganizing }] : []),
-                    { label: file ? "Replace" : "Add PDF", onClick: () => inputRef.current?.click() },
+                    ...(reorganizedData ? [{ label: t("organize.actions.reApply"), onClick: handleApply, disabled: isReorganizing }] : []),
+                    { label: file ? t("common.replace") : t("organize.actions.addPdf"), onClick: () => inputRef.current?.click() },
                 ]}
-                status={isReorganizing ? { tone: "info", message: "Reorganizing pages..." } : isSplitting ? { tone: "info", message: "Loading pages..." } : activeStatus}
+                status={
+                    isReorganizing
+                        ? { tone: "info", message: t("organize.status.reorganizing") }
+                        : isSplitting
+                          ? { tone: "info", message: t("organize.status.loading") }
+                          : activeStatus
+                }
             />
         </div>
     ) : (
         <EmptyState
             badgeIcon={<RiAddLine className="size-5" />}
-            description="Drag and drop pages to reorder them."
+            description={t("organize.emptyDescription")}
             fileInputId={fileInputId}
             onFiles={handleFiles}
-            title="Drop a PDF to organize"
+            title={t("organize.emptyTitle")}
             visual={<EmptyOrganize />}
         />
     );
@@ -293,7 +301,7 @@ export function OrganizeTool() {
                     event.currentTarget.value = "";
                 }}
             />
-            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title="Organize Pages">
+            <ToolLayout onFiles={handleFiles} sidebar={sidebar} title={t("organize.toolTitle")}>
                 {centerContent}
             </ToolLayout>
         </>

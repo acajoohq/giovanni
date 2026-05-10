@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { SplitTool } from "@/components/pdf/tools/SplitTool";
+﻿import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/split")({
-    component: SplitTool,
+    beforeLoad: () => {
+        throw redirect({ to: "/$locale/split", params: { locale: "en" }, replace: true });
+    },
 });

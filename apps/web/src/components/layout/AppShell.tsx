@@ -1,19 +1,23 @@
-import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
-import { Link, Outlet } from "@tanstack/react-router";
+﻿import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
+import { Link, Outlet, useParams } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AboutDialog } from "@/components/dialogs/AboutDialog";
-
-const navigationItems = [
-    { label: "Compress", to: "/compress" },
-    { label: "Split", to: "/split" },
-    { label: "Merge", to: "/merge" },
-    { label: "Organize", to: "/organize" },
-    { label: "Extract Images", to: "/extract-images" },
-    { label: "PDF to JPG", to: "/pdf-to-jpg" },
-] as const;
+import { LanguageMenu } from "@/components/layout/LanguageMenu";
 
 export function AppShell() {
+    const { t } = useTranslation();
     const [aboutOpen, setAboutOpen] = useState(false);
+    const { locale = "en" } = useParams({ strict: false });
+
+    const navigationItems = [
+        { label: t("nav.compress"), to: "/$locale/compress" as const },
+        { label: t("nav.split"), to: "/$locale/split" as const },
+        { label: t("nav.merge"), to: "/$locale/merge" as const },
+        { label: t("nav.organize"), to: "/$locale/organize" as const },
+        { label: t("nav.extractImages"), to: "/$locale/extract-images" as const },
+        { label: t("nav.pdfToJpg"), to: "/$locale/pdf-to-jpg" as const },
+    ];
 
     return (
         <div className="flex h-dvh w-screen min-w-0 flex-col overflow-hidden bg-app-bg font-sans text-neutral-200">
@@ -29,6 +33,7 @@ export function AppShell() {
                                 key={item.to}
                                 className="shrink-0 rounded-md px-3 py-1.5 text-[11px] font-medium text-neutral-500 transition-all hover:text-white [&.active]:bg-app-border-subtle [&.active]:text-white"
                                 to={item.to}
+                                params={{ locale }}
                             >
                                 {item.label}
                             </Link>
@@ -36,14 +41,17 @@ export function AppShell() {
                     </nav>
                 </div>
 
-                <button
-                    aria-label="About Giovanni"
-                    className="absolute right-3 top-2 flex size-7 items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-app-border-subtle hover:text-white sm:static"
-                    onClick={() => setAboutOpen(true)}
-                    type="button"
-                >
-                    <RiInformationLine className="size-4" />
-                </button>
+                <div className="absolute right-3 top-2 flex items-center gap-1 sm:static">
+                    <LanguageMenu />
+                    <button
+                        aria-label={t("nav.aboutAriaLabel")}
+                        className="flex size-7 items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-app-border-subtle hover:text-white"
+                        onClick={() => setAboutOpen(true)}
+                        type="button"
+                    >
+                        <RiInformationLine className="size-4" />
+                    </button>
+                </div>
             </header>
 
             <main className="relative min-h-0 flex-1 overflow-hidden">

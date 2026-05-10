@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { MergeTool } from "@/components/pdf/tools/MergeTool";
+﻿import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/merge")({
-    component: MergeTool,
+    beforeLoad: () => {
+        throw redirect({ to: "/$locale/merge", params: { locale: "en" }, replace: true });
+    },
 });

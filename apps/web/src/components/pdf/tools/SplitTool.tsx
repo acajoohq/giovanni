@@ -6,15 +6,7 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar } from "@/components/sidebar/Sidebar";
-import { SidebarContent } from "@/components/sidebar/SidebarContent";
-import { SidebarField } from "@/components/sidebar/SidebarField";
-import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { SidebarInput } from "@/components/sidebar/SidebarControls";
-import { SidebarSection } from "@/components/sidebar/SidebarSection";
-import { SidebarCollapsibleSection } from "@/components/sidebar/SidebarCollapsibleSection";
-import { SidebarToggle } from "@/components/sidebar/SidebarToggle";
-import { SidebarToggleGroup } from "@/components/sidebar/SidebarToggleGroup";
+import { Sidebar, SidebarCollapsibleSection, SidebarContent, SidebarField, SidebarHeader, SidebarInput, SidebarSection, SidebarToggle, SidebarToggleGroup } from "@/components/sidebar";
 import { EmptySplit } from "@/components/pdf/emptyState/EmptySplit";
 import { PdfPageThumbnail } from "@/components/pdf/PdfPageThumbnail";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
@@ -136,7 +128,7 @@ export function SplitTool() {
                     </SidebarField>
                 </SidebarContent>
             </SidebarSection>
-            <SidebarCollapsibleSection title="Advanced">
+            <SidebarCollapsibleSection title="Advanced" storageKey="split-advanced">
                 <SidebarContent>
                     <SidebarField label={t("split.sidebar.pattern")}>
                         <SidebarInput value={splitSettings.outputPattern} onChange={(event) => updateSplitSettings({ outputPattern: event.currentTarget.value })} />

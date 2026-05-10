@@ -7,13 +7,7 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar } from "@/components/sidebar/Sidebar";
-import { SidebarContent } from "@/components/sidebar/SidebarContent";
-import { SidebarField } from "@/components/sidebar/SidebarField";
-import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { SidebarInput, SidebarRange } from "@/components/sidebar/SidebarControls";
-import { SidebarSection } from "@/components/sidebar/SidebarSection";
-import { SidebarCollapsibleSection } from "@/components/sidebar/SidebarCollapsibleSection";
+import { Sidebar, SidebarCollapsibleSection, SidebarContent, SidebarField, SidebarHeader, SidebarInput, SidebarRange, SidebarSection } from "@/components/sidebar";
 import { EmptyPdfToJpg } from "@/components/pdf/emptyState/EmptyPdfToJpg";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
@@ -157,7 +151,7 @@ export function PdfToJpgTool() {
                 </SidebarContent>
             </SidebarSection>
 
-            <SidebarCollapsibleSection title={t("pdfToJpg.sidebar.exportSettings")}>
+            <SidebarCollapsibleSection title={t("pdfToJpg.sidebar.exportSettings")} storageKey="pdf-to-jpg-export-settings">
                 <SidebarContent>
                     <SidebarField label={t("pdfToJpg.sidebar.pattern")}>
                         <SidebarInput value={settings.outputPattern} onChange={(event) => updateExportSettings({ outputPattern: event.currentTarget.value })} />

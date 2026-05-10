@@ -5,16 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { ComparisonSlider } from "@/components/viewer/ComparisonSlider";
 import { EmptyState } from "@/components/emptyState/EmptyState";
-import { Sidebar } from "@/components/sidebar/Sidebar";
-import { SidebarCheckbox } from "@/components/sidebar/SidebarCheckbox";
-import { SidebarContent } from "@/components/sidebar/SidebarContent";
-import { SidebarField } from "@/components/sidebar/SidebarField";
-import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { SidebarRange, SidebarSelect } from "@/components/sidebar/SidebarControls";
-import { SidebarSection } from "@/components/sidebar/SidebarSection";
-import { SidebarCollapsibleSection } from "@/components/sidebar/SidebarCollapsibleSection";
-import { SidebarToggle } from "@/components/sidebar/SidebarToggle";
-import { SidebarToggleGroup } from "@/components/sidebar/SidebarToggleGroup";
+import { Sidebar, SidebarCheckbox, SidebarCollapsibleSection, SidebarContent, SidebarField, SidebarHeader, SidebarRange, SidebarSection, SidebarSelect, SidebarToggle, SidebarToggleGroup } from "@/components/sidebar";
 import { EmptyCompress } from "@/components/pdf/emptyState/EmptyCompress";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
@@ -148,7 +139,7 @@ export function CompressTool() {
                 </SidebarContent>
             </SidebarSection>
 
-            <SidebarCollapsibleSection title="Advanced">
+            <SidebarCollapsibleSection title="Advanced" storageKey="compress-advanced">
                 <SidebarContent>
                     <SidebarField label={t("compress.sidebar.level")}>
                         <SidebarRange
@@ -168,7 +159,7 @@ export function CompressTool() {
                 </SidebarContent>
             </SidebarCollapsibleSection>
 
-            <SidebarCollapsibleSection title={t("compress.sidebar.streamOptions")}>
+            <SidebarCollapsibleSection title={t("compress.sidebar.streamOptions")} storageKey="compress-stream-options">
                 <SidebarContent>
                     <SidebarCheckbox checked={settings.linearize} label="Linearize" onChange={(event) => updateSettings({ linearize: event.currentTarget.checked })} />
                     <SidebarCheckbox

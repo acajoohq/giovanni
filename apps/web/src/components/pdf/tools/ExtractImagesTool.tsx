@@ -6,14 +6,7 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar } from "@/components/sidebar/Sidebar";
-import { SidebarCheckbox } from "@/components/sidebar/SidebarCheckbox";
-import { SidebarContent } from "@/components/sidebar/SidebarContent";
-import { SidebarField } from "@/components/sidebar/SidebarField";
-import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { SidebarInput } from "@/components/sidebar/SidebarControls";
-import { SidebarSection } from "@/components/sidebar/SidebarSection";
-import { SidebarCollapsibleSection } from "@/components/sidebar/SidebarCollapsibleSection";
+import { Sidebar, SidebarCheckbox, SidebarCollapsibleSection, SidebarContent, SidebarField, SidebarHeader, SidebarInput, SidebarSection } from "@/components/sidebar";
 import { EmptyExtractImages } from "@/components/pdf/emptyState/EmptyExtractImages";
 import { ExtractedImageCard } from "@/components/pdf/ExtractedImageCard";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
@@ -154,7 +147,7 @@ export function ExtractImagesTool() {
                     </SidebarField>
                 </SidebarContent>
             </SidebarSection>
-            <SidebarCollapsibleSection title="Advanced">
+            <SidebarCollapsibleSection title="Advanced" storageKey="extract-images-advanced">
                 <SidebarContent>
                     <SidebarCheckbox
                         checked={extractImagesSettings.includeRawStreams}

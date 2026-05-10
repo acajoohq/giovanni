@@ -87,7 +87,6 @@
         "format": "oxfmt --write src tsdown.config.ts vitest.config.ts",
         "format:check": "oxfmt --check src tsdown.config.ts vitest.config.ts",
         "lint": "oxlint src tsdown.config.ts vitest.config.ts",
-        "qpdf:compare": "node script/qpdf-compare.ts",
         "test": "vitest run",
         "test:coverage": "vitest run --coverage",
         "test:watch": "vitest",

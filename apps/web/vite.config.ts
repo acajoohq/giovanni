@@ -91,7 +91,6 @@ export default defineConfig(({ mode }) => {
             alias: {
                 "@": fileURLToPath(new URL("./src", import.meta.url)),
             },
-            conditions: ["source"],
         },
         worker: {
             format: "es",

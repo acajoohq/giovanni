@@ -108,7 +108,7 @@ export interface MergeOptions extends WriteOptions {}
 /**
  * Options for organizing pages.
  */
-export interface OrganizeOptions extends OpenDocumentOptions, WriteOptions {
+export interface OrganizeOptions extends OpenDocumentOptions {
     /**
      * Zero-based page indices for the output PDF.
      * Duplicates copy pages; omitted indices remove pages.

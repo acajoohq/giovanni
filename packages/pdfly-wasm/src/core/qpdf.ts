@@ -112,6 +112,10 @@ export class QpdfDocument {
         return info;
     }
 
+    // TODO: coalesceContentStreams() and removeUnreferencedResources() permanently mutate
+    // wasmInstance, so calling write() twice with different compressPages/removeUnreferencedResources
+    // options produces incorrect output on the second call. Fix by storing the original input bytes
+    // and re-opening a fresh instance per write(), or by adding a WASM-level clone API.
     async write(options?: WriteOptions): Promise<Uint8Array> {
         try {
             const module = await initQpdfModule();

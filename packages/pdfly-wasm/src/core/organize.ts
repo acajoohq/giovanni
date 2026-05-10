@@ -8,9 +8,8 @@ import type { OrganizeOptions, OrganizeResult } from "../types/index.js";
  * Reorganize the pages of a PDF into a new order.
  *
  * @param input - PDF file as Uint8Array or ArrayBuffer
- * @param pageOrder - Array of 0-based page indices describing the new order.
- *   May include duplicates (to copy pages) or fewer indices than the original
- *   (to delete pages). Each index must be a valid page number in the source PDF.
+ * @param options - `pages`: zero-based indices for the output; duplicates copy pages,
+ *   omitted indices remove pages. Each index must be valid in the source PDF.
  * @returns OrganizeResult with the reorganized PDF data
  *
  * @example

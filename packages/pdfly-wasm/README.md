@@ -18,9 +18,7 @@ const input = await fetch("document.pdf").then((response) => response.arrayBuffe
 const info = await inspectPdf(input);
 
 const optimized = await optimizePdf(input, {
-    compressionLevel: 9,
-    decodeLevel: "all",
-    recompressFlate: true,
+    preset: "web",       // default | web | archive
     linearize: true,
 });
 

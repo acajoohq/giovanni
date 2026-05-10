@@ -70,5 +70,12 @@ pnpm clean
     - [ ] Add module-level side-effect import of `pdfRenderer.client` in PDF tool routes (start pdfjs-dist download at chunk parse time, not on component mount)
     - [ ] Preload `qpdf.wasm` via `<link rel="preload" as="fetch">` in PDF tool route heads (fixed path, no hash)
     - [ ] Merge sub-1KB shared chunks into consumers
+- [ ] Compression improvements
+    - [ ] Image recompression pipeline — `extractImages` → `canvas.toBlob(quality)` → `pdf-lib` reinject → QPDF structural pass (~50–75% savings on image-heavy docs, no server needed)
+    - [ ] MuPDF WASM (`libmupdf-wasm`, ~4 MB) — native image resampling + font subsetting in one module
+    - [ ] Font subsetting via `opentype.js`/`fontkit` — strip unused glyphs from embedded fonts (lossless, 200–800 KB/font)
+    - [ ] Server-side Ghostscript — `gs -dPDFSETTINGS=/ebook` endpoint for 66–80% savings; WASM path as offline/privacy fallback
+    - [ ] Quality preset UI — `Lossless / Balanced / Small` once a lossy image pipeline exists
 - [ ] Open Question
     - [ ] Should we rename the wasm build to as it's doing more on top of qpdf?
+

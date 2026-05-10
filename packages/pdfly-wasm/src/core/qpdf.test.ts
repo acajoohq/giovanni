@@ -320,6 +320,38 @@ describe("QpdfDocument", () => {
             doc.dispose();
         });
 
+        it("write() called twice with different options does not carry over mutations from the first call", async () => {
+            const wrapper = makeFakeWrapper();
+            mockInitQpdfModule.mockResolvedValue(makeFakeModule(wrapper) as never);
+
+            const document = await QpdfDocument.open(new Uint8Array());
+            await document.write({ compressPages: true });
+            await document.write({ compressPages: false });
+
+            // coalesceContentStreams must only have been called once — from the first write,
+            // not carried over into the second write that explicitly opts out
+            expect(wrapper.coalesceContentStreams).toHaveBeenCalledOnce();
+            document.dispose();
+        });
+
+        it("inspect-then-write: picks a preset from page count without parsing the PDF twice", async () => {
+            const largeDocumentWrapper = makeFakeWrapper();
+            largeDocumentWrapper.getNumPages.mockReturnValue(75);
+            mockInitQpdfModule.mockResolvedValue(makeFakeModule(largeDocumentWrapper) as never);
+
+            const document = await QpdfDocument.open(new Uint8Array());
+
+            const preset = document.pageCount > 50 ? "archive" : "web";
+            const optimizedPdfBytes = await document.write({ preset });
+
+            expect(preset).toBe("archive");
+            expect(optimizedPdfBytes).toBeInstanceOf(Uint8Array);
+            // archive preset sets compressPages: true and removeUnreferencedResources: true
+            expect(largeDocumentWrapper.coalesceContentStreams).toHaveBeenCalledOnce();
+            expect(largeDocumentWrapper.removeUnreferencedResources).toHaveBeenCalledOnce();
+            document.dispose();
+        });
+
         it("throws QpdfValidationError when the document is not open", async () => {
             const doc = new QpdfDocument();
 

@@ -1,22 +1,22 @@
 import { initQpdfModule } from "./module-loader.js";
 import { QpdfCompressionError, QpdfInitError, QpdfValidationError } from "./errors.js";
-import { normalizeBuffer, validateWriteOptions } from "../utils/validation.js";
-import type { OpenDocumentOptions, QpdfDocumentInfo, WriteOptions } from "../types/index.js";
+import { normalizeBuffer, validateOptimizeOptions } from "../utils/validation.js";
+import type { OpenDocumentOptions, OptimizeOptions, QpdfDocumentInfo } from "../types/index.js";
 import type { WasmQPDFWrapper } from "../types/wasm-module.js";
 
 /**
  * Advanced qpdf document for reusable workflows.
  *
+ * Useful when you need to inspect a PDF and conditionally write it — keeps the
+ * parsed document in memory so you don't pay the parse cost twice.
+ *
  * @example
  * ```typescript
+ * // Inspect the PDF once, then choose an optimization preset based on its content
  * const document = await QpdfDocument.open(pdfBytes);
  *
- * console.log(`Pages: ${document.pageCount}`);
- * console.log(`Version: ${document.pdfVersion}`);
- * console.log(`Encrypted: ${document.isEncrypted}`);
- *
- * const info = document.info();
- * console.log('PDF Info:', info);
+ * const preset = document.pageCount > 50 ? "archive" : "web";
+ * const optimizedPdfBytes = await document.write({ preset });
  *
  * document.dispose();
  * ```
@@ -24,6 +24,8 @@ import type { WasmQPDFWrapper } from "../types/wasm-module.js";
 export class QpdfDocument {
     private wasmInstance: WasmQPDFWrapper | null = null;
     private initialized = false;
+    private storedInput: Uint8Array | null = null;
+    private storedOpenOptions: OpenDocumentOptions | undefined;
 
     static async open(input: Uint8Array | ArrayBuffer, options?: OpenDocumentOptions): Promise<QpdfDocument> {
         const document = new QpdfDocument();
@@ -36,7 +38,7 @@ export class QpdfDocument {
      * Load a PDF from memory
      *
      * @param input - PDF file as Uint8Array or ArrayBuffer
-     * @param password - Optional password for encrypted PDFs
+     * @param options - Optional open options (e.g. password for encrypted PDFs)
      */
     async open(input: Uint8Array | ArrayBuffer, options?: OpenDocumentOptions): Promise<void> {
         try {
@@ -47,6 +49,8 @@ export class QpdfDocument {
             this.wasmInstance = new module.QPDFWrapper();
             this.wasmInstance.processMemoryFile(inputBuffer, options?.password ?? "");
             this.initialized = true;
+            this.storedInput = inputBuffer;
+            this.storedOpenOptions = options;
         } catch (error) {
             this.dispose();
             if (error instanceof QpdfValidationError || error instanceof QpdfInitError || error instanceof QpdfCompressionError) {
@@ -112,44 +116,48 @@ export class QpdfDocument {
         return info;
     }
 
-    // TODO: coalesceContentStreams() and removeUnreferencedResources() irreversibly mutate
-    // wasmInstance, so calling write() twice with different compressPages/removeUnreferencedResources
-    // options produces incorrect output on the second call. Fix by storing the original input bytes
-    // and re-opening a fresh instance per write(), or by adding a WASM-level clone API.
-    async write(options?: WriteOptions): Promise<Uint8Array> {
+    /**
+     * Write the PDF with the given options. Safe to call multiple times with different
+     * options — each call processes a fresh instance so mutations don't accumulate.
+     */
+    async write(options?: OptimizeOptions): Promise<Uint8Array> {
+        if (!this.storedInput) {
+            throw new QpdfValidationError("Document not open. Call QpdfDocument.open() first.");
+        }
+
         try {
             const module = await initQpdfModule();
-            const wasm = this.getWasmInstance();
-            const writeOptions = validateWriteOptions(options);
+            const writeOptions = validateOptimizeOptions(options);
 
-            if (writeOptions.compressPages) {
-                wasm.coalesceContentStreams();
-            }
-            if (writeOptions.removeUnreferencedResources) {
-                wasm.removeUnreferencedResources();
-            }
-
-            const writer = new module.QPDFWriter(wasm);
-
+            const writeInstance = new module.QPDFWrapper();
             try {
-                writer.setCompressStreams(true);
-                writer.setCompressionLevel(writeOptions.compressionLevel);
-                writer.setDecodeLevel(writeOptions.decodeLevel);
-                writer.setRecompressFlate(writeOptions.recompressFlate);
-                writer.setObjectStreamMode(writeOptions.objectStreams);
+                writeInstance.processMemoryFile(this.storedInput, this.storedOpenOptions?.password ?? "");
 
-                if (writeOptions.linearize) {
-                    if (typeof writer.setLinearization !== "function") {
-                        throw new QpdfValidationError("linearize is not available in this WASM build");
+                if (writeOptions.compressPages) writeInstance.coalesceContentStreams();
+                if (writeOptions.removeUnreferencedResources) writeInstance.removeUnreferencedResources();
+
+                const writer = new module.QPDFWriter(writeInstance);
+                try {
+                    writer.setCompressStreams(true);
+                    writer.setCompressionLevel(writeOptions.compressionLevel);
+                    writer.setDecodeLevel(writeOptions.decodeLevel);
+                    writer.setRecompressFlate(writeOptions.recompressFlate);
+                    writer.setObjectStreamMode(writeOptions.objectStreams);
+
+                    if (writeOptions.linearize) {
+                        if (typeof writer.setLinearization !== "function") {
+                            throw new QpdfValidationError("linearize is not available in this WASM build");
+                        }
+                        writer.setLinearization(true);
                     }
-                    writer.setLinearization(true);
+
+                    writer.write();
+                    return writer.getBuffer().slice();
+                } finally {
+                    writer.delete();
                 }
-
-                writer.write();
-
-                return writer.getBuffer().slice();
             } finally {
-                writer.delete();
+                writeInstance.delete();
             }
         } catch (error) {
             if (error instanceof QpdfValidationError || error instanceof QpdfCompressionError) {
@@ -180,11 +188,10 @@ export class QpdfDocument {
             this.wasmInstance = null;
             this.initialized = false;
         }
+        this.storedInput = null;
+        this.storedOpenOptions = undefined;
     }
 
-    /**
-     * Ensure the PDF is initialized before operations
-     */
     private ensureInitialized(): void {
         if (!this.initialized || !this.wasmInstance) {
             throw new QpdfValidationError("QpdfDocument is not open. Call QpdfDocument.open() first.");

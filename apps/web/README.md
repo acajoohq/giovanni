@@ -11,6 +11,7 @@ The user-facing routes are stable:
 - `/split`
 - `/merge`
 - `/extract-images`
+- `/pdf-to-jpg`
 
 Route files stay thin and bind URLs to tool screens.
 
@@ -18,15 +19,12 @@ Route files stay thin and bind URLs to tool screens.
 
 Product `.tsx` lives under `src/components`. Hooks and pure helpers live in top-level `src/hooks` and `src/utils`, grouped by domain (mirroring Lemni Web).
 
-- `src/components/layout` - app shell and tool layout.
-- `src/components/dialogs` - app-level dialogs such as About.
-- `src/components/viewer` - before/after, comparison slider, processing placeholder.
-- `src/components/pdf` - PDF tool UI: shared widgets (`PdfPreview`, `PdfFilesList`, `ResultTray`, `ExtractedImageCard`), drop-zone vignettes (`emptyState`), route-level tools (`tools`).
-- `src/components/sidebar` - typed sidebar settings controls and sections.
-- `src/components/emptyState` - reusable file drop/select empty state.
-- `src/components/ui/shadcn` - shadcn primitives only.
-- `src/hooks/pdf` - reusable tool workflow hooks.
-- `src/utils/pdf` - pure file, filename, metric, ZIP, download helpers, and client-only pdf.js helpers (`pdfRenderer.client`).
+- `src/components` - UI components (`*.tsx`).
+- `src/hooks` - reusable hooks (`use*.ts`).
+- `src/utils` - pure file, filename, metric, ZIP, download helpers, and client-only pdf.js helpers (`*.utils.ts`).
+- `src/types` - shared TypeScript types (`*.types.ts`).
+- `src/constants` - shared constants (`*.constants.ts`).
+- `src/providers` - React context providers (e.g. `ThemeProvider.tsx`).
 
 Folders use camelCase/PascalCase naming in app-owned areas. The only `ui` subtree is `ui/shadcn`.
 
@@ -38,8 +36,8 @@ Examples:
 
 ```ts
 import { ToolLayout } from "@/components/layout/ToolLayout";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { filterPdfFiles } from "@/utils/pdf/pdfToolUtils";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import { filterPdfFiles } from "@/utils/pdfToolUtils.utils";
 ```
 
 ## Styling

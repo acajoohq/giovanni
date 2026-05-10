@@ -16,8 +16,8 @@ import { PdfFilesList } from "@/components/pdf/PdfFilesList";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { EmptyMerge } from "@/components/pdf/emptyState/EmptyMerge";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/utils/pdf/pdfToolUtils";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/utils/pdfToolUtils.utils";
 
 export function MergeTool() {
     const { t } = useTranslation();
@@ -112,7 +112,7 @@ export function MergeTool() {
         files.length > 0 ? (
             <div className="flex h-full flex-col overflow-hidden">
                 <div className="flex shrink-0 items-center justify-between border-b border-app-border-subtle px-4 py-2">
-                    <span className="text-[11px] font-medium text-neutral-500">{t("merge.fileCount", { count: files.length })}</span>
+                    <span className="text-[11px] font-medium text-muted-foreground">{t("merge.fileCount", { count: files.length })}</span>
                     <Button size="sm" variant="secondary" type="button" onClick={() => inputRef.current?.click()}>
                         {t("merge.actions.addPdfs")}
                     </Button>
@@ -126,7 +126,7 @@ export function MergeTool() {
     const afterContent =
         files.length < 2 ? (
             <div className="flex h-full items-center justify-center">
-                <span className="text-[12px] text-neutral-700">{t("merge.minPdfsHint")}</span>
+                <span className="text-[12px] text-app-text-subtle">{t("merge.minPdfsHint")}</span>
             </div>
         ) : mergedData ? (
             <PdfPreview data={mergedData} />

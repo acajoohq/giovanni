@@ -119,13 +119,12 @@ export default defineConfig(({ mode }) => {
             "import.meta.env.VITE_GIT_COMMIT": JSON.stringify(gitCommit),
         },
         environments: {
-            // The render entry uses optional node-canvas for server-side PDF.js
-            // rendering. Keeping native canvas external prevents Rolldown from
-            // trying to bundle the unreadable `.node` binary during SSR builds.
+            // `canvas` and `.node` binaries are pulled in by `@pdfly/wasm` (noExternal by TanStack Start) but can't be bundled by Rolldown.
+            // `pdfjs-dist` uses DOM/Canvas APIs unavailable in Node.js — loading it during prerender crashes the SSR process.
             ssr: {
                 build: {
                     rollupOptions: {
-                        external: ["canvas", /\.node$/],
+                        external: ["canvas", /\.node$/, "pdfjs-dist"],
                     },
                 },
             },

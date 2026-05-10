@@ -16,10 +16,10 @@ import { SidebarSection } from "@/components/sidebar/SidebarSection";
 import { EmptyPdfToJpg } from "@/components/pdf/emptyState/EmptyPdfToJpg";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
-import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce";
+import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce.constants";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { useObjectUrls } from "@/hooks/pdf/useObjectUrls";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import { useObjectUrls } from "@/hooks/useObjectUrls";
 import {
     buildJpgPageEntries,
     downloadBlob,
@@ -30,7 +30,7 @@ import {
     makeArchiveName,
     makePageJpgName,
     pdfBaseName,
-} from "@/utils/pdf/pdfToolUtils";
+} from "@/utils/pdfToolUtils.utils";
 
 interface RenderPagesToJpgSettings {
     qualityPercent: number;
@@ -181,7 +181,7 @@ export function PdfToJpgTool() {
                                     <img alt={t("pdfToJpg.jpgAlt", { page: page.pageIndex + 1 })} className="h-full w-full object-contain" src={pageUrls[index]} />
                                 ) : null}
                             </div>
-                            <span className="truncate text-center text-[10px] text-neutral-500">
+                            <span className="truncate text-center text-[10px] text-muted-foreground">
                                 {t("pdfToJpg.pageLabel", { page: page.pageIndex + 1, width: page.width, height: page.height })}
                             </span>
                             <Button className="h-6 text-[10px]" size="sm" variant="secondary" type="button" onClick={() => downloadPage(page)}>

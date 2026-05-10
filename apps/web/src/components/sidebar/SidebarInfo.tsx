@@ -5,8 +5,8 @@ import { RiInformationLine } from "@remixicon/react";
 export const SidebarInfo = ({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) => (
     <div className="mt-auto p-4">
         <div className={cn("p-3 rounded-[4px] bg-app-control border border-app-border flex gap-2 items-start", className)} {...props}>
-            <RiInformationLine className="size-4 text-neutral-500 shrink-0 mt-0.5" />
-            <p className="text-[11px] text-neutral-400 leading-relaxed">{children}</p>
+            <RiInformationLine className="size-4 text-muted-foreground shrink-0 mt-0.5" />
+            <p className="text-[11px] text-muted-foreground leading-relaxed">{children}</p>
         </div>
     </div>
 );

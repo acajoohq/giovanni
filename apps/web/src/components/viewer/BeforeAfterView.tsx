@@ -19,7 +19,7 @@ export function BeforeAfterView({ before, after, isProcessing }: BeforeAfterView
     return (
         <div className="relative h-full w-full">
             <button
-                className="absolute right-2 top-2 z-20 flex h-6 items-center gap-1 rounded-md border border-app-control-hover bg-app-surface-raised px-2 text-[10px] font-medium text-neutral-600 transition-colors hover:border-app-border-strong hover:text-neutral-400"
+                className="absolute right-2 top-2 z-20 flex h-6 items-center gap-1 rounded-md border border-app-control-hover bg-app-surface-raised px-2 text-[10px] font-medium text-app-text-subtle transition-colors hover:border-app-border-strong hover:text-muted-foreground"
                 type="button"
                 onClick={() => setDirection((d) => (d === "horizontal" ? "vertical" : "horizontal"))}
             >
@@ -57,7 +57,7 @@ export function BeforeAfterView({ before, after, isProcessing }: BeforeAfterView
 
 function SectionBadge({ children }: { children: ReactNode }) {
     return (
-        <div className="pointer-events-none absolute left-2 top-2 z-10 rounded-full border border-app-control-hover bg-app-surface-raised px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-neutral-700">
+        <div className="pointer-events-none absolute left-2 top-2 z-10 rounded-full border border-app-control-hover bg-app-surface-raised px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-app-text-subtle">
             {children}
         </div>
     );
@@ -67,7 +67,7 @@ function OutputPlaceholder() {
     const { t } = useTranslation();
     return (
         <div className="flex h-full w-full items-center justify-center">
-            <span className="text-[12px] text-neutral-700">{t("common.viewer.outputPlaceholder")}</span>
+            <span className="text-[12px] text-app-text-subtle">{t("common.viewer.outputPlaceholder")}</span>
         </div>
     );
 }

@@ -12,21 +12,29 @@
     --brand-dark: #b33e29;
     --brand-deep: #8f3426;
     --brand-soft: #ff7b63;
-    --app-bg: #0a0a0a;
-    --app-workspace: #0f0f0f;
-    --app-panel: #181818;
-    --app-panel-strong: #222222;
-    --app-control: #111111;
-    --app-control-hover: #252525;
-    --app-surface: #101010;
-    --app-surface-raised: #141414;
-    --app-surface-muted: #1a1a1a;
-    --app-border: #282828;
-    --app-border-subtle: #1f1f1f;
-    --app-border-strong: #333333;
-    --app-border-stronger: #444444;
-    --app-text: #ededed;
-    --app-text-muted: #d4d4d4;
+    --app-bg: #fafafa;
+    --app-workspace: #f5f5f5;
+    --app-panel: #f0f0f0;
+    --app-panel-strong: #ebebeb;
+    --app-control: #ffffff;
+    --app-control-hover: #f5f5f5;
+    --app-surface: #ffffff;
+    --app-surface-raised: #ffffff;
+    --app-surface-muted: #f8f8f8;
+    --app-border: #e5e5e5;
+    --app-border-subtle: #f0f0f0;
+    --app-border-strong: #d4d4d4;
+    --app-border-stronger: #b8b8b8;
+    --app-text: #171717;
+    --app-text-muted: #404040;
+    --app-text-subtle: #717171;
+
+    --app-shadow-skeuo: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+    --app-shadow-skeuo-sm: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.03), 0px 1px 2px 0px rgba(0, 0, 0, 0.08);
+    --app-shadow-skeuo-inner: inset 0px 2px 6px 0px rgba(0, 0, 0, 0.12), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 1px 0px 0px rgba(255, 255, 255, 0.8);
+    --app-shadow-sidebar: -8px 0 24px rgba(0, 0, 0, 0.08);
+    --app-shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.1);
+    --app-shadow-pdf-page: 0 4px 16px rgba(0, 0, 0, 0.08);
 
     --background: oklch(1 0 0);
     --foreground: oklch(0.141 0.005 285.823);
@@ -63,6 +71,30 @@
 }
 
 .dark {
+    --app-bg: #0a0a0a;
+    --app-workspace: #0f0f0f;
+    --app-panel: #181818;
+    --app-panel-strong: #222222;
+    --app-control: #111111;
+    --app-control-hover: #252525;
+    --app-surface: #101010;
+    --app-surface-raised: #141414;
+    --app-surface-muted: #1a1a1a;
+    --app-border: #282828;
+    --app-border-subtle: #1f1f1f;
+    --app-border-strong: #333333;
+    --app-border-stronger: #444444;
+    --app-text: #ededed;
+    --app-text-muted: #d4d4d4;
+    --app-text-subtle: #858585;
+
+    --app-shadow-skeuo: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.15), 0px 2px 4px 0px rgba(0, 0, 0, 0.4);
+    --app-shadow-skeuo-sm: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+    --app-shadow-skeuo-inner: inset 0px 2px 6px 0px rgba(0, 0, 0, 0.75), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.4), 0px 1px 0px 0px rgba(255, 255, 255, 0.06);
+    --app-shadow-sidebar: -8px 0 24px rgba(0, 0, 0, 0.5);
+    --app-shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.62);
+    --app-shadow-pdf-page: 0 4px 16px rgba(0, 0, 0, 0.6);
+
     --background: oklch(0.141 0.005 285.823);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.21 0.006 285.885);
@@ -151,6 +183,7 @@
     --color-app-border-stronger: var(--app-border-stronger);
     --color-app-text: var(--app-text);
     --color-app-text-muted: var(--app-text-muted);
+    --color-app-text-subtle: var(--app-text-subtle);
 
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
@@ -160,15 +193,15 @@
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
 
-    /* Skeuomorphic utilities */
-    --shadow-skeuo: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.15), 0px 2px 4px 0px rgba(0, 0, 0, 0.4);
-    --shadow-skeuo-sm: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
-    --shadow-skeuo-inner: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.5), inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 1px 0px 0px rgba(255, 255, 255, 0.05);
-    --shadow-sidebar: -8px 0 24px rgba(0, 0, 0, 0.5);
-    --shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.62);
+    /* Skeuomorphic utilities — resolved from :root / .dark vars for theme-awareness */
+    --shadow-skeuo: var(--app-shadow-skeuo);
+    --shadow-skeuo-sm: var(--app-shadow-skeuo-sm);
+    --shadow-skeuo-inner: var(--app-shadow-skeuo-inner);
+    --shadow-sidebar: var(--app-shadow-sidebar);
+    --shadow-result-tray: var(--app-shadow-result-tray);
     --shadow-brand-glow: 0 0 48px rgba(235, 90, 63, 0.18);
     --shadow-brand-card: 0 10px 20px rgba(235, 90, 63, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-    --shadow-pdf-page: 0 4px 16px rgba(0, 0, 0, 0.6);
+    --shadow-pdf-page: var(--app-shadow-pdf-page);
 }
 
 @layer base {
@@ -180,5 +213,6 @@
     }
     html {
         @apply font-sans;
+        background: var(--app-bg);
     }
 }

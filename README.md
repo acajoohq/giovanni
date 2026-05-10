@@ -1,6 +1,8 @@
 # Pdfly
 
-Local-first PDF tooling: a Vite demo ([`apps/pdfly-web`](apps/pdfly-web)), a qpdf + WebAssembly package ([`@pdfly/wasm`](packages/pdfly-wasm)), and a local [qpdf](https://github.com/qpdf/qpdf) clone under `vendor/qpdf` for the WASM build. Processing stays on the device.
+Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF bytes stay on the device.
+
+**Layout:** [`apps/web`](apps/web) (main UI), [`apps/pdfly-desktop`](apps/pdfly-desktop) (Tauri), [`packages/pdfly-wasm`](packages/pdfly-wasm) (`@pdfly/wasm`), [`packages/pdfly-ui`](packages/pdfly-ui). Clone qpdf into `vendor/qpdf` (gitignored) to build WASM.
 
 ## Requirements
 
@@ -11,41 +13,42 @@ Local-first PDF tooling: a Vite demo ([`apps/pdfly-web`](apps/pdfly-web)), a qpd
 - Emscripten (`emcc`, `emcmake`, `emmake` on PATH) for `@pdfly/wasm` WASM build
 - CMake
 - Bash (WASM build script); on Windows use `packages/pdfly-wasm/wasm/build.ps1`
+- Rust for Tauri desktop build
 
-## Setup
+## Add node and emsdk with mise-en-place
+
+```bash
+mise plugins install emsdk https://github.com/RobLoach/asdf-emsdk.git
+mise install
+```
+
+## Getting started
 
 ```bash
 pnpm install
 git clone https://github.com/qpdf/qpdf.git vendor/qpdf
+pnpm -F @pdfly/wasm build   # or: pnpm build
+pnpm dev
 ```
 
-WASM build needs `vendor/qpdf`. API and usage: [packages/pdfly-wasm/README.md](packages/pdfly-wasm/README.md).
+Consumers installing **`@pdfly/wasm` from npm:** [packages/pdfly-wasm/README.md](packages/pdfly-wasm/README.md).
 
 ## Commands
 
 ```bash
-pnpm dev              # pdfly-web dev server
-pnpm build            # all packages (Turbo)
-pnpm -F @pdfly/wasm build   # library only (needs vendor/qpdf)
-pnpm check            # typecheck, lint, test, format:check
-pnpm validate         # package checks; requires build first
-pnpm clean
+pnpm dev                              # web
+pnpm build                            # turbo
+pnpm -F @pdfly/wasm build             # WASM + lib only
+pnpm -F pdfly-desktop run tauri dev   # desktop
+pnpm check                            # types, lint, tests, format
+pnpm validate
 ```
 
-| Task                    | Command                                                              |
-| ----------------------- | -------------------------------------------------------------------- |
-| Test / watch            | `pnpm test` / `pnpm test:watch`                                      |
-| Typecheck, lint, format | `pnpm typecheck` · `pnpm lint` · `pnpm format` / `pnpm format:check` |
-
-**pnpm workspace:** `pnpm -F <name> <script>` runs a script in one package (`pdfly-web`, `@pdfly/wasm`). `pnpm -r <script>` runs it everywhere it exists. Globs: `pnpm-workspace.yaml`.
-
-**Stack:** oxfmt, oxlint, Turbo.
+`pnpm -F <pkg> <script>` — packages include `web`, `@pdfly/wasm`, `pdfly-desktop`. See [pnpm-workspace.yaml](pnpm-workspace.yaml).
 
 ## License
 
-[@pdfly/wasm](packages/pdfly-wasm) is **Apache-2.0** ([license](packages/pdfly-wasm/LICENSE)). qpdf is a separate project.
-
-**Repo:** [github.com/MatteoGauthier/qpdf-wasm](https://github.com/MatteoGauthier/qpdf-wasm)
+[@pdfly/wasm](packages/pdfly-wasm) is **Apache-2.0** ([LICENSE](packages/pdfly-wasm/LICENSE)). **Repo:** [github.com/MatteoGauthier/qpdf-wasm](https://github.com/MatteoGauthier/qpdf-wasm)
 
 ## Todo
 
@@ -63,8 +66,8 @@ pnpm clean
     - [ ] Library design
 - [ ] Publish package
 - [x] Tauri (desktop app)
-- [ ] Merge/fuse PDFs
-- [ ] Lots of fixture tests (runned on demand
+- [x] Merge/fuse PDFs
+- [ ] Lots of fixture tests
 - [ ] Rename to Giovanni
 - [ ] Make sure we cache heavily big assets.
 - [ ] Fix the inconsistencies in qpdf wasm package and options of each methods, also the writerpattern is not consisten accross tool. We should make it better by having a clear optimized pipeline.

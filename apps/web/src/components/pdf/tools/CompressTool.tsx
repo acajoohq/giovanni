@@ -17,10 +17,10 @@ import { SidebarToggleGroup } from "@/components/sidebar/SidebarToggleGroup";
 import { EmptyCompress } from "@/components/pdf/emptyState/EmptyCompress";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
-import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce";
+import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce.constants";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
-import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdf/pdfToolUtils";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdfToolUtils.utils";
 
 const PRESET_LABELS: Record<QpdfOptimizePreset, string> = {
     default: "Default",
@@ -211,18 +211,18 @@ export function CompressTool() {
             {previewPageCount > 1 && (
                 <div className="absolute bottom-30 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-md border border-app-border bg-app-panel px-2 py-1 md:bottom-24">
                     <button
-                        className="flex size-6 items-center justify-center rounded text-neutral-400 transition-colors hover:bg-app-control-hover hover:text-white disabled:opacity-30"
+                        className="flex size-6 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-app-control-hover hover:text-foreground disabled:opacity-30"
                         disabled={previewPage === 1}
                         type="button"
                         onClick={() => updatePreviewPage((currentPage) => currentPage - 1)}
                     >
                         <RiArrowLeftSLine className="size-4" />
                     </button>
-                    <span className="min-w-[52px] text-center text-[11px] font-medium text-neutral-400">
+                    <span className="min-w-[52px] text-center text-[11px] font-medium text-muted-foreground">
                         {previewPage} / {previewPageCount}
                     </span>
                     <button
-                        className="flex size-6 items-center justify-center rounded text-neutral-400 transition-colors hover:bg-app-control-hover hover:text-white disabled:opacity-30"
+                        className="flex size-6 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-app-control-hover hover:text-foreground disabled:opacity-30"
                         disabled={previewPage === previewPageCount}
                         type="button"
                         onClick={() => updatePreviewPage((currentPage) => currentPage + 1)}

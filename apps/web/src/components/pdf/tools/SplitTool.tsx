@@ -18,7 +18,7 @@ import { EmptySplit } from "@/components/pdf/emptyState/EmptySplit";
 import { PdfPageThumbnail } from "@/components/pdf/PdfPageThumbnail";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
-import { useAsyncToolJob } from "@/hooks/pdf/useAsyncToolJob";
+import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import {
     buildSplitPageEntries,
     downloadPdf,
@@ -29,7 +29,7 @@ import {
     makeArchiveName,
     makePagePdfName,
     pdfBaseName,
-} from "@/utils/pdf/pdfToolUtils";
+} from "@/utils/pdfToolUtils.utils";
 
 interface SplitJobResult {
     pages: Uint8Array[];
@@ -149,11 +149,11 @@ export function SplitTool() {
             <div className="h-full w-full overflow-y-auto p-3 pb-24">
                 <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
                     {pages.map((page, index) => (
-                        <div key={index} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:260px]">
+                        <div key={`page-${index}`} className="flex flex-col gap-1.5 [content-visibility:auto] [contain-intrinsic-size:260px]">
                             <div className="aspect-3/4 overflow-hidden rounded-md border border-app-border bg-app-bg">
                                 <PdfPageThumbnail data={page} />
                             </div>
-                            <span className="truncate text-center text-[10px] text-neutral-500">{t("split.pageLabel", { page: index + 1 })}</span>
+                            <span className="truncate text-center text-[10px] text-muted-foreground">{t("split.pageLabel", { page: index + 1 })}</span>
                             <Button className="h-6 text-[10px]" size="sm" variant="secondary" type="button" onClick={() => handleDownloadPage(page, index)}>
                                 {t("common.download")}
                             </Button>

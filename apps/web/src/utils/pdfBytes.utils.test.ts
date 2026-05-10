@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { copyPdfBytes, copyPdfEntries } from "./pdfBytes";
+import { copyPdfBytes, copyPdfEntries } from "./pdfBytes.utils";
 
 describe("pdfBytes", () => {
     it("copies a Uint8Array into an independent buffer", () => {

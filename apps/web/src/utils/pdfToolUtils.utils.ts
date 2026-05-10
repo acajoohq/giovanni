@@ -1,7 +1,7 @@
 import { formatBytes, type ExtractedImage } from "@pdfly/wasm";
 import type { PdfPageJpg } from "@pdfly/wasm/render";
 import { zip } from "fflate";
-import { copyPdfBytes, copyPdfEntries } from "./pdfBytes";
+import { copyPdfBytes, copyPdfEntries } from "./pdfBytes.utils";
 
 export function isPdfFile(file: File): boolean {
     return file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf");
@@ -58,13 +58,14 @@ export function buildSplitPageEntries(pages: Uint8Array[], pattern: string, base
 }
 
 export async function buildJpgPageEntries(pages: PdfPageJpg[], pattern: string, baseName: string): Promise<Record<string, Uint8Array>> {
-    const entries: Record<string, Uint8Array> = {};
-
-    for (const page of pages) {
-        entries[makePageJpgName(pattern, baseName, page.pageIndex)] = new Uint8Array(await page.blob.arrayBuffer());
-    }
-
-    return entries;
+    const entries = await Promise.all(
+        pages.map(async (page) => {
+            const name = makePageJpgName(pattern, baseName, page.pageIndex);
+            const data = new Uint8Array(await page.blob.arrayBuffer());
+            return [name, data] as [string, Uint8Array];
+        }),
+    );
+    return Object.fromEntries(entries);
 }
 
 export function formatDuration(ms: number): string {
@@ -117,22 +118,18 @@ interface BuildExtractedImageEntriesOptions {
 }
 
 export async function buildExtractedImageEntries(images: ExtractedImage[], baseName: string, options: BuildExtractedImageEntriesOptions = {}): Promise<Record<string, Uint8Array>> {
-    const entries: Record<string, Uint8Array> = {};
-
-    for (const [index, image] of images.entries()) {
-        const name = imageDownloadName(baseName, index, image);
-
-        if (image.blob) {
-            entries[name] = new Uint8Array(await image.blob.arrayBuffer());
-            continue;
-        }
-
-        if (options.includeRawStreams) {
-            entries[name] = image.bytes;
-        }
-    }
-
-    return entries;
+    const tuples = await Promise.all(
+        [...images.entries()].map(async ([index, image]): Promise<[string, Uint8Array] | null> => {
+            const name = imageDownloadName(baseName, index, image);
+            if (image.blob) {
+                return [name, new Uint8Array(await image.blob.arrayBuffer())];
+            } else if (options.includeRawStreams) {
+                return [name, image.bytes];
+            }
+            return null;
+        }),
+    );
+    return Object.fromEntries(tuples.filter((t): t is [string, Uint8Array] => t !== null));
 }
 
 export async function buildBrowserReadyImageEntries(images: ExtractedImage[], baseName: string): Promise<Record<string, Uint8Array>> {

@@ -1,4 +1,4 @@
-﻿import { formatBytes, splitPages } from "@pdfly/wasm";
+import { formatBytes, splitPdf } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -6,14 +6,17 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar } from "@/components/sidebar/Sidebar";
-import { SidebarContent } from "@/components/sidebar/SidebarContent";
-import { SidebarField } from "@/components/sidebar/SidebarField";
-import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { SidebarInput } from "@/components/sidebar/SidebarControls";
-import { SidebarSection } from "@/components/sidebar/SidebarSection";
-import { SidebarToggle } from "@/components/sidebar/SidebarToggle";
-import { SidebarToggleGroup } from "@/components/sidebar/SidebarToggleGroup";
+import {
+    Sidebar,
+    SidebarCollapsibleSection,
+    SidebarContent,
+    SidebarField,
+    SidebarHeader,
+    SidebarInput,
+    SidebarSection,
+    SidebarToggle,
+    SidebarToggleGroup,
+} from "@/components/sidebar";
 import { EmptySplit } from "@/components/pdf/emptyState/EmptySplit";
 import { PdfPageThumbnail } from "@/components/pdf/PdfPageThumbnail";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
@@ -63,7 +66,7 @@ export function SplitTool() {
             execute: async () => {
                 const buffer = await nextFile.arrayBuffer();
 
-                return splitPages(buffer);
+                return splitPdf(buffer);
             },
             errorMessage: t("split.status.failed"),
             successStatus: (nextResult) => ({
@@ -123,12 +126,6 @@ export function SplitTool() {
             <SidebarSection>
                 <SidebarHeader>{t("split.sidebar.splitSettings")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label={t("split.sidebar.pattern")}>
-                        <SidebarInput value={splitSettings.outputPattern} onChange={(event) => updateSplitSettings({ outputPattern: event.currentTarget.value })} />
-                    </SidebarField>
-                    <SidebarField label={t("split.sidebar.archive")}>
-                        <SidebarInput value={splitSettings.archiveName} onChange={(event) => updateSplitSettings({ archiveName: event.currentTarget.value })} />
-                    </SidebarField>
                     <SidebarField label={t("split.sidebar.zip")}>
                         <SidebarToggleGroup>
                             <SidebarToggle isActive={splitSettings.zipCompressionMode === "store"} onClick={() => updateSplitSettings({ zipCompressionMode: "store" })}>
@@ -141,6 +138,16 @@ export function SplitTool() {
                     </SidebarField>
                 </SidebarContent>
             </SidebarSection>
+            <SidebarCollapsibleSection title="Advanced" storageKey="split-advanced">
+                <SidebarContent>
+                    <SidebarField label={t("split.sidebar.pattern")}>
+                        <SidebarInput value={splitSettings.outputPattern} onChange={(event) => updateSplitSettings({ outputPattern: event.currentTarget.value })} />
+                    </SidebarField>
+                    <SidebarField label={t("split.sidebar.archive")}>
+                        <SidebarInput value={splitSettings.archiveName} onChange={(event) => updateSplitSettings({ archiveName: event.currentTarget.value })} />
+                    </SidebarField>
+                </SidebarContent>
+            </SidebarCollapsibleSection>
         </Sidebar>
     );
 

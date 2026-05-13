@@ -1,4 +1,5 @@
-﻿import { formatBytes, pdfToJpg, type PdfPageJpg, type PdfToJpgResult } from "@pdfly/wasm";
+import { formatBytes } from "@pdfly/wasm";
+import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@pdfly/wasm/render";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -6,12 +7,7 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar } from "@/components/sidebar/Sidebar";
-import { SidebarContent } from "@/components/sidebar/SidebarContent";
-import { SidebarField } from "@/components/sidebar/SidebarField";
-import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { SidebarInput, SidebarRange } from "@/components/sidebar/SidebarControls";
-import { SidebarSection } from "@/components/sidebar/SidebarSection";
+import { Sidebar, SidebarCollapsibleSection, SidebarContent, SidebarField, SidebarHeader, SidebarInput, SidebarRange, SidebarSection } from "@/components/sidebar";
 import { EmptyPdfToJpg } from "@/components/pdf/emptyState/EmptyPdfToJpg";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
@@ -31,7 +27,7 @@ import {
     pdfBaseName,
 } from "@/utils/pdfToolUtils.utils";
 
-interface PdfToJpgSettings {
+interface RenderPagesToJpgSettings {
     qualityPercent: number;
     scale: number;
     outputPattern: string;
@@ -47,22 +43,22 @@ export function PdfToJpgTool() {
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
-    const [settings, setSettings] = useState<PdfToJpgSettings>({
+    const [settings, setSettings] = useState<RenderPagesToJpgSettings>({
         qualityPercent: 92,
         scale: 2,
         outputPattern: "{basename}_page_{page}",
         archiveName: "{basename}_jpg.zip",
     });
-    const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<PdfToJpgResult>();
+    const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<RenderPdfPagesToJpgResult>();
     const pages = result?.pages ?? [];
     const pageUrls = useObjectUrls(pages, getPageBlob);
 
-    const processFile = async (nextFile: File, nextSettings: PdfToJpgSettings = settings) => {
+    const processFile = async (nextFile: File, nextSettings: RenderPagesToJpgSettings = settings) => {
         await runJob({
             execute: async () => {
                 const buffer = await nextFile.arrayBuffer();
 
-                return pdfToJpg(buffer, {
+                return renderPdfPagesToJpg(buffer, {
                     quality: nextSettings.qualityPercent / 100,
                     scale: nextSettings.scale,
                 });
@@ -75,11 +71,11 @@ export function PdfToJpgTool() {
         });
     };
 
-    const debouncedProcessFile = useDebouncedCallback((nextFile: File, nextSettings: PdfToJpgSettings) => {
+    const debouncedProcessFile = useDebouncedCallback((nextFile: File, nextSettings: RenderPagesToJpgSettings) => {
         void processFile(nextFile, nextSettings);
     }, PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS);
 
-    const scheduleCurrentFileProcessing = (nextSettings: PdfToJpgSettings) => {
+    const scheduleCurrentFileProcessing = (nextSettings: RenderPagesToJpgSettings) => {
         if (!file) {
             debouncedProcessFile.cancel();
             return;
@@ -88,13 +84,13 @@ export function PdfToJpgTool() {
         debouncedProcessFile(file, nextSettings);
     };
 
-    const updateConversionSettings = (patch: Partial<Pick<PdfToJpgSettings, "qualityPercent" | "scale">>) => {
+    const updateConversionSettings = (patch: Partial<Pick<RenderPagesToJpgSettings, "qualityPercent" | "scale">>) => {
         const nextSettings = { ...settings, ...patch };
         setSettings(nextSettings);
         scheduleCurrentFileProcessing(nextSettings);
     };
 
-    const updateExportSettings = (patch: Partial<Pick<PdfToJpgSettings, "outputPattern" | "archiveName">>) => {
+    const updateExportSettings = (patch: Partial<Pick<RenderPagesToJpgSettings, "outputPattern" | "archiveName">>) => {
         setSettings((currentSettings) => ({ ...currentSettings, ...patch }));
     };
 
@@ -155,8 +151,7 @@ export function PdfToJpgTool() {
                 </SidebarContent>
             </SidebarSection>
 
-            <SidebarSection>
-                <SidebarHeader>{t("pdfToJpg.sidebar.exportSettings")}</SidebarHeader>
+            <SidebarCollapsibleSection title={t("pdfToJpg.sidebar.exportSettings")} storageKey="pdf-to-jpg-export-settings">
                 <SidebarContent>
                     <SidebarField label={t("pdfToJpg.sidebar.pattern")}>
                         <SidebarInput value={settings.outputPattern} onChange={(event) => updateExportSettings({ outputPattern: event.currentTarget.value })} />
@@ -165,7 +160,7 @@ export function PdfToJpgTool() {
                         <SidebarInput value={settings.archiveName} onChange={(event) => updateExportSettings({ archiveName: event.currentTarget.value })} />
                     </SidebarField>
                 </SidebarContent>
-            </SidebarSection>
+            </SidebarCollapsibleSection>
         </Sidebar>
     );
 

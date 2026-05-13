@@ -1,16 +1,11 @@
-import { formatBytes, mergePdfs, splitPages } from "@pdfly/wasm";
+import { formatBytes, organizePdf, splitPdf } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { type DragEvent, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { EmptyState } from "@/components/emptyState/EmptyState";
-import { Sidebar } from "@/components/sidebar/Sidebar";
-import { SidebarContent } from "@/components/sidebar/SidebarContent";
-import { SidebarField } from "@/components/sidebar/SidebarField";
-import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { SidebarInput } from "@/components/sidebar/SidebarControls";
-import { SidebarSection } from "@/components/sidebar/SidebarSection";
+import { Sidebar, SidebarContent, SidebarField, SidebarHeader, SidebarInput, SidebarSection } from "@/components/sidebar";
 import { EmptyOrganize } from "@/components/pdf/emptyState/EmptyOrganize";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
@@ -56,7 +51,7 @@ export function OrganizeTool() {
         await runSplitJob({
             execute: async () => {
                 const buffer = await nextFile.arrayBuffer();
-                return splitPages(buffer);
+                return splitPdf(buffer);
             },
             errorMessage: t("organize.status.failedLoad"),
             successStatus: (result) => ({
@@ -124,11 +119,11 @@ export function OrganizeTool() {
     };
 
     const handleApply = async () => {
-        if (pages.length === 0 || pageOrder.length === 0) return;
+        if (!file || pages.length === 0 || pageOrder.length === 0) return;
         await runReorganizeJob({
             execute: async () => {
-                const reorderedPages = pageOrder.map((i) => pages[i] as Uint8Array);
-                const result = await mergePdfs(reorderedPages);
+                const buffer = await file.arrayBuffer();
+                const result = await organizePdf(buffer, { pages: pageOrder });
                 return result.data;
             },
             errorMessage: t("organize.status.failedReorganize"),

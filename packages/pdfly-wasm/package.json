@@ -27,11 +27,13 @@
         "LICENSE"
     ],
     "type": "module",
+    "sideEffects": false,
     "main": "./dist/index.cjs",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
     "exports": {
         ".": {
+            "source": "./src/index.ts",
             "import": {
                 "types": "./dist/index.d.mts",
                 "default": "./dist/index.mjs"
@@ -39,6 +41,41 @@
             "require": {
                 "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
+            }
+        },
+        "./render": {
+            "source": "./src/render.ts",
+            "import": {
+                "types": "./dist/render.d.mts",
+                "default": "./dist/render.mjs"
+            },
+            "require": {
+                "types": "./dist/render.d.cts",
+                "default": "./dist/render.cjs"
+            }
+        }
+    },
+    "publishConfig": {
+        "exports": {
+            ".": {
+                "import": {
+                    "types": "./dist/index.d.mts",
+                    "default": "./dist/index.mjs"
+                },
+                "require": {
+                    "types": "./dist/index.d.cts",
+                    "default": "./dist/index.cjs"
+                }
+            },
+            "./render": {
+                "import": {
+                    "types": "./dist/render.d.mts",
+                    "default": "./dist/render.mjs"
+                },
+                "require": {
+                    "types": "./dist/render.d.cts",
+                    "default": "./dist/render.cjs"
+                }
             }
         }
     },
@@ -67,6 +104,7 @@
         "oxlint": "^1.63.0",
         "publint": "^0.3.19",
         "tsdown": "^0.21.10",
+        "typescript": "^6.0.3",
         "vitest": "^4.1.5"
     },
     "peerDependencies": {

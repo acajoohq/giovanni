@@ -1,6 +1,6 @@
 import { QpdfConversionError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
-import type { PdfPageJpg, PdfToJpgOptions, PdfToJpgResult } from "../types/index.js";
+import type { PdfPageJpg, RenderPdfPagesToJpgOptions, RenderPdfPagesToJpgResult } from "../types/index.js";
 import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
 import type { Canvas as NodeCanvas } from "canvas";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api.js";
@@ -28,6 +28,8 @@ const nodeCanvasPromise: Promise<((w: number, h: number) => NodeCanvas) | null> 
     ? Promise.resolve(null)
     : import("canvas").then(({ createCanvas }) => createCanvas as (w: number, h: number) => NodeCanvas).catch(() => null);
 
+// TODO : See if we should externalize this rendering to some other package or keep it here
+
 /**
  * Convert a PDF to JPG images by rendering each page via PDF.js.
  *
@@ -39,7 +41,7 @@ const nodeCanvasPromise: Promise<((w: number, h: number) => NodeCanvas) | null> 
  * @param options - Conversion options
  * @returns Conversion result with one JPEG blob per page
  */
-export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJpgOptions): Promise<PdfToJpgResult> {
+export async function renderPdfPagesToJpg(input: Uint8Array | ArrayBuffer, options?: RenderPdfPagesToJpgOptions): Promise<RenderPdfPagesToJpgResult> {
     const quality = options?.quality ?? 0.92;
     const scale = options?.scale ?? 2.0;
 
@@ -52,7 +54,7 @@ export async function pdfToJpg(input: Uint8Array | ArrayBuffer, options?: PdfToJ
 
     const pdfjs = await pdfjsPromise;
     if (!pdfjs) {
-        throw new QpdfConversionError("pdfjs-dist is required for pdfToJpg. Install it with: npm install pdfjs-dist");
+        throw new QpdfConversionError("pdfjs-dist is required for renderPdfPagesToJpg. Install it with: npm install pdfjs-dist");
     }
 
     const inputBuffer = normalizeBuffer(input);

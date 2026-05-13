@@ -1,7 +1,8 @@
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { compressPdf, extractImages, pdfToJpg, splitPages } from "@pdfly/wasm";
+import { extractImages, optimizePdf, splitPdf } from "@pdfly/wasm";
+import { renderPdfPagesToJpg } from "@pdfly/wasm/render";
 import { describe, expect, it } from "vitest";
 
 type PdfFixture = {
@@ -27,7 +28,7 @@ describe("pdf tools", () => {
     it.each(pdfFixtures)(
         "compresses $name into a readable PDF",
         async ({ data }) => {
-            const result = await compressPdf(data);
+            const result = await optimizePdf(data);
 
             expect(result.originalSize).toBe(data.byteLength);
             expect(result.compressedSize).toBe(result.data.byteLength);
@@ -40,7 +41,7 @@ describe("pdf tools", () => {
     it.each(pdfFixturesWithCompressionGoals)(
         "keeps $name under the compression goal",
         async ({ data, maxCompressedSize }) => {
-            const result = await compressPdf(data);
+            const result = await optimizePdf(data);
 
             expect(result.compressedSize).toBeLessThanOrEqual(maxCompressedSize);
         },
@@ -50,7 +51,7 @@ describe("pdf tools", () => {
     it.each(pdfFixtures)(
         "splits $name into readable page PDFs",
         async ({ data }) => {
-            const result = await splitPages(data);
+            const result = await splitPdf(data);
 
             expect(result.pageCount).toBeGreaterThan(0);
             expect(result.pages).toHaveLength(result.pageCount);
@@ -88,11 +89,11 @@ describe("pdf tools", () => {
         integrationTestTimeoutMs,
     );
 
-    describe("pdfToJpg", () => {
+    describe("renderPdfPagesToJpg", () => {
         it.each(pdfFixtures)(
             "converts $name to JPG images",
             async ({ data }) => {
-                const result = await pdfToJpg(data);
+                const result = await renderPdfPagesToJpg(data);
 
                 expect(result.convertedPageCount).toBeGreaterThan(0);
                 expect(result.pages).toHaveLength(result.convertedPageCount);
@@ -115,8 +116,8 @@ describe("pdf tools", () => {
         it.each(pdfFixtures)(
             "respects quality option when converting $name",
             async ({ data }) => {
-                const highQuality = await pdfToJpg(data, { quality: 0.99 });
-                const lowQuality = await pdfToJpg(data, { quality: 0.1 });
+                const highQuality = await renderPdfPagesToJpg(data, { quality: 0.99 });
+                const lowQuality = await renderPdfPagesToJpg(data, { quality: 0.1 });
 
                 expect(highQuality.convertedPageCount).toBe(lowQuality.convertedPageCount);
 
@@ -131,8 +132,8 @@ describe("pdf tools", () => {
         it.each(pdfFixtures)(
             "respects scale option when converting $name",
             async ({ data }) => {
-                const normalScale = await pdfToJpg(data, { scale: 1.0 });
-                const doubleScale = await pdfToJpg(data, { scale: 2.0 });
+                const normalScale = await renderPdfPagesToJpg(data, { scale: 1.0 });
+                const doubleScale = await renderPdfPagesToJpg(data, { scale: 2.0 });
 
                 expect(normalScale.convertedPageCount).toBe(doubleScale.convertedPageCount);
 
@@ -148,19 +149,19 @@ describe("pdf tools", () => {
         it("throws on invalid quality (0)", async () => {
             const [fixture] = pdfFixtures;
             if (!fixture) return;
-            await expect(pdfToJpg(fixture.data, { quality: 0 })).rejects.toThrow();
+            await expect(renderPdfPagesToJpg(fixture.data, { quality: 0 })).rejects.toThrow();
         });
 
         it("throws on invalid quality (> 1)", async () => {
             const [fixture] = pdfFixtures;
             if (!fixture) return;
-            await expect(pdfToJpg(fixture.data, { quality: 1.1 })).rejects.toThrow();
+            await expect(renderPdfPagesToJpg(fixture.data, { quality: 1.1 })).rejects.toThrow();
         });
 
         it("throws on invalid scale (<= 0)", async () => {
             const [fixture] = pdfFixtures;
             if (!fixture) return;
-            await expect(pdfToJpg(fixture.data, { scale: 0 })).rejects.toThrow();
+            await expect(renderPdfPagesToJpg(fixture.data, { scale: 0 })).rejects.toThrow();
         });
     });
 });

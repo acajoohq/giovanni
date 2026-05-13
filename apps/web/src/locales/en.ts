@@ -52,6 +52,12 @@
         toolTitle: "Compress PDF",
         emptyTitle: "Drop a PDF to compress",
         emptyDescription: "Secure, offline processing.",
+        preset: {
+            header: "Preset",
+            default: { label: "Default", description: "Safe lossless rewrite" },
+            web: { label: "Web", description: "Linearize for streaming" },
+            archive: { label: "Archive", description: "Deep structural cleanup" },
+        },
         sidebar: {
             compression: "Compression",
             level: "Level",

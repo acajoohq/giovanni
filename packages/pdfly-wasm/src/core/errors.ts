@@ -1,10 +1,22 @@
 /**
  * Base error class for all qpdf-related errors
  */
+export type QpdfErrorCode = "init_failed" | "invalid_input" | "parse_failed" | "write_failed" | "operation_failed";
+
+export interface QpdfErrorOptions extends ErrorOptions {
+    code?: QpdfErrorCode;
+    operation?: string;
+}
+
 export class QpdfError extends Error {
-    constructor(message: string, options?: ErrorOptions) {
+    readonly code: QpdfErrorCode;
+    readonly operation?: string;
+
+    constructor(message: string, options?: QpdfErrorOptions) {
         super(message, options);
         this.name = "QpdfError";
+        this.code = options?.code ?? "operation_failed";
+        this.operation = options?.operation;
 
         // maintain proper stack traces in runtimes that expose captureStackTrace
         const errorWithCapture = Error as ErrorConstructor & {
@@ -19,9 +31,10 @@ export class QpdfError extends Error {
     }
 }
 
-/**
- * Error thrown when WASM module fails to initialize
- */
+export function isQpdfError(error: unknown): error is QpdfError {
+    return error instanceof QpdfError;
+}
+
 export class QpdfInitError extends QpdfError {
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
@@ -29,9 +42,6 @@ export class QpdfInitError extends QpdfError {
     }
 }
 
-/**
- * Error thrown when PDF compression fails
- */
 export class QpdfCompressionError extends QpdfError {
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
@@ -39,9 +49,6 @@ export class QpdfCompressionError extends QpdfError {
     }
 }
 
-/**
- * Error thrown when PDF splitting fails
- */
 export class QpdfSplitError extends QpdfError {
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
@@ -49,9 +56,6 @@ export class QpdfSplitError extends QpdfError {
     }
 }
 
-/**
- * Error thrown when input validation fails
- */
 export class QpdfValidationError extends QpdfError {
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
@@ -59,9 +63,6 @@ export class QpdfValidationError extends QpdfError {
     }
 }
 
-/**
- * Error thrown when PDF merging fails
- */
 export class QpdfMergeError extends QpdfError {
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
@@ -69,9 +70,6 @@ export class QpdfMergeError extends QpdfError {
     }
 }
 
-/**
- * Error thrown when image extraction fails
- */
 export class QpdfImageExtractionError extends QpdfError {
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
@@ -79,9 +77,6 @@ export class QpdfImageExtractionError extends QpdfError {
     }
 }
 
-/**
- * Error thrown when PDF to JPG conversion fails
- */
 export class QpdfConversionError extends QpdfError {
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
@@ -89,9 +84,6 @@ export class QpdfConversionError extends QpdfError {
     }
 }
 
-/**
- * Error thrown when PDF page reorganization fails
- */
 export class QpdfOrganizeError extends QpdfError {
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);

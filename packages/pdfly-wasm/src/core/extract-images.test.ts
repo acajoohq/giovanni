@@ -68,7 +68,9 @@ async function extractSingleRawImage(pdfBytes: Uint8Array): Promise<WasmExtracte
 
     expect(images).toHaveLength(1);
 
-    return images[0]!;
+    const image = images[0];
+    if (!image) throw new Error("Expected one image");
+    return image;
 }
 
 async function loadQpdfModule(): Promise<QpdfWasmModule> {

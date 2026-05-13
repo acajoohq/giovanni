@@ -8,3 +8,4 @@ export * from "./SidebarToggle";
 export * from "./SidebarCheckbox";
 export * from "./SidebarInfo";
 export * from "./SidebarControls";
+export * from "./SidebarCollapsibleSection";

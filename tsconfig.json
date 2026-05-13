@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
+        "customConditions": ["source"],
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "isolatedModules": true,
@@ -8,10 +9,6 @@
         "moduleResolution": "Bundler",
         "resolveJsonModule": true,
         "moduleDetection": "force",
-        "paths": {
-            "@pdfly/ui": ["./packages/pdfly-ui/src/index.ts"],
-            "@pdfly/wasm": ["./packages/pdfly-wasm/src/index.ts"]
-        },
         "skipLibCheck": true,
         "strict": true,
         "target": "ES2022"

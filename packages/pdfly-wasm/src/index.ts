@@ -1,50 +1,21 @@
 /**
- * @pdfly/wasm - Modern WebAssembly build of qpdf for PDF compression and manipulation
- *
- * @example Simple API
- * ```typescript
- * import { compressPdf } from '@pdfly/wasm';
- *
- * const pdfBytes = await fetch('document.pdf').then(r => r.arrayBuffer());
- * const result = await compressPdf(pdfBytes, {
- *   compressionLevel: 9,
- *   decodeLevel: 'all'
- * });
- *
- * console.log(`Saved ${result.savedBytes} bytes`);
- * ```
- *
- * @example Advanced API
- * ```typescript
- * import { QPDF, QPDFWriter } from '@pdfly/wasm';
- *
- * const qpdf = new QPDF();
- * await qpdf.processMemoryFile(pdfBytes);
- *
- * const writer = new QPDFWriter(qpdf);
- * await writer.setCompressionLevel(9);
- * await writer.write();
- * const compressed = writer.getBuffer();
- *
- * writer.cleanup();
- * qpdf.cleanup();
- * ```
+ * @pdfly/wasm - qpdf WebAssembly API for local-first PDF workflows.
  */
 
-// simple api
-export { initQpdf, getVersion, compressPdf } from "./core/compress.js";
-export { splitPages } from "./core/split.js";
+// qpdf api
+export { initQpdf, getQpdfVersion, linearizePdf, optimizePdf } from "./core/compress.js";
+export { inspectPdf, checkPdf } from "./core/inspect.js";
+export { splitPdf } from "./core/split.js";
 export { mergePdfs } from "./core/merge.js";
+export { organizePdf } from "./core/organize.js";
 export { extractImages } from "./core/extract-images.js";
-export { pdfToJpg } from "./core/pdf-to-jpg.js";
-export { reorganizePages } from "./core/organize.js";
 
 // advanced api
-export { QPDF } from "./core/qpdf.js";
-export { QPDFWriter } from "./core/writer.js";
+export { QpdfDocument } from "./core/qpdf.js";
 
 // error classes
 export {
+    isQpdfError,
     QpdfError,
     QpdfInitError,
     QpdfCompressionError,
@@ -58,21 +29,30 @@ export {
 
 // types
 export type {
-    CompressionOptions,
+    CheckOptions,
     DecodeLevel,
+    InspectOptions,
+    MergeOptions,
     ObjectStreamMode,
-    CompressionResult,
+    OpenDocumentOptions,
+    OptimizeOptions,
+    OrganizeOptions,
+    PdfData,
+    PdfInput,
+    QpdfOptimizePreset,
+    WriteOptions,
+    OptimizeResult,
     SplitResult,
     MergeResult,
-    QPDFInfo,
+    QpdfCheckResult,
+    QpdfDocumentInfo,
     ExtractedImage,
     ExtractImagesResult,
-    PdfPageJpg,
-    PdfToJpgResult,
-    PdfToJpgOptions,
     OrganizeResult,
 } from "./types/index.js";
 
 // utility functions
 export { formatBytes, calculateSavings, formatPercentage } from "./utils/format.js";
-export { bufferToBlob, createDownloadUrl, downloadBuffer } from "./utils/buffer.js";
+
+// preset constants
+export { OPTIMIZE_PRESETS } from "./utils/validation.js";

@@ -12,8 +12,7 @@
             "@/lib/*": ["./src/lib/*"],
             "@/routes/*": ["./src/routes/*"],
             "@/styles/*": ["./src/styles/*"],
-            "@/utils/*": ["./src/utils/*"],
-            "@pdfly/wasm": ["../../packages/pdfly-wasm/src/index.ts"]
+            "@/utils/*": ["./src/utils/*"]
         }
     },
     "include": ["src", "@pdfly", "vite.config.ts"]

@@ -1,17 +1,23 @@
-﻿import { compressPdf, formatBytes, type CompressionResult, type DecodeLevel, type ObjectStreamMode } from "@pdfly/wasm";
+import { formatBytes, optimizePdf, OPTIMIZE_PRESETS, type DecodeLevel, type ObjectStreamMode, type OptimizeResult, type QpdfOptimizePreset, type WriteOptions } from "@pdfly/wasm";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { ComparisonSlider } from "@/components/viewer/ComparisonSlider";
 import { EmptyState } from "@/components/emptyState/EmptyState";
-import { Sidebar } from "@/components/sidebar/Sidebar";
-import { SidebarCheckbox } from "@/components/sidebar/SidebarCheckbox";
-import { SidebarContent } from "@/components/sidebar/SidebarContent";
-import { SidebarField } from "@/components/sidebar/SidebarField";
-import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { SidebarRange, SidebarSelect } from "@/components/sidebar/SidebarControls";
-import { SidebarSection } from "@/components/sidebar/SidebarSection";
+import {
+    Sidebar,
+    SidebarCheckbox,
+    SidebarCollapsibleSection,
+    SidebarContent,
+    SidebarField,
+    SidebarHeader,
+    SidebarRange,
+    SidebarSection,
+    SidebarSelect,
+    SidebarToggle,
+    SidebarToggleGroup,
+} from "@/components/sidebar";
 import { EmptyCompress } from "@/components/pdf/emptyState/EmptyCompress";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
@@ -20,31 +26,29 @@ import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdfToolUtils.utils";
 
-interface CompressionOptions {
-    compressionLevel: number;
-    decodeLevel: DecodeLevel;
-    objectStreams: ObjectStreamMode;
-    recompressFlate: boolean;
-    compressPages: boolean;
-    removeUnreferencedResources: boolean;
-}
+type OptimizeSettings = { preset: QpdfOptimizePreset } & Required<WriteOptions>;
 
 export function CompressTool() {
     const { t } = useTranslation();
+
+    const presetLabels: Record<QpdfOptimizePreset, string> = {
+        default: t("compress.preset.default.label"),
+        web: t("compress.preset.web.label"),
+        archive: t("compress.preset.archive.label"),
+    };
+
+    const presetDescriptions: Record<QpdfOptimizePreset, string> = {
+        default: t("compress.preset.default.description"),
+        web: t("compress.preset.web.description"),
+        archive: t("compress.preset.archive.description"),
+    };
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
     const [previewPage, setPreviewPage] = useState(1);
     const [previewPageCount, setPreviewPageCount] = useState(0);
-    const [compressionOptions, setCompressionOptions] = useState<CompressionOptions>({
-        compressionLevel: 6,
-        decodeLevel: "generalized",
-        objectStreams: "generate",
-        recompressFlate: true,
-        compressPages: false,
-        removeUnreferencedResources: false,
-    });
-    const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<CompressionResult>();
+    const [settings, setSettings] = useState<OptimizeSettings>({ preset: "default", ...OPTIMIZE_PRESETS.default });
+    const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<OptimizeResult>();
 
     const decodeLevelOptions: Array<{ label: string; value: DecodeLevel }> = [
         { label: t("compress.decodeLevel.none"), value: "none" },
@@ -59,12 +63,12 @@ export function CompressTool() {
         { label: t("compress.objectStreamMode.disable"), value: "disable" },
     ];
 
-    const processFile = async (nextFile: File, options: CompressionOptions = compressionOptions) => {
+    const processFile = async (nextFile: File, options: OptimizeSettings = settings) => {
         await runJob({
             execute: async () => {
                 const buffer = await nextFile.arrayBuffer();
 
-                return compressPdf(buffer, options);
+                return optimizePdf(buffer, options);
             },
             errorMessage: t("compress.status.failed"),
             successStatus: (nextResult) =>
@@ -74,23 +78,27 @@ export function CompressTool() {
         });
     };
 
-    const debouncedProcessFile = useDebouncedCallback((nextFile: File, nextOptions: CompressionOptions) => {
-        void processFile(nextFile, nextOptions);
+    const debouncedProcessFile = useDebouncedCallback((nextFile: File, nextSettings: OptimizeSettings) => {
+        void processFile(nextFile, nextSettings);
     }, PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS);
 
-    const scheduleRecompress = (nextOptions: CompressionOptions) => {
+    const scheduleRecompress = (nextSettings: OptimizeSettings) => {
         if (!file) {
             debouncedProcessFile.cancel();
             return;
         }
 
-        debouncedProcessFile(file, nextOptions);
+        debouncedProcessFile(file, nextSettings);
     };
 
-    const updateCompressionOptions = (patch: Partial<CompressionOptions>) => {
-        const nextOptions = { ...compressionOptions, ...patch };
-        setCompressionOptions(nextOptions);
-        scheduleRecompress(nextOptions);
+    const updateSettings = (patch: Partial<OptimizeSettings>) => {
+        const nextSettings = { ...settings, ...patch };
+        setSettings(nextSettings);
+        scheduleRecompress(nextSettings);
+    };
+
+    const selectPreset = (preset: QpdfOptimizePreset) => {
+        updateSettings({ preset, ...OPTIMIZE_PRESETS[preset] });
     };
 
     const handleFiles = (files: File[]) => {
@@ -130,54 +138,59 @@ export function CompressTool() {
     const sidebar = (
         <Sidebar>
             <SidebarSection>
-                <SidebarHeader>{t("compress.sidebar.compression")}</SidebarHeader>
+                <SidebarHeader>{t("compress.preset.header")}</SidebarHeader>
+                <SidebarContent>
+                    <SidebarToggleGroup>
+                        {(Object.keys(OPTIMIZE_PRESETS) as QpdfOptimizePreset[]).map((preset) => (
+                            <SidebarToggle key={preset} isActive={settings.preset === preset} title={presetDescriptions[preset]} onClick={() => selectPreset(preset)}>
+                                {presetLabels[preset]}
+                            </SidebarToggle>
+                        ))}
+                    </SidebarToggleGroup>
+                    <p className="mt-1.5 text-[11px] text-neutral-500">{presetDescriptions[settings.preset]}</p>
+                </SidebarContent>
+            </SidebarSection>
+
+            <SidebarCollapsibleSection title="Advanced" storageKey="compress-advanced">
                 <SidebarContent>
                     <SidebarField label={t("compress.sidebar.level")}>
                         <SidebarRange
                             max={9}
                             min={1}
-                            value={compressionOptions.compressionLevel}
-                            valueLabel={compressionOptions.compressionLevel}
-                            onValueChange={(compressionLevel) => updateCompressionOptions({ compressionLevel })}
+                            value={settings.compressionLevel}
+                            valueLabel={settings.compressionLevel}
+                            onValueChange={(compressionLevel) => updateSettings({ compressionLevel })}
                         />
                     </SidebarField>
                     <SidebarField label={t("compress.sidebar.decode")}>
-                        <SidebarSelect
-                            options={decodeLevelOptions}
-                            value={compressionOptions.decodeLevel}
-                            onValueChange={(decodeLevel) => updateCompressionOptions({ decodeLevel })}
-                        />
+                        <SidebarSelect options={decodeLevelOptions} value={settings.decodeLevel} onValueChange={(decodeLevel) => updateSettings({ decodeLevel })} />
                     </SidebarField>
                     <SidebarField label={t("compress.sidebar.objectStreams")}>
-                        <SidebarSelect
-                            options={objectStreamOptions}
-                            value={compressionOptions.objectStreams}
-                            onValueChange={(objectStreams) => updateCompressionOptions({ objectStreams })}
-                        />
+                        <SidebarSelect options={objectStreamOptions} value={settings.objectStreams} onValueChange={(objectStreams) => updateSettings({ objectStreams })} />
                     </SidebarField>
                 </SidebarContent>
-            </SidebarSection>
+            </SidebarCollapsibleSection>
 
-            <SidebarSection>
-                <SidebarHeader>{t("compress.sidebar.streamOptions")}</SidebarHeader>
+            <SidebarCollapsibleSection title={t("compress.sidebar.streamOptions")} storageKey="compress-stream-options">
                 <SidebarContent>
+                    <SidebarCheckbox checked={settings.linearize} label="Linearize" onChange={(event) => updateSettings({ linearize: event.currentTarget.checked })} />
                     <SidebarCheckbox
-                        checked={compressionOptions.recompressFlate}
+                        checked={settings.recompressFlate}
                         label={t("compress.sidebar.recompressFlate")}
-                        onChange={(event) => updateCompressionOptions({ recompressFlate: event.currentTarget.checked })}
+                        onChange={(event) => updateSettings({ recompressFlate: event.currentTarget.checked })}
                     />
                     <SidebarCheckbox
-                        checked={compressionOptions.compressPages}
+                        checked={settings.compressPages}
                         label={t("compress.sidebar.compressPages")}
-                        onChange={(event) => updateCompressionOptions({ compressPages: event.currentTarget.checked })}
+                        onChange={(event) => updateSettings({ compressPages: event.currentTarget.checked })}
                     />
                     <SidebarCheckbox
-                        checked={compressionOptions.removeUnreferencedResources}
+                        checked={settings.removeUnreferencedResources}
                         label={t("compress.sidebar.removeUnused")}
-                        onChange={(event) => updateCompressionOptions({ removeUnreferencedResources: event.currentTarget.checked })}
+                        onChange={(event) => updateSettings({ removeUnreferencedResources: event.currentTarget.checked })}
                     />
                 </SidebarContent>
-            </SidebarSection>
+            </SidebarCollapsibleSection>
         </Sidebar>
     );
 
@@ -219,6 +232,7 @@ export function CompressTool() {
                         ? [
                               { label: t("compress.metrics.saved"), value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
                               { label: t("common.metrics.output"), value: formatBytes(result.compressedSize) },
+                              { label: t("compress.preset.header"), value: presetLabels[result.preset] },
                               ...(elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
                           ]
                         : []

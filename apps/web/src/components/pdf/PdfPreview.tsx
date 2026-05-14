@@ -191,7 +191,7 @@ export function PdfPreview({ data, file, page: controlledPage, onPageChange, onP
     };
 
     return (
-        <div ref={containerRef} className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-app-bg">
+        <div ref={containerRef} className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-app-bg pb-16">
             {!hasSource && (
                 <div className="flex flex-col items-center gap-2 text-app-text-subtle">
                     {placeholder ?? (

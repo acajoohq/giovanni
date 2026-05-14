@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { access, mkdir, rename, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { VENDOR_PINS } from "./upstreams.js";
+import { VENDOR_PINS } from "./upstreams";
 
 type BuildMode = "dev" | "prd";
 type BuildTarget = "qpdf" | "ghostscript";

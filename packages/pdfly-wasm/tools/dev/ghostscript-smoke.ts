@@ -3,7 +3,7 @@
  * gsapi-backed rewrite wrapper.
  *
  * Usage:
- *   node --experimental-strip-types tools/dev/ghostscript-smoke.ts <input.pdf> <output.pdf> [preset]
+ *   pnpm smoke:ghostscript <input.pdf> <output.pdf> [preset]
  *
  * Presets:
  *   screen | ebook | printer | prepress | default

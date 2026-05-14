@@ -2,11 +2,11 @@
  * Inspect a PDF and optimize it with an automatically chosen preset.
  *
  * Usage:
- *   node --experimental-strip-types tools/dev/optimize-pdf.ts <input.pdf> <output.pdf>
+ *   pnpm exec tsx tools/dev/optimize-pdf.ts <input.pdf> <output.pdf>
  */
 
 import { readFile, writeFile } from "node:fs/promises";
-import { QpdfDocument } from "../../src/index.js";
+import { QpdfDocument } from "../../src/index";
 
 const [, , inputPath, outputPath] = process.argv;
 

@@ -12,6 +12,7 @@ Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF
 - `vendor/qpdf` (clone in Setup)
 - Emscripten (`emcc`, `emcmake`, `emmake` on PATH) for `@pdfly/wasm` WASM build
 - CMake
+- Docker 23+ for the experimental Ghostscript WASM build
 - Bash (WASM build script); on Windows use `packages/pdfly-wasm/wasm/build.ps1`
 - Rust for Tauri desktop build
 
@@ -39,12 +40,25 @@ Consumers installing **`@pdfly/wasm` from npm:** [packages/pdfly-wasm/README.md]
 pnpm dev                              # web
 pnpm build                            # turbo
 pnpm -F @pdfly/wasm build             # WASM + lib only
+pnpm -F @pdfly/wasm build:ghostscript:dev   # Ghostscript WASM spike via Docker
+pnpm -F @pdfly/wasm build:ghostscript:prd   # optimized Ghostscript WASM spike via Docker
 pnpm -F pdfly-desktop run tauri dev   # desktop
 pnpm check                            # types, lint, tests, format
 pnpm validate
 ```
 
 `pnpm -F <pkg> <script>` — packages include `web`, `@pdfly/wasm`, `pdfly-desktop`. See [pnpm-workspace.yaml](pnpm-workspace.yaml).
+
+## Ghostscript WASM Spike
+
+The first Ghostscript milestone is Docker-first and file-based, similar to the build orchestration used by `ffmpeg.wasm`.
+
+- source: `vendor/ghostpdl`
+- toolchain: `emscripten/emsdk` inside Docker
+- output: `packages/pdfly-wasm/build/ghostscript`
+- current goal: produce `ghostscript.js` + `ghostscript.wasm` that can later be driven through Emscripten FS and CLI-style args
+
+This is intentionally separate from the qpdf build and does not yet expose a public TypeScript API. The flow is Dockerfile-centric; there is no extra Node wrapper around it.
 
 ## License
 
@@ -83,3 +97,4 @@ pnpm validate
     - [ ] Quality preset UI — `Lossless / Balanced / Small` once a lossy image pipeline exists
 - [ ] Open Question
     - [ ] Should we rename the wasm build to as it's doing more on top of qpdf?
+- [ ] WebAssembly.instantiateStreaming() to speed up

@@ -82,6 +82,9 @@
     "scripts": {
         "build": "pnpm run build:wasm && pnpm run build:lib",
         "build:lib": "tsdown",
+        "build:ghostscript:dev": "rm -rf build/ghostscript && docker buildx build --file wasm/docker/ghostscript.Dockerfile --build-arg GHOSTSCRIPT_BUILD_MODE=dev --build-arg JOBS=1 --output type=local,dest=build/ghostscript ../..",
+        "build:ghostscript:prd": "rm -rf build/ghostscript && docker buildx build --file wasm/docker/ghostscript.Dockerfile --build-arg GHOSTSCRIPT_BUILD_MODE=prd --build-arg JOBS=1 --output type=local,dest=build/ghostscript ../..",
+        "smoke:ghostscript": "node --experimental-strip-types script/ghostscript-smoke.ts",
         "build:wasm": "node script/build-wasm.mjs",
         "clean": "rm -rf dist build",
         "format": "oxfmt --write src tsdown.config.ts vitest.config.ts",

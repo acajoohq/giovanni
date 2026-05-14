@@ -2,7 +2,7 @@ import type { InputHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export const SidebarCheckbox = ({ className, label, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: ReactNode }) => (
-    <label className={cn("mt-1 flex items-start justify-between gap-3 cursor-pointer group", className)}>
+    <label className={cn("my-2 flex items-start justify-between gap-3 cursor-pointer group", className)}>
         <span className="flex-1 text-[12px] leading-snug text-muted-foreground transition-colors group-hover:text-app-text-muted">{label}</span>
         <input
             type="checkbox"

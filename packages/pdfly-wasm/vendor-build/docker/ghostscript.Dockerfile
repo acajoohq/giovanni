@@ -3,6 +3,9 @@
 FROM emscripten/emsdk:5.0.7 AS ghostscript-builder
 
 ARG GHOSTSCRIPT_BUILD_MODE=dev
+ARG GHOSTPDL_VERSION
+ARG GHOSTPDL_ARCHIVE_URL
+ARG GHOSTPDL_SHA256=""
 ARG JOBS=1
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -12,6 +15,8 @@ RUN apt-get update && \
         autoconf \
         automake \
         bison \
+        ca-certificates \
+        curl \
         flex \
         libtool \
         make \
@@ -22,7 +27,13 @@ RUN apt-get update && \
 
 WORKDIR /src
 
-COPY vendor/ghostpdl /src/vendor/ghostpdl
+RUN set -eux; \
+    mkdir -p /src/vendor/ghostpdl; \
+    curl -fsSL "$GHOSTPDL_ARCHIVE_URL" -o /tmp/ghostpdl.tar.gz; \
+    if [ -n "$GHOSTPDL_SHA256" ]; then \
+        echo "$GHOSTPDL_SHA256  /tmp/ghostpdl.tar.gz" | sha256sum -c -; \
+    fi; \
+    tar -xzf /tmp/ghostpdl.tar.gz --strip-components=1 -C /src/vendor/ghostpdl
 
 RUN set -eux; \
     case "$GHOSTSCRIPT_BUILD_MODE" in \
@@ -98,6 +109,7 @@ RUN set -eux; \
     cat > "$OUT_DIR/manifest.json" <<EOF
 {
   "buildMode": "${GHOSTSCRIPT_BUILD_MODE}",
+  "sourceVersion": "${GHOSTPDL_VERSION}",
   "host": "${HOST_TRIPLE}",
   "build": "${BUILD_TRIPLE}",
   "artifacts": [

@@ -9,7 +9,7 @@ pnpm add @pdfly/wasm
 # npm install @pdfly/wasm
 ```
 
-Needs **Node 24+** for local dev ([`engines`](package.json)). Docker is the build toolchain for the vendored WASM engines.
+Needs **Node 24+** for local dev ([`engines`](package.json)). Docker is the build toolchain for the vendored WASM engines. On Windows, use Docker Desktop with Linux containers enabled.
 
 ## Usage
 
@@ -42,14 +42,19 @@ import { renderPdfPagesToJpg } from "@pdfly/wasm/render";
 
 ## Build from this monorepo
 
-Pinned upstream sources are synced into repo-root `vendor/` automatically. From the repo root:
+Pinned upstream sources are fetched inside the Docker build. From the repo root:
 
 ```bash
-pnpm --filter @pdfly/wasm vendor:sync
 pnpm --filter @pdfly/wasm build
 ```
 
 The default `build` path runs the optimized qpdf Docker build and then bundles the package. More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).
+
+Vendor sync is intentionally simple:
+
+- pinned source archives live in `tools/vendor/upstreams.ts`
+- Docker fetches those pinned archives during the build
+- no manual clone or host-side vendor cache is required
 
 ```bash
 pnpm --filter @pdfly/wasm test
@@ -69,7 +74,7 @@ Build-system contract:
 
 - [`vendor-build/README.md`](./vendor-build/README.md)
 
-`src/` — TS API; `tools/` — local orchestration and smoke helpers; `vendor-build/` — native/container build definitions; `dist/` — packaged output. All processing is local once the pinned sources have been synced.
+`src/` — TS API; `tools/` — local orchestration and smoke helpers; `vendor-build/` — native/container build definitions; `dist/` — packaged output.
 
 ## Experimental Ghostscript WASM Build
 
@@ -78,14 +83,13 @@ The Ghostscript port is being built as a separate Docker-driven spike first, bef
 From the repo root:
 
 ```bash
-pnpm --filter @pdfly/wasm vendor:sync
 pnpm --filter @pdfly/wasm build:ghostscript:dev
 ```
 
 That flow:
 
 - uses `packages/pdfly-wasm/vendor-build/docker/ghostscript.Dockerfile`
-- uses a pinned `ghostpdl` source archive synced into `vendor/ghostpdl`
+- uses a pinned `ghostpdl` source archive fetched inside Docker
 - keeps the Ghostscript build logic inside the Dockerfile
 - installs autotools inside the container
 - runs `autogen.sh`, `emconfigure ./configure`, and `emmake make`

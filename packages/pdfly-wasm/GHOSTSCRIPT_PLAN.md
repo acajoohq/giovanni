@@ -6,7 +6,8 @@ This file is the working plan and progress ledger for the Ghostscript integratio
 
 Completed:
 
-- [x] Pinned vendor bootstrap for `qpdf` and `ghostpdl`
+- [x] Pinned upstream definition for `qpdf` and `ghostpdl`
+- [x] Removed host-side vendor sync; Docker now fetches pinned source archives directly
 - [x] Unified Docker-first build entrypoint for both upstream engines
 - [x] Separated orchestration (`tools/`) from native build definitions (`vendor-build/`)
 - [x] Docker-first Ghostscript WASM build
@@ -18,6 +19,12 @@ Completed:
 Current proof point:
 
 - input PDF bytes -> Ghostscript WASM -> `pdfwrite` -> output PDF bytes
+
+Scope note:
+
+- the source of truth is now `tools/vendor/upstreams.ts`
+- Docker fetches pinned archives directly during the build
+- there is no host-side vendor cache contract anymore
 
 ## Main Goal
 
@@ -157,6 +164,7 @@ Todos:
 - [ ] compare representative qpdf vs Ghostscript outputs
 - [ ] document AGPL/licensing implications clearly
 - [ ] document known performance expectations and caveats
+- [ ] github actions
 
 Checkpoint:
 
@@ -167,13 +175,14 @@ Checkpoint:
 Update this file after each of these milestones:
 
 1. Docker build changes
-2. internal runtime loader works
-3. internal rewrite function works
-4. typed options land
-5. public compression facade lands
-6. tree-shaking/package export verification is done
-7. web UI integration lands
-8. test/release hardening lands
+2. vendor sync/build contract simplification
+3. internal runtime loader works
+4. internal rewrite function works
+5. typed options land
+6. public compression facade lands
+7. tree-shaking/package export verification is done
+8. web UI integration lands
+9. test/release hardening lands
 
 For each update:
 

@@ -80,7 +80,6 @@
         }
     },
     "scripts": {
-        "vendor:sync": "node --experimental-strip-types tools/vendor/sync.ts",
         "build": "pnpm run build:wasm && pnpm run build:lib",
         "build:vendor": "node --experimental-strip-types tools/vendor/build.ts",
         "build:lib": "tsdown",
@@ -91,7 +90,7 @@
         "smoke:ghostscript": "node --experimental-strip-types tools/dev/ghostscript-smoke.ts",
         "build:wasm": "pnpm run build:qpdf:prd",
         "build:wasm:dev": "pnpm run build:qpdf:dev",
-        "clean": "rm -rf dist build",
+        "clean": "node --experimental-strip-types tools/dev/clean.ts",
         "format": "oxfmt --write src tools tsdown.config.ts vitest.config.ts",
         "format:check": "oxfmt --check src tools tsdown.config.ts vitest.config.ts",
         "lint": "oxlint src tools tsdown.config.ts vitest.config.ts",
@@ -111,7 +110,6 @@
         "oxfmt": "^0.48.0",
         "oxlint": "^1.63.0",
         "publint": "^0.3.19",
-        "tar": "^7.4.3",
         "tsdown": "^0.21.10",
         "typescript": "^6.0.3",
         "vitest": "^4.1.5"

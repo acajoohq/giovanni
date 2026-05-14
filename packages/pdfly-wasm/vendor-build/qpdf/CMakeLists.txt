@@ -25,7 +25,10 @@ set(ZLIB_LIB_PATH "z" CACHE FILEPATH "zlib library")
 set(LIBJPEG_H_PATH "${EMSCRIPTEN_SYSROOT}/include" CACHE PATH "libjpeg include path")
 set(LIBJPEG_LIB_PATH "jpeg" CACHE FILEPATH "libjpeg library")
 
-set(QPDF_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../vendor/qpdf" CACHE PATH "qpdf source directory")
+set(QPDF_SOURCE_DIR "" CACHE PATH "qpdf source directory")
+if(NOT QPDF_SOURCE_DIR OR NOT EXISTS "${QPDF_SOURCE_DIR}/CMakeLists.txt")
+  message(FATAL_ERROR "QPDF_SOURCE_DIR must point to an unpacked qpdf source tree")
+endif()
 set(qpdf_SOURCE_DIR ${QPDF_SOURCE_DIR})
 set(qpdf_INCLUDE ${qpdf_SOURCE_DIR}/include)
 

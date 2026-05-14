@@ -5,7 +5,7 @@ This directory contains the build definitions for vendored upstream engines used
 ## Separation of concerns
 
 - `tools/vendor/*`
-  Orchestration only: vendor syncing, target selection, Docker invocation
+  Orchestration only: pinned source definitions, target selection, Docker invocation
 
 - `vendor-build/docker/*`
   Container recipes only: isolated build environments for each upstream engine
@@ -34,6 +34,14 @@ Each engine writes to its own output directory:
   - `manifest.json`
 
 That engine-named output is the stable contract for tooling, tests, and packaging.
+
+## Vendor source contract
+
+Pinned upstream sources are defined in:
+
+- `tools/vendor/upstreams.ts`
+
+Docker fetches those archives during the build. There is no host-side vendor sync step anymore.
 
 ## Supported tweaks
 

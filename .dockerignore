@@ -13,6 +13,4 @@ packages/*/build
 packages/*/.turbo
 packages/*/.tmp
 packages/pdfly-wasm/wasm/
-vendor/*
-!vendor/qpdf
-!vendor/ghostpdl
+vendor/

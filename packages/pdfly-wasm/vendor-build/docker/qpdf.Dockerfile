@@ -3,20 +3,33 @@
 FROM emscripten/emsdk:5.0.7 AS qpdf-builder
 
 ARG QPDF_BUILD_MODE=prd
+ARG QPDF_VERSION
+ARG QPDF_ARCHIVE_URL
+ARG QPDF_SHA256=""
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        ca-certificates \
         cmake \
+        curl \
         make \
+        tar \
         python3 && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
 
-COPY vendor/qpdf /src/vendor/qpdf
 COPY packages/pdfly-wasm/vendor-build /src/packages/pdfly-wasm/vendor-build
+
+RUN set -eux; \
+    mkdir -p /src/vendor/qpdf; \
+    curl -fsSL "$QPDF_ARCHIVE_URL" -o /tmp/qpdf.tar.gz; \
+    if [ -n "$QPDF_SHA256" ]; then \
+        echo "$QPDF_SHA256  /tmp/qpdf.tar.gz" | sha256sum -c -; \
+    fi; \
+    tar -xzf /tmp/qpdf.tar.gz --strip-components=1 -C /src/vendor/qpdf
 
 RUN set -eux; \
     case "$QPDF_BUILD_MODE" in \
@@ -50,6 +63,7 @@ RUN set -eux; \
     cat > "$OUT_DIR/manifest.json" <<EOF
 {
   "buildMode": "${QPDF_BUILD_MODE}",
+  "sourceVersion": "${QPDF_VERSION}",
   "artifacts": [
     "qpdf.js",
     "qpdf.wasm"

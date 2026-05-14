@@ -389,9 +389,7 @@ export function CompressTool() {
                                     step={6}
                                     value={ghostscriptSettings.colorImageResolution}
                                     valueLabel={`${ghostscriptSettings.colorImageResolution}`}
-                                    onValueChange={(colorImageResolution) =>
-                                        updateGhostscriptSettings({ colorImageResolution }, { recompress: false })
-                                    }
+                                    onValueChange={(colorImageResolution) => updateGhostscriptSettings({ colorImageResolution }, { recompress: false })}
                                     onValueCommitted={(colorImageResolution: number) => updateGhostscriptSettings({ colorImageResolution })}
                                 />
                             </SidebarField>
@@ -407,9 +405,7 @@ export function CompressTool() {
                                     step={6}
                                     value={ghostscriptSettings.grayImageResolution}
                                     valueLabel={`${ghostscriptSettings.grayImageResolution}`}
-                                    onValueChange={(grayImageResolution) =>
-                                        updateGhostscriptSettings({ grayImageResolution }, { recompress: false })
-                                    }
+                                    onValueChange={(grayImageResolution) => updateGhostscriptSettings({ grayImageResolution }, { recompress: false })}
                                     onValueCommitted={(grayImageResolution: number) => updateGhostscriptSettings({ grayImageResolution })}
                                 />
                             </SidebarField>

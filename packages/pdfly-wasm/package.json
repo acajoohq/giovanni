@@ -89,6 +89,7 @@
         "lint": "oxlint src tsdown.config.ts vitest.config.ts",
         "test": "vitest run",
         "test:coverage": "vitest run --coverage",
+        "test:report": "vitest run --reporter=verbose --reporter=junit --outputFile.junit=./test-report/junit.xml",
         "test:watch": "vitest",
         "typecheck": "tsgo --noEmit",
         "validate": "publint && attw --pack . --profile node16",

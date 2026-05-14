@@ -1,0 +1,812 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="252" failures="3" errors="0" time="3.3216432">
+    <testsuite name="src/core/compress.test.ts" timestamp="2026-05-14T17:11:20.539Z" hostname="eduardo" tests="8" failures="0" errors="0" skipped="0" time="0.032117">
+        <testcase classname="src/core/compress.test.ts" name="optimizePdf &gt; returns correct size statistics" time="0.0082917">
+        </testcase>
+        <testcase classname="src/core/compress.test.ts" name="optimizePdf &gt; includes the preset name in the result" time="0.001011">
+        </testcase>
+        <testcase classname="src/core/compress.test.ts" name="optimizePdf &gt; defaults preset to &apos;default&apos;" time="0.0010318">
+        </testcase>
+        <testcase classname="src/core/compress.test.ts" name="optimizePdf &gt; copies output out of WASM heap via slice()" time="0.0023748">
+        </testcase>
+        <testcase classname="src/core/compress.test.ts" name="optimizePdf &gt; wraps WASM failures in QpdfCompressionError" time="0.0060654">
+        </testcase>
+        <testcase classname="src/core/compress.test.ts" name="optimizePdf &gt; accepts ArrayBuffer input" time="0.0010021">
+        </testcase>
+        <testcase classname="src/core/compress.test.ts" name="linearizePdf &gt; forwards linearize: true to the WASM compressPdf call" time="0.0064558">
+        </testcase>
+        <testcase classname="src/core/compress.test.ts" name="linearizePdf &gt; includes preset in the result" time="0.0009673">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/core/errors.test.ts" timestamp="2026-05-14T17:11:20.545Z" hostname="eduardo" tests="11" failures="0" errors="0" skipped="0" time="0.02076">
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfError &gt; should create error with message" time="0.0054986">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfError &gt; should support error cause" time="0.0009665">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfError &gt; should expose structured error metadata" time="0.0007734">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfError &gt; should work with instanceof" time="0.0009986">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfInitError &gt; should create init error" time="0.0014699">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfCompressionError &gt; should create compression error" time="0.0011">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfSplitError &gt; should create split error" time="0.0009366">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfMergeError &gt; should create merge error" time="0.0008024">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfValidationError &gt; should create validation error" time="0.0010062">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfConversionError &gt; should create conversion error" time="0.0013123">
+        </testcase>
+        <testcase classname="src/core/errors.test.ts" name="Error Classes &gt; QpdfOrganizeError &gt; should create organize error" time="0.0008185">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/core/extract-images.test.ts" timestamp="2026-05-14T17:11:20.550Z" hostname="eduardo" tests="8" failures="3" errors="0" skipped="0" time="0.3519693">
+        <testcase classname="src/core/extract-images.test.ts" name="extractImages WASM filter decoding &gt; returns browser-decodable JPEG bytes for &apos;plain DCTDecode&apos;" time="0.2500307">
+        </testcase>
+        <testcase classname="src/core/extract-images.test.ts" name="extractImages WASM filter decoding &gt; returns browser-decodable JPEG bytes for &apos;ASCII85-wrapped DCTDecode&apos;" time="0.0520322">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+            <failure message="Aborted(undefined). Build with -sASSERTIONS for more info." type="RuntimeError">
+RuntimeError: Aborted(undefined). Build with -sASSERTIONS for more info.
+ ❯ abort build/wasm/qpdf.js:1:3183
+ ❯ ___cxa_throw build/wasm/qpdf.js:1:6563
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:425450
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:425668
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:109039
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:723603
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:817283
+ ❯ Object.extractImages build/wasm/qpdf.js:1:76817
+ ❯ extractSingleRawImage src/core/extract-images.test.ts:67:27
+ ❯ src/core/extract-images.test.ts:28:23
+            </failure>
+        </testcase>
+        <testcase classname="src/core/extract-images.test.ts" name="extractImages WASM filter decoding &gt; returns browser-decodable JPEG bytes for &apos;Flate-wrapped DCTDecode&apos;" time="0.0104943">
+        </testcase>
+        <testcase classname="src/core/extract-images.test.ts" name="extractImages WASM filter decoding &gt; returns browser-decodable JPEG bytes for &apos;RunLength-wrapped DCTDecode&apos;" time="0.0032437">
+        </testcase>
+        <testcase classname="src/core/extract-images.test.ts" name="extractImages WASM filter decoding &gt; handles upstream fixture: &apos;Mozilla PDF.js ASCIIHexDecode fixture&apos;" time="0.0026707">
+        </testcase>
+        <testcase classname="src/core/extract-images.test.ts" name="extractImages WASM filter decoding &gt; handles upstream fixture: &apos;py-pdf ImageMagick images fixture&apos;" time="0.01394">
+        </testcase>
+        <testcase classname="src/core/extract-images.test.ts" name="extractImages WASM filter decoding &gt; handles upstream fixture: &apos;PDFium rectangles fixture&apos;" time="0.0122469">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+            <failure message="Aborted(undefined). Build with -sASSERTIONS for more info." type="RuntimeError">
+RuntimeError: Aborted(undefined). Build with -sASSERTIONS for more info.
+ ❯ abort build/wasm/qpdf.js:1:3183
+ ❯ ___cxa_throw build/wasm/qpdf.js:1:6563
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:425450
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:425668
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:109039
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:723603
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:817283
+ ❯ Object.extractImages build/wasm/qpdf.js:1:76817
+ ❯ src/core/extract-images.test.ts:54:31
+            </failure>
+        </testcase>
+        <testcase classname="src/core/extract-images.test.ts" name="extractImages WASM filter decoding &gt; handles upstream fixture: &apos;qpdf filter-on-write fixture&apos;" time="0.0032537">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+            <failure message="Aborted(undefined). Build with -sASSERTIONS for more info." type="RuntimeError">
+RuntimeError: Aborted(undefined). Build with -sASSERTIONS for more info.
+ ❯ abort build/wasm/qpdf.js:1:3183
+ ❯ ___cxa_throw build/wasm/qpdf.js:1:6563
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:425450
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:425668
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:109039
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:723603
+ ❯ null.&lt;anonymous&gt; wasm:/wasm/003a8596:1:817283
+ ❯ Object.extractImages build/wasm/qpdf.js:1:76817
+ ❯ src/core/extract-images.test.ts:54:31
+            </failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/core/inspect.test.ts" timestamp="2026-05-14T17:11:20.561Z" hostname="eduardo" tests="8" failures="0" errors="0" skipped="0" time="0.0268712">
+        <testcase classname="src/core/inspect.test.ts" name="inspectPdf &gt; returns document info" time="0.0074661">
+        </testcase>
+        <testcase classname="src/core/inspect.test.ts" name="inspectPdf &gt; disposes the document after a successful read" time="0.0012485">
+        </testcase>
+        <testcase classname="src/core/inspect.test.ts" name="inspectPdf &gt; disposes the document even when info() throws" time="0.0045361">
+        </testcase>
+        <testcase classname="src/core/inspect.test.ts" name="checkPdf &gt; returns isValid: true and empty warnings on success" time="0.0033588">
+        </testcase>
+        <testcase classname="src/core/inspect.test.ts" name="checkPdf &gt; returns isValid: false with the error message in warnings when a QpdfError is thrown" time="0.0026551">
+        </testcase>
+        <testcase classname="src/core/inspect.test.ts" name="checkPdf &gt; returns a zeroed info when the PDF is invalid" time="0.0011">
+        </testcase>
+        <testcase classname="src/core/inspect.test.ts" name="checkPdf &gt; rethrows QpdfValidationError unchanged" time="0.0012116">
+        </testcase>
+        <testcase classname="src/core/inspect.test.ts" name="checkPdf &gt; rethrows non-QpdfError errors unchanged" time="0.0008808">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/core/merge.test.ts" timestamp="2026-05-14T17:11:20.567Z" hostname="eduardo" tests="7" failures="0" errors="0" skipped="0" time="0.023497">
+        <testcase classname="src/core/merge.test.ts" name="mergePdfs &gt; throws QpdfMergeError when called with an empty array" time="0.0094647">
+        </testcase>
+        <testcase classname="src/core/merge.test.ts" name="mergePdfs &gt; merges a single input and returns data with sourceCount" time="0.0022221">
+        </testcase>
+        <testcase classname="src/core/merge.test.ts" name="mergePdfs &gt; reports the correct sourceCount for multiple inputs" time="0.0012567">
+        </testcase>
+        <testcase classname="src/core/merge.test.ts" name="mergePdfs &gt; copies output out of WASM heap via slice()" time="0.0020922">
+        </testcase>
+        <testcase classname="src/core/merge.test.ts" name="mergePdfs &gt; throws QpdfMergeError when mergePdfs export is missing" time="0.0010324">
+        </testcase>
+        <testcase classname="src/core/merge.test.ts" name="mergePdfs &gt; wraps unexpected errors in QpdfMergeError" time="0.0019683">
+        </testcase>
+        <testcase classname="src/core/merge.test.ts" name="mergePdfs &gt; accepts ArrayBuffer inputs" time="0.0011426">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/core/organize.test.ts" timestamp="2026-05-14T17:11:20.570Z" hostname="eduardo" tests="11" failures="0" errors="0" skipped="0" time="0.0322623">
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; throws QpdfOrganizeError when pages is empty" time="0.0102767">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; selects a single page from a multi-page PDF" time="0.0021347">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; passes pages to mergePdfs in the specified order" time="0.0050899">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; allows duplicate page indices" time="0.000946">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; removes pages by omitting their index" time="0.0010482">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; accepts ArrayBuffer input" time="0.0009159">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; returns the data from mergePdfs" time="0.0007407">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; throws QpdfOrganizeError for an out-of-bounds index" time="0.0011782">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; throws QpdfOrganizeError for a negative index" time="0.0016076">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; throws QpdfOrganizeError for a non-integer index" time="0.0016204">
+        </testcase>
+        <testcase classname="src/core/organize.test.ts" name="organizePdf &gt; wraps unexpected errors in QpdfOrganizeError" time="0.0022962">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/core/pixel-encoder.test.ts" timestamp="2026-05-14T17:11:20.576Z" hostname="eduardo" tests="2" failures="0" errors="0" skipped="0" time="0.0076607">
+        <testcase classname="src/core/pixel-encoder.test.ts" name="raw pixel encoder &gt; uses pixelColorModel rather than components to decide support" time="0.004732">
+        </testcase>
+        <testcase classname="src/core/pixel-encoder.test.ts" name="raw pixel encoder &gt; reports unsupported color spaces for unknown pixel color models" time="0.0007943">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/core/qpdf.test.ts" timestamp="2026-05-14T17:11:20.577Z" hostname="eduardo" tests="23" failures="0" errors="0" skipped="0" time="0.0647648">
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; QpdfDocument.open() static factory &gt; returns a QpdfDocument instance" time="0.0076356">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; QpdfDocument.open() static factory &gt; passes password to processMemoryFile" time="0.0058724">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; QpdfDocument.open() static factory &gt; passes empty string when no password is given" time="0.0017811">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; instance.open() disposes previous instance &gt; calls delete() on the previous wrapper before replacing it" time="0.0019131">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; property getters &gt; pageCount delegates to getNumPages()" time="0.0017909">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; property getters &gt; pdfVersion delegates to getPDFVersion()" time="0.0013219">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; property getters &gt; isEncrypted delegates to isEncrypted()" time="0.0013829">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; property getters &gt; isLinearized delegates to isLinearized()" time="0.0014511">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; property getters &gt; throws QpdfValidationError when the document is not open" time="0.002184">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; info() &gt; aggregates all document metadata" time="0.0033452">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; returns a Uint8Array from writer.getBuffer()" time="0.002906">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; calls writer.delete() even when write() throws" time="0.0042388">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; wraps write failures in QpdfCompressionError" time="0.0014811">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; calls coalesceContentStreams() when compressPages is true" time="0.0014592">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; does not call coalesceContentStreams() when compressPages is false" time="0.0018156">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; calls removeUnreferencedResources() when removeUnreferencedResources is true" time="0.0020762">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; does not call removeUnreferencedResources() when removeUnreferencedResources is false" time="0.0016659">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; calls both coalesceContentStreams() and removeUnreferencedResources() for archive preset options" time="0.0044883">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; calls coalesceContentStreams() before constructing the writer" time="0.002832">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; write() called twice with different options does not carry over mutations from the first call" time="0.0018164">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; inspect-then-write: picks a preset from page count without parsing the PDF twice" time="0.001908">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; write() &gt; throws QpdfValidationError when the document is not open" time="0.0015954">
+        </testcase>
+        <testcase classname="src/core/qpdf.test.ts" name="QpdfDocument &gt; dispose() &gt; is idempotent — safe to call multiple times" time="0.0019435">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/core/split.test.ts" timestamp="2026-05-14T17:11:20.588Z" hostname="eduardo" tests="5" failures="0" errors="0" skipped="0" time="0.0204786">
+        <testcase classname="src/core/split.test.ts" name="splitPdf &gt; returns pages and pageCount" time="0.0076253">
+        </testcase>
+        <testcase classname="src/core/split.test.ts" name="splitPdf &gt; copies pages out of WASM heap via slice()" time="0.0018993">
+        </testcase>
+        <testcase classname="src/core/split.test.ts" name="splitPdf &gt; throws QpdfSplitError when splitPages export is missing" time="0.0028603">
+        </testcase>
+        <testcase classname="src/core/split.test.ts" name="splitPdf &gt; wraps unexpected errors in QpdfSplitError" time="0.0030641">
+        </testcase>
+        <testcase classname="src/core/split.test.ts" name="splitPdf &gt; accepts ArrayBuffer input" time="0.0010676">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/compression-quality.test.ts" timestamp="2026-05-14T17:11:20.591Z" hostname="eduardo" tests="145" failures="0" errors="0" skipped="0" time="2.7040747">
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; has at least one PDF fixture" time="0.0033488">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; prints a summary table of all compression results" time="0.0036279">
+            <system-out>
+┌─────────┬────────────────────────────────────────────┬───────────┬───────────┬────────────┬──────────┬───────────┐
+│ (index) │ fixture                                    │ preset    │ original  │ compressed │ saved    │ savings % │
+├─────────┼────────────────────────────────────────────┼───────────┼───────────┼────────────┼──────────┼───────────┤
+│ 0       │ [32m&apos;extract-images/dct-flate-wrapper.pdf&apos;[39m     │ [32m&apos;default&apos;[39m │ [32m&apos;699 B&apos;[39m   │ [32m&apos;854 B&apos;[39m    │ [32m&apos;-155 B&apos;[39m │ [32m&apos;-22.2%&apos;[39m  │
+│ 1       │ [32m&apos;extract-images/dct-flate-wrapper.pdf&apos;[39m     │ [32m&apos;web&apos;[39m     │ [32m&apos;699 B&apos;[39m   │ [32m&apos;1.6 KB&apos;[39m   │ [32m&apos;-891 B&apos;[39m │ [32m&apos;-127.5%&apos;[39m │
+│ 2       │ [32m&apos;extract-images/dct-flate-wrapper.pdf&apos;[39m     │ [32m&apos;archive&apos;[39m │ [32m&apos;699 B&apos;[39m   │ [32m&apos;854 B&apos;[39m    │ [32m&apos;-155 B&apos;[39m │ [32m&apos;-22.2%&apos;[39m  │
+│ 3       │ [32m&apos;extract-images/dct-plain.pdf&apos;[39m             │ [32m&apos;default&apos;[39m │ [32m&apos;676 B&apos;[39m   │ [32m&apos;829 B&apos;[39m    │ [32m&apos;-153 B&apos;[39m │ [32m&apos;-22.6%&apos;[39m  │
+│ 4       │ [32m&apos;extract-images/dct-plain.pdf&apos;[39m             │ [32m&apos;web&apos;[39m     │ [32m&apos;676 B&apos;[39m   │ [32m&apos;1.5 KB&apos;[39m   │ [32m&apos;-889 B&apos;[39m │ [32m&apos;-131.5%&apos;[39m │
+│ 5       │ [32m&apos;extract-images/dct-plain.pdf&apos;[39m             │ [32m&apos;archive&apos;[39m │ [32m&apos;676 B&apos;[39m   │ [32m&apos;829 B&apos;[39m    │ [32m&apos;-153 B&apos;[39m │ [32m&apos;-22.6%&apos;[39m  │
+│ 6       │ [32m&apos;extract-images/dct-runlength-wrapper.pdf&apos;[39m │ [32m&apos;default&apos;[39m │ [32m&apos;697 B&apos;[39m   │ [32m&apos;852 B&apos;[39m    │ [32m&apos;-155 B&apos;[39m │ [32m&apos;-22.2%&apos;[39m  │
+│ 7       │ [32m&apos;extract-images/dct-runlength-wrapper.pdf&apos;[39m │ [32m&apos;web&apos;[39m     │ [32m&apos;697 B&apos;[39m   │ [32m&apos;1.6 KB&apos;[39m   │ [32m&apos;-891 B&apos;[39m │ [32m&apos;-127.8%&apos;[39m │
+│ 8       │ [32m&apos;extract-images/dct-runlength-wrapper.pdf&apos;[39m │ [32m&apos;archive&apos;[39m │ [32m&apos;697 B&apos;[39m   │ [32m&apos;852 B&apos;[39m    │ [32m&apos;-155 B&apos;[39m │ [32m&apos;-22.2%&apos;[39m  │
+│ 9       │ [32m&apos;upstream/pdfjs/asciihexdecode.pdf&apos;[39m        │ [32m&apos;default&apos;[39m │ [32m&apos;743 B&apos;[39m   │ [32m&apos;709 B&apos;[39m    │ [32m&apos;34 B&apos;[39m   │ [32m&apos;+4.6%&apos;[39m   │
+│ 10      │ [32m&apos;upstream/pdfjs/asciihexdecode.pdf&apos;[39m        │ [32m&apos;web&apos;[39m     │ [32m&apos;743 B&apos;[39m   │ [32m&apos;1.4 KB&apos;[39m   │ [32m&apos;-727 B&apos;[39m │ [32m&apos;-97.8%&apos;[39m  │
+│ 11      │ [32m&apos;upstream/pdfjs/asciihexdecode.pdf&apos;[39m        │ [32m&apos;archive&apos;[39m │ [32m&apos;743 B&apos;[39m   │ [32m&apos;709 B&apos;[39m    │ [32m&apos;34 B&apos;[39m   │ [32m&apos;+4.6%&apos;[39m   │
+│ 12      │ [32m&apos;upstream/pypdf/imagemagick-images.pdf&apos;[39m    │ [32m&apos;default&apos;[39m │ [32m&apos;15.6 KB&apos;[39m │ [32m&apos;9.0 KB&apos;[39m   │ [32m&apos;6.7 KB&apos;[39m │ [32m&apos;+42.6%&apos;[39m  │
+│ 13      │ [32m&apos;upstream/pypdf/imagemagick-images.pdf&apos;[39m    │ [32m&apos;web&apos;[39m     │ [32m&apos;15.6 KB&apos;[39m │ [32m&apos;10.9 KB&apos;[39m  │ [32m&apos;4.7 KB&apos;[39m │ [32m&apos;+30.1%&apos;[39m  │
+│ 14      │ [32m&apos;upstream/pypdf/imagemagick-images.pdf&apos;[39m    │ [32m&apos;archive&apos;[39m │ [32m&apos;15.6 KB&apos;[39m │ [32m&apos;9.0 KB&apos;[39m   │ [32m&apos;6.7 KB&apos;[39m │ [32m&apos;+42.6%&apos;[39m  │
+└─────────┴────────────────────────────────────────────┴───────────┴───────────┴────────────┴──────────┴───────────┘
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;extract-images/dct-flate-wrapper.pdf&apos; (&apos;default&apos;): 699 B → 854 B (-22.2 %)" time="0.0007412">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;extract-images/dct-flate-wrapper.pdf&apos; (&apos;web&apos;): 699 B → 1590 B (-127.5 %)" time="0.0003817">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;extract-images/dct-flate-wrapper.pdf&apos; (&apos;archive&apos;): 699 B → 854 B (-22.2 %)" time="0.0004312">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;extract-images/dct-plain.pdf&apos; (&apos;default&apos;): 676 B → 829 B (-22.6 %)" time="0.0002796">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;extract-images/dct-plain.pdf&apos; (&apos;web&apos;): 676 B → 1565 B (-131.5 %)" time="0.000209">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;extract-images/dct-plain.pdf&apos; (&apos;archive&apos;): 676 B → 829 B (-22.6 %)" time="0.0001722">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;extract-images/dct-runlength-wrapper.…&apos; (&apos;default&apos;): 697 B → 852 B (-22.2 %)" time="0.0002429">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;extract-images/dct-runlength-wrapper.…&apos; (&apos;web&apos;): 697 B → 1588 B (-127.8 %)" time="0.000276">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;extract-images/dct-runlength-wrapper.…&apos; (&apos;archive&apos;): 697 B → 852 B (-22.2 %)" time="0.000205">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;upstream/pdfjs/asciihexdecode.pdf&apos; (&apos;default&apos;): 743 B → 709 B (4.6 %)" time="0.0002115">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;upstream/pdfjs/asciihexdecode.pdf&apos; (&apos;web&apos;): 743 B → 1470 B (-97.8 %)" time="0.0001639">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;upstream/pdfjs/asciihexdecode.pdf&apos; (&apos;archive&apos;): 743 B → 709 B (4.6 %)" time="0.0001547">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;upstream/pypdf/imagemagick-images.pdf&apos; (&apos;default&apos;): 16012 B → 9198 B (42.6 %)" time="0.0001219">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;upstream/pypdf/imagemagick-images.pdf&apos; (&apos;web&apos;): 16012 B → 11196 B (30.1 %)" time="0.0001178">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compression size report &gt; &apos;upstream/pypdf/imagemagick-images.pdf&apos; (&apos;archive&apos;): 16012 B → 9198 B (42.6 %)" time="0.0001539">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0201057">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.021917">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0173021">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0142777">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0127594">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0212341">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0230385">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0223461">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0257068">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.042535">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0135675">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0138316">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0158433">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0125489">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0256824">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0357983">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0132612">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0363173">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0157929">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — output validity &gt; produces a valid non-empty PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0165802">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0119824">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0441603">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0235794">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — output validity &gt; produces a valid non-empty PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0156921">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0148902">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0164679">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-plain.pdf&apos;" time="0.0122441">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0121932">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0108539">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0479536">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0287709">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;default&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0183138">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0162138">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0171803">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-plain.pdf&apos;" time="0.0125598">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0127744">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0185248">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0115881">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0248868">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;web&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0158461">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.012245">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0140494">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-plain.pdf&apos;" time="0.0431016">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0151956">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0130029">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0143574">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0269359">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; — statistic consistency &gt; reports internally consistent statistics for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0339085">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; vs &quot;default&quot; size comparison &gt; &quot;archive&quot; output is no larger than &quot;default&quot; output for &apos;extract-images/dct-ascii85-wrapper.pdf&apos; (±5 %)" time="0.0170902">
+            <system-err>
+Aborted(undefined)
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; vs &quot;default&quot; size comparison &gt; &quot;archive&quot; output is no larger than &quot;default&quot; output for &apos;extract-images/dct-flate-wrapper.pdf&apos; (±5 %)" time="0.0432">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; vs &quot;default&quot; size comparison &gt; &quot;archive&quot; output is no larger than &quot;default&quot; output for &apos;extract-images/dct-plain.pdf&apos; (±5 %)" time="0.0137445">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; vs &quot;default&quot; size comparison &gt; &quot;archive&quot; output is no larger than &quot;default&quot; output for &apos;extract-images/dct-runlength-wrapper.…&apos; (±5 %)" time="0.0447431">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; vs &quot;default&quot; size comparison &gt; &quot;archive&quot; output is no larger than &quot;default&quot; output for &apos;upstream/pdfium/rectangles.pdf&apos; (±5 %)" time="0.0252137">
+            <system-err>
+Aborted(undefined)
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; vs &quot;default&quot; size comparison &gt; &quot;archive&quot; output is no larger than &quot;default&quot; output for &apos;upstream/pdfjs/asciihexdecode.pdf&apos; (±5 %)" time="0.0397112">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; vs &quot;default&quot; size comparison &gt; &quot;archive&quot; output is no larger than &quot;default&quot; output for &apos;upstream/pypdf/imagemagick-images.pdf&apos; (±5 %)" time="0.0332231">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; preset &quot;archive&quot; vs &quot;default&quot; size comparison &gt; &quot;archive&quot; output is no larger than &quot;default&quot; output for &apos;upstream/qpdf/filter-on-write.pdf&apos; (±5 %)" time="0.0305137">
+            <system-err>
+Aborted(undefined)
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compressionLevel sensitivity &gt; level 9 produces output no larger than level 1 for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0140053">
+            <system-err>
+Aborted(undefined)
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compressionLevel sensitivity &gt; level 9 produces output no larger than level 1 for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0321915">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compressionLevel sensitivity &gt; level 9 produces output no larger than level 1 for &apos;extract-images/dct-plain.pdf&apos;" time="0.0146418">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compressionLevel sensitivity &gt; level 9 produces output no larger than level 1 for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0177612">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compressionLevel sensitivity &gt; level 9 produces output no larger than level 1 for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0203567">
+            <system-err>
+Aborted(undefined)
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compressionLevel sensitivity &gt; level 9 produces output no larger than level 1 for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0191246">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compressionLevel sensitivity &gt; level 9 produces output no larger than level 1 for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0374507">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; compressionLevel sensitivity &gt; level 9 produces output no larger than level 1 for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0217302">
+            <system-err>
+Aborted(undefined)
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; linearizePdf &gt; produces a valid non-empty PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0162068">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; linearizePdf &gt; produces a valid non-empty PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0206745">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; linearizePdf &gt; produces a valid non-empty PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0121711">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; linearizePdf &gt; produces a valid non-empty PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.010536">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; linearizePdf &gt; produces a valid non-empty PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0196347">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; linearizePdf &gt; produces a valid non-empty PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0322774">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; linearizePdf &gt; produces a valid non-empty PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0356159">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; linearizePdf &gt; produces a valid non-empty PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0198198">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;none&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0241693">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;none&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0316017">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;none&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0147798">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;none&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0395815">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;none&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0127309">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;none&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0110281">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;none&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0552085">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;none&quot; &gt; produces a valid non-empty PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0159354">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;generalized&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0115207">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;generalized&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0117616">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;generalized&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0385929">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;generalized&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0121813">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;generalized&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0113362">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;generalized&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0116243">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;generalized&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0262192">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;generalized&quot; &gt; produces a valid non-empty PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0152632">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;specialized&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.012804">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;specialized&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0381781">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;specialized&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0176651">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;specialized&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0110368">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;specialized&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0146142">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;specialized&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.010769">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;specialized&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0201677">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;specialized&quot; &gt; produces a valid non-empty PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0266006">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;all&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0156988">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;all&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0300953">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;all&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0383167">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;all&quot; &gt; produces a valid non-empty PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0118625">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;all&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0128602">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;all&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0154629">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;all&quot; &gt; produces a valid non-empty PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0271858">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; decodeLevel &quot;all&quot; &gt; produces a valid non-empty PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0124449">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;preserve&quot; &gt; produces a valid PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.01024">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;preserve&quot; &gt; produces a valid PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0139761">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;preserve&quot; &gt; produces a valid PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0102395">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;preserve&quot; &gt; produces a valid PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0103767">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;preserve&quot; &gt; produces a valid PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0222827">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;preserve&quot; &gt; produces a valid PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0291199">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;preserve&quot; &gt; produces a valid PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0239996">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;preserve&quot; &gt; produces a valid PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.013696">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;disable&quot; &gt; produces a valid PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.0272924">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;disable&quot; &gt; produces a valid PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0299206">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;disable&quot; &gt; produces a valid PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0108157">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;disable&quot; &gt; produces a valid PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0109284">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;disable&quot; &gt; produces a valid PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0140514">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;disable&quot; &gt; produces a valid PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0105152">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;disable&quot; &gt; produces a valid PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0198921">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;disable&quot; &gt; produces a valid PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0458101">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;generate&quot; &gt; produces a valid PDF for &apos;extract-images/dct-ascii85-wrapper.pdf&apos;" time="0.01296">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;generate&quot; &gt; produces a valid PDF for &apos;extract-images/dct-flate-wrapper.pdf&apos;" time="0.0362372">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;generate&quot; &gt; produces a valid PDF for &apos;extract-images/dct-plain.pdf&apos;" time="0.0131231">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;generate&quot; &gt; produces a valid PDF for &apos;extract-images/dct-runlength-wrapper.…&apos;" time="0.0105313">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;generate&quot; &gt; produces a valid PDF for &apos;upstream/pdfium/rectangles.pdf&apos;" time="0.0162389">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;generate&quot; &gt; produces a valid PDF for &apos;upstream/pdfjs/asciihexdecode.pdf&apos;" time="0.0120858">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;generate&quot; &gt; produces a valid PDF for &apos;upstream/pypdf/imagemagick-images.pdf&apos;" time="0.0202075">
+        </testcase>
+        <testcase classname="src/test/compression-quality.test.ts" name="compression quality &gt; objectStreams &quot;generate&quot; &gt; produces a valid PDF for &apos;upstream/qpdf/filter-on-write.pdf&apos;" time="0.0243428">
+            <system-err>
+Aborted(undefined)
+
+            </system-err>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/utils/format.test.ts" timestamp="2026-05-14T17:11:20.672Z" hostname="eduardo" tests="12" failures="0" errors="0" skipped="0" time="0.0153676">
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; formatBytes &gt; should format zero bytes" time="0.0049337">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; formatBytes &gt; should format bytes" time="0.0006166">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; formatBytes &gt; should format kilobytes" time="0.0005743">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; formatBytes &gt; should format megabytes" time="0.0007555">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; formatBytes &gt; should respect decimals parameter" time="0.0005889">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; calculateSavings &gt; should calculate savings correctly" time="0.0008121">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; calculateSavings &gt; should handle no savings" time="0.0005671">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; calculateSavings &gt; should handle size increase" time="0.0005016">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; formatPercentage &gt; should format positive percentages with sign" time="0.0007206">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; formatPercentage &gt; should format negative percentages" time="0.0005818">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; formatPercentage &gt; should format zero" time="0.0003659">
+        </testcase>
+        <testcase classname="src/utils/format.test.ts" name="Format Utilities &gt; formatPercentage &gt; should respect decimals parameter" time="0.0002826">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/utils/validation.test.ts" timestamp="2026-05-14T17:11:20.678Z" hostname="eduardo" tests="12" failures="0" errors="0" skipped="0" time="0.02182">
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; normalizeBuffer &gt; should return Uint8Array as-is" time="0.0055609">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; normalizeBuffer &gt; should convert ArrayBuffer to Uint8Array" time="0.0012826">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; normalizeBuffer &gt; should throw on invalid input" time="0.0014303">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; validateOptimizeOptions &gt; should return defaults for undefined options" time="0.0023025">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; validateOptimizeOptions &gt; should accept valid compression level" time="0.0007543">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; validateOptimizeOptions &gt; should reject invalid compression level" time="0.0012742">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; validateOptimizeOptions &gt; should accept valid decode level" time="0.0006751">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; validateOptimizeOptions &gt; should reject invalid decode level" time="0.0007191">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; validateOptimizeOptions &gt; should accept valid object streams mode" time="0.0006392">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; validateOptimizeOptions &gt; should reject invalid object streams mode" time="0.0008357">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; validateOptimizeOptions &gt; should coerce boolean values" time="0.0008645">
+        </testcase>
+        <testcase classname="src/utils/validation.test.ts" name="Validation Utilities &gt; validateOptimizeOptions &gt; applies the web preset" time="0.0007002">
+        </testcase>
+    </testsuite>
+</testsuites>

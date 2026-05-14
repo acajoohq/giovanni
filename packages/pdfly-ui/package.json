@@ -11,6 +11,7 @@
         "test:watch": "vitest"
     },
     "dependencies": {
+        "@pdfly/pdf-render": "workspace:*",
         "@pdfly/wasm": "workspace:*",
         "fflate": "^0.8.2"
     },

@@ -2,7 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { extractImages, optimizePdf, splitPdf } from "@pdfly/wasm";
-import { renderPdfPagesToJpg } from "@pdfly/wasm/render";
+import { renderPdfPagesToJpg } from "@pdfly/pdf-render";
 import { describe, expect, it } from "vitest";
 
 type PdfFixture = {

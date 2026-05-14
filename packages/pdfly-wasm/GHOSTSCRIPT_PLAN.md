@@ -50,12 +50,12 @@ Add Ghostscript as a second compression engine in `@pdfly/wasm`, with:
 
 Goal:
 
-- move the smoke-test logic into `src/core/ghostscript/*`
+- move the smoke-test logic into `src/engines/ghostscript/*`
 - keep it internal until the runtime is stable
 
 Todos:
 
-- [x] add `src/core/ghostscript/module-loader.ts`
+- [x] add `src/engines/ghostscript/module-loader.ts`
 - [x] add Ghostscript runtime types
 - [x] lazy-load `ghostscript.js`
 - [x] resolve `ghostscript.wasm` through `locateFile(...)`

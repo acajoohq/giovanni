@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ExtractedImage } from "@pdfly/wasm";
-import type { PdfPageJpg } from "@pdfly/wasm/render";
+import type { PdfPageJpg } from "@pdfly/pdf-render";
 import {
     buildBrowserReadyImageEntries,
     buildExtractedImageEntries,

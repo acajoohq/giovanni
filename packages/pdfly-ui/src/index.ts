@@ -1,9 +1,9 @@
 import "./styles.css";
 import { zip } from "fflate";
 import type { ExtractedImage } from "@pdfly/wasm";
-import type { PdfPageJpg } from "@pdfly/wasm/render";
+import type { PdfPageJpg } from "@pdfly/pdf-render";
 import { extractImages, formatBytes, getQpdfVersion, mergePdfs, optimizePdf, splitPdf } from "@pdfly/wasm";
-import { renderPdfPagesToJpg } from "@pdfly/wasm/render";
+import { renderPdfPagesToJpg } from "@pdfly/pdf-render";
 
 export function initApp(): void {
     const SPLIT_LIST_PAGE_SIZE = 10;

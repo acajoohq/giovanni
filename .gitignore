@@ -47,7 +47,6 @@ lerna-debug.log*
 .env.local
 .agents/skills/
 /vendor/
-/packages/pdfly-wasm/wasm/
 .claude/settings.local.json
 dogfood-output/
 .tmp/

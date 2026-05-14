@@ -1,6 +1,8 @@
 # @pdfly/wasm
 
-[qpdf](https://github.com/qpdf/qpdf) in the browser or Node: compress, split, merge, extract images, PDF→JPG. Helpers: `compressPdf`, `splitPages`, `mergePdfs`, `extractImages`, `pdfToJpg`. Lower level: `QPDF`, `QPDFWriter` (see types / `src/index.ts`).
+[qpdf](https://github.com/qpdf/qpdf) and **Ghostscript** in the browser or Node via WebAssembly: compress, split, merge, extract images, inspect, organize. Helpers include `compressPdf`, `optimizePdf`, `splitPdf`, `mergePdfs`, `extractImages`. Advanced API: `QpdfDocument` (see [`src/index.ts`](./src/index.ts)).
+
+**PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@pdfly/pdf-render`**, not in this module.
 
 ## Install
 
@@ -57,10 +59,10 @@ QPDF is a lossless PDF structural tool. It is a good fit for rewriting PDFs, obj
 
 Omitted optimization options use the defaults in `OptimizeOptions` (see TypeScript types). Notably, **`objectStreams` defaults to `generate`**, which usually improves size by rewriting object streams; set **`preserve`** if you need output structure closer to the input (e.g. compatibility or structural diffs).
 
-PDF.js-backed page rendering is intentionally separate from the main QPDF API:
+To render each PDF page to a JPEG via PDF.js, use **`@pdfly/pdf-render`**:
 
 ```ts
-import { renderPdfPagesToJpg } from "@pdfly/wasm/render";
+import { renderPdfPagesToJpg } from "@pdfly/pdf-render";
 ```
 
 ## Build from this monorepo
@@ -101,15 +103,15 @@ Build-system contract:
 
 Runtime engine contract:
 
-- both engines use an engine-local module loader under `src/core/<engine>/module-loader.ts`
-- both engines implement the same adapter shape under `src/core/<engine>/engine.ts`
-- `src/core/compression/*` owns the shared adapter contract and engine registry
-- `src/core/shared/wasm-loader.ts` owns the shared Emscripten loader pattern
-- [`src/core/README.md`](./src/core/README.md) describes the directory contract
+- both engines use an engine-local module loader under `src/engines/<engine>/module-loader.ts`
+- both engines implement the same adapter shape under `src/engines/<engine>/engine.ts`
+- `src/compression/*` owns the shared adapter contract and engine registry
+- `src/runtime/wasm-loader.ts` owns the shared Emscripten loader pattern
+- [`src/ARCHITECTURE.md`](./src/ARCHITECTURE.md) describes the directory contract
 
-## Experimental Ghostscript WASM Build
+## Ghostscript WASM build
 
-The Ghostscript port is being built as a separate Docker-driven spike first, before any public JS API is added.
+The Ghostscript engine is built with the same Docker-first model as qpdf.
 
 From the repo root:
 
@@ -134,7 +136,7 @@ Current target artifacts are:
 - `config.log`
 - `configaux.log`
 
-This path is intentionally separate from the existing qpdf WASM build while the port is still being hardened.
+This path is separate from the qpdf WASM build; both ship as artifacts under `build/` and are copied into `dist/` during `pnpm --filter @pdfly/wasm build:lib`.
 
 You can then verify the artifact end to end with:
 

@@ -3,15 +3,15 @@
  */
 
 // qpdf api
-export { compressPdf, getAvailableCompressionEngines, getGhostscriptVersion, getQpdfVersion, initCompressionEngine, initQpdf, linearizePdf, optimizePdf } from "./core/compress.js";
-export { inspectPdf, checkPdf } from "./core/inspect.js";
-export { splitPdf } from "./core/split.js";
-export { mergePdfs } from "./core/merge.js";
-export { organizePdf } from "./core/organize.js";
-export { extractImages } from "./core/extract-images.js";
+export { compressPdf, getAvailableCompressionEngines, getGhostscriptVersion, getQpdfVersion, initCompressionEngine, initQpdf, linearizePdf, optimizePdf } from "./operations/compress.js";
+export { inspectPdf, checkPdf } from "./operations/inspect.js";
+export { splitPdf } from "./operations/split.js";
+export { mergePdfs } from "./operations/merge.js";
+export { organizePdf } from "./operations/organize.js";
+export { extractImages } from "./operations/extract-images.js";
 
 // advanced api
-export { QpdfDocument } from "./core/qpdf.js";
+export { QpdfDocument } from "./engines/qpdf/document.js";
 
 // error classes
 export {
@@ -30,7 +30,7 @@ export {
     GhostscriptInitError,
     GhostscriptCompressionError,
     GhostscriptValidationError,
-} from "./core/errors.js";
+} from "./errors/index.js";
 
 // types
 export type {

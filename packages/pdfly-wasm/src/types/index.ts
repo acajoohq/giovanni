@@ -1,37 +1,32 @@
+export type { CompressionEngine, PdfData, PdfInput } from "./common.js";
 export type {
-    CompressionEngine,
     CheckOptions,
     DecodeLevel,
-    CompressOptions,
-    GhostscriptColorConversionStrategy,
-    GhostscriptCompatibilityLevel,
-    GhostscriptCompressOptions,
-    GhostscriptPdfSettings,
     InspectOptions,
     MergeOptions,
     ObjectStreamMode,
     OpenDocumentOptions,
     OptimizeOptions,
     OrganizeOptions,
-    PdfInput,
     QpdfOptimizePreset,
-    RenderPdfPagesToJpgOptions,
     SplitOptions,
     WriteOptions,
-} from "./options.js";
+} from "./qpdf-options.js";
+export type {
+    GhostscriptColorConversionStrategy,
+    GhostscriptCompatibilityLevel,
+    GhostscriptCompressOptions,
+    GhostscriptPdfSettings,
+} from "./ghostscript-options.js";
+export type { CompressOptions } from "./compress-options.js";
+export type { CompressResult } from "./compression-results.js";
+export type { OptimizeResult, QpdfCheckResult, QpdfDocumentInfo } from "./qpdf-results.js";
 export type {
     ColorComponentCount,
-    CompressResult,
     ExtractedImage,
     ExtractImagesResult,
     MergeResult,
-    OptimizeResult,
-    PdfData,
-    PixelColorModel,
-    QpdfCheckResult,
-    QpdfDocumentInfo,
-    SplitResult,
-    PdfPageJpg,
-    RenderPdfPagesToJpgResult,
     OrganizeResult,
-} from "./results.js";
+    PixelColorModel,
+    SplitResult,
+} from "./operation-results.js";

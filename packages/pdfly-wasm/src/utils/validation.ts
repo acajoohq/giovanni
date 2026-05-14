@@ -1,5 +1,5 @@
-import { QpdfValidationError } from "../core/errors.js";
-import type { DecodeLevel, ObjectStreamMode, OptimizeOptions, QpdfOptimizePreset, WriteOptions } from "../types/options.js";
+import { QpdfValidationError } from "../errors/index.js";
+import type { DecodeLevel, ObjectStreamMode, OptimizeOptions, QpdfOptimizePreset, WriteOptions } from "../types/qpdf-options.js";
 import type { WasmCompressionOptions } from "../types/wasm-module.js";
 
 export function normalizeBuffer(input: Uint8Array | ArrayBuffer): Uint8Array {

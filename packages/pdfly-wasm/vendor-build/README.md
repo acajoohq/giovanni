@@ -42,20 +42,20 @@ That engine-named output is the stable contract for tooling, tests, and packagin
 
 The TypeScript runtime mirrors the engine split:
 
-- `src/core/qpdf/*`
-  qpdf module loading and engine adapter
+- `src/engines/qpdf/*`
+  qpdf module loading, document API, and engine adapter
 
-- `src/core/ghostscript/*`
+- `src/engines/ghostscript/*`
   Ghostscript module loading, runtime execution, option normalization, and engine adapter
 
-- `src/core/compression/*`
+- `src/compression/*`
   shared engine adapter contract and engine registry
 
-- `src/core/shared/wasm-loader.ts`
+- `src/runtime/wasm-loader.ts`
   shared Emscripten module-loader helpers used by both engines
 
-- `src/core/README.md`
-  short filesystem contract for contributors working in the runtime layer
+- `src/ARCHITECTURE.md`
+  filesystem contract for contributors working in the runtime layer
 
 ## Vendor source contract
 

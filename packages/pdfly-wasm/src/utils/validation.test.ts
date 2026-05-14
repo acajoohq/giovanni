@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { QpdfValidationError } from "../errors/index.js";
-import type { OptimizeOptions } from "../types/qpdf-options.js";
+import type { OptimizeOptions } from "../types/qpdf.types.js";
 import { normalizeBuffer, validateOptimizeOptions } from "./validation.js";
 
 describe("Validation Utilities", () => {

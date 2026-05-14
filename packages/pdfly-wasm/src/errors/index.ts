@@ -11,7 +11,7 @@ export {
     QpdfOrganizeError,
     QpdfSplitError,
     QpdfValidationError,
-} from "./qpdf.js";
+} from "./qpdf.error.js";
 export {
     GhostscriptCompressionError,
     GhostscriptError,
@@ -20,4 +20,4 @@ export {
     GhostscriptInitError,
     GhostscriptValidationError,
     isGhostscriptError,
-} from "./ghostscript.js";
+} from "./ghostscript.error.js";

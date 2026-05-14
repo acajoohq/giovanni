@@ -1,5 +1,5 @@
 import { GhostscriptValidationError } from "../../errors/index.js";
-import type { GhostscriptColorConversionStrategy, GhostscriptCompatibilityLevel, GhostscriptCompressOptions, GhostscriptPdfSettings } from "../../types/ghostscript-options.js";
+import type { GhostscriptColorConversionStrategy, GhostscriptCompatibilityLevel, GhostscriptCompressOptions, GhostscriptPdfSettings } from "../../types/ghostscript.types.js";
 
 export interface NormalizedGhostscriptOptions {
     pdfSettings: GhostscriptPdfSettings;

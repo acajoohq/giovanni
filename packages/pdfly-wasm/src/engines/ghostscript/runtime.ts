@@ -1,5 +1,5 @@
 import { initGhostscriptModule } from "./module-loader.js";
-import type { GhostscriptWasmModule } from "../../types/wasm-module.js";
+import type { GhostscriptWasmModule } from "../../types/wasm.types.js";
 
 let executionQueue: Promise<void> = Promise.resolve();
 

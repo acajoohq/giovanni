@@ -1,6 +1,6 @@
 import { GhostscriptInitError } from "../../errors/index.js";
-import { createSingletonEmscriptenModuleLoader } from "../../runtime/wasm-loader.js";
-import type { GhostscriptModuleOptions, GhostscriptWasmModule } from "../../types/wasm-module.js";
+import { createSingletonEmscriptenModuleLoader } from "../../runtime/wasmModule.loader.js";
+import type { GhostscriptModuleOptions, GhostscriptWasmModule } from "../../types/wasm.types.js";
 
 function normalizeModule(module: unknown): GhostscriptWasmModule {
     const normalized = module as GhostscriptWasmModule & {

@@ -106,7 +106,7 @@ Runtime engine contract:
 - both engines use an engine-local module loader under `src/engines/<engine>/module-loader.ts`
 - both engines implement the same adapter shape under `src/engines/<engine>/engine.ts`
 - `src/compression/*` owns the shared adapter contract and engine registry
-- `src/runtime/wasm-loader.ts` owns the shared Emscripten loader pattern
+- `src/runtime/wasmModule.loader.ts` owns the shared Emscripten loader pattern
 - [`src/ARCHITECTURE.md`](./src/ARCHITECTURE.md) describes the directory contract
 
 ## Ghostscript WASM build

@@ -2,7 +2,7 @@ import { initQpdfModule } from "./module-loader.js";
 import { QpdfCompressionError, QpdfInitError, QpdfValidationError } from "../../errors/index.js";
 import { normalizeBuffer, validateOptimizeOptions } from "../../utils/validation.js";
 import type { OpenDocumentOptions, OptimizeOptions, QpdfDocumentInfo } from "../../types/index.js";
-import type { WasmQPDFWrapper } from "../../types/wasm-module.js";
+import type { WasmQPDFWrapper } from "../../types/wasm.types.js";
 
 /**
  * Advanced qpdf document for reusable workflows.

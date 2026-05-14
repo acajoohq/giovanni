@@ -1,3 +1,5 @@
+import type { PdfData } from "./pdf.types.js";
+
 /**
  * Compression decode level - controls how aggressively to decode streams
  */
@@ -81,42 +83,95 @@ export interface OptimizeOptions extends WriteOptions {
 }
 
 /**
- * Options for opening an encrypted PDF.
- */
-export interface OpenDocumentOptions {
-    /**
-     * Password for encrypted PDFs.
-     */
-    password?: string;
-}
-
-/**
- * Options for splitting a PDF.
- */
-export interface SplitOptions extends OpenDocumentOptions {}
-
-/**
  * Options for merging PDFs.
  */
 export interface MergeOptions extends WriteOptions {}
 
 /**
- * Options for organizing pages.
+ * Result of a PDF optimization operation.
  */
-export interface OrganizeOptions extends OpenDocumentOptions {
+export interface OptimizeResult extends PdfData {
     /**
-     * Zero-based page indices for the output PDF.
-     * Duplicates copy pages; omitted indices remove pages.
+     * Optimization preset used for this output.
      */
-    pages: number[];
+    preset: QpdfOptimizePreset;
+
+    /**
+     * Original file size in bytes
+     */
+    originalSize: number;
+
+    /**
+     * Compressed file size in bytes
+     */
+    compressedSize: number;
+
+    /**
+     * Compression ratio (0-1, where 0.5 = 50% reduction)
+     */
+    compressionRatio: number;
+
+    /**
+     * Space saved in bytes
+     */
+    savedBytes: number;
+
+    /**
+     * Percentage of space saved, negative when output is larger
+     */
+    percentageSaved: number;
 }
 
 /**
- * Options for inspecting a PDF.
+ * PDF metadata information
  */
-export interface InspectOptions extends OpenDocumentOptions {}
+export interface QpdfDocumentInfo {
+    /**
+     * Number of pages in the PDF
+     */
+    numPages: number;
+
+    /**
+     * PDF version (e.g., "1.4", "1.7")
+     */
+    pdfVersion: string;
+
+    /**
+     * Whether the PDF is encrypted
+     */
+    isEncrypted: boolean;
+
+    /**
+     * Whether the PDF is linearized (optimized for web viewing)
+     */
+    isLinearized: boolean;
+
+    /**
+     * PDF title metadata (if available)
+     */
+    title?: string;
+
+    /**
+     * PDF author metadata (if available)
+     */
+    author?: string;
+
+    /**
+     * PDF subject metadata (if available)
+     */
+    subject?: string;
+
+    /**
+     * PDF creator metadata (if available)
+     */
+    creator?: string;
+}
 
 /**
- * Options for checking a PDF.
+ * Result of a qpdf check operation.
  */
-export interface CheckOptions extends OpenDocumentOptions {}
+export interface QpdfCheckResult {
+    info: QpdfDocumentInfo;
+    isValid: boolean;
+    warnings: string[];
+}

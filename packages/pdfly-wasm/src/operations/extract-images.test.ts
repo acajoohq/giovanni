@@ -2,7 +2,7 @@
 
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
-import type { QpdfWasmModule, WasmExtractedImage } from "../types/wasm-module.js";
+import type { QpdfWasmModule, WasmExtractedImage } from "../types/wasm.types.js";
 
 let modulePromise: Promise<QpdfWasmModule> | null = null;
 

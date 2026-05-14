@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { encodeRawPixelsAsPng, rawPixelUnsupportedReason } from "./pixel-encoder.js";
-import type { WasmExtractedImage } from "../types/wasm-module.js";
+import type { WasmExtractedImage } from "../types/wasm.types.js";
 
 describe("raw pixel encoder", () => {
     afterEach(() => {

@@ -1,8 +1,8 @@
-import { getCompressionEngine, getCompressionEngineAdapter, listCompressionEngines } from "../compression/registry.js";
+import { getCompressionEngine, getCompressionEngineAdapter, listCompressionEngines } from "../compression/compressionEngine.registry.js";
 import { initGhostscriptModule } from "../engines/ghostscript/module-loader.js";
 import { initQpdfModule } from "../engines/qpdf/module-loader.js";
 import type { CompressionEngine, CompressOptions, CompressResult, OptimizeOptions, OptimizeResult } from "../types/index.js";
-import type { OptimizeResult as QpdfOptimizeResult } from "../types/qpdf-results.js";
+import type { OptimizeResult as QpdfOptimizeResult } from "../types/qpdf.types.js";
 
 /**
  * Initialize the qpdf WASM module

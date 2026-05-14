@@ -1,4 +1,53 @@
-import type { PdfData } from "./common.js";
+/**
+ * PDF input accepted by qpdf-backed APIs.
+ */
+export type PdfInput = Uint8Array | ArrayBuffer;
+
+/**
+ * Caller-owned PDF bytes.
+ */
+export interface PdfData {
+    /**
+     * PDF data.
+     */
+    data: Uint8Array;
+}
+
+/**
+ * Options for opening an encrypted PDF.
+ */
+export interface OpenDocumentOptions {
+    /**
+     * Password for encrypted PDFs.
+     */
+    password?: string;
+}
+
+/**
+ * Options for splitting a PDF.
+ */
+export interface SplitOptions extends OpenDocumentOptions {}
+
+/**
+ * Options for organizing pages.
+ */
+export interface OrganizeOptions extends OpenDocumentOptions {
+    /**
+     * Zero-based page indices for the output PDF.
+     * Duplicates copy pages; omitted indices remove pages.
+     */
+    pages: number[];
+}
+
+/**
+ * Options for inspecting a PDF.
+ */
+export interface InspectOptions extends OpenDocumentOptions {}
+
+/**
+ * Options for checking a PDF.
+ */
+export interface CheckOptions extends OpenDocumentOptions {}
 
 /**
  * Result of a PDF split operation
@@ -13,16 +62,6 @@ export interface SplitResult {
      * Total number of pages
      */
     pageCount: number;
-}
-
-/**
- * Result of a PDF merge operation
- */
-export interface MergeResult extends PdfData {
-    /**
-     * Number of PDFs that were merged
-     */
-    sourceCount: number;
 }
 
 export type PixelColorModel = "unknown" | "gray" | "rgb" | "cmyk";
@@ -81,4 +120,14 @@ export interface OrganizeResult extends PdfData {
      * Number of pages in the original PDF
      */
     originalPageCount: number;
+}
+
+/**
+ * Result of a PDF merge operation
+ */
+export interface MergeResult extends PdfData {
+    /**
+     * Number of PDFs that were merged
+     */
+    sourceCount: number;
 }

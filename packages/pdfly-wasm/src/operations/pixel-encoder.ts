@@ -1,4 +1,4 @@
-import type { WasmExtractedImage, WasmPixelColorModel } from "../types/wasm-module.js";
+import type { WasmExtractedImage, WasmPixelColorModel } from "../types/wasm.types.js";
 
 // encode a raw-pixel image as a PNG Blob via canvas; null when unsupported
 export async function encodeRawPixelsAsPng(image: WasmExtractedImage): Promise<Blob | null> {

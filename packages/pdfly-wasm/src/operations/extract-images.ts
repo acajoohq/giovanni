@@ -3,7 +3,7 @@ import { QpdfImageExtractionError } from "../errors/index.js";
 import { encodeRawPixelsAsPng, rawPixelUnsupportedReason } from "./pixel-encoder.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { ExtractedImage, ExtractImagesResult } from "../types/index.js";
-import type { WasmExtractedImage } from "../types/wasm-module.js";
+import type { WasmExtractedImage } from "../types/wasm.types.js";
 
 /**
  * Extract every embedded raster image from a PDF.

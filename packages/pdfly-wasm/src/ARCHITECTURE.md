@@ -8,15 +8,15 @@ This package is split by responsibility.
 
 - `src/engines/qpdf/*`
 
-  qpdf WASM module loading, compression adapter, and `QpdfDocument` advanced API.
+  qpdf WASM module loading, compression engine implementation, and `QpdfDocument` advanced API.
 
 - `src/engines/ghostscript/*`
 
-  Ghostscript WASM module loading, runtime, option mapping, rewrite path, and compression adapter.
+  Ghostscript WASM module loading, runtime, option mapping, rewrite path, and compression engine implementation.
 
 - `src/compression/*`
 
-  Engine-neutral compression adapter contract and registry.
+  Engine-neutral compression engine interface and registry.
 
 - `src/runtime/*`
 
@@ -24,11 +24,11 @@ This package is split by responsibility.
 
 - `src/errors/*`
 
-  Typed errors by engine (`qpdf.ts`, `ghostscript.ts`), re-exported from `index.ts`.
+  Typed errors by engine (`qpdf.error.ts`, `ghostscript.error.ts`), re-exported from `index.ts`.
 
 - `src/types/*`
 
-  Public and internal TypeScript declarations grouped by domain (`common`, `qpdf-options`, `ghostscript-options`, results).
+  Public and internal TypeScript declarations grouped by domain stem (`pdf.types.ts`, `qpdf.types.ts`, `ghostscript.types.ts`, `compression.types.ts`, `wasm.types.ts`), re-exported from `index.ts`.
 
 - `src/utils/*`
 

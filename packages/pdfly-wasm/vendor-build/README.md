@@ -51,7 +51,7 @@ The TypeScript runtime mirrors the engine split:
 - `src/compression/*`
   shared engine adapter contract and engine registry
 
-- `src/runtime/wasm-loader.ts`
+- `src/runtime/wasmModule.loader.ts`
   shared Emscripten module-loader helpers used by both engines
 
 - `src/ARCHITECTURE.md`

@@ -4,13 +4,18 @@ This directory is the reserved native boundary for Ghostscript-specific Emscript
 
 Current state:
 
-- the Ghostscript WASM build uses upstream `gs.js` / `gs.wasm`
-- the JS runtime drives it through `callMain(...)` and MEMFS
-- there is no custom C/C++ binding layer yet
+- the Ghostscript WASM build still produces `ghostscript.js` / `ghostscript.wasm`
+- this directory owns the custom C++ wrapper over `gsapi_*`
+- the exported JS surface is intentionally narrow:
+  - `rewritePdf(data, args)`
+  - `getGhostscriptVersion()`
 
-Why this directory exists now:
+Why this directory exists:
 
 - to keep the engine layout parallel with `vendor-build/qpdf/bindings/emscripten/`
-- to give Ghostscript a stable home if we replace the CLI-style surface with a narrower `gsapi_*` wrapper later
+- to keep Ghostscript lifecycle, stdio capture, temp file handling, and `gsapi_*` calls out of TypeScript
 
-If we add a native adapter, it should live here and export a narrower runtime contract than raw `callMain(...)`.
+Design rule:
+
+- keep the native surface small and operation-oriented
+- do not mirror the entire Ghostscript embedding API into JS unless the product actually needs it

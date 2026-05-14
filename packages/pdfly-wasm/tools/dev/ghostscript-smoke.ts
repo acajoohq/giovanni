@@ -1,5 +1,6 @@
 /**
- * Run the Ghostscript WASM spike against a local PDF fixture using MEMFS.
+ * Run the Ghostscript WASM spike against a local PDF fixture using the native
+ * gsapi-backed rewrite wrapper.
  *
  * Usage:
  *   node --experimental-strip-types tools/dev/ghostscript-smoke.ts <input.pdf> <output.pdf> [preset]
@@ -19,16 +20,11 @@ type GhostscriptModuleFactory = (options: GhostscriptModuleOptions) => Promise<G
 type GhostscriptModuleOptions = {
     noInitialRun: boolean;
     locateFile: (path: string) => string;
-    print: (line: string) => void;
-    printErr: (line: string) => void;
 };
 
 type GhostscriptModule = {
-    FS: {
-        writeFile: (path: string, data: Uint8Array) => void;
-        readFile: (path: string) => Uint8Array;
-    };
-    callMain: (args: string[]) => number;
+    rewritePdf: (data: Uint8Array, args: string[]) => Uint8Array;
+    getVersion: () => string;
 };
 
 const [, , inputPath, outputPath, presetArg = "ebook"] = process.argv;
@@ -54,9 +50,6 @@ if (typeof createGhostscriptModule !== "function") {
     throw new TypeError("ghostscript.js did not export a module factory function");
 }
 
-const logs: string[] = [];
-const errors: string[] = [];
-
 const module = await createGhostscriptModule({
     noInitialRun: true,
     locateFile(path) {
@@ -66,19 +59,9 @@ const module = await createGhostscriptModule({
 
         return pathToFileURL(resolve("build/ghostscript", path)).href;
     },
-    print(line) {
-        logs.push(String(line));
-    },
-    printErr(line) {
-        errors.push(String(line));
-    },
 });
 
 const inputBytes = await readFile(inputPath);
-const inputMemfsPath = "/input.pdf";
-const outputMemfsPath = "/output.pdf";
-
-module.FS.writeFile(inputMemfsPath, inputBytes);
 
 const args = [
     "-sDEVICE=pdfwrite",
@@ -87,22 +70,11 @@ const args = [
     "-dSAFER",
     "-dQUIET",
     `-dPDFSETTINGS=/${preset}`,
-    `-sOutputFile=${outputMemfsPath}`,
-    inputMemfsPath,
 ];
 
 const startedAt = Date.now();
-const exitCode = module.callMain(args);
+const outputBytes = module.rewritePdf(inputBytes, args);
 const elapsedMs = Date.now() - startedAt;
-
-if (exitCode !== 0) {
-    if (errors.length > 0) {
-        console.error(errors.join("\n"));
-    }
-    throw new Error(`Ghostscript exited with code ${exitCode}`);
-}
-
-const outputBytes = module.FS.readFile(outputMemfsPath);
 await writeFile(outputPath, outputBytes);
 
 const sizeDelta = inputBytes.byteLength - outputBytes.byteLength;
@@ -113,13 +85,3 @@ console.log(`Input:  ${inputBytes.byteLength} bytes`);
 console.log(`Output: ${outputBytes.byteLength} bytes`);
 console.log(`Delta:  ${sizeDelta} bytes (${sizeDeltaPercent.toFixed(1)}%)`);
 console.log(`Time:   ${elapsedMs}ms`);
-
-if (logs.length > 0) {
-    console.log("\nGhostscript output:");
-    console.log(logs.join("\n"));
-}
-
-if (errors.length > 0) {
-    console.error("\nGhostscript stderr:");
-    console.error(errors.join("\n"));
-}

@@ -1,14 +1,31 @@
 import { GhostscriptInitError } from "../errors.js";
 import { createSingletonEmscriptenModuleLoader } from "../shared/wasm-loader.js";
 import type { GhostscriptModuleOptions, GhostscriptWasmModule } from "../../types/wasm-module.js";
-import type { GhostscriptLogCapture } from "./runtime.js";
 
-let activeCapture: GhostscriptLogCapture | null = null;
+function normalizeModule(module: unknown): GhostscriptWasmModule {
+    const normalized = module as GhostscriptWasmModule & {
+        getGhostscriptVersion?: () => string;
+    };
+
+    if (typeof normalized.getVersion !== "function" && typeof normalized.getGhostscriptVersion === "function") {
+        normalized.getVersion = normalized.getGhostscriptVersion.bind(normalized);
+    }
+
+    if (typeof normalized.rewritePdf !== "function") {
+        throw new TypeError("ghostscript.js did not export rewritePdf");
+    }
+    if (typeof normalized.getVersion !== "function") {
+        throw new TypeError("ghostscript.js did not export getVersion/getGhostscriptVersion");
+    }
+
+    return normalized;
+}
 
 const loader = createSingletonEmscriptenModuleLoader<GhostscriptWasmModule, GhostscriptModuleOptions>({
     resolveFrom: import.meta.url,
     moduleFileName: "./ghostscript.js",
     exportNames: ["default", "createGhostscriptModule"],
+    normalizeModule,
     createModuleOptions() {
         return {
             noInitialRun: true,
@@ -18,12 +35,6 @@ const loader = createSingletonEmscriptenModuleLoader<GhostscriptWasmModule, Ghos
                 }
 
                 return new URL(`./${path}`, import.meta.url).href;
-            },
-            print(line) {
-                activeCapture?.stdout.push(String(line));
-            },
-            printErr(line) {
-                activeCapture?.stderr.push(String(line));
             },
         };
     },
@@ -36,21 +47,6 @@ export async function initGhostscriptModule(): Promise<GhostscriptWasmModule> {
     return loader.init();
 }
 
-export async function withGhostscriptModule<T>(
-    capture: GhostscriptLogCapture,
-    operation: (module: GhostscriptWasmModule) => Promise<T>
-): Promise<T> {
-    const module = await initGhostscriptModule();
-    activeCapture = capture;
-
-    try {
-        return await operation(module);
-    } finally {
-        activeCapture = null;
-    }
-}
-
 export function resetGhostscriptModule(): void {
-    activeCapture = null;
     loader.reset();
 }

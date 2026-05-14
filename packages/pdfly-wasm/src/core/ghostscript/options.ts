@@ -65,7 +65,7 @@ export function validateGhostscriptOptions(options?: GhostscriptCompressOptions)
     return normalized;
 }
 
-export function buildGhostscriptArgs(inputPath: string, outputPath: string, options: NormalizedGhostscriptOptions): string[] {
+export function buildGhostscriptArgs(options: NormalizedGhostscriptOptions): string[] {
     const args = [
         "-sDEVICE=pdfwrite",
         "-dBATCH",
@@ -73,7 +73,6 @@ export function buildGhostscriptArgs(inputPath: string, outputPath: string, opti
         "-dSAFER",
         "-dQUIET",
         `-dPDFSETTINGS=/${options.pdfSettings}`,
-        `-sOutputFile=${outputPath}`,
     ];
 
     if (options.compatibilityLevel) {
@@ -91,7 +90,6 @@ export function buildGhostscriptArgs(inputPath: string, outputPath: string, opti
     appendNumberArg(args, "MonoImageResolution", options.monoImageResolution);
     appendNumberArg(args, "JPEGQ", options.jpegQuality);
 
-    args.push(inputPath);
     return args;
 }
 

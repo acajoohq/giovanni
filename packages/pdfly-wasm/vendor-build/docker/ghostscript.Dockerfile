@@ -27,6 +27,8 @@ RUN apt-get update && \
 
 WORKDIR /src
 
+COPY packages/pdfly-wasm/vendor-build /src/packages/pdfly-wasm/vendor-build
+
 RUN set -eux; \
     mkdir -p /src/vendor/ghostpdl; \
     curl -fsSL "$GHOSTPDL_ARCHIVE_URL" -o /tmp/ghostpdl.tar.gz; \
@@ -51,6 +53,7 @@ RUN set -eux; \
             ;; \
     esac; \
     export SOURCE_DIR=/src/vendor/ghostpdl; \
+    export BINDINGS_DIR=/src/packages/pdfly-wasm/vendor-build/ghostscript/bindings/emscripten; \
     export OUT_DIR=/out; \
     export HOST_TRIPLE=wasm32-unknown-emscripten; \
     mkdir -p "$OUT_DIR"; \
@@ -64,7 +67,6 @@ RUN set -eux; \
     CCAUX=cc \
     CFLAGS="$GS_OPT_CFLAGS" \
     CXXFLAGS="$GS_OPT_CFLAGS" \
-    LDFLAGS="$GS_OPT_LDFLAGS -sWASM=1 -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME=createGhostscriptModule -sENVIRONMENT=web,worker,node -sALLOW_MEMORY_GROWTH=1 -sFORCE_FILESYSTEM=1 -sEXPORTED_RUNTIME_METHODS=['FS','callMain']" \
     emconfigure ./configure \
         --host="$HOST_TRIPLE" \
         --build="$BUILD_TRIPLE" \
@@ -90,20 +92,42 @@ RUN set -eux; \
         --without-xps \
         --without-x; \
     export BUILD_LOG=/tmp/ghostscript-build.log; \
-    if ! emmake make -j"$JOBS" >"$BUILD_LOG" 2>&1; then \
+    if ! emmake make -j"$JOBS" libgs >"$BUILD_LOG" 2>&1; then \
         tail -n 200 "$BUILD_LOG"; \
         exit 1; \
     fi; \
-    if [ ! -f "$SOURCE_DIR/bin/gs.js" ]; then \
-        echo "Expected Ghostscript JS launcher not found at $SOURCE_DIR/bin/gs.js" >&2; \
+    em++ \
+        --bind \
+        -std=c++20 \
+        "$BINDINGS_DIR/bindings.cc" \
+        "$BINDINGS_DIR/api/ghostscript_api.cc" \
+        "$SOURCE_DIR/bin/gs.a" \
+        -I"$SOURCE_DIR" \
+        -I"$BINDINGS_DIR" \
+        $GS_OPT_CFLAGS \
+        -lembind \
+        -sWASM=1 \
+        -sMODULARIZE=1 \
+        -sEXPORT_ES6=1 \
+        -sEXPORT_NAME=createGhostscriptModule \
+        -sENVIRONMENT=web,worker,node \
+        -sALLOW_MEMORY_GROWTH=1 \
+        -sFORCE_FILESYSTEM=1 \
+        -sINITIAL_MEMORY=32MB \
+        -sMAXIMUM_MEMORY=2GB \
+        -sSTACK_SIZE=5MB \
+        -sDISABLE_EXCEPTION_CATCHING=0 \
+        --no-entry \
+        $GS_OPT_LDFLAGS \
+        -o "$OUT_DIR/ghostscript.js"; \
+    if [ ! -f "$OUT_DIR/ghostscript.js" ]; then \
+        echo "Expected Ghostscript JS launcher not found at $OUT_DIR/ghostscript.js" >&2; \
         exit 1; \
     fi; \
-    if [ ! -f "$SOURCE_DIR/bin/gs.wasm" ]; then \
-        echo "Expected Ghostscript WASM binary not found at $SOURCE_DIR/bin/gs.wasm" >&2; \
+    if [ ! -f "$OUT_DIR/ghostscript.wasm" ]; then \
+        echo "Expected Ghostscript WASM binary not found at $OUT_DIR/ghostscript.wasm" >&2; \
         exit 1; \
     fi; \
-    cp "$SOURCE_DIR/bin/gs.js" "$OUT_DIR/ghostscript.js"; \
-    cp "$SOURCE_DIR/bin/gs.wasm" "$OUT_DIR/ghostscript.wasm"; \
     if [ -f "$SOURCE_DIR/config.log" ]; then cp "$SOURCE_DIR/config.log" "$OUT_DIR/config.log"; fi; \
     if [ -f "$SOURCE_DIR/configaux.log" ]; then cp "$SOURCE_DIR/configaux.log" "$OUT_DIR/configaux.log"; fi; \
     cat > "$OUT_DIR/manifest.json" <<EOF

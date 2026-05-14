@@ -1,4 +1,5 @@
 import { getCompressionEngine, getCompressionEngineAdapter, listCompressionEngines } from "./compression/registry.js";
+import { initGhostscriptModule } from "./ghostscript/module-loader.js";
 import { initQpdfModule } from "./qpdf/module-loader.js";
 import type { CompressionEngine, CompressOptions, CompressResult, OptimizeOptions, OptimizeResult } from "../types/index.js";
 import type { OptimizeResult as QpdfOptimizeResult } from "../types/results.js";
@@ -25,6 +26,11 @@ export async function initCompressionEngine(engine: CompressionEngine): Promise<
  */
 export async function getQpdfVersion(): Promise<string> {
     const module = await initQpdfModule();
+    return module.getVersion();
+}
+
+export async function getGhostscriptVersion(): Promise<string> {
+    const module = await initGhostscriptModule();
     return module.getVersion();
 }
 

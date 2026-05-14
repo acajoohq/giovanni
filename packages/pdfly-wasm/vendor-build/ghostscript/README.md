@@ -5,14 +5,14 @@ This directory is reserved for Ghostscript-specific native build definitions tha
 Current status:
 
 - Docker recipe exists at `vendor-build/docker/ghostscript.Dockerfile`
-- reserved Emscripten binding room exists at `vendor-build/ghostscript/bindings/emscripten/`
-- no custom native Ghostscript wrapper exists yet
-- current Ghostscript proof runs through CLI-style `callMain(...)` and MEMFS
+- Ghostscript-specific Emscripten bindings live at `vendor-build/ghostscript/bindings/emscripten/`
+- the current wrapper is a narrow `gsapi_*` adapter for rewrite/version operations
+- the TypeScript runtime no longer drives Ghostscript through `callMain(...)`
 
-When Ghostscript needs a custom native binding layer, put it here:
+Current native responsibility split:
 
 - `bindings/emscripten/`
-  Emscripten-facing binding code, if we stop using the CLI-style module surface
+  Emscripten-facing Ghostscript wrapper code
 
 - `toolchains/`
   Ghostscript-specific toolchain files, only if they diverge from the current Docker/configure path

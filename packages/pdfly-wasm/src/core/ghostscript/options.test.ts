@@ -30,8 +30,6 @@ describe("validateGhostscriptOptions", () => {
 describe("buildGhostscriptArgs", () => {
     it("maps normalized options to Ghostscript CLI flags", () => {
         const args = buildGhostscriptArgs(
-            "/input.pdf",
-            "/output.pdf",
             validateGhostscriptOptions({
                 preset: "screen",
                 compatibilityLevel: "1.4",
@@ -50,8 +48,6 @@ describe("buildGhostscriptArgs", () => {
                 "-dDownsampleColorImages=true",
                 "-dColorImageResolution=96",
                 "-dJPEGQ=75",
-                "-sOutputFile=/output.pdf",
-                "/input.pdf",
             ])
         );
     });

@@ -3,7 +3,7 @@
  */
 
 // qpdf api
-export { compressPdf, getAvailableCompressionEngines, getQpdfVersion, initCompressionEngine, initQpdf, linearizePdf, optimizePdf } from "./core/compress.js";
+export { compressPdf, getAvailableCompressionEngines, getGhostscriptVersion, getQpdfVersion, initCompressionEngine, initQpdf, linearizePdf, optimizePdf } from "./core/compress.js";
 export { inspectPdf, checkPdf } from "./core/inspect.js";
 export { splitPdf } from "./core/split.js";
 export { mergePdfs } from "./core/merge.js";

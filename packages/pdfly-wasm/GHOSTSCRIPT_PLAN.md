@@ -14,16 +14,18 @@ Completed:
 - [x] Docker-first Ghostscript WASM build
 - [x] PDF-focused build surface (`--without-pcl`, `--without-xps`)
 - [x] `ghostscript.js` + `ghostscript.wasm` artifact export
-- [x] Node smoke test through MEMFS and `pdfwrite`
+- [x] Node smoke test for the Ghostscript rewrite path
 - [x] Real-file viability check on a large image-heavy PDF
 - [x] Internal Ghostscript runtime, rewrite path, typed options, and public compression facade
 - [x] Shared Emscripten module-loader contract for qpdf and Ghostscript
-- [x] Reserved `vendor-build/ghostscript/bindings/emscripten/` room for a future native `gsapi_*` wrapper
+- [x] Native Ghostscript `gsapi_*` wrapper under `vendor-build/ghostscript/bindings/emscripten/`
 - [x] Default package build now produces both qpdf and Ghostscript WASM artifacts
+- [x] Ghostscript module surface normalized to the same loader/version contract as qpdf
 
 Current proof point:
 
 - input PDF bytes -> Ghostscript WASM -> `pdfwrite` -> output PDF bytes
+- input/output rewrite now flows through a narrow native `rewritePdf(...)` binding instead of JS-side `callMain(...)`
 
 Scope note:
 
@@ -57,6 +59,7 @@ Todos:
 - [x] lazy-load `ghostscript.js`
 - [x] resolve `ghostscript.wasm` through `locateFile(...)`
 - [x] normalize Node/browser loading behavior
+- [x] normalize the Ghostscript module surface to `getVersion()` + `rewritePdf(...)`
 - [x] add package build copy/export path for Ghostscript runtime artifacts
 
 Checkpoint:
@@ -72,9 +75,9 @@ Goal:
 Todos:
 
 - [x] add `rewritePdfWithGhostscript(input, options): Promise<Uint8Array>`
-- [x] map input/output through MEMFS
+- [x] move input/output path management into the native wrapper
 - [x] support `preset` / `PDFSETTINGS`
-- [x] capture stderr/stdout for better debugging
+- [x] capture stderr/stdout through `gsapi_set_stdio_with_handle(...)`
 - [x] convert runtime failures into typed Ghostscript errors
 - [x] ensure repeated calls do not leak files or stale state
 
@@ -204,6 +207,7 @@ For each update:
 - Docker cache behavior is currently implicit in the local builder state
 - package distribution must not accidentally force Ghostscript into qpdf-only bundles
 - licensing needs explicit handling before wider release
+- Ghostscript still has a smaller native surface than qpdf; deeper bindings should be added only if a real product workflow needs them
 
 ## Done Criteria
 

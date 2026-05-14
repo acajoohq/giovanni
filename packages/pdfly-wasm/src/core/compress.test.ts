@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QpdfCompressionError } from "./errors.js";
-import { compressPdf, getAvailableCompressionEngines, initCompressionEngine, linearizePdf, optimizePdf } from "./compress.js";
+import { compressPdf, getAvailableCompressionEngines, getGhostscriptVersion, initCompressionEngine, linearizePdf, optimizePdf } from "./compress.js";
 import { initQpdfModule } from "./qpdf/module-loader.js";
 import { initGhostscriptModule } from "./ghostscript/module-loader.js";
 import { compressPdfWithGhostscript } from "./ghostscript/rewrite.js";
@@ -148,15 +148,21 @@ describe("compression engine helpers", () => {
 
     it("initializes Ghostscript through its module loader", async () => {
         mockInitGhostscriptModule.mockResolvedValue({
-            FS: {
-                writeFile: vi.fn<(path: string, data: Uint8Array) => void>(),
-                readFile: vi.fn<(path: string) => Uint8Array>(() => new Uint8Array()),
-            },
-            callMain: vi.fn<(args: string[]) => number>(() => 0),
+            rewritePdf: vi.fn<(data: Uint8Array, args: string[]) => Uint8Array>(() => new Uint8Array()),
+            getVersion: vi.fn<() => string>(() => "10.07"),
         } as never);
 
         await initCompressionEngine("ghostscript");
 
         expect(mockInitGhostscriptModule).toHaveBeenCalled();
+    });
+
+    it("reads the Ghostscript version through the normalized module surface", async () => {
+        mockInitGhostscriptModule.mockResolvedValue({
+            rewritePdf: vi.fn<(data: Uint8Array, args: string[]) => Uint8Array>(() => new Uint8Array()),
+            getVersion: vi.fn<() => string>(() => "10.07"),
+        } as never);
+
+        await expect(getGhostscriptVersion()).resolves.toBe("10.07");
     });
 });

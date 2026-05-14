@@ -14,7 +14,7 @@ This directory contains the build definitions for vendored upstream engines used
   qpdf-specific native build definition only: CMake, toolchains, Emscripten bindings
 
 - `vendor-build/ghostscript/*`
-  Ghostscript-specific native build definition only: Docker-driven upstream build today, reserved `bindings/emscripten` room for a future `gsapi_*` wrapper
+  Ghostscript-specific native build definition only: Docker-driven upstream build plus the narrow `gsapi_*` Emscripten wrapper
 
 - `build/qpdf` and `build/ghostscript`
   Generated artifacts only: build outputs consumed by packaging or smoke scripts

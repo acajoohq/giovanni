@@ -85,17 +85,12 @@ export type CreateQpdfModule = () => Promise<QpdfWasmModule>;
 export interface GhostscriptModuleOptions {
     noInitialRun: boolean;
     locateFile: (path: string) => string;
-    print: (line: string) => void;
-    printErr: (line: string) => void;
 }
 
 export interface GhostscriptWasmModule {
-    FS: {
-        writeFile(path: string, data: Uint8Array): void;
-        readFile(path: string): Uint8Array;
-        unlink?(path: string): void;
-    };
-    callMain(args: string[]): number;
+    rewritePdf(data: Uint8Array, args: string[]): Uint8Array;
+    getVersion(): string;
+    getGhostscriptVersion?: () => string;
 }
 
 export type CreateGhostscriptModule = (options: GhostscriptModuleOptions) => Promise<GhostscriptWasmModule>;

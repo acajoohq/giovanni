@@ -4,36 +4,16 @@ import { normalizeBuffer } from "../../utils/validation.js";
 import type { CompressResult, GhostscriptCompressOptions } from "../../types/index.js";
 import type { GhostscriptErrorOptions } from "../errors.js";
 import { buildGhostscriptArgs, validateGhostscriptOptions } from "./options.js";
-import { cleanupGhostscriptMemfsFile, nextGhostscriptMemfsPath, withGhostscriptExecution } from "./runtime.js";
+import { withGhostscriptExecution } from "./runtime.js";
 
 export async function rewritePdfWithGhostscript(input: Uint8Array | ArrayBuffer, options?: GhostscriptCompressOptions): Promise<Uint8Array> {
     const inputBuffer = normalizeBuffer(input);
     const normalizedOptions = validateGhostscriptOptions(options);
-    const capture = { stdout: [] as string[], stderr: [] as string[] };
 
     try {
-        return await withGhostscriptExecution(capture, async (module) => {
-            const inputPath = nextGhostscriptMemfsPath("input");
-            const outputPath = nextGhostscriptMemfsPath("output");
-
-            try {
-                module.FS.writeFile(inputPath, inputBuffer);
-
-                const args = buildGhostscriptArgs(inputPath, outputPath, normalizedOptions);
-                const exitCode = module.callMain(args);
-                if (exitCode !== 0) {
-                    const errorOptions: GhostscriptErrorOptions = {
-                        code: "write_failed",
-                        operation: "ghostscript-rewrite",
-                    };
-                    throw new GhostscriptCompressionError(buildGhostscriptFailureMessage(exitCode, capture.stderr), errorOptions);
-                }
-
-                return module.FS.readFile(outputPath).slice();
-            } finally {
-                cleanupGhostscriptMemfsFile(module.FS, inputPath);
-                cleanupGhostscriptMemfsFile(module.FS, outputPath);
-            }
+        return await withGhostscriptExecution(async (module) => {
+            const args = buildGhostscriptArgs(normalizedOptions);
+            return module.rewritePdf(inputBuffer, args).slice();
         });
     } catch (error) {
         if (error instanceof GhostscriptValidationError || error instanceof GhostscriptCompressionError) {
@@ -68,13 +48,4 @@ export async function compressPdfWithGhostscript(
         savedBytes,
         percentageSaved,
     };
-}
-
-function buildGhostscriptFailureMessage(exitCode: number, stderr: string[]): string {
-    if (stderr.length === 0) {
-        return `Ghostscript exited with code ${exitCode}`;
-    }
-
-    const detail = stderr.slice(-5).join(" | ");
-    return `Ghostscript exited with code ${exitCode}: ${detail}`;
 }

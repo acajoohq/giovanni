@@ -1,40 +1,13 @@
-import { withGhostscriptModule } from "./module-loader.js";
+import { initGhostscriptModule } from "./module-loader.js";
 import type { GhostscriptWasmModule } from "../../types/wasm-module.js";
 
-let operationCounter = 0;
 let executionQueue: Promise<void> = Promise.resolve();
 
-export async function withGhostscriptExecution<T>(
-    capture: GhostscriptLogCapture,
-    operation: (module: GhostscriptWasmModule) => Promise<T>
-): Promise<T> {
-    return enqueue(async () =>
-        withGhostscriptModule(capture, async (module) => {
-            return operation(module);
-        }),
-    );
-}
-
-export function nextGhostscriptMemfsPath(prefix: string): string {
-    operationCounter += 1;
-    return `/${prefix}-${operationCounter}.pdf`;
-}
-
-export function cleanupGhostscriptMemfsFile(fs: { unlink?(path: string): void }, path: string): void {
-    try {
-        fs.unlink?.(path);
-    } catch {
-        // ignore cleanup failures; these should not mask the real operation result
-    }
-}
-
-export interface GhostscriptLogCapture {
-    stdout: string[];
-    stderr: string[];
+export async function withGhostscriptExecution<T>(operation: (module: GhostscriptWasmModule) => Promise<T>): Promise<T> {
+    return enqueue(async () => operation(await initGhostscriptModule()));
 }
 
 export function resetGhostscriptRuntime(): void {
-    operationCounter = 0;
     executionQueue = Promise.resolve();
 }
 

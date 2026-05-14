@@ -44,8 +44,8 @@ pnpm build                            # turbo
 pnpm -F @pdfly/wasm build             # WASM + lib only
 pnpm -F @pdfly/wasm build:qpdf:dev    # qpdf WASM debug-ish Docker build
 pnpm -F @pdfly/wasm build:qpdf:prd    # qpdf WASM optimized Docker build
-pnpm -F @pdfly/wasm build:ghostscript:dev   # Ghostscript WASM spike via Docker
-pnpm -F @pdfly/wasm build:ghostscript:prd   # optimized Ghostscript WASM spike via Docker
+pnpm -F @pdfly/wasm build:ghostscript:dev   # Ghostscript WASM Docker build
+pnpm -F @pdfly/wasm build:ghostscript:prd   # optimized Ghostscript WASM Docker build
 pnpm -F pdfly-desktop run tauri dev   # desktop
 pnpm check                            # types, lint, tests, format
 pnpm validate
@@ -55,12 +55,12 @@ pnpm validate
 
 ## Ghostscript WASM Spike
 
-The first Ghostscript milestone is Docker-first and file-based, similar to the build orchestration used by `ffmpeg.wasm`.
+The Ghostscript build is Docker-first, similar to the build orchestration used by `ffmpeg.wasm`.
 
 - source: pinned archive fetched inside the Docker build
 - toolchain: `emscripten/emsdk` inside Docker
 - output: `packages/pdfly-wasm/build/ghostscript`
-- current goal: produce `ghostscript.js` + `ghostscript.wasm` that can later be driven through Emscripten FS and CLI-style args
+- native wrapper: `gsapi_*` exposed through a narrow Emscripten binding (`rewritePdf`, version)
 
 The lower-level Ghostscript runtime remains internal, but the package now exposes an engine-aware `compressPdf(...)` facade above qpdf and Ghostscript. The flow is Dockerfile-centric, the default `pnpm -F @pdfly/wasm build` path builds both engines, and both upstream engines now follow the same pinned-source plus Docker-build model with engine-named outputs:
 

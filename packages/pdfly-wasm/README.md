@@ -129,7 +129,7 @@ Current target artifacts are:
 - `config.log`
 - `configaux.log`
 
-This path is intentionally separate from the existing qpdf WASM build while the port is still being proven.
+This path is intentionally separate from the existing qpdf WASM build while the port is still being hardened.
 
 You can then verify the artifact end to end with:
 
@@ -140,4 +140,4 @@ pnpm --filter @pdfly/wasm smoke:ghostscript \
   screen
 ```
 
-That smoke path loads `ghostscript.js`, maps `ghostscript.wasm` with `locateFile(...)`, writes the input PDF into MEMFS, runs `pdfwrite`, and writes the output PDF back to disk.
+That smoke path loads `ghostscript.js`, maps `ghostscript.wasm` with `locateFile(...)`, and calls the native `gsapi_*` rewrite wrapper that drives `pdfwrite` inside the WASM runtime.

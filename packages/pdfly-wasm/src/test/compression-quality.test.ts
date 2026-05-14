@@ -18,7 +18,7 @@
  *  6. Every decodeLevel produces a valid PDF for every fixture that succeeds.
  */
 
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -117,6 +117,35 @@ async function writeCompressionReport(results: SizeResult[], skipped: SkippedRes
     lines.push("</compression-report>");
 
     await writeFile(join(reportDir, "compression-results.xml"), lines.join("\n"), "utf-8");
+
+    // Write a markdown summary to $GITHUB_STEP_SUMMARY when running in CI
+    const stepSummaryPath = process.env.GITHUB_STEP_SUMMARY;
+    if (stepSummaryPath) {
+        const md: string[] = [
+            "## Compression Results\n",
+            `| File | Original | default | web | archive |`,
+            `|------|----------|---------|-----|---------|`,
+        ];
+
+        for (const name of allFileNames) {
+            const fileResults = results.filter((r) => r.name === name);
+            const originalBytes = fileResults[0]?.originalBytes ?? 0;
+            const original = formatBytes(originalBytes);
+
+            const cell = (preset: "default" | "web" | "archive") => {
+                const r = fileResults.find((x) => x.preset === preset);
+                const s = skipped.find((x) => x.name === name && x.preset === preset);
+                if (r) return `${formatBytes(r.compressedBytes)} (-${r.percentageSaved}%)`;
+                if (s) return "⚠️ skip";
+                return "—";
+            };
+
+            md.push(`| ${name} | ${original} | ${cell("default")} | ${cell("web")} | ${cell("archive")} |`);
+        }
+
+        md.push(`\n_Generated ${new Date().toISOString()}_`);
+        await appendFile(stepSummaryPath, md.join("\n") + "\n");
+    }
 }
 
 /**

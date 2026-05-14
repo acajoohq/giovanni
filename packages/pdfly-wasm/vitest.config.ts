@@ -20,10 +20,7 @@ export default defineConfig({
             transform(code, id) {
                 if (/module-loader\.(ts|js)$/.test(id) && !id.includes("node_modules")) {
                     return {
-                        code: code.replace(
-                            /new URL\(["']\.\/qpdf\.js["'],\s*import\.meta\.url\)\.href/,
-                            JSON.stringify(wasmJsUrl),
-                        ),
+                        code: code.replace(/new URL\(["']\.\/qpdf\.js["'],\s*import\.meta\.url\)\.href/, JSON.stringify(wasmJsUrl)),
                         map: null,
                     };
                 }
@@ -34,9 +31,7 @@ export default defineConfig({
         globals: true,
         environment: "node",
         setupFiles: ["./src/test/setup.ts"],
-        reporters: isCI
-            ? [["junit", { outputFile: "./test-report/junit.xml", suiteName: "pdfly-wasm" }], "verbose"]
-            : ["default"],
+        reporters: isCI ? [["junit", { outputFile: "./test-report/junit.xml", suiteName: "pdfly-wasm" }], "verbose"] : ["default"],
         coverage: {
             provider: "v8",
             reporter: ["text", "json", "html"],

@@ -165,7 +165,7 @@ export function OrganizeTool() {
         ) : null;
 
     const resultMetrics = [
-        ...(pages.length > 0 ? [{ label: t("common.metrics.pages"), value: pages.length, tone: "accent" as const }] : []),
+        ...(pageOrder.length > 0 ? [{ label: t("common.metrics.pages"), value: pageOrder.length, tone: "accent" as const }] : []),
         ...(reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
         ...(file && reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.throughput"), value: formatThroughput(file.size, elapsedMs) }] : []),
     ];

@@ -125,10 +125,6 @@ export const fr: Translations = {
         actions: {
             replace: "Remplacer",
         },
-        notes: {
-            qpdf: "qpdf garde une structure proche de l'original. Il ne recompresse pas agressivement les images intégrées.",
-            ghostscript: "Ghostscript réécrit tout le PDF et réduit souvent beaucoup plus les scans. Le rendu peut changer et certains fichiers peuvent devenir plus lourds.",
-        },
         status: {
             compressing: "Compression en cours...",
             savedBytes: "{{bytes}} économisés.",

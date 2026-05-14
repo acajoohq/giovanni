@@ -123,10 +123,6 @@
         actions: {
             replace: "Replace",
         },
-        notes: {
-            qpdf: "qpdf keeps the PDF structurally close to the original. It will not aggressively recompress embedded images.",
-            ghostscript: "Ghostscript rewrites the whole PDF and can reduce scans much more aggressively. Output can change visually and some files may become larger.",
-        },
         status: {
             compressing: "Compressing PDF...",
             savedBytes: "Saved {{bytes}}.",

@@ -27,7 +27,6 @@ import {
     SidebarContent,
     SidebarField,
     SidebarHeader,
-    SidebarInfo,
     SidebarRange,
     SidebarSection,
     SidebarSelect,
@@ -438,8 +437,6 @@ export function CompressTool() {
                     </SidebarCollapsibleSection>
                 </>
             )}
-
-            <SidebarInfo>{t(engine === "qpdf" ? "compress.notes.qpdf" : "compress.notes.ghostscript")}</SidebarInfo>
         </Sidebar>
     );
 

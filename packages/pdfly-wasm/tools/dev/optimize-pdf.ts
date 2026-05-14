@@ -2,11 +2,11 @@
  * Inspect a PDF and optimize it with an automatically chosen preset.
  *
  * Usage:
- *   npx tsx script/optimize-pdf.ts <input.pdf> <output.pdf>
+ *   node --experimental-strip-types tools/dev/optimize-pdf.ts <input.pdf> <output.pdf>
  */
 
 import { readFile, writeFile } from "node:fs/promises";
-import { QpdfDocument } from "../src/index.js";
+import { QpdfDocument } from "../../src/index.js";
 
 const [, , inputPath, outputPath] = process.argv;
 
@@ -21,7 +21,6 @@ const document = await QpdfDocument.open(pdfBytes);
 const { numPages, pdfVersion, isLinearized } = document.info();
 console.log(`Pages: ${numPages}  |  PDF ${pdfVersion}  |  Linearized: ${isLinearized}`);
 
-// pick a preset based on what's in the file — no second parse needed
 const preset = numPages > 50 ? "archive" : "web";
 console.log(`Preset: ${preset}`);
 

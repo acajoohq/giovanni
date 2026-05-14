@@ -8,6 +8,7 @@ Completed:
 
 - [x] Pinned vendor bootstrap for `qpdf` and `ghostpdl`
 - [x] Unified Docker-first build entrypoint for both upstream engines
+- [x] Separated orchestration (`tools/`) from native build definitions (`vendor-build/`)
 - [x] Docker-first Ghostscript WASM build
 - [x] PDF-focused build surface (`--without-pcl`, `--without-xps`)
 - [x] `ghostscript.js` + `ghostscript.wasm` artifact export
@@ -47,7 +48,7 @@ Todos:
 
 Checkpoint:
 
-- runtime can load from package code, not only from `script/ghostscript-smoke.ts`
+- runtime can load from package code, not only from `tools/dev/ghostscript-smoke.ts`
 
 ### Phase 2: Internal Rewrite Operation
 

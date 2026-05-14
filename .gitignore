@@ -49,7 +49,7 @@ lerna-debug.log*
 .env.local
 .agents/skills/
 vendor/
-packages/pdfly-wasm/wasm/cmake-build/
+packages/pdfly-wasm/wasm/
 .claude/settings.local.json
 dogfood-output/
 packages/pdfly-wasm/.tmp

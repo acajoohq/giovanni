@@ -8,8 +8,8 @@ export default defineConfig({
     minify: false,
     sourcemap: true,
     copy: [
-        { from: "build/wasm/qpdf.js", to: "dist", verbose: true },
-        { from: "build/wasm/qpdf.wasm", to: "dist", verbose: true },
+        { from: "build/qpdf/qpdf.js", to: "dist", verbose: true },
+        { from: "build/qpdf/qpdf.wasm", to: "dist", verbose: true },
     ],
     publint: {
         level: "error",

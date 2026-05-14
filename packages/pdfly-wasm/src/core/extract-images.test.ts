@@ -75,7 +75,7 @@ async function extractSingleRawImage(pdfBytes: Uint8Array): Promise<WasmExtracte
 
 async function loadQpdfModule(): Promise<QpdfWasmModule> {
     modulePromise ??= (async () => {
-        const moduleUrl = new URL("../../build/wasm/qpdf.js", import.meta.url).href;
+        const moduleUrl = new URL("../../build/qpdf/qpdf.js", import.meta.url).href;
         const imported = (await import(/* @vite-ignore */ moduleUrl)) as { default?: () => Promise<QpdfWasmModule>; createQpdfModule?: () => Promise<QpdfWasmModule> };
         const createQpdfModule = imported.default ?? imported.createQpdfModule;
 

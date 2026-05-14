@@ -1,0 +1,52 @@
+# Vendor Build Contract
+
+This directory contains the build definitions for vendored upstream engines used by `@pdfly/wasm`.
+
+## Separation of concerns
+
+- `tools/vendor/*`
+  Orchestration only: vendor syncing, target selection, Docker invocation
+
+- `vendor-build/docker/*`
+  Container recipes only: isolated build environments for each upstream engine
+
+- `vendor-build/qpdf/*`
+  qpdf-specific native build definition only: CMake, toolchains, Emscripten bindings
+
+- `build/qpdf` and `build/ghostscript`
+  Generated artifacts only: build outputs consumed by packaging or smoke scripts
+
+- `src/*`
+  Runtime/library API only: package code that ships to consumers
+
+## Output contract
+
+Each engine writes to its own output directory:
+
+- `build/qpdf`
+  - `qpdf.js`
+  - `qpdf.wasm`
+  - `manifest.json`
+
+- `build/ghostscript`
+  - `ghostscript.js`
+  - `ghostscript.wasm`
+  - `manifest.json`
+
+That engine-named output is the stable contract for tooling, tests, and packaging.
+
+## Supported tweaks
+
+Keep tweaks explicit and narrow.
+
+- build mode:
+  - `qpdf`: `dev | prd`
+  - `ghostscript`: `dev | prd`
+- Ghostscript parallelism:
+  - `PDFLY_GHOSTSCRIPT_JOBS=<n>`
+
+Example:
+
+```bash
+PDFLY_GHOSTSCRIPT_JOBS=4 pnpm --filter @pdfly/wasm build:ghostscript:prd
+```

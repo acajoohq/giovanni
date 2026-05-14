@@ -16,7 +16,7 @@ RUN apt-get update && \
 WORKDIR /src
 
 COPY vendor/qpdf /src/vendor/qpdf
-COPY packages/pdfly-wasm/wasm /src/packages/pdfly-wasm/wasm
+COPY packages/pdfly-wasm/vendor-build /src/packages/pdfly-wasm/vendor-build
 
 RUN set -eux; \
     case "$QPDF_BUILD_MODE" in \
@@ -31,14 +31,14 @@ RUN set -eux; \
             exit 1; \
             ;; \
     esac; \
-    export SOURCE_DIR=/src/packages/pdfly-wasm/wasm; \
+    export SOURCE_DIR=/src/packages/pdfly-wasm/vendor-build/qpdf; \
     export BUILD_DIR=/tmp/qpdf-build; \
     export OUT_DIR=/out; \
     mkdir -p "$BUILD_DIR" "$OUT_DIR"; \
     cd "$BUILD_DIR"; \
     emcmake cmake \
         -DQPDF_SOURCE_DIR=/src/vendor/qpdf \
-        -DCMAKE_TOOLCHAIN_FILE="$SOURCE_DIR/emscripten-toolchain.cmake" \
+        -DCMAKE_TOOLCHAIN_FILE="$SOURCE_DIR/toolchains/emscripten.cmake" \
         -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
         "$SOURCE_DIR"; \
     cmake --build . --parallel "$(nproc)"; \

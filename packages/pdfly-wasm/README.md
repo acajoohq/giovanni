@@ -65,7 +65,11 @@ pnpm --filter @pdfly/wasm build:ghostscript:dev
 pnpm --filter @pdfly/wasm build:ghostscript:prd
 ```
 
-`src/` — TS API; `wasm/` — vendor build configs; `dist/` — tsdown output (includes `qpdf.js` / `qpdf.wasm`). All processing is local once the pinned sources have been synced.
+Build-system contract:
+
+- [`vendor-build/README.md`](./vendor-build/README.md)
+
+`src/` — TS API; `tools/` — local orchestration and smoke helpers; `vendor-build/` — native/container build definitions; `dist/` — packaged output. All processing is local once the pinned sources have been synced.
 
 ## Experimental Ghostscript WASM Build
 
@@ -80,7 +84,7 @@ pnpm --filter @pdfly/wasm build:ghostscript:dev
 
 That flow:
 
-- uses `packages/pdfly-wasm/wasm/docker/ghostscript.Dockerfile`
+- uses `packages/pdfly-wasm/vendor-build/docker/ghostscript.Dockerfile`
 - uses a pinned `ghostpdl` source archive synced into `vendor/ghostpdl`
 - keeps the Ghostscript build logic inside the Dockerfile
 - installs autotools inside the container

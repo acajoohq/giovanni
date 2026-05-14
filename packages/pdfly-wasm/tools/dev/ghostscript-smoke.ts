@@ -2,7 +2,7 @@
  * Run the Ghostscript WASM spike against a local PDF fixture using MEMFS.
  *
  * Usage:
- *   node --experimental-strip-types script/ghostscript-smoke.ts <input.pdf> <output.pdf> [preset]
+ *   node --experimental-strip-types tools/dev/ghostscript-smoke.ts <input.pdf> <output.pdf> [preset]
  *
  * Presets:
  *   screen | ebook | printer | prepress | default

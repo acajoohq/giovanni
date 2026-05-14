@@ -1,4 +1,4 @@
-// embind bindings — expose the C++ API to JavaScript
+// Emscripten bindings — expose the qpdf native API to JavaScript
 
 #include "qpdf_wasm.hh"
 #include <emscripten/bind.h>

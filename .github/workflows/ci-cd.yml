@@ -15,9 +15,8 @@ permissions:
     pull-requests: write
 
 env:
-    EMSDK_VERSION: 5.0.6
-    QPDF_VERSION: a898bb3a7289d1d05789d6d3f0d5dd534943a8da
     TURBO_TELEMETRY_DISABLED: "1"
+    PDFLY_DOCKER_CACHE_ROOT: .tmp/docker-buildx-cache
     # pull request workflows default to refs/pull/n/merge; use head so builds/previews match the branch
     SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
@@ -54,6 +53,9 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Setup Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
             - name: Cache Turbo
               uses: actions/cache@v4
               with:
@@ -89,17 +91,13 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Cache Emscripten SDK
+            - name: Cache Docker Buildx layers
               uses: actions/cache@v4
               with:
-                  path: .cache/emsdk
-                  key: emsdk-${{ runner.os }}-${{ env.EMSDK_VERSION }}
-
-            - name: Cache qpdf source
-              uses: actions/cache@v4
-              with:
-                  path: vendor/qpdf
-                  key: qpdf-${{ env.QPDF_VERSION }}
+                  path: .tmp/docker-buildx-cache
+                  key: docker-buildx-${{ runner.os }}-${{ hashFiles('packages/pdfly-wasm/package.json', 'packages/pdfly-wasm/native/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
+                  restore-keys: |
+                      docker-buildx-${{ runner.os }}-
 
             - name: Cache Turbo
               uses: actions/cache@v4
@@ -110,61 +108,11 @@ jobs:
                       turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'apps/**/package.json', 'packages/**/package.json') }}-
                       turbo-${{ runner.os }}-
 
-            - name: Cache WASM build artifacts
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      packages/pdfly-wasm/build/qpdf
-                      packages/pdfly-wasm/build/ghostscript
-                  key: wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-qpdf-${{ env.QPDF_VERSION }}-${{ hashFiles('pnpm-lock.yaml', 'packages/pdfly-wasm/package.json', 'packages/pdfly-wasm/tsdown.config.ts', 'packages/pdfly-wasm/src/**', 'packages/pdfly-wasm/native/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
-                  restore-keys: |
-                      wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-qpdf-${{ env.QPDF_VERSION }}-
-                      wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-
-
-            - name: Ensure CMake
-              run: |
-                  set -euo pipefail
-                  if ! command -v cmake >/dev/null 2>&1; then
-                    echo "CMake not found, installing..."
-                    sudo apt-get update
-                    sudo apt-get install -y cmake
-                  else
-                    echo "CMake already installed."
-                  fi
-
-            - name: Setup Emscripten
-              run: |
-                  set -euo pipefail
-
-                  if [ ! -d .cache/emsdk/.git ]; then
-                      git clone --depth 1 https://github.com/emscripten-core/emsdk.git .cache/emsdk
-                  fi
-
-                  .cache/emsdk/emsdk install "$EMSDK_VERSION"
-                  .cache/emsdk/emsdk activate "$EMSDK_VERSION"
-
-            - name: Fetch qpdf source
-              run: |
-                  set -euo pipefail
-
-                  if [ ! -d vendor/qpdf/.git ]; then
-                      mkdir -p vendor
-                      git clone --filter=blob:none https://github.com/qpdf/qpdf.git vendor/qpdf
-                  fi
-
-                  git -C vendor/qpdf checkout "$QPDF_VERSION"
-
             - name: Run build
-              run: |
-                  set -euo pipefail
-                  source .cache/emsdk/emsdk_env.sh
-                  pnpm run build
+              run: pnpm run build
 
             - name: Run tests
-              run: |
-                  set -euo pipefail
-                  source .cache/emsdk/emsdk_env.sh
-                  pnpm run test
+              run: pnpm run test
 
             - name: Check package contract
               run: pnpm --filter @pdfly/wasm package:check

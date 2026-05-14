@@ -22,6 +22,10 @@ Completed:
 - [x] Default package build now produces both qpdf and Ghostscript WASM artifacts
 - [x] Ghostscript module surface normalized to the same loader/version contract as qpdf
 - [x] Web compression UI can now switch between qpdf and Ghostscript with engine-specific controls
+- [x] qpdf + Ghostscript vendor builds now run in parallel from one entrypoint
+- [x] Docker-native GitHub Actions flow updated to the same pinned-archive build contract
+- [x] package-level release verification checks built artifacts and exercises both engines from `dist/`
+- [x] licensing and runtime caveats are now documented in the package README
 
 Current proof point:
 
@@ -34,6 +38,7 @@ Scope note:
 - Docker fetches pinned archives directly during the build
 - there is no host-side vendor cache contract anymore
 - local rebuild speed currently depends on the Docker builder cache; explicit shared cache config is still optional follow-up
+- local cache export/import is now explicit when the active `docker buildx` driver supports it; plain `docker` drivers fall back cleanly without that cache path
 
 ## Main Goal
 
@@ -168,13 +173,13 @@ Goal:
 
 Todos:
 
-- [ ] add unit tests for loader and option validation
-- [ ] add integration tests for Ghostscript rewrite path
-- [ ] add package-level artifact checks
-- [ ] compare representative qpdf vs Ghostscript outputs
-- [ ] document AGPL/licensing implications clearly
-- [ ] document known performance expectations and caveats
-- [ ] github actions
+- [x] add unit tests for loader and option validation
+- [x] add integration tests for Ghostscript rewrite path
+- [x] add package-level artifact checks
+- [x] compare representative qpdf vs Ghostscript outputs
+- [x] document AGPL/licensing implications clearly
+- [x] document known performance expectations and caveats
+- [x] github actions
 
 Checkpoint:
 

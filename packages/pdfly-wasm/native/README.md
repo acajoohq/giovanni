@@ -74,9 +74,18 @@ Keep tweaks explicit and narrow.
     - `ghostscript`: `dev | prd`
 - Ghostscript parallelism:
     - `PDFLY_GHOSTSCRIPT_JOBS=<n>`
+- Docker BuildKit cache root:
+    - `PDFLY_DOCKER_CACHE_ROOT=<path>`
 
 Example:
 
 ```bash
 PDFLY_GHOSTSCRIPT_JOBS=4 pnpm --filter @pdfly/wasm build:ghostscript:prd
+PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @pdfly/wasm build:wasm
 ```
+
+## Build behavior
+
+- `build:wasm` invokes qpdf and Ghostscript in parallel
+- local cache export is used only when the active `docker buildx` driver supports it
+- plain `docker` drivers still work; they just skip cache export/import and rely on the driver's own layer cache

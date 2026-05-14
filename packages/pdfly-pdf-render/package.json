@@ -2,8 +2,8 @@
     "name": "@pdfly/pdf-render",
     "version": "0.1.0",
     "private": true,
-    "type": "module",
     "description": "PDF.js-based page rasterisation to JPEG (browser and Node with optional canvas)",
+    "type": "module",
     "exports": {
         ".": "./src/index.ts"
     },
@@ -13,6 +13,10 @@
     "dependencies": {
         "pdfjs-dist": "^5.7.284"
     },
+    "devDependencies": {
+        "@types/node": "^25.6.0",
+        "typescript": "^6.0.3"
+    },
     "peerDependencies": {
         "canvas": "^3.2.3"
     },
@@ -20,10 +24,6 @@
         "canvas": {
             "optional": true
         }
-    },
-    "devDependencies": {
-        "@types/node": "^25.6.0",
-        "typescript": "^6.0.3"
     },
     "engines": {
         "node": ">=24.0.0"

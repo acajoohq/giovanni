@@ -75,6 +75,18 @@ pnpm --filter @pdfly/wasm build
 
 The default `build` path runs the optimized qpdf and Ghostscript Docker builds and then bundles the package. More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).
 
+The engine builds now run in parallel when you call:
+
+```bash
+pnpm --filter @pdfly/wasm build:wasm
+```
+
+If your Docker buildx driver supports local cache export, `tools/vendor/build.ts` also reuses a per-engine cache directory. You can override that cache location with:
+
+```bash
+PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @pdfly/wasm build:wasm
+```
+
 Vendor sync is intentionally simple:
 
 - pinned source archives live in `tools/vendor/upstreams.ts`
@@ -84,6 +96,7 @@ Vendor sync is intentionally simple:
 ```bash
 pnpm --filter @pdfly/wasm test
 pnpm --filter @pdfly/wasm validate
+pnpm --filter @pdfly/wasm package:check
 ```
 
 Useful collaborator commands:
@@ -148,3 +161,29 @@ pnpm --filter @pdfly/wasm smoke:ghostscript \
 ```
 
 That smoke path loads `ghostscript.js`, maps `ghostscript.wasm` with `locateFile(...)`, and calls the native `gsapi_*` rewrite wrapper that drives `pdfwrite` inside the WASM runtime.
+
+## Release notes
+
+Ghostscript is still an experimental engine in this package.
+
+- `qpdf` is the smaller, lossless structural path
+- `ghostscript` is the heavier, lossy rewrite path
+- browser runtime and output quality are content-dependent
+
+Observed behavior in this repo:
+
+- `qpdf.wasm` is roughly `1 MB`
+- `ghostscript.wasm` is materially larger at roughly `17 MB` in the packaged artifact
+- Ghostscript can take several seconds on larger image-heavy PDFs, but usually saves much more space than qpdf on scans
+
+## Licensing note
+
+Ghostscript licensing is handled by Artifex and is separate from the Apache-2.0 license used for the TypeScript package code in this repo.
+
+- Artifex describes Ghostscript/GhostPDL as dual-licensed under `AGPLv3` or a commercial license
+- their guidance also says SaaS / closed-source distribution cases generally require careful AGPL compliance review or a commercial license
+
+Read the official pages before distributing a Ghostscript-enabled build:
+
+- [Artifex licensing](https://artifex.com/licensing)
+- [Ghostscript FAQ](https://ghostscript.com/faq/)

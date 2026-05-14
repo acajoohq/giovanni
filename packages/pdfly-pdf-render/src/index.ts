@@ -3,9 +3,12 @@ import type { Canvas as NodeCanvas } from "canvas";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api.js";
 
 export class PdfRenderError extends Error {
-    constructor(message: string, options?: ErrorOptions) {
-        super(message, options);
+    declare readonly cause: unknown;
+
+    constructor(message: string, options?: { cause?: unknown }) {
+        super(message);
         this.name = "PdfRenderError";
+        this.cause = options?.cause;
         Object.setPrototypeOf(this, new.target.prototype);
     }
 }

@@ -5,11 +5,11 @@
         "build": {
             "dependsOn": ["^build"],
             "env": ["SOURCE_SHA", "GITHUB_SHA"],
-            "outputs": ["dist/**"]
+            "outputs": ["dist/**", "build/**"]
         },
         "build:lib": {
             "outputs": ["dist/**"],
-            "inputs": ["$TURBO_DEFAULT$", "build/wasm/**"]
+            "inputs": ["$TURBO_DEFAULT$", "build/**"]
         },
         "clean": {
             "cache": false
@@ -25,7 +25,7 @@
             "inputs": ["$TURBO_DEFAULT$"]
         },
         "test": {
-            "dependsOn": ["^build"],
+            "dependsOn": ["build", "^build"],
             "inputs": ["$TURBO_DEFAULT$"]
         },
         "test:watch": {

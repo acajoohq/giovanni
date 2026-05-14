@@ -42,6 +42,7 @@ Consumers installing **`@pdfly/wasm` from npm:** [packages/pdfly-wasm/README.md]
 pnpm dev                              # web
 pnpm build                            # turbo
 pnpm -F @pdfly/wasm build             # WASM + lib only
+pnpm -F @pdfly/wasm build:wasm        # qpdf + Ghostscript WASM in parallel
 pnpm -F @pdfly/wasm build:qpdf:dev    # qpdf WASM debug-ish Docker build
 pnpm -F @pdfly/wasm build:qpdf:prd    # qpdf WASM optimized Docker build
 pnpm -F @pdfly/wasm build:ghostscript:dev   # Ghostscript WASM Docker build
@@ -66,6 +67,12 @@ The lower-level Ghostscript runtime remains internal, but the package now expose
 
 - `packages/pdfly-wasm/build/qpdf`
 - `packages/pdfly-wasm/build/ghostscript`
+
+Build notes:
+
+- `build:wasm` now runs qpdf and Ghostscript in parallel
+- local BuildKit cache reuse is automatic when the active `docker buildx` driver supports local cache export
+- GitHub Actions now uses the same Docker-native vendor build path instead of bootstrapping `emsdk` and vendoring sources on the host
 
 ## License
 

@@ -121,11 +121,7 @@ async function writeCompressionReport(results: SizeResult[], skipped: SkippedRes
     // Write a markdown summary to $GITHUB_STEP_SUMMARY when running in CI
     const stepSummaryPath = process.env.GITHUB_STEP_SUMMARY;
     if (stepSummaryPath) {
-        const md: string[] = [
-            "## Compression Results\n",
-            `| File | Original | default | web | archive |`,
-            `|------|----------|---------|-----|---------|`,
-        ];
+        const md: string[] = ["## Compression Results\n", `| File | Original | default | web | archive |`, `|------|----------|---------|-----|---------|`];
 
         for (const name of allFileNames) {
             const fileResults = results.filter((r) => r.name === name);

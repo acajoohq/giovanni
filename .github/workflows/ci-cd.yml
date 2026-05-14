@@ -167,6 +167,12 @@ jobs:
                   source .cache/emsdk/emsdk_env.sh
                   pnpm run test
 
+            - name: Run pdfly-wasm tests with report
+              run: |
+                  set -euo pipefail
+                  source .cache/emsdk/emsdk_env.sh
+                  pnpm --filter @pdfly/wasm run test:report
+
             - name: Publish test report
               uses: dorny/test-reporter@v1
               if: always()

@@ -2,18 +2,13 @@
 
 Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF bytes stay on the device.
 
-**Layout:** [`apps/web`](apps/web) (main UI), [`apps/pdfly-desktop`](apps/pdfly-desktop) (Tauri), [`packages/pdfly-wasm`](packages/pdfly-wasm) (`@pdfly/wasm`), [`packages/pdfly-ui`](packages/pdfly-ui). Clone qpdf into `vendor/qpdf` (gitignored) to build WASM.
+**Layout:** [`apps/web`](apps/web) (main UI), [`apps/pdfly-desktop`](apps/pdfly-desktop) (Tauri), [`packages/pdfly-wasm`](packages/pdfly-wasm) (`@pdfly/wasm`), [`packages/pdfly-ui`](packages/pdfly-ui). Upstream PDF engines are pinned and fetched automatically into `vendor/` when needed.
 
 ## Requirements
 
 - Node.js 24+
 - pnpm 10.33+
-- Git
-- `vendor/qpdf` (clone in Setup)
-- Emscripten (`emcc`, `emcmake`, `emmake` on PATH) for `@pdfly/wasm` WASM build
-- CMake
-- Docker 23+ for the experimental Ghostscript WASM build
-- Bash (WASM build script); on Windows use `packages/pdfly-wasm/wasm/build.ps1`
+- Docker 23+ for WASM vendor builds
 - Rust for Tauri desktop build
 
 ## Add node and emsdk with mise-en-place
@@ -27,9 +22,14 @@ mise install
 
 ```bash
 pnpm install
-git clone https://github.com/qpdf/qpdf.git vendor/qpdf
 pnpm -F @pdfly/wasm build   # or: pnpm build
 pnpm dev
+```
+
+If you want to prefetch the pinned upstream sources without building yet:
+
+```bash
+pnpm -F @pdfly/wasm vendor:sync
 ```
 
 Consumers installing **`@pdfly/wasm` from npm:** [packages/pdfly-wasm/README.md](packages/pdfly-wasm/README.md).
@@ -40,6 +40,9 @@ Consumers installing **`@pdfly/wasm` from npm:** [packages/pdfly-wasm/README.md]
 pnpm dev                              # web
 pnpm build                            # turbo
 pnpm -F @pdfly/wasm build             # WASM + lib only
+pnpm -F @pdfly/wasm vendor:sync       # fetch pinned qpdf + ghostpdl sources
+pnpm -F @pdfly/wasm build:qpdf:dev    # qpdf WASM debug-ish Docker build
+pnpm -F @pdfly/wasm build:qpdf:prd    # qpdf WASM optimized Docker build
 pnpm -F @pdfly/wasm build:ghostscript:dev   # Ghostscript WASM spike via Docker
 pnpm -F @pdfly/wasm build:ghostscript:prd   # optimized Ghostscript WASM spike via Docker
 pnpm -F pdfly-desktop run tauri dev   # desktop
@@ -53,12 +56,12 @@ pnpm validate
 
 The first Ghostscript milestone is Docker-first and file-based, similar to the build orchestration used by `ffmpeg.wasm`.
 
-- source: `vendor/ghostpdl`
+- source: pinned archive synced into `vendor/ghostpdl`
 - toolchain: `emscripten/emsdk` inside Docker
 - output: `packages/pdfly-wasm/build/ghostscript`
 - current goal: produce `ghostscript.js` + `ghostscript.wasm` that can later be driven through Emscripten FS and CLI-style args
 
-This is intentionally separate from the qpdf build and does not yet expose a public TypeScript API. The flow is Dockerfile-centric; there is no extra Node wrapper around it.
+This is intentionally separate from the qpdf build and does not yet expose a public TypeScript API. The flow is Dockerfile-centric, and both upstream engines now follow the same pinned-vendor plus Docker-build model.
 
 ## License
 

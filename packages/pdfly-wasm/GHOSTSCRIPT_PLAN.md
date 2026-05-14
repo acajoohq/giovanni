@@ -6,6 +6,8 @@ This file is the working plan and progress ledger for the Ghostscript integratio
 
 Completed:
 
+- [x] Pinned vendor bootstrap for `qpdf` and `ghostpdl`
+- [x] Unified Docker-first build entrypoint for both upstream engines
 - [x] Docker-first Ghostscript WASM build
 - [x] PDF-focused build surface (`--without-pcl`, `--without-xps`)
 - [x] `ghostscript.js` + `ghostscript.wasm` artifact export

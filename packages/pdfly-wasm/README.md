@@ -9,7 +9,7 @@ pnpm add @pdfly/wasm
 # npm install @pdfly/wasm
 ```
 
-Needs **Node 24+** for local dev ([`engines`](package.json)).
+Needs **Node 24+** for local dev ([`engines`](package.json)). Docker is the build toolchain for the vendored WASM engines.
 
 ## Usage
 
@@ -42,21 +42,30 @@ import { renderPdfPagesToJpg } from "@pdfly/wasm/render";
 
 ## Build from this monorepo
 
-qpdf lives at repo root **`vendor/qpdf`**. From the repo root, with Emscripten + CMake on PATH:
+Pinned upstream sources are synced into repo-root `vendor/` automatically. From the repo root:
 
 ```bash
-git clone https://github.com/qpdf/qpdf.git vendor/qpdf
+pnpm --filter @pdfly/wasm vendor:sync
 pnpm --filter @pdfly/wasm build
 ```
 
-Emscripten: [emsdk](https://github.com/emscripten-core/emsdk). First WASM build may download ports — network once. More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).
+The default `build` path runs the optimized qpdf Docker build and then bundles the package. More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).
 
 ```bash
 pnpm --filter @pdfly/wasm test
 pnpm --filter @pdfly/wasm validate
 ```
 
-`src/` — TS API; `wasm/` — CMake/Emscripten; `dist/` — tsdown output (includes `qpdf.js` / `qpdf.wasm`). All processing is local.
+Useful collaborator commands:
+
+```bash
+pnpm --filter @pdfly/wasm build:qpdf:dev
+pnpm --filter @pdfly/wasm build:qpdf:prd
+pnpm --filter @pdfly/wasm build:ghostscript:dev
+pnpm --filter @pdfly/wasm build:ghostscript:prd
+```
+
+`src/` — TS API; `wasm/` — vendor build configs; `dist/` — tsdown output (includes `qpdf.js` / `qpdf.wasm`). All processing is local once the pinned sources have been synced.
 
 ## Experimental Ghostscript WASM Build
 
@@ -65,13 +74,14 @@ The Ghostscript port is being built as a separate Docker-driven spike first, bef
 From the repo root:
 
 ```bash
-git clone https://github.com/ArtifexSoftware/ghostpdl.git vendor/ghostpdl
+pnpm --filter @pdfly/wasm vendor:sync
 pnpm --filter @pdfly/wasm build:ghostscript:dev
 ```
 
 That flow:
 
 - uses `packages/pdfly-wasm/wasm/docker/ghostscript.Dockerfile`
+- uses a pinned `ghostpdl` source archive synced into `vendor/ghostpdl`
 - keeps the Ghostscript build logic inside the Dockerfile
 - installs autotools inside the container
 - runs `autogen.sh`, `emconfigure ./configure`, and `emmake make`

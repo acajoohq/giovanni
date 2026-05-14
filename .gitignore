@@ -48,7 +48,7 @@ lerna-debug.log*
 .env
 .env.local
 .agents/skills/
-vendor/qpdf/
+vendor/
 packages/pdfly-wasm/wasm/cmake-build/
 .claude/settings.local.json
 dogfood-output/

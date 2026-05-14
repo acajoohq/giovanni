@@ -96,9 +96,7 @@ async function writeCompressionReport(results: SizeResult[], skipped: SkippedRes
         const originalBytes = fileResults[0]?.originalBytes ?? 0;
         const allAborted = fileSkipped.length > 0 && fileResults.length === 0;
 
-        lines.push(
-            `  <file name="${escapeXml(name)}" originalBytes="${originalBytes}"${allAborted ? ' status="wasm-abort"' : ""}>`,
-        );
+        lines.push(`  <file name="${escapeXml(name)}" originalBytes="${originalBytes}"${allAborted ? ' status="wasm-abort"' : ""}>`);
 
         for (const preset of ["default", "web", "archive"] as const) {
             const r = fileResults.find((x) => x.preset === preset);

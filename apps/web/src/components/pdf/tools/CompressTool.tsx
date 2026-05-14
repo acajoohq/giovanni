@@ -210,10 +210,12 @@ export function CompressTool() {
         scheduleRecompress(engine, nextSettings, ghostscriptSettings);
     };
 
-    const updateGhostscriptSettings = (patch: Partial<GhostscriptSettings>) => {
+    const updateGhostscriptSettings = (patch: Partial<GhostscriptSettings>, options?: { recompress?: boolean }) => {
         const nextSettings = { ...ghostscriptSettings, ...patch };
         setGhostscriptSettings(nextSettings);
-        scheduleRecompress(engine, qpdfSettings, nextSettings);
+        if (options?.recompress ?? true) {
+            scheduleRecompress(engine, qpdfSettings, nextSettings);
+        }
     };
 
     const selectEngine = (nextEngine: CompressionEngine) => {
@@ -380,14 +382,17 @@ export function CompressTool() {
                                 label={t("compress.sidebar.downsampleColor")}
                                 onChange={(event) => updateGhostscriptSettings({ downsampleColorImages: event.currentTarget.checked })}
                             />
-                            <SidebarField label={t("compress.sidebar.colorResolution")}>
+                            <SidebarField className="-mt-2 mb-2" label={t("compress.sidebar.colorResolution")}>
                                 <SidebarRange
                                     max={300}
                                     min={36}
                                     step={6}
                                     value={ghostscriptSettings.colorImageResolution}
                                     valueLabel={`${ghostscriptSettings.colorImageResolution}`}
-                                    onValueChange={(colorImageResolution) => updateGhostscriptSettings({ colorImageResolution })}
+                                    onValueChange={(colorImageResolution) =>
+                                        updateGhostscriptSettings({ colorImageResolution }, { recompress: false })
+                                    }
+                                    onValueCommitted={(colorImageResolution: number) => updateGhostscriptSettings({ colorImageResolution })}
                                 />
                             </SidebarField>
                             <SidebarCheckbox
@@ -395,14 +400,17 @@ export function CompressTool() {
                                 label={t("compress.sidebar.downsampleGray")}
                                 onChange={(event) => updateGhostscriptSettings({ downsampleGrayImages: event.currentTarget.checked })}
                             />
-                            <SidebarField label={t("compress.sidebar.grayResolution")}>
+                            <SidebarField className="-mt-2 mb-2" label={t("compress.sidebar.grayResolution")}>
                                 <SidebarRange
                                     max={300}
                                     min={36}
                                     step={6}
                                     value={ghostscriptSettings.grayImageResolution}
                                     valueLabel={`${ghostscriptSettings.grayImageResolution}`}
-                                    onValueChange={(grayImageResolution) => updateGhostscriptSettings({ grayImageResolution })}
+                                    onValueChange={(grayImageResolution) =>
+                                        updateGhostscriptSettings({ grayImageResolution }, { recompress: false })
+                                    }
+                                    onValueCommitted={(grayImageResolution: number) => updateGhostscriptSettings({ grayImageResolution })}
                                 />
                             </SidebarField>
                             <SidebarField label={t("compress.sidebar.jpegQuality")}>
@@ -411,7 +419,8 @@ export function CompressTool() {
                                     min={0}
                                     value={ghostscriptSettings.jpegQuality}
                                     valueLabel={ghostscriptSettings.jpegQuality}
-                                    onValueChange={(jpegQuality) => updateGhostscriptSettings({ jpegQuality })}
+                                    onValueChange={(jpegQuality) => updateGhostscriptSettings({ jpegQuality }, { recompress: false })}
+                                    onValueCommitted={(jpegQuality: number) => updateGhostscriptSettings({ jpegQuality })}
                                 />
                             </SidebarField>
                         </SidebarContent>

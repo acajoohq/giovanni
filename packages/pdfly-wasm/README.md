@@ -178,7 +178,11 @@ Observed behavior in this repo:
 
 ## Licensing note
 
-Ghostscript licensing is handled by Artifex and is separate from the Apache-2.0 license used for the TypeScript package code in this repo.
+Ghostscript licensing is handled by Artifex and is not covered by the Apache-only terms that apply to the package-authored TypeScript code.
+
+This published package includes bundled Ghostscript artifacts, so its package metadata is declared as:
+
+- `(Apache-2.0 AND AGPL-3.0-or-later)`
 
 - Artifex describes Ghostscript/GhostPDL as dual-licensed under `AGPLv3` or a commercial license
 - their guidance also says SaaS / closed-source distribution cases generally require careful AGPL compliance review or a commercial license

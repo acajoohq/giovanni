@@ -14,7 +14,7 @@
     "bugs": {
         "url": "https://github.com/MatteoGauthier/qpdf-wasm/issues"
     },
-    "license": "Apache-2.0",
+    "license": "(Apache-2.0 AND AGPL-3.0-or-later)",
     "author": "qpdf contributors",
     "repository": {
         "type": "git",
@@ -24,7 +24,8 @@
     "files": [
         "dist",
         "README.md",
-        "LICENSE"
+        "LICENSE",
+        "LICENSE.APACHE"
     ],
     "type": "module",
     "sideEffects": false,

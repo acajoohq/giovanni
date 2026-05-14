@@ -54,21 +54,51 @@ export const fr: Translations = {
         toolTitle: "Compresser PDF",
         emptyTitle: "Déposez un PDF à compresser",
         emptyDescription: "Traitement sécurisé et hors ligne.",
+        engine: {
+            header: "Moteur",
+            qpdf: {
+                label: "qpdf",
+                description: "Réécriture structurelle sans perte. Idéal si vous voulez réduire le PDF sans retoucher les images intégrées.",
+            },
+            ghostscript: {
+                label: "Ghostscript",
+                description: "Réécriture avec perte. Idéal pour les scans ou les PDF riches en images.",
+            },
+        },
         preset: {
             header: "Preset",
+        },
+        qpdfPreset: {
             default: { label: "Défaut", description: "Réécriture sans perte" },
             web: { label: "Web", description: "Linéariser pour le streaming" },
             archive: { label: "Archive", description: "Nettoyage structurel approfondi" },
         },
+        ghostscriptPreset: {
+            default: { label: "Défaut", description: "Réécriture Ghostscript équilibrée" },
+            screen: { label: "Écran", description: "Réduction agressive pour le partage à l'écran" },
+            ebook: { label: "eBook", description: "Sortie plus légère avec des images plus lisibles que le mode écran" },
+            printer: { label: "Imprimante", description: "Résolution plus élevée pour une impression standard" },
+            prepress: { label: "Prépresse", description: "Qualité maximale avec une sortie plus lourde" },
+        },
         sidebar: {
-            compression: "Compression",
+            advanced: "Avancé",
             level: "Niveau",
             decode: "Décodage",
             objectStreams: "Flux d'objets",
             streamOptions: "Options de flux",
+            linearize: "Linéariser",
             recompressFlate: "Recompresser flate",
             compressPages: "Compresser les pages",
             removeUnused: "Supprimer inutilisés",
+            imageSettings: "Paramètres d'image",
+            outputSettings: "Paramètres de sortie",
+            compatibility: "Compatibilité",
+            colorStrategy: "Stratégie couleur",
+            downsampleColor: "Rééchantillonner les images couleur",
+            downsampleGray: "Rééchantillonner les images en niveaux de gris",
+            colorResolution: "PPP couleur",
+            grayResolution: "PPP gris",
+            jpegQuality: "Qualité JPEG",
         },
         decodeLevel: {
             none: "Aucun",
@@ -81,11 +111,23 @@ export const fr: Translations = {
             preserve: "Conserver",
             disable: "Désactiver",
         },
+        colorStrategy: {
+            preserve: "Conserver",
+            gray: "Niveaux de gris",
+            rgb: "RVB",
+            cmyk: "CMJN",
+            deviceIndependent: "Indépendant du périphérique",
+        },
         metrics: {
             saved: "Économisé",
+            engine: "Moteur",
         },
         actions: {
             replace: "Remplacer",
+        },
+        notes: {
+            qpdf: "qpdf garde une structure proche de l'original. Il ne recompresse pas agressivement les images intégrées.",
+            ghostscript: "Ghostscript réécrit tout le PDF et réduit souvent beaucoup plus les scans. Le rendu peut changer et certains fichiers peuvent devenir plus lourds.",
         },
         status: {
             compressing: "Compression en cours...",

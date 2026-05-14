@@ -23,6 +23,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         ],
     }),
     component: RootComponent,
+    errorComponent: RootErrorPage,
     // This only triggers for truly malformed paths that bypass $locale entirely.
     // It renders outside RootComponent so it must be self-contained.
     notFoundComponent: RootNotFoundPage,
@@ -69,6 +70,28 @@ function RootNotFoundPage() {
             <body>
                 <main className="mx-auto max-w-lg p-8">
                     <h1 className="text-2xl font-semibold tracking-tight text-foreground">Not found</h1>
+                    <Link className="mt-4 inline-flex text-brand hover:underline" to="/">
+                        Back home
+                    </Link>
+                </main>
+                <Scripts />
+            </body>
+        </html>
+    );
+}
+
+function RootErrorPage({ error }: Readonly<{ error: unknown }>) {
+    const message = error instanceof Error ? error.message : "Unknown application error";
+
+    return (
+        <html className="dark bg-[#0a0a0a] antialiased">
+            <head>
+                <HeadContent />
+            </head>
+            <body>
+                <main className="mx-auto max-w-lg p-8">
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Something went wrong</h1>
+                    <p className="mt-3 text-sm text-muted-foreground">{message}</p>
                     <Link className="mt-4 inline-flex text-brand hover:underline" to="/">
                         Back home
                     </Link>

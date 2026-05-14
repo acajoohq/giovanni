@@ -34,7 +34,7 @@ const loader = createSingletonEmscriptenModuleLoader<GhostscriptWasmModule, Ghos
                     return new URL("./ghostscript.wasm", import.meta.url).href;
                 }
 
-                return new URL(`./${path}`, import.meta.url).href;
+                return path;
             },
         };
     },

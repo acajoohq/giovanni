@@ -52,21 +52,51 @@
         toolTitle: "Compress PDF",
         emptyTitle: "Drop a PDF to compress",
         emptyDescription: "Secure, offline processing.",
+        engine: {
+            header: "Engine",
+            qpdf: {
+                label: "qpdf",
+                description: "Lossless structural rewrite. Best when you want smaller files without changing embedded images.",
+            },
+            ghostscript: {
+                label: "Ghostscript",
+                description: "Lossy rewrite. Best for scanned or image-heavy PDFs where image resampling matters.",
+            },
+        },
         preset: {
             header: "Preset",
+        },
+        qpdfPreset: {
             default: { label: "Default", description: "Safe lossless rewrite" },
             web: { label: "Web", description: "Linearize for streaming" },
             archive: { label: "Archive", description: "Deep structural cleanup" },
         },
+        ghostscriptPreset: {
+            default: { label: "Default", description: "Balanced Ghostscript rewrite" },
+            screen: { label: "Screen", description: "Aggressive downsampling for on-screen sharing" },
+            ebook: { label: "eBook", description: "Smaller output with more readable images than screen" },
+            printer: { label: "Printer", description: "Higher-resolution output for office printing" },
+            prepress: { label: "Prepress", description: "Highest-quality rewrite with larger output" },
+        },
         sidebar: {
-            compression: "Compression",
+            advanced: "Advanced",
             level: "Level",
             decode: "Decode",
             objectStreams: "Object streams",
             streamOptions: "Stream Options",
+            linearize: "Linearize",
             recompressFlate: "Recompress flate",
             compressPages: "Compress pages",
             removeUnused: "Remove unused",
+            imageSettings: "Image Settings",
+            outputSettings: "Output Settings",
+            compatibility: "Compatibility",
+            colorStrategy: "Color strategy",
+            downsampleColor: "Downsample color images",
+            downsampleGray: "Downsample grayscale images",
+            colorResolution: "Color DPI",
+            grayResolution: "Gray DPI",
+            jpegQuality: "JPEG quality",
         },
         decodeLevel: {
             none: "None",
@@ -79,11 +109,23 @@
             preserve: "Preserve",
             disable: "Disable",
         },
+        colorStrategy: {
+            preserve: "Preserve",
+            gray: "Gray",
+            rgb: "RGB",
+            cmyk: "CMYK",
+            deviceIndependent: "Device-independent",
+        },
         metrics: {
             saved: "Saved",
+            engine: "Engine",
         },
         actions: {
             replace: "Replace",
+        },
+        notes: {
+            qpdf: "qpdf keeps the PDF structurally close to the original. It will not aggressively recompress embedded images.",
+            ghostscript: "Ghostscript rewrites the whole PDF and can reduce scans much more aggressively. Output can change visually and some files may become larger.",
         },
         status: {
             compressing: "Compressing PDF...",

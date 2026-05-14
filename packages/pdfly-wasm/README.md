@@ -46,6 +46,11 @@ const ghostscriptResult = await compressPdf(input, {
 });
 ```
 
+In the web app, the compression tool now exposes both engines directly:
+
+- `qpdf` stays the default lossless path
+- `ghostscript` is available as the lossy rewrite path with image-oriented controls
+
 ## QPDF Scope
 
 QPDF is a lossless PDF structural tool. It is a good fit for rewriting PDFs, object streams, flate recompression, linearization, inspection, validation, splitting, merging, and page organization. It does not resample or re-encode images, so it is not an aggressive lossy image compressor.

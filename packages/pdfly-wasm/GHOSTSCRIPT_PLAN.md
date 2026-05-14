@@ -21,6 +21,7 @@ Completed:
 - [x] Native Ghostscript `gsapi_*` wrapper under `vendor-build/ghostscript/bindings/emscripten/`
 - [x] Default package build now produces both qpdf and Ghostscript WASM artifacts
 - [x] Ghostscript module surface normalized to the same loader/version contract as qpdf
+- [x] Web compression UI can now switch between qpdf and Ghostscript with engine-specific controls
 
 Current proof point:
 
@@ -149,11 +150,11 @@ Goal:
 
 Todos:
 
-- [ ] add engine selector to the web compression UI
-- [ ] keep qpdf as the default path initially
-- [ ] show Ghostscript presets cleanly
-- [ ] add advanced controls only where they are stable enough
-- [ ] explain that Ghostscript is lossy/rewrite-oriented
+- [x] add engine selector to the web compression UI
+- [x] keep qpdf as the default path initially
+- [x] show Ghostscript presets cleanly
+- [x] add advanced controls only where they are stable enough
+- [x] explain that Ghostscript is lossy/rewrite-oriented
 
 Checkpoint:
 

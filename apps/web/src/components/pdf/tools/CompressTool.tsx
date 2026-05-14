@@ -71,6 +71,7 @@ export function CompressTool() {
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
+    const [sourceData, setSourceData] = useState<Uint8Array | null>(null);
     const [previewPage, setPreviewPage] = useState(1);
     const [previewPageCount, setPreviewPageCount] = useState(0);
     const [engine, setEngine] = useState<CompressionEngine>("qpdf");
@@ -172,14 +173,14 @@ export function CompressTool() {
 
     const processFile = async (
         nextFile: File,
+        nextSourceData: Uint8Array,
         nextEngine: CompressionEngine = engine,
         nextQpdfSettings: QpdfSettings = qpdfSettings,
         nextGhostscriptSettings: GhostscriptSettings = ghostscriptSettings,
     ) => {
         await runJob({
             execute: async () => {
-                const buffer = await nextFile.arrayBuffer();
-                return compressPdf(buffer, buildCompressionOptions(nextEngine, nextQpdfSettings, nextGhostscriptSettings));
+                return compressPdf(nextSourceData, buildCompressionOptions(nextEngine, nextQpdfSettings, nextGhostscriptSettings));
             },
             errorMessage: t("compress.status.failed"),
             successStatus: (nextResult) =>
@@ -190,8 +191,14 @@ export function CompressTool() {
     };
 
     const debouncedProcessFile = useDebouncedCallback(
-        (nextFile: File, nextEngine: CompressionEngine, nextQpdfSettings: QpdfSettings, nextGhostscriptSettings: GhostscriptSettings) => {
-            void processFile(nextFile, nextEngine, nextQpdfSettings, nextGhostscriptSettings);
+        (
+            nextFile: File,
+            nextSourceData: Uint8Array,
+            nextEngine: CompressionEngine,
+            nextQpdfSettings: QpdfSettings,
+            nextGhostscriptSettings: GhostscriptSettings,
+        ) => {
+            void processFile(nextFile, nextSourceData, nextEngine, nextQpdfSettings, nextGhostscriptSettings);
         },
         PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS,
     );
@@ -201,12 +208,12 @@ export function CompressTool() {
         nextQpdfSettings: QpdfSettings = qpdfSettings,
         nextGhostscriptSettings: GhostscriptSettings = ghostscriptSettings,
     ) => {
-        if (!file) {
+        if (!file || !sourceData) {
             debouncedProcessFile.cancel();
             return;
         }
 
-        debouncedProcessFile(file, nextEngine, nextQpdfSettings, nextGhostscriptSettings);
+        debouncedProcessFile(file, sourceData, nextEngine, nextQpdfSettings, nextGhostscriptSettings);
     };
 
     const updateQpdfSettings = (patch: Partial<QpdfSettings>) => {
@@ -234,7 +241,7 @@ export function CompressTool() {
         updateGhostscriptSettings({ preset });
     };
 
-    const handleFiles = (files: File[]) => {
+    const handleFiles = async (files: File[]) => {
         const nextFile = findFirstPdfFile(files);
 
         if (!nextFile) {
@@ -242,12 +249,19 @@ export function CompressTool() {
             return;
         }
 
-        reset();
-        debouncedProcessFile.cancel();
-        setPreviewPage(1);
-        setPreviewPageCount(0);
-        setFile(nextFile);
-        void processFile(nextFile);
+        try {
+            const nextSourceData = new Uint8Array(await nextFile.arrayBuffer());
+
+            reset();
+            debouncedProcessFile.cancel();
+            setPreviewPage(1);
+            setPreviewPageCount(0);
+            setFile(nextFile);
+            setSourceData(nextSourceData);
+            void processFile(nextFile, nextSourceData);
+        } catch (error) {
+            setStatus({ tone: "error", message: error instanceof Error ? error.message : t("common.selectPdf") });
+        }
     };
 
     const updatePreviewPage = (nextPage: number | ((currentPage: number) => number)) => {
@@ -455,7 +469,7 @@ export function CompressTool() {
         <div className="relative h-full w-full">
             <ComparisonSlider
                 after={result ? <PdfPreview data={result.data} page={previewPage} showControls={false} onPageChange={updatePreviewPage} /> : undefined}
-                before={<PdfPreview file={file} page={previewPage} showControls={false} onPageChange={updatePreviewPage} onPageCountChange={setPreviewPageCount} />}
+                before={<PdfPreview data={sourceData} page={previewPage} showControls={false} onPageChange={updatePreviewPage} onPageCountChange={setPreviewPageCount} />}
                 isProcessing={isWorking}
             />
             {previewPageCount > 1 && (
@@ -527,7 +541,7 @@ export function CompressTool() {
                 accept="application/pdf,.pdf"
                 type="file"
                 onChange={(event) => {
-                    handleFiles(Array.from(event.currentTarget.files ?? []));
+                    void handleFiles(Array.from(event.currentTarget.files ?? []));
                     event.currentTarget.value = "";
                 }}
             />

@@ -7,7 +7,7 @@ export interface EmscriptenModuleLoadOptions<TModule, TModuleOptions = undefined
     resolveFrom: string;
     moduleFileName: string;
     exportNames?: string[];
-    createModuleOptions?: () => TModuleOptions;
+    createModuleOptions?: (moduleUrl: string) => TModuleOptions;
     normalizeModule?: (module: unknown) => TModule;
     createInitError: (error: unknown) => Error;
 }
@@ -58,7 +58,7 @@ export function createSingletonEmscriptenModuleLoader<TModule, TModuleOptions = 
             const module =
                 options.createModuleOptions === undefined
                     ? await createModule()
-                    : await createModule(options.createModuleOptions());
+                    : await createModule(options.createModuleOptions(moduleUrl));
 
             return options.normalizeModule ? options.normalizeModule(module) : (module as TModule);
         } catch (error) {

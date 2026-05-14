@@ -26,12 +26,14 @@ const loader = createSingletonEmscriptenModuleLoader<GhostscriptWasmModule, Ghos
     moduleFileName: "./ghostscript.js",
     exportNames: ["default", "createGhostscriptModule"],
     normalizeModule,
-    createModuleOptions() {
+    createModuleOptions(moduleUrl) {
+        const wasmUrl = new URL("./ghostscript.wasm", moduleUrl).href;
+
         return {
             noInitialRun: true,
             locateFile(path) {
-                if (path === "gs.wasm") {
-                    return new URL("./ghostscript.wasm", import.meta.url).href;
+                if (path === "gs.wasm" || path === "ghostscript.wasm") {
+                    return wasmUrl;
                 }
 
                 return path;

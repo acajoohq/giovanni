@@ -1,7 +1,11 @@
-﻿import i18next from "i18next";
+import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
 import { en } from "@/locales/en";
 import { fr } from "@/locales/fr";
+
+const SUPPORTED_LOCALES = ["en", "fr"] as const;
+type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+const DEFAULT_LOCALE: SupportedLocale = "en";
 
 const resources = {
     en: { translation: en },
@@ -14,11 +18,39 @@ const baseConfig = {
     interpolation: { escapeValue: false },
 } as const;
 
+function isSupportedLocale(locale: string): locale is SupportedLocale {
+    return (SUPPORTED_LOCALES as readonly string[]).includes(locale);
+}
+
+function normalizeLocale(locale: string | undefined) {
+    if (locale && isSupportedLocale(locale)) {
+        return locale;
+    }
+
+    return DEFAULT_LOCALE;
+}
+
+function resolveClientLocale() {
+    if (typeof document === "undefined") {
+        return DEFAULT_LOCALE;
+    }
+
+    const documentLocale = document.documentElement.lang.trim().toLowerCase();
+
+    if (isSupportedLocale(documentLocale)) {
+        return documentLocale;
+    }
+
+    const pathnameLocale = window.location.pathname.split("/")[1]?.toLowerCase();
+
+    return normalizeLocale(pathnameLocale);
+}
+
 // Client singleton — initialized once, safe (single user, no concurrency)
 const clientI18n = i18next.createInstance();
 export const i18nReady = clientI18n.use(initReactI18next).init({
     ...baseConfig,
-    lng: "en",
+    lng: resolveClientLocale(),
 });
 export default clientI18n;
 
@@ -26,11 +58,11 @@ export default clientI18n;
  * SSR factory: creates a fresh, isolated i18n instance per request.
  * Resources are bundled so initialization is synchronous — no backend needed.
  */
-export function createI18nInstance(locale = "en") {
+export function createI18nInstance(locale = DEFAULT_LOCALE) {
     const instance = i18next.createInstance();
     instance.use(initReactI18next).init({
         ...baseConfig,
-        lng: locale,
+        lng: normalizeLocale(locale),
     });
     return instance;
 }

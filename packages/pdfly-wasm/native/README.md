@@ -72,6 +72,8 @@ Keep tweaks explicit and narrow.
 - build mode:
     - `qpdf`: `dev | prd`
     - `ghostscript`: `dev | prd`
+- qpdf parallelism:
+    - `PDFLY_QPDF_JOBS=<n>`
 - Ghostscript parallelism:
     - `PDFLY_GHOSTSCRIPT_JOBS=<n>`
 - Docker BuildKit cache root:
@@ -80,6 +82,7 @@ Keep tweaks explicit and narrow.
 Example:
 
 ```bash
+PDFLY_QPDF_JOBS=2 pnpm --filter @pdfly/wasm build:qpdf:prd
 PDFLY_GHOSTSCRIPT_JOBS=4 pnpm --filter @pdfly/wasm build:ghostscript:prd
 PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @pdfly/wasm build:wasm
 ```

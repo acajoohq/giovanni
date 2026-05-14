@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { access, mkdir, rename, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { VENDOR_PINS } from "./upstreams.ts";
+import { VENDOR_PINS } from "./upstreams.js";
 
 type BuildMode = "dev" | "prd";
 type BuildTarget = "qpdf" | "ghostscript";
@@ -29,6 +29,7 @@ const BUILD_TARGETS: Record<BuildTarget, BuildTargetConfig> = {
                 QPDF_VERSION: VENDOR_PINS.qpdf.version,
                 QPDF_ARCHIVE_URL: VENDOR_PINS.qpdf.archiveUrl,
                 QPDF_SHA256: VENDOR_PINS.qpdf.sha256 ?? "",
+                QPDF_JOBS: process.env.PDFLY_QPDF_JOBS ?? "",
             };
         },
     },
@@ -41,7 +42,7 @@ const BUILD_TARGETS: Record<BuildTarget, BuildTargetConfig> = {
                 GHOSTPDL_VERSION: VENDOR_PINS.ghostpdl.version,
                 GHOSTPDL_ARCHIVE_URL: VENDOR_PINS.ghostpdl.archiveUrl,
                 GHOSTPDL_SHA256: VENDOR_PINS.ghostpdl.sha256 ?? "",
-                JOBS: process.env.PDFLY_GHOSTSCRIPT_JOBS ?? "1",
+                JOBS: process.env.PDFLY_GHOSTSCRIPT_JOBS ?? "",
             };
         },
     },

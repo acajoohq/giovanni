@@ -6,6 +6,7 @@ ARG QPDF_BUILD_MODE=prd
 ARG QPDF_VERSION
 ARG QPDF_ARCHIVE_URL
 ARG QPDF_SHA256=""
+ARG QPDF_JOBS=""
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -21,7 +22,7 @@ RUN apt-get update && \
 
 WORKDIR /src
 
-COPY packages/pdfly-wasm/native /src/packages/pdfly-wasm/native
+COPY packages/pdfly-wasm/native/qpdf /src/packages/pdfly-wasm/native/qpdf
 
 RUN set -eux; \
     mkdir -p /src/vendor/qpdf; \
@@ -47,6 +48,7 @@ RUN set -eux; \
     export SOURCE_DIR=/src/packages/pdfly-wasm/native/qpdf; \
     export BUILD_DIR=/tmp/qpdf-build; \
     export OUT_DIR=/out; \
+    export BUILD_JOBS="${QPDF_JOBS:-$(nproc)}"; \
     mkdir -p "$BUILD_DIR" "$OUT_DIR"; \
     cd "$BUILD_DIR"; \
     emcmake cmake \
@@ -54,7 +56,7 @@ RUN set -eux; \
         -DCMAKE_TOOLCHAIN_FILE="$SOURCE_DIR/toolchains/emscripten.cmake" \
         -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
         "$SOURCE_DIR"; \
-    cmake --build . --parallel "$(nproc)"; \
+    cmake --build . --parallel "$BUILD_JOBS"; \
     test -f "$BUILD_DIR/qpdf.js"; \
     test -f "$BUILD_DIR/qpdf.wasm"; \
     cp "$BUILD_DIR/qpdf.js" "$OUT_DIR/qpdf.js"; \

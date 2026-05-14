@@ -6,7 +6,7 @@ ARG GHOSTSCRIPT_BUILD_MODE=dev
 ARG GHOSTPDL_VERSION
 ARG GHOSTPDL_ARCHIVE_URL
 ARG GHOSTPDL_SHA256=""
-ARG JOBS=1
+ARG JOBS=""
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -27,7 +27,7 @@ RUN apt-get update && \
 
 WORKDIR /src
 
-COPY packages/pdfly-wasm/native /src/packages/pdfly-wasm/native
+COPY packages/pdfly-wasm/native/ghostscript /src/packages/pdfly-wasm/native/ghostscript
 
 RUN set -eux; \
     mkdir -p /src/vendor/ghostpdl; \
@@ -56,6 +56,7 @@ RUN set -eux; \
     export BINDINGS_DIR=/src/packages/pdfly-wasm/native/ghostscript/bindings/emscripten; \
     export OUT_DIR=/out; \
     export HOST_TRIPLE=wasm32-unknown-emscripten; \
+    export BUILD_JOBS="${JOBS:-1}"; \
     mkdir -p "$OUT_DIR"; \
     cd "$SOURCE_DIR"; \
     NOCONFIGURE=1 ./autogen.sh; \
@@ -92,7 +93,7 @@ RUN set -eux; \
         --without-xps \
         --without-x; \
     export BUILD_LOG=/tmp/ghostscript-build.log; \
-    if ! emmake make -j"$JOBS" libgs >"$BUILD_LOG" 2>&1; then \
+    if ! emmake make -j"$BUILD_JOBS" libgs >"$BUILD_LOG" 2>&1; then \
         tail -n 200 "$BUILD_LOG"; \
         exit 1; \
     fi; \

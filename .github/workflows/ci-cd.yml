@@ -17,6 +17,8 @@ permissions:
 env:
     TURBO_TELEMETRY_DISABLED: "1"
     PDFLY_DOCKER_CACHE_ROOT: .tmp/docker-buildx-cache
+    PDFLY_QPDF_JOBS: "2"
+    PDFLY_GHOSTSCRIPT_JOBS: "2"
     # pull request workflows default to refs/pull/n/merge; use head so builds/previews match the branch
     SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
@@ -48,13 +50,11 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v6
               with:
+                  node-version-file: .node-version
                   cache: pnpm
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
-
-            - name: Setup Docker Buildx
-              uses: docker/setup-buildx-action@v3
 
             - name: Cache Turbo
               uses: actions/cache@v4
@@ -94,13 +94,21 @@ jobs:
             - name: Setup Docker Buildx
               uses: docker/setup-buildx-action@v3
 
-            - name: Cache Docker Buildx layers
+            - name: Cache qpdf Buildx layers
               uses: actions/cache@v4
               with:
-                  path: .tmp/docker-buildx-cache
-                  key: docker-buildx-${{ runner.os }}-${{ hashFiles('packages/pdfly-wasm/package.json', 'packages/pdfly-wasm/native/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
+                  path: .tmp/docker-buildx-cache/qpdf-prd
+                  key: docker-buildx-qpdf-${{ runner.os }}-${{ hashFiles('packages/pdfly-wasm/native/docker/qpdf.Dockerfile', 'packages/pdfly-wasm/native/qpdf/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
                   restore-keys: |
-                      docker-buildx-${{ runner.os }}-
+                      docker-buildx-qpdf-${{ runner.os }}-
+
+            - name: Cache Ghostscript Buildx layers
+              uses: actions/cache@v4
+              with:
+                  path: .tmp/docker-buildx-cache/ghostscript-prd
+                  key: docker-buildx-ghostscript-${{ runner.os }}-${{ hashFiles('packages/pdfly-wasm/native/docker/ghostscript.Dockerfile', 'packages/pdfly-wasm/native/ghostscript/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
+                  restore-keys: |
+                      docker-buildx-ghostscript-${{ runner.os }}-
 
             - name: Cache Turbo
               uses: actions/cache@v4

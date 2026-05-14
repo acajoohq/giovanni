@@ -17,7 +17,19 @@ interface OrganizePageCardProps {
     onDelete: () => void;
 }
 
-export function OrganizePageCard({ originalIndex, currentIndex, pageCount, pageData, isDragSource, onDragStart, onDragOver, onDrop, onDragEnd, onMove, onDelete }: OrganizePageCardProps) {
+export function OrganizePageCard({
+    originalIndex,
+    currentIndex,
+    pageCount,
+    pageData,
+    isDragSource,
+    onDragStart,
+    onDragOver,
+    onDrop,
+    onDragEnd,
+    onMove,
+    onDelete,
+}: OrganizePageCardProps) {
     const orderChanged = originalIndex !== currentIndex;
 
     return (

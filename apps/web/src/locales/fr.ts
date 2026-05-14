@@ -193,6 +193,7 @@ export const fr: Translations = {
         pageLabelWas: "(était {{original}})",
         moveUp: "Monter la page {{page}}",
         moveDown: "Descendre la page {{page}}",
+        deletePage: "Supprimer la page {{page}}",
         actions: {
             applyOrder: "Appliquer l'ordre",
             applyNoChanges: "Appliquer (aucun changement)",

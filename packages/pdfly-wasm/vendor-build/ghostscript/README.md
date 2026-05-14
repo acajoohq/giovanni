@@ -5,7 +5,8 @@ This directory is reserved for Ghostscript-specific native build definitions tha
 Current status:
 
 - Docker recipe exists at `vendor-build/docker/ghostscript.Dockerfile`
-- no custom Emscripten binding layer exists yet
+- reserved Emscripten binding room exists at `vendor-build/ghostscript/bindings/emscripten/`
+- no custom native Ghostscript wrapper exists yet
 - current Ghostscript proof runs through CLI-style `callMain(...)` and MEMFS
 
 When Ghostscript needs a custom native binding layer, put it here:

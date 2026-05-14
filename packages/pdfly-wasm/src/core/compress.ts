@@ -1,8 +1,7 @@
-import { initQpdfModule } from "./module-loader.js";
-import { QpdfCompressionError } from "./errors.js";
-import { getOptimizePreset, normalizeBuffer, validateOptimizeOptions } from "../utils/validation.js";
-import { calculateSavings } from "../utils/format.js";
-import type { OptimizeOptions, OptimizeResult } from "../types/index.js";
+import { getCompressionEngine, getCompressionEngineAdapter, listCompressionEngines } from "./compression/registry.js";
+import { initQpdfModule } from "./qpdf/module-loader.js";
+import type { CompressionEngine, CompressOptions, CompressResult, OptimizeOptions, OptimizeResult } from "../types/index.js";
+import type { OptimizeResult as QpdfOptimizeResult } from "../types/results.js";
 
 /**
  * Initialize the qpdf WASM module
@@ -11,6 +10,14 @@ import type { OptimizeOptions, OptimizeResult } from "../types/index.js";
  */
 export async function initQpdf(): Promise<void> {
     await initQpdfModule();
+}
+
+export function getAvailableCompressionEngines(): CompressionEngine[] {
+    return listCompressionEngines();
+}
+
+export async function initCompressionEngine(engine: CompressionEngine): Promise<void> {
+    await getCompressionEngineAdapter(engine).init();
 }
 
 /**
@@ -46,39 +53,27 @@ export async function getQpdfVersion(): Promise<string> {
  * ```
  */
 export async function optimizePdf(input: Uint8Array | ArrayBuffer, options?: OptimizeOptions): Promise<OptimizeResult> {
-    try {
-        // initialize module
-        const module = await initQpdfModule();
+    const result = await getCompressionEngineAdapter("qpdf").compress(input, options);
+    return toOptimizeResult(result);
+}
 
-        // normalize and validate input
-        const inputBuffer = normalizeBuffer(input);
-        const validatedOptions = validateOptimizeOptions(options);
-
-        // perform optimization
-        const optimizedBuffer = module.compressPdf(inputBuffer, validatedOptions).slice();
-
-        // calculate statistics
-        const originalSize = inputBuffer.byteLength;
-        const compressedSize = optimizedBuffer.byteLength;
-        const { savedBytes, compressionRatio, percentageSaved } = calculateSavings(originalSize, compressedSize);
-
-        return {
-            data: optimizedBuffer,
-            preset: getOptimizePreset(options),
-            originalSize,
-            compressedSize,
-            compressionRatio,
-            savedBytes,
-            percentageSaved,
-        };
-    } catch (error) {
-        if (error instanceof QpdfCompressionError) {
-            throw error;
-        }
-        throw new QpdfCompressionError("Failed to optimize PDF", { cause: error });
-    }
+export async function compressPdf(input: Uint8Array | ArrayBuffer, options?: CompressOptions): Promise<CompressResult> {
+    const engine = getCompressionEngine(options);
+    return getCompressionEngineAdapter(engine).compress(input, options as never);
 }
 
 export async function linearizePdf(input: Uint8Array | ArrayBuffer, options?: Omit<OptimizeOptions, "linearize">): Promise<OptimizeResult> {
     return optimizePdf(input, { ...options, linearize: true });
+}
+
+function toOptimizeResult(result: CompressResult): QpdfOptimizeResult {
+    return {
+        data: result.data,
+        preset: result.preset as OptimizeResult["preset"],
+        originalSize: result.originalSize,
+        compressedSize: result.compressedSize,
+        compressionRatio: result.compressionRatio,
+        savedBytes: result.savedBytes,
+        percentageSaved: result.percentageSaved,
+    };
 }

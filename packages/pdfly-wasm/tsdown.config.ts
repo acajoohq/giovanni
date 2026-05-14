@@ -10,6 +10,8 @@ export default defineConfig({
     copy: [
         { from: "build/qpdf/qpdf.js", to: "dist", verbose: true },
         { from: "build/qpdf/qpdf.wasm", to: "dist", verbose: true },
+        { from: "build/ghostscript/ghostscript.js", to: "dist", verbose: true },
+        { from: "build/ghostscript/ghostscript.wasm", to: "dist", verbose: true },
     ],
     publint: {
         level: "error",

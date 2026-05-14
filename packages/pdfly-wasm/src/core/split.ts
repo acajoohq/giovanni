@@ -1,4 +1,4 @@
-import { initQpdfModule } from "./module-loader.js";
+import { initQpdfModule } from "./qpdf/module-loader.js";
 import { QpdfSplitError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { SplitResult } from "../types/index.js";

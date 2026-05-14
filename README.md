@@ -62,7 +62,7 @@ The first Ghostscript milestone is Docker-first and file-based, similar to the b
 - output: `packages/pdfly-wasm/build/ghostscript`
 - current goal: produce `ghostscript.js` + `ghostscript.wasm` that can later be driven through Emscripten FS and CLI-style args
 
-This is intentionally separate from the qpdf build and does not yet expose a public TypeScript API. The flow is Dockerfile-centric, and both upstream engines now follow the same pinned-vendor plus Docker-build model with engine-named outputs:
+The lower-level Ghostscript runtime remains internal, but the package now exposes an engine-aware `compressPdf(...)` facade above qpdf and Ghostscript. The flow is Dockerfile-centric, the default `pnpm -F @pdfly/wasm build` path builds both engines, and both upstream engines now follow the same pinned-source plus Docker-build model with engine-named outputs:
 
 - `packages/pdfly-wasm/build/qpdf`
 - `packages/pdfly-wasm/build/ghostscript`

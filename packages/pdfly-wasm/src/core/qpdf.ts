@@ -1,4 +1,4 @@
-import { initQpdfModule } from "./module-loader.js";
+import { initQpdfModule } from "./qpdf/module-loader.js";
 import { QpdfCompressionError, QpdfInitError, QpdfValidationError } from "./errors.js";
 import { normalizeBuffer, validateOptimizeOptions } from "../utils/validation.js";
 import type { OpenDocumentOptions, OptimizeOptions, QpdfDocumentInfo } from "../types/index.js";

@@ -1,4 +1,4 @@
-import type { QpdfOptimizePreset } from "./options.js";
+import type { CompressionEngine, GhostscriptPdfSettings, QpdfOptimizePreset } from "./options.js";
 
 /**
  * Caller-owned PDF bytes.
@@ -42,6 +42,16 @@ export interface OptimizeResult extends PdfData {
     /**
      * Percentage of space saved, negative when output is larger
      */
+    percentageSaved: number;
+}
+
+export interface CompressResult extends PdfData {
+    engine: CompressionEngine;
+    preset: QpdfOptimizePreset | GhostscriptPdfSettings;
+    originalSize: number;
+    compressedSize: number;
+    compressionRatio: number;
+    savedBytes: number;
     percentageSaved: number;
 }
 

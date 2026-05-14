@@ -1,4 +1,4 @@
-import { initQpdfModule } from "./module-loader.js";
+import { initQpdfModule } from "./qpdf/module-loader.js";
 import { QpdfImageExtractionError } from "./errors.js";
 import { encodeRawPixelsAsPng, rawPixelUnsupportedReason } from "./pixel-encoder.js";
 import { normalizeBuffer } from "../utils/validation.js";

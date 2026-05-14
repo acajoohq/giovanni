@@ -9,12 +9,17 @@ Completed:
 - [x] Pinned upstream definition for `qpdf` and `ghostpdl`
 - [x] Removed host-side vendor sync; Docker now fetches pinned source archives directly
 - [x] Unified Docker-first build entrypoint for both upstream engines
+- [x] Verified qpdf and Ghostscript builds with Docker-owned source fetching
 - [x] Separated orchestration (`tools/`) from native build definitions (`vendor-build/`)
 - [x] Docker-first Ghostscript WASM build
 - [x] PDF-focused build surface (`--without-pcl`, `--without-xps`)
 - [x] `ghostscript.js` + `ghostscript.wasm` artifact export
 - [x] Node smoke test through MEMFS and `pdfwrite`
 - [x] Real-file viability check on a large image-heavy PDF
+- [x] Internal Ghostscript runtime, rewrite path, typed options, and public compression facade
+- [x] Shared Emscripten module-loader contract for qpdf and Ghostscript
+- [x] Reserved `vendor-build/ghostscript/bindings/emscripten/` room for a future native `gsapi_*` wrapper
+- [x] Default package build now produces both qpdf and Ghostscript WASM artifacts
 
 Current proof point:
 
@@ -25,6 +30,7 @@ Scope note:
 - the source of truth is now `tools/vendor/upstreams.ts`
 - Docker fetches pinned archives directly during the build
 - there is no host-side vendor cache contract anymore
+- local rebuild speed currently depends on the Docker builder cache; explicit shared cache config is still optional follow-up
 
 ## Main Goal
 
@@ -46,12 +52,12 @@ Goal:
 
 Todos:
 
-- [ ] add `src/core/ghostscript/module-loader.ts`
-- [ ] add Ghostscript runtime types
-- [ ] lazy-load `ghostscript.js`
-- [ ] resolve `ghostscript.wasm` through `locateFile(...)`
-- [ ] normalize Node/browser loading behavior
-- [ ] add package build copy/export path for Ghostscript runtime artifacts
+- [x] add `src/core/ghostscript/module-loader.ts`
+- [x] add Ghostscript runtime types
+- [x] lazy-load `ghostscript.js`
+- [x] resolve `ghostscript.wasm` through `locateFile(...)`
+- [x] normalize Node/browser loading behavior
+- [x] add package build copy/export path for Ghostscript runtime artifacts
 
 Checkpoint:
 
@@ -65,12 +71,12 @@ Goal:
 
 Todos:
 
-- [ ] add `rewritePdfWithGhostscript(input, options): Promise<Uint8Array>`
-- [ ] map input/output through MEMFS
-- [ ] support `preset` / `PDFSETTINGS`
-- [ ] capture stderr/stdout for better debugging
-- [ ] convert runtime failures into typed Ghostscript errors
-- [ ] ensure repeated calls do not leak files or stale state
+- [x] add `rewritePdfWithGhostscript(input, options): Promise<Uint8Array>`
+- [x] map input/output through MEMFS
+- [x] support `preset` / `PDFSETTINGS`
+- [x] capture stderr/stdout for better debugging
+- [x] convert runtime failures into typed Ghostscript errors
+- [x] ensure repeated calls do not leak files or stale state
 
 Checkpoint:
 
@@ -84,12 +90,12 @@ Goal:
 
 Todos:
 
-- [ ] define Ghostscript option types
-- [ ] add preset support: `screen | ebook | printer | prepress | default`
-- [ ] add downsampling toggles
-- [ ] add DPI controls
-- [ ] add JPEG quality controls where they map cleanly
-- [ ] validate unsupported or conflicting options early
+- [x] define Ghostscript option types
+- [x] add preset support: `screen | ebook | printer | prepress | default`
+- [x] add downsampling toggles
+- [x] add DPI controls
+- [x] add JPEG quality controls where they map cleanly
+- [x] validate unsupported or conflicting options early
 
 Checkpoint:
 
@@ -103,12 +109,12 @@ Goal:
 
 Todos:
 
-- [ ] add `CompressionEngine = "qpdf" | "ghostscript"`
-- [ ] add `compressPdf(input, options)`
-- [ ] add `getAvailableCompressionEngines()`
-- [ ] add `initCompressionEngine(engine)`
-- [ ] keep `optimizePdf(...)` as qpdf-compatible wrapper
-- [ ] normalize result shape across engines
+- [x] add `CompressionEngine = "qpdf" | "ghostscript"`
+- [x] add `compressPdf(input, options)`
+- [x] add `getAvailableCompressionEngines()`
+- [x] add `initCompressionEngine(engine)`
+- [x] keep `optimizePdf(...)` as qpdf-compatible wrapper
+- [x] normalize result shape across engines
 
 Checkpoint:
 
@@ -122,11 +128,11 @@ Goal:
 
 Todos:
 
-- [ ] keep Ghostscript behind a lazy boundary
-- [ ] avoid top-level Ghostscript imports from shared entrypoints
-- [ ] add package exports if subpaths are needed
-- [ ] ensure `ghostscript.js` / `ghostscript.wasm` are copied separately
-- [ ] verify package metadata remains side-effect-safe
+- [x] keep Ghostscript behind a lazy boundary
+- [x] avoid top-level Ghostscript imports from shared entrypoints
+- [x] keep package exports unchanged; no Ghostscript subpath is needed yet
+- [x] ensure `ghostscript.js` / `ghostscript.wasm` are copied separately
+- [x] verify package metadata remains side-effect-safe
 
 Checkpoint:
 
@@ -195,6 +201,7 @@ For each update:
 - Ghostscript output quality/size tradeoffs are content-dependent
 - browser runtime behavior may differ from Node for large files
 - artifact naming and `locateFile(...)` behavior must stay stable
+- Docker cache behavior is currently implicit in the local builder state
 - package distribution must not accidentally force Ghostscript into qpdf-only bundles
 - licensing needs explicit handling before wider release
 

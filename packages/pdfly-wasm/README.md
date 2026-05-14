@@ -28,6 +28,24 @@ const optimized = await optimizePdf(input, {
 const pages = await splitPdf(optimized.data);
 ```
 
+Engine-aware compression is also available:
+
+```ts
+import { compressPdf } from "@pdfly/wasm";
+
+const qpdfResult = await compressPdf(input, {
+    engine: "qpdf",
+    preset: "web",
+});
+
+const ghostscriptResult = await compressPdf(input, {
+    engine: "ghostscript",
+    preset: "screen",
+    colorImageResolution: 96,
+    jpegQuality: 75,
+});
+```
+
 ## QPDF Scope
 
 QPDF is a lossless PDF structural tool. It is a good fit for rewriting PDFs, object streams, flate recompression, linearization, inspection, validation, splitting, merging, and page organization. It does not resample or re-encode images, so it is not an aggressive lossy image compressor.
@@ -48,7 +66,7 @@ Pinned upstream sources are fetched inside the Docker build. From the repo root:
 pnpm --filter @pdfly/wasm build
 ```
 
-The default `build` path runs the optimized qpdf Docker build and then bundles the package. More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).
+The default `build` path runs the optimized qpdf and Ghostscript Docker builds and then bundles the package. More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).
 
 Vendor sync is intentionally simple:
 
@@ -75,6 +93,14 @@ Build-system contract:
 - [`vendor-build/README.md`](./vendor-build/README.md)
 
 `src/` — TS API; `tools/` — local orchestration and smoke helpers; `vendor-build/` — native/container build definitions; `dist/` — packaged output.
+
+Runtime engine contract:
+
+- both engines use an engine-local module loader under `src/core/<engine>/module-loader.ts`
+- both engines implement the same adapter shape under `src/core/<engine>/engine.ts`
+- `src/core/compression/*` owns the shared adapter contract and engine registry
+- `src/core/shared/wasm-loader.ts` owns the shared Emscripten loader pattern
+- [`src/core/README.md`](./src/core/README.md) describes the directory contract
 
 ## Experimental Ghostscript WASM Build
 

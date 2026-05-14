@@ -1,11 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QpdfCompressionError } from "./errors.js";
-import { optimizePdf, linearizePdf } from "./compress.js";
-import { initQpdfModule } from "./module-loader.js";
+import { compressPdf, getAvailableCompressionEngines, initCompressionEngine, linearizePdf, optimizePdf } from "./compress.js";
+import { initQpdfModule } from "./qpdf/module-loader.js";
+import { initGhostscriptModule } from "./ghostscript/module-loader.js";
+import { compressPdfWithGhostscript } from "./ghostscript/rewrite.js";
 
-vi.mock("./module-loader.js");
+vi.mock("./qpdf/module-loader.js");
+vi.mock("./ghostscript/module-loader.js");
+vi.mock("./ghostscript/rewrite.js");
 
 const mockInitQpdfModule = vi.mocked(initQpdfModule);
+const mockInitGhostscriptModule = vi.mocked(initGhostscriptModule);
+const mockCompressPdfWithGhostscript = vi.mocked(compressPdfWithGhostscript);
 
 function makeFakeModule(compressResult = new Uint8Array(600)) {
     return {
@@ -79,6 +85,35 @@ describe("optimizePdf", () => {
     });
 });
 
+describe("compressPdf", () => {
+    it("defaults to the qpdf engine", async () => {
+        mockInitQpdfModule.mockResolvedValue(makeFakeModule() as never);
+
+        const result = await compressPdf(new Uint8Array(1000));
+
+        expect(result.engine).toBe("qpdf");
+        expect(result.preset).toBe("default");
+    });
+
+    it("dispatches to Ghostscript when requested", async () => {
+        mockCompressPdfWithGhostscript.mockResolvedValue({
+            engine: "ghostscript",
+            data: new Uint8Array(400),
+            preset: "screen",
+            originalSize: 1000,
+            compressedSize: 400,
+            compressionRatio: 0.4,
+            savedBytes: 600,
+            percentageSaved: 60,
+        });
+
+        const result = await compressPdf(new Uint8Array(1000), { engine: "ghostscript", preset: "screen" });
+
+        expect(mockCompressPdfWithGhostscript).toHaveBeenCalledWith(expect.any(Uint8Array), expect.objectContaining({ engine: "ghostscript", preset: "screen" }));
+        expect(result.engine).toBe("ghostscript");
+    });
+});
+
 describe("linearizePdf", () => {
     it("forwards linearize: true to the WASM compressPdf call", async () => {
         const fakeModule = makeFakeModule();
@@ -95,5 +130,33 @@ describe("linearizePdf", () => {
         const result = await linearizePdf(new Uint8Array());
 
         expect(result.preset).toBe("default");
+    });
+});
+
+describe("compression engine helpers", () => {
+    it("lists the available engines", () => {
+        expect(getAvailableCompressionEngines()).toEqual(["qpdf", "ghostscript"]);
+    });
+
+    it("initializes qpdf through the existing module loader", async () => {
+        mockInitQpdfModule.mockResolvedValue(makeFakeModule() as never);
+
+        await initCompressionEngine("qpdf");
+
+        expect(mockInitQpdfModule).toHaveBeenCalled();
+    });
+
+    it("initializes Ghostscript through its module loader", async () => {
+        mockInitGhostscriptModule.mockResolvedValue({
+            FS: {
+                writeFile: vi.fn<(path: string, data: Uint8Array) => void>(),
+                readFile: vi.fn<(path: string) => Uint8Array>(() => new Uint8Array()),
+            },
+            callMain: vi.fn<(args: string[]) => number>(() => 0),
+        } as never);
+
+        await initCompressionEngine("ghostscript");
+
+        expect(mockInitGhostscriptModule).toHaveBeenCalled();
     });
 });

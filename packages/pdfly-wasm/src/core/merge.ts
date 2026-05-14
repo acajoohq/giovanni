@@ -1,4 +1,4 @@
-import { initQpdfModule } from "./module-loader.js";
+import { initQpdfModule } from "./qpdf/module-loader.js";
 import { QpdfMergeError } from "./errors.js";
 import { normalizeBuffer } from "../utils/validation.js";
 import type { MergeResult } from "../types/index.js";

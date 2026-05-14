@@ -1,6 +1,12 @@
 export type {
+    CompressionEngine,
     CheckOptions,
     DecodeLevel,
+    CompressOptions,
+    GhostscriptColorConversionStrategy,
+    GhostscriptCompatibilityLevel,
+    GhostscriptCompressOptions,
+    GhostscriptPdfSettings,
     InspectOptions,
     MergeOptions,
     ObjectStreamMode,
@@ -15,6 +21,7 @@ export type {
 } from "./options.js";
 export type {
     ColorComponentCount,
+    CompressResult,
     ExtractedImage,
     ExtractImagesResult,
     MergeResult,

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QpdfMergeError } from "./errors.js";
 import { mergePdfs } from "./merge.js";
-import { initQpdfModule } from "./module-loader.js";
+import { initQpdfModule } from "./qpdf/module-loader.js";
 
-vi.mock("./module-loader.js");
+vi.mock("./qpdf/module-loader.js");
 
 const mockInitQpdfModule = vi.mocked(initQpdfModule);
 

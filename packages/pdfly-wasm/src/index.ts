@@ -3,7 +3,7 @@
  */
 
 // qpdf api
-export { initQpdf, getQpdfVersion, linearizePdf, optimizePdf } from "./core/compress.js";
+export { compressPdf, getAvailableCompressionEngines, getQpdfVersion, initCompressionEngine, initQpdf, linearizePdf, optimizePdf } from "./core/compress.js";
 export { inspectPdf, checkPdf } from "./core/inspect.js";
 export { splitPdf } from "./core/split.js";
 export { mergePdfs } from "./core/merge.js";
@@ -25,12 +25,24 @@ export {
     QpdfImageExtractionError,
     QpdfConversionError,
     QpdfOrganizeError,
+    isGhostscriptError,
+    GhostscriptError,
+    GhostscriptInitError,
+    GhostscriptCompressionError,
+    GhostscriptValidationError,
 } from "./core/errors.js";
 
 // types
 export type {
+    CompressionEngine,
     CheckOptions,
+    CompressOptions,
+    CompressResult,
     DecodeLevel,
+    GhostscriptColorConversionStrategy,
+    GhostscriptCompatibilityLevel,
+    GhostscriptCompressOptions,
+    GhostscriptPdfSettings,
     InspectOptions,
     MergeOptions,
     ObjectStreamMode,

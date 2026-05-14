@@ -81,3 +81,21 @@ export interface QpdfWasmModule {
  * Factory function that returns the WASM module
  */
 export type CreateQpdfModule = () => Promise<QpdfWasmModule>;
+
+export interface GhostscriptModuleOptions {
+    noInitialRun: boolean;
+    locateFile: (path: string) => string;
+    print: (line: string) => void;
+    printErr: (line: string) => void;
+}
+
+export interface GhostscriptWasmModule {
+    FS: {
+        writeFile(path: string, data: Uint8Array): void;
+        readFile(path: string): Uint8Array;
+        unlink?(path: string): void;
+    };
+    callMain(args: string[]): number;
+}
+
+export type CreateGhostscriptModule = (options: GhostscriptModuleOptions) => Promise<GhostscriptWasmModule>;

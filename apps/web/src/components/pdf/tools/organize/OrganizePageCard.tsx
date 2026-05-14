@@ -1,4 +1,4 @@
-import { RiArrowDownLine, RiArrowUpLine, RiDragMove2Line } from "@remixicon/react";
+import { RiArrowDownLine, RiArrowUpLine, RiCloseLine, RiDragMove2Line } from "@remixicon/react";
 import { type DragEvent } from "react";
 import { PdfPageThumbnail } from "@/components/pdf/PdfPageThumbnail";
 import { cn } from "@/lib/utils";
@@ -14,9 +14,10 @@ interface OrganizePageCardProps {
     onDrop: () => void;
     onDragEnd: () => void;
     onMove: (direction: -1 | 1) => void;
+    onDelete: () => void;
 }
 
-export function OrganizePageCard({ originalIndex, currentIndex, pageCount, pageData, isDragSource, onDragStart, onDragOver, onDrop, onDragEnd, onMove }: OrganizePageCardProps) {
+export function OrganizePageCard({ originalIndex, currentIndex, pageCount, pageData, isDragSource, onDragStart, onDragOver, onDrop, onDragEnd, onMove, onDelete }: OrganizePageCardProps) {
     const orderChanged = originalIndex !== currentIndex;
 
     return (
@@ -51,6 +52,15 @@ export function OrganizePageCard({ originalIndex, currentIndex, pageCount, pageD
                         onClick={() => onMove(1)}
                     >
                         <RiArrowDownLine className="size-3" />
+                    </button>
+                    <button
+                        aria-label={`Delete page ${currentIndex + 1}`}
+                        className="flex h-5 w-5 items-center justify-center rounded bg-red-600/80 text-white hover:bg-red-600 disabled:opacity-30"
+                        disabled={pageCount === 1}
+                        type="button"
+                        onClick={() => onDelete()}
+                    >
+                        <RiCloseLine className="size-3" />
                     </button>
                 </div>
                 <div className="pointer-events-none absolute bottom-1 left-1 flex h-5 w-5 items-center justify-center rounded bg-black/50">

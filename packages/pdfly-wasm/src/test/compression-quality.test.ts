@@ -216,14 +216,10 @@ describe("compression quality", () => {
                 const expectedSaved = result.originalSize - result.compressedSize;
                 expect(result.savedBytes).toBe(expectedSaved);
 
-                const expectedRatio =
-                    result.originalSize === 0 ? 0 : result.compressedSize / result.originalSize;
+                const expectedRatio = result.originalSize === 0 ? 0 : result.compressedSize / result.originalSize;
                 expect(result.compressionRatio).toBeCloseTo(expectedRatio, 5);
 
-                const expectedPct =
-                    result.originalSize === 0
-                        ? 0
-                        : (result.savedBytes / result.originalSize) * 100;
+                const expectedPct = result.originalSize === 0 ? 0 : (result.savedBytes / result.originalSize) * 100;
                 expect(result.percentageSaved).toBeCloseTo(expectedPct, 3);
             },
             TEST_TIMEOUT_MS,
@@ -239,18 +235,13 @@ describe("compression quality", () => {
         it.each(fixtures)(
             '"archive" output is no larger than "default" output for $name (±5 %)',
             async ({ data }) => {
-                const [defaultResult, archiveResult] = await Promise.all([
-                    tryCompress(data, { preset: "default" }),
-                    tryCompress(data, { preset: "archive" }),
-                ]);
+                const [defaultResult, archiveResult] = await Promise.all([tryCompress(data, { preset: "default" }), tryCompress(data, { preset: "archive" })]);
 
                 if (defaultResult === null || archiveResult === null) return; // skip on WASM abort
 
                 // archive may equal or beat default; a tiny 5 % slack covers
                 // cases where additional metadata from linearise headers adds bytes.
-                expect(archiveResult.compressedSize).toBeLessThanOrEqual(
-                    defaultResult.compressedSize * 1.05,
-                );
+                expect(archiveResult.compressedSize).toBeLessThanOrEqual(defaultResult.compressedSize * 1.05);
             },
             TEST_TIMEOUT_MS,
         );

@@ -36,7 +36,7 @@ describe("buildGhostscriptArgs", () => {
                 colorConversionStrategy: "RGB",
                 colorImageResolution: 96,
                 jpegQuality: 75,
-            })
+            }),
         );
 
         expect(args).toEqual(
@@ -48,7 +48,7 @@ describe("buildGhostscriptArgs", () => {
                 "-dDownsampleColorImages=true",
                 "-dColorImageResolution=96",
                 "-dJPEGQ=75",
-            ])
+            ]),
         );
     });
 });

@@ -47,7 +47,7 @@ export function createSingletonWasmLoader<T>(factory: () => Promise<T>): WasmSin
 }
 
 export function createSingletonEmscriptenModuleLoader<TModule, TModuleOptions = undefined>(
-    options: EmscriptenModuleLoadOptions<TModule, TModuleOptions>
+    options: EmscriptenModuleLoadOptions<TModule, TModuleOptions>,
 ): WasmSingletonLoader<TModule> {
     return createSingletonWasmLoader(async () => {
         try {
@@ -55,10 +55,7 @@ export function createSingletonEmscriptenModuleLoader<TModule, TModuleOptions = 
             const imported = await import(/* @vite-ignore */ moduleUrl);
             const createModule = resolveModuleFactory<TModuleOptions>(imported, options.exportNames);
 
-            const module =
-                options.createModuleOptions === undefined
-                    ? await createModule()
-                    : await createModule(options.createModuleOptions(moduleUrl));
+            const module = options.createModuleOptions === undefined ? await createModule() : await createModule(options.createModuleOptions(moduleUrl));
 
             return options.normalizeModule ? options.normalizeModule(module) : (module as TModule);
         } catch (error) {

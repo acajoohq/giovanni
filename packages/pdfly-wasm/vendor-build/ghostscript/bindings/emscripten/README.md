@@ -7,8 +7,8 @@ Current state:
 - the Ghostscript WASM build still produces `ghostscript.js` / `ghostscript.wasm`
 - this directory owns the custom C++ wrapper over `gsapi_*`
 - the exported JS surface is intentionally narrow:
-  - `rewritePdf(data, args)`
-  - `getGhostscriptVersion()`
+    - `rewritePdf(data, args)`
+    - `getGhostscriptVersion()`
 
 Why this directory exists:
 

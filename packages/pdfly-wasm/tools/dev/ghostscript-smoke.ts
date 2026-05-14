@@ -63,14 +63,7 @@ const module = await createGhostscriptModule({
 
 const inputBytes = await readFile(inputPath);
 
-const args = [
-    "-sDEVICE=pdfwrite",
-    "-dBATCH",
-    "-dNOPAUSE",
-    "-dSAFER",
-    "-dQUIET",
-    `-dPDFSETTINGS=/${preset}`,
-];
+const args = ["-sDEVICE=pdfwrite", "-dBATCH", "-dNOPAUSE", "-dSAFER", "-dQUIET", `-dPDFSETTINGS=/${preset}`];
 
 const startedAt = Date.now();
 const outputBytes = module.rewritePdf(inputBytes, args);

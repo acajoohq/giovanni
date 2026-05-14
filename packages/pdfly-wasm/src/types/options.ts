@@ -154,9 +154,7 @@ export interface GhostscriptCompressOptions {
     jpegQuality?: number;
 }
 
-export type CompressOptions =
-    | ({ engine?: "qpdf" } & OptimizeOptions)
-    | ({ engine: "ghostscript" } & GhostscriptCompressOptions);
+export type CompressOptions = ({ engine?: "qpdf" } & OptimizeOptions) | ({ engine: "ghostscript" } & GhostscriptCompressOptions);
 
 /**
  * Options for opening an encrypted PDF.

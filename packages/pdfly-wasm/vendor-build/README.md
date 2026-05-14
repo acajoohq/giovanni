@@ -27,14 +27,14 @@ This directory contains the build definitions for vendored upstream engines used
 Each engine writes to its own output directory:
 
 - `build/qpdf`
-  - `qpdf.js`
-  - `qpdf.wasm`
-  - `manifest.json`
+    - `qpdf.js`
+    - `qpdf.wasm`
+    - `manifest.json`
 
 - `build/ghostscript`
-  - `ghostscript.js`
-  - `ghostscript.wasm`
-  - `manifest.json`
+    - `ghostscript.js`
+    - `ghostscript.wasm`
+    - `manifest.json`
 
 That engine-named output is the stable contract for tooling, tests, and packaging.
 
@@ -70,10 +70,10 @@ Docker fetches those archives during the build. There is no host-side vendor syn
 Keep tweaks explicit and narrow.
 
 - build mode:
-  - `qpdf`: `dev | prd`
-  - `ghostscript`: `dev | prd`
+    - `qpdf`: `dev | prd`
+    - `ghostscript`: `dev | prd`
 - Ghostscript parallelism:
-  - `PDFLY_GHOSTSCRIPT_JOBS=<n>`
+    - `PDFLY_GHOSTSCRIPT_JOBS=<n>`
 
 Example:
 

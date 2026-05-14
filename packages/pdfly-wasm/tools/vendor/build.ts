@@ -68,16 +68,7 @@ async function main(): Promise<void> {
     const dockerfile = toDockerPath(resolve(packageRoot, config.dockerfile));
     const buildArgs = config.resolveBuildArgs(mode);
     const dockerBuildArgs = Object.entries(buildArgs).flatMap(([key, value]) => ["--build-arg", `${key}=${value}`]);
-    const dockerArgs = [
-        "buildx",
-        "build",
-        "--file",
-        dockerfile,
-        ...dockerBuildArgs,
-        "--output",
-        `type=local,dest=${toDockerPath(outputDirectory)}`,
-        toDockerPath(repoRoot),
-    ];
+    const dockerArgs = ["buildx", "build", "--file", dockerfile, ...dockerBuildArgs, "--output", `type=local,dest=${toDockerPath(outputDirectory)}`, toDockerPath(repoRoot)];
 
     console.log(`Building ${target} (${mode}) with Docker`);
     execFileSync("docker", dockerArgs, { cwd: packageRoot, stdio: "inherit" });

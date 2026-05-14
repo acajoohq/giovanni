@@ -29,10 +29,7 @@ export async function rewritePdfWithGhostscript(input: Uint8Array | ArrayBuffer,
     }
 }
 
-export async function compressPdfWithGhostscript(
-    input: Uint8Array | ArrayBuffer,
-    options?: GhostscriptCompressOptions
-): Promise<CompressResult> {
+export async function compressPdfWithGhostscript(input: Uint8Array | ArrayBuffer, options?: GhostscriptCompressOptions): Promise<CompressResult> {
     const inputBuffer = normalizeBuffer(input);
     const normalizedOptions = validateGhostscriptOptions(options);
     const outputBuffer = await rewritePdfWithGhostscript(inputBuffer, options);

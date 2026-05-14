@@ -27,10 +27,7 @@ describe("rewritePdfWithGhostscript", () => {
             colorImageResolution: 96,
         });
 
-        expect(rewritePdf).toHaveBeenCalledWith(
-            expect.any(Uint8Array),
-            expect.arrayContaining(["-sDEVICE=pdfwrite", "-dPDFSETTINGS=/screen", "-dColorImageResolution=96"]),
-        );
+        expect(rewritePdf).toHaveBeenCalledWith(expect.any(Uint8Array), expect.arrayContaining(["-sDEVICE=pdfwrite", "-dPDFSETTINGS=/screen", "-dColorImageResolution=96"]));
     });
 
     it("copies output out of WASM-owned memory via slice()", async () => {

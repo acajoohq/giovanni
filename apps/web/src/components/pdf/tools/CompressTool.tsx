@@ -143,14 +143,9 @@ export function CompressTool() {
         { label: t("compress.colorStrategy.deviceIndependent"), value: "UseDeviceIndependentColor" },
     ];
 
-    const activePresetDescription =
-        engine === "qpdf" ? qpdfPresetDescriptions[qpdfSettings.preset] : ghostscriptPresetDescriptions[ghostscriptSettings.preset];
+    const activePresetDescription = engine === "qpdf" ? qpdfPresetDescriptions[qpdfSettings.preset] : ghostscriptPresetDescriptions[ghostscriptSettings.preset];
 
-    const buildCompressionOptions = (
-        nextEngine: CompressionEngine,
-        nextQpdfSettings: QpdfSettings,
-        nextGhostscriptSettings: GhostscriptSettings,
-    ) => {
+    const buildCompressionOptions = (nextEngine: CompressionEngine, nextQpdfSettings: QpdfSettings, nextGhostscriptSettings: GhostscriptSettings) => {
         if (nextEngine === "qpdf") {
             return {
                 engine: "qpdf" as const,
@@ -191,13 +186,7 @@ export function CompressTool() {
     };
 
     const debouncedProcessFile = useDebouncedCallback(
-        (
-            nextFile: File,
-            nextSourceData: Uint8Array,
-            nextEngine: CompressionEngine,
-            nextQpdfSettings: QpdfSettings,
-            nextGhostscriptSettings: GhostscriptSettings,
-        ) => {
+        (nextFile: File, nextSourceData: Uint8Array, nextEngine: CompressionEngine, nextQpdfSettings: QpdfSettings, nextGhostscriptSettings: GhostscriptSettings) => {
             void processFile(nextFile, nextSourceData, nextEngine, nextQpdfSettings, nextGhostscriptSettings);
         },
         PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS,
@@ -283,9 +272,7 @@ export function CompressTool() {
     };
 
     const getResultPresetLabel = (nextResult: CompressResult) => {
-        return nextResult.engine === "qpdf"
-            ? qpdfPresetLabels[nextResult.preset as QpdfOptimizePreset]
-            : ghostscriptPresetLabels[nextResult.preset as GhostscriptPdfSettings];
+        return nextResult.engine === "qpdf" ? qpdfPresetLabels[nextResult.preset as QpdfOptimizePreset] : ghostscriptPresetLabels[nextResult.preset as GhostscriptPdfSettings];
     };
 
     const sidebar = (
@@ -295,12 +282,7 @@ export function CompressTool() {
                 <SidebarContent>
                     <SidebarToggleGroup>
                         {(["qpdf", "ghostscript"] as CompressionEngine[]).map((candidate) => (
-                            <SidebarToggle
-                                key={candidate}
-                                isActive={engine === candidate}
-                                title={engineDescriptions[candidate]}
-                                onClick={() => selectEngine(candidate)}
-                            >
+                            <SidebarToggle key={candidate} isActive={engine === candidate} title={engineDescriptions[candidate]} onClick={() => selectEngine(candidate)}>
                                 {engineLabels[candidate]}
                             </SidebarToggle>
                         ))}
@@ -353,11 +335,7 @@ export function CompressTool() {
                                 />
                             </SidebarField>
                             <SidebarField label={t("compress.sidebar.decode")}>
-                                <SidebarSelect
-                                    options={decodeLevelOptions}
-                                    value={qpdfSettings.decodeLevel}
-                                    onValueChange={(decodeLevel) => updateQpdfSettings({ decodeLevel })}
-                                />
+                                <SidebarSelect options={decodeLevelOptions} value={qpdfSettings.decodeLevel} onValueChange={(decodeLevel) => updateQpdfSettings({ decodeLevel })} />
                             </SidebarField>
                             <SidebarField label={t("compress.sidebar.objectStreams")}>
                                 <SidebarSelect

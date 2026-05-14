@@ -1,10 +1,5 @@
 import { GhostscriptValidationError } from "../errors.js";
-import type {
-    GhostscriptColorConversionStrategy,
-    GhostscriptCompatibilityLevel,
-    GhostscriptCompressOptions,
-    GhostscriptPdfSettings,
-} from "../../types/options.js";
+import type { GhostscriptColorConversionStrategy, GhostscriptCompatibilityLevel, GhostscriptCompressOptions, GhostscriptPdfSettings } from "../../types/options.js";
 
 export interface NormalizedGhostscriptOptions {
     pdfSettings: GhostscriptPdfSettings;
@@ -34,13 +29,7 @@ export function validateGhostscriptOptions(options?: GhostscriptCompressOptions)
     }
 
     if (options?.colorConversionStrategy !== undefined) {
-        const valid: GhostscriptColorConversionStrategy[] = [
-            "LeaveColorUnchanged",
-            "Gray",
-            "RGB",
-            "CMYK",
-            "UseDeviceIndependentColor",
-        ];
+        const valid: GhostscriptColorConversionStrategy[] = ["LeaveColorUnchanged", "Gray", "RGB", "CMYK", "UseDeviceIndependentColor"];
         if (!valid.includes(options.colorConversionStrategy)) {
             throw new GhostscriptValidationError(`colorConversionStrategy must be one of: ${valid.join(", ")}`);
         }
@@ -66,14 +55,7 @@ export function validateGhostscriptOptions(options?: GhostscriptCompressOptions)
 }
 
 export function buildGhostscriptArgs(options: NormalizedGhostscriptOptions): string[] {
-    const args = [
-        "-sDEVICE=pdfwrite",
-        "-dBATCH",
-        "-dNOPAUSE",
-        "-dSAFER",
-        "-dQUIET",
-        `-dPDFSETTINGS=/${options.pdfSettings}`,
-    ];
+    const args = ["-sDEVICE=pdfwrite", "-dBATCH", "-dNOPAUSE", "-dSAFER", "-dQUIET", `-dPDFSETTINGS=/${options.pdfSettings}`];
 
     if (options.compatibilityLevel) {
         args.push(`-dCompatibilityLevel=${options.compatibilityLevel}`);

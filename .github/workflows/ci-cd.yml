@@ -184,6 +184,14 @@ jobs:
                   path: packages/pdfly-wasm/test-report/junit.xml
                   if-no-files-found: ignore
 
+            - name: Upload compression results artifact
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: compression-results
+                  path: packages/pdfly-wasm/test-report/compression-results.xml
+                  if-no-files-found: ignore
+
             - name: Check package contract
               run: pnpm --filter @pdfly/wasm package:check
 

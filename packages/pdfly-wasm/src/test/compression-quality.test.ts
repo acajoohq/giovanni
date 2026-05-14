@@ -18,7 +18,7 @@
  *  6. Every decodeLevel produces a valid PDF for every fixture that succeeds.
  */
 
-import { readdir, readFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -75,6 +75,52 @@ function formatBytes(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
+function escapeXml(s: string): string {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+async function writeCompressionReport(results: SizeResult[], skipped: SkippedResult[]): Promise<void> {
+    const reportDir = join(dirname(fileURLToPath(import.meta.url)), "../../test-report");
+    await mkdir(reportDir, { recursive: true });
+
+    const allFileNames = [...new Set([...results.map((r) => r.name), ...skipped.map((s) => s.name)])].sort();
+
+    const lines: string[] = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        `<compression-report generated="${new Date().toISOString()}" fixtures="${allFileNames.length}" presets="3">`,
+    ];
+
+    for (const name of allFileNames) {
+        const fileResults = results.filter((r) => r.name === name);
+        const fileSkipped = skipped.filter((s) => s.name === name);
+        const originalBytes = fileResults[0]?.originalBytes ?? 0;
+        const allAborted = fileSkipped.length > 0 && fileResults.length === 0;
+
+        lines.push(
+            `  <file name="${escapeXml(name)}" originalBytes="${originalBytes}"${allAborted ? ' status="wasm-abort"' : ""}>`,
+        );
+
+        for (const preset of ["default", "web", "archive"] as const) {
+            const r = fileResults.find((x) => x.preset === preset);
+            const s = fileSkipped.find((x) => x.preset === preset);
+
+            if (r) {
+                lines.push(
+                    `    <result preset="${preset}" compressedBytes="${r.compressedBytes}" savedBytes="${r.savedBytes}" percentageSaved="${r.percentageSaved}" ratio="${r.ratio}"/>`,
+                );
+            } else if (s) {
+                lines.push(`    <result preset="${preset}" status="wasm-abort"/>`);
+            }
+        }
+
+        lines.push(`  </file>`);
+    }
+
+    lines.push("</compression-report>");
+
+    await writeFile(join(reportDir, "compression-results.xml"), lines.join("\n"), "utf-8");
+}
+
 /**
  * Run optimizePdf and return the result, or null if the WASM aborts on this
  * fixture (a known pre-existing issue for certain exotic test files).
@@ -117,9 +163,17 @@ type SizeResult = {
     compressedBytes: number;
     savedBytes: number;
     percentageSaved: number;
+    ratio: number;
+};
+
+type SkippedResult = {
+    name: string;
+    preset: QpdfOptimizePreset;
+    reason: "wasm-abort";
 };
 
 const sizeResults: SizeResult[] = [];
+const skippedResults: SkippedResult[] = [];
 
 for (const fixture of fixtures) {
     for (const preset of ["default", "web", "archive"] as const) {
@@ -132,10 +186,15 @@ for (const fixture of fixtures) {
                 compressedBytes: result.compressedSize,
                 savedBytes: result.savedBytes,
                 percentageSaved: Math.round(result.percentageSaved * 10) / 10,
+                ratio: result.originalSize === 0 ? 1 : Math.round((result.compressedSize / result.originalSize) * 10000) / 10000,
             });
+        } else {
+            skippedResults.push({ name: fixture.name, preset, reason: "wasm-abort" });
         }
     }
 }
+
+await writeCompressionReport(sizeResults, skippedResults);
 
 // ---------------------------------------------------------------------------
 

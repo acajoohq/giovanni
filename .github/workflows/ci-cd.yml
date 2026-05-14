@@ -116,7 +116,7 @@ jobs:
                   path: |
                       packages/pdfly-wasm/build/qpdf
                       packages/pdfly-wasm/build/ghostscript
-                  key: wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-qpdf-${{ env.QPDF_VERSION }}-${{ hashFiles('pnpm-lock.yaml', 'packages/pdfly-wasm/package.json', 'packages/pdfly-wasm/tsdown.config.ts', 'packages/pdfly-wasm/src/**', 'packages/pdfly-wasm/vendor-build/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
+                  key: wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-qpdf-${{ env.QPDF_VERSION }}-${{ hashFiles('pnpm-lock.yaml', 'packages/pdfly-wasm/package.json', 'packages/pdfly-wasm/tsdown.config.ts', 'packages/pdfly-wasm/src/**', 'packages/pdfly-wasm/native/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
                   restore-keys: |
                       wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-qpdf-${{ env.QPDF_VERSION }}-
                       wasm-build-${{ runner.os }}-emsdk-${{ env.EMSDK_VERSION }}-

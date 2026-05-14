@@ -19,7 +19,7 @@ const repoRoot = resolve(packageRoot, "..", "..");
 
 const BUILD_TARGETS: Record<BuildTarget, BuildTargetConfig> = {
     qpdf: {
-        dockerfile: "vendor-build/docker/qpdf.Dockerfile",
+        dockerfile: "native/docker/qpdf.Dockerfile",
         outputDirectory: "build/qpdf",
         resolveBuildArgs(mode) {
             return {
@@ -31,7 +31,7 @@ const BUILD_TARGETS: Record<BuildTarget, BuildTargetConfig> = {
         },
     },
     ghostscript: {
-        dockerfile: "vendor-build/docker/ghostscript.Dockerfile",
+        dockerfile: "native/docker/ghostscript.Dockerfile",
         outputDirectory: "build/ghostscript",
         resolveBuildArgs(mode) {
             return {

@@ -12,7 +12,7 @@ Current state:
 
 Why this directory exists:
 
-- to keep the engine layout parallel with `vendor-build/qpdf/bindings/emscripten/`
+- to keep the engine layout parallel with `native/qpdf/bindings/emscripten/`
 - to keep Ghostscript lifecycle, stdio capture, temp file handling, and `gsapi_*` calls out of TypeScript
 
 Design rule:

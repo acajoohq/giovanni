@@ -1,19 +1,19 @@
-# Vendor Build Contract
+# Native build contract
 
-This directory contains the build definitions for vendored upstream engines used by `@pdfly/wasm`.
+This directory contains native (CMake / Emscripten) and container build definitions for upstream engines used by `@pdfly/wasm`.
 
 ## Separation of concerns
 
 - `tools/vendor/*`
   Orchestration only: pinned source definitions, target selection, Docker invocation
 
-- `vendor-build/docker/*`
+- `native/docker/*`
   Container recipes only: isolated build environments for each upstream engine
 
-- `vendor-build/qpdf/*`
+- `native/qpdf/*`
   qpdf-specific native build definition only: CMake, toolchains, Emscripten bindings
 
-- `vendor-build/ghostscript/*`
+- `native/ghostscript/*`
   Ghostscript-specific native build definition only: Docker-driven upstream build plus the narrow `gsapi_*` Emscripten wrapper
 
 - `build/qpdf` and `build/ghostscript`

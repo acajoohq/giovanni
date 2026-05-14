@@ -21,7 +21,7 @@ RUN apt-get update && \
 
 WORKDIR /src
 
-COPY packages/pdfly-wasm/vendor-build /src/packages/pdfly-wasm/vendor-build
+COPY packages/pdfly-wasm/native /src/packages/pdfly-wasm/native
 
 RUN set -eux; \
     mkdir -p /src/vendor/qpdf; \
@@ -44,7 +44,7 @@ RUN set -eux; \
             exit 1; \
             ;; \
     esac; \
-    export SOURCE_DIR=/src/packages/pdfly-wasm/vendor-build/qpdf; \
+    export SOURCE_DIR=/src/packages/pdfly-wasm/native/qpdf; \
     export BUILD_DIR=/tmp/qpdf-build; \
     export OUT_DIR=/out; \
     mkdir -p "$BUILD_DIR" "$OUT_DIR"; \

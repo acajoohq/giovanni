@@ -10,7 +10,7 @@ Completed:
 - [x] Removed host-side vendor sync; Docker now fetches pinned source archives directly
 - [x] Unified Docker-first build entrypoint for both upstream engines
 - [x] Verified qpdf and Ghostscript builds with Docker-owned source fetching
-- [x] Separated orchestration (`tools/`) from native build definitions (`vendor-build/`)
+- [x] Separated orchestration (`tools/`) from native build definitions (`native/`)
 - [x] Docker-first Ghostscript WASM build
 - [x] PDF-focused build surface (`--without-pcl`, `--without-xps`)
 - [x] `ghostscript.js` + `ghostscript.wasm` artifact export
@@ -18,7 +18,7 @@ Completed:
 - [x] Real-file viability check on a large image-heavy PDF
 - [x] Internal Ghostscript runtime, rewrite path, typed options, and public compression facade
 - [x] Shared Emscripten module-loader contract for qpdf and Ghostscript
-- [x] Native Ghostscript `gsapi_*` wrapper under `vendor-build/ghostscript/bindings/emscripten/`
+- [x] Native Ghostscript `gsapi_*` wrapper under `native/ghostscript/bindings/emscripten/`
 - [x] Default package build now produces both qpdf and Ghostscript WASM artifacts
 - [x] Ghostscript module surface normalized to the same loader/version contract as qpdf
 - [x] Web compression UI can now switch between qpdf and Ghostscript with engine-specific controls

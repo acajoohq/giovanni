@@ -97,9 +97,9 @@ pnpm --filter @pdfly/wasm build:ghostscript:prd
 
 Build-system contract:
 
-- [`vendor-build/README.md`](./vendor-build/README.md)
+- [`native/README.md`](./native/README.md)
 
-`src/` — TS API; `tools/` — local orchestration and smoke helpers; `vendor-build/` — native/container build definitions; `dist/` — packaged output.
+`src/` — TS API; `tools/` — local orchestration and smoke helpers; `native/` — CMake, Emscripten bindings, and Docker build definitions; `dist/` — packaged output.
 
 Runtime engine contract:
 
@@ -121,7 +121,7 @@ pnpm --filter @pdfly/wasm build:ghostscript:dev
 
 That flow:
 
-- uses `packages/pdfly-wasm/vendor-build/docker/ghostscript.Dockerfile`
+- uses `packages/pdfly-wasm/native/docker/ghostscript.Dockerfile`
 - uses a pinned `ghostpdl` source archive fetched inside Docker
 - keeps the Ghostscript build logic inside the Dockerfile
 - installs autotools inside the container

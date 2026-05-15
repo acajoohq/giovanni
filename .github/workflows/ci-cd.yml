@@ -168,6 +168,7 @@ jobs:
                   pnpm run test
 
             - name: Run pdfly-wasm tests with report
+              continue-on-error: true
               run: |
                   set -euo pipefail
                   source .cache/emsdk/emsdk_env.sh

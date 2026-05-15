@@ -2,20 +2,20 @@
 // Post/update a compression summary comment on the PR.
 // Uses github-script@v7 globals: github, context, core, process.
 
-const fs = require("fs");
-const path = require("path");
+const { existsSync, readFileSync } = await import("node:fs");
+const { join } = await import("node:path");
 
 const COMMENT_MARKER = "<!-- pdfly-compression-summary -->";
 const BOT_LOGIN = "github-actions[bot]";
-const SUMMARY_PATH = path.join(process.env.GITHUB_WORKSPACE, "packages/pdfly-wasm/test-report/compression-summary.md");
+const SUMMARY_PATH = join(process.env.GITHUB_WORKSPACE, "packages/pdfly-wasm/test-report/compression-summary.md");
 
 function buildCommentBody() {
-    if (!fs.existsSync(SUMMARY_PATH)) {
+    if (!existsSync(SUMMARY_PATH)) {
         core.warning("compression-summary.md not found, skipping PR comment.");
         return null;
     }
 
-    const summary = fs.readFileSync(SUMMARY_PATH, "utf8").trim();
+    const summary = readFileSync(SUMMARY_PATH, "utf8").trim();
     return [COMMENT_MARKER, "", summary].join("\n");
 }
 

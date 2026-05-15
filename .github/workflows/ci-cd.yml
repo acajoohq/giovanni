@@ -213,6 +213,18 @@ jobs:
                   path: packages/pdfly-wasm/test-report/compression-summary.md
                   if-no-files-found: ignore
 
+            - name: Post compression summary as PR comment
+              if: github.event_name == 'pull_request' && always()
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require("fs");
+                      const path = require("path");
+                      const scriptPath = path.join(process.env.GITHUB_WORKSPACE, ".github/scripts/post-compression-comment.js");
+                      const body = fs.readFileSync(scriptPath, "utf8");
+                      const run = new Function("github", "context", "core", "return (async function () {\n" + body + "\n})();");
+                      await run(github, context, core);
+
             - name: Check package contract
               run: pnpm --filter @pdfly/wasm package:check
 

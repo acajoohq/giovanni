@@ -54,6 +54,7 @@ def main() -> None:
     baseline = parse_xml(args.baseline) if args.baseline and args.baseline.exists() else None
 
     title = "## Compression Results" + (" (vs master)" if baseline else "")
+    no_baseline_note = "" if baseline else "\n> ℹ️ No master baseline available\n"
     lines = [
         f"{title}\n",
         "| File | Original | default | web | archive |",
@@ -97,7 +98,7 @@ def main() -> None:
     if baseline is not None:
         lines.append("\n> ✅ unchanged &nbsp;|&nbsp; 🟢 improved &nbsp;|&nbsp; ⚠️ regression &nbsp;|&nbsp; 🆕 new fixture")
 
-    content = "\n".join(lines) + "\n"
+    content = no_baseline_note + "\n".join(lines) + "\n"
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     MD_PATH.write_text(content, encoding="utf-8")

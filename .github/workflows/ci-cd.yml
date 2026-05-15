@@ -175,9 +175,35 @@ jobs:
                   path: packages/pdfly-wasm/test-report/compression-results.xml
                   if-no-files-found: ignore
 
+            - name: Download master compression baseline
+              if: github.event_name == 'pull_request'
+              continue-on-error: true
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  RUN_ID=$(gh run list \
+                      --repo "$GITHUB_REPOSITORY" \
+                      --branch master \
+                      --workflow ci-cd.yml \
+                      --status success \
+                      --limit 1 \
+                      --json databaseId \
+                      --jq '.[0].databaseId')
+                  if [ -n "$RUN_ID" ]; then
+                      gh run download "$RUN_ID" \
+                          --repo "$GITHUB_REPOSITORY" \
+                          --name compression-results \
+                          --dir /tmp/compression-baseline
+                  fi
+
             - name: Generate compression summary
               if: always()
-              run: python3 packages/pdfly-wasm/script/generate-compression-summary.py
+              run: |
+                  BASELINE_FLAG=""
+                  if [ -f "/tmp/compression-baseline/compression-results.xml" ]; then
+                      BASELINE_FLAG="--baseline /tmp/compression-baseline/compression-results.xml"
+                  fi
+                  python3 packages/pdfly-wasm/script/generate-compression-summary.py $BASELINE_FLAG
 
             - name: Upload compression summary artifact
               uses: actions/upload-artifact@v4

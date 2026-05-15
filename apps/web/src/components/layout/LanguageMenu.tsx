@@ -18,11 +18,17 @@ export function LanguageMenu() {
     const [open, setOpen] = useState(false);
 
     const switchLocale = (newLocale: string) => {
+        // Fire-and-forget: start the language change without awaiting so we don't
+        // trigger an intermediate re-render with the backdrop still visible.
+        // LocaleLayout's useEffect also keeps i18n in sync with the route param.
+        void i18n.changeLanguage(newLocale);
         // Replace the current locale segment in the pathname with the new one
         // e.g. /en/compress -> /fr/compress
         const newPathname = location.pathname.replace(new RegExp(`^/${locale}(/|$)`), `/${newLocale}$1`);
-        navigate({ to: newPathname + location.searchStr + location.hash, replace: true });
+        // Close first so React batches this with navigate() in the same render pass,
+        // avoiding the backdrop lingering over the new page.
         setOpen(false);
+        navigate({ to: newPathname + location.searchStr + location.hash, replace: true });
     };
 
     const current = locale ?? i18n.resolvedLanguage ?? "en";
@@ -37,7 +43,7 @@ export function LanguageMenu() {
             </Dialog.Trigger>
 
             <Dialog.Portal>
-                <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+                <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 duration-100 data-open:animate-in data-open:fade-in-0" />
                 <Dialog.Popup className="fixed bottom-0 left-0 right-0 z-50 rounded-t-xl border-t border-app-border bg-app-surface-raised p-2 shadow-xl outline-none duration-150 data-open:animate-in data-open:slide-in-from-bottom-4 data-closed:animate-out data-closed:slide-out-to-bottom-4 sm:bottom-auto sm:left-auto sm:right-4 sm:top-12 sm:w-40 sm:rounded-lg sm:border sm:data-open:slide-in-from-bottom-0 sm:data-open:zoom-in-95 sm:data-closed:slide-out-to-bottom-0 sm:data-closed:zoom-out-95">
                     <div className="mb-1 flex items-center justify-between px-2 py-1.5">
                         <p className="text-[9px] font-medium uppercase tracking-widest text-app-text-subtle">{t("nav.languageLabel")}</p>

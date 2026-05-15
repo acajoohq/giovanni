@@ -26,7 +26,8 @@
         },
         "test": {
             "dependsOn": ["^build"],
-            "inputs": ["$TURBO_DEFAULT$"]
+            "inputs": ["$TURBO_DEFAULT$"],
+            "outputs": ["test-report/**"]
         },
         "test:watch": {
             "cache": false,

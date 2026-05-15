@@ -167,36 +167,24 @@ jobs:
                   source .cache/emsdk/emsdk_env.sh
                   pnpm run test
 
-            - name: Run pdfly-wasm tests with report
-              continue-on-error: true
-              run: |
-                  set -euo pipefail
-                  source .cache/emsdk/emsdk_env.sh
-                  pnpm --filter @pdfly/wasm run test:report
-
-            - name: Publish test report
-              uses: dorny/test-reporter@v1
-              if: always()
-              with:
-                  name: pdfly-wasm test results
-                  path: packages/pdfly-wasm/test-report/junit.xml
-                  reporter: java-junit
-                  fail-on-error: false
-
-            - name: Upload test report artifact
-              uses: actions/upload-artifact@v4
-              if: always()
-              with:
-                  name: test-report
-                  path: packages/pdfly-wasm/test-report/junit.xml
-                  if-no-files-found: ignore
-
             - name: Upload compression results artifact
               uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: compression-results
                   path: packages/pdfly-wasm/test-report/compression-results.xml
+                  if-no-files-found: ignore
+
+            - name: Generate compression summary
+              if: always()
+              run: python3 packages/pdfly-wasm/script/generate-compression-summary.py
+
+            - name: Upload compression summary artifact
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: compression-summary
+                  path: packages/pdfly-wasm/test-report/compression-summary.md
                   if-no-files-found: ignore
 
             - name: Check package contract

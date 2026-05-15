@@ -11,8 +11,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // without needing to build first.
 const wasmJsUrl = pathToFileURL(resolve(__dirname, "build/wasm/qpdf.js")).href;
 
-const isCI = Boolean(process.env.CI);
-
 export default defineConfig({
     plugins: [
         {
@@ -31,7 +29,6 @@ export default defineConfig({
         globals: true,
         environment: "node",
         setupFiles: ["./src/test/setup.ts"],
-        reporters: isCI ? [["junit", { outputFile: "./test-report/junit.xml", suiteName: "pdfly-wasm" }], "verbose"] : ["default"],
         coverage: {
             provider: "v8",
             reporter: ["text", "json", "html"],

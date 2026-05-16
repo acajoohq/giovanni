@@ -97,6 +97,7 @@
             colorResolution: "Color DPI",
             grayResolution: "Gray DPI",
             jpegQuality: "JPEG quality",
+            off: "Off",
         },
         decodeLevel: {
             none: "None",

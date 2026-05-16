@@ -99,6 +99,7 @@ export const fr: Translations = {
             colorResolution: "PPP couleur",
             grayResolution: "PPP gris",
             jpegQuality: "Qualité JPEG",
+            off: "Désactivé",
         },
         decodeLevel: {
             none: "Aucun",

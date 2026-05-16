@@ -1,6 +1,7 @@
 import {
     compressPdf,
     formatBytes,
+    GHOSTSCRIPT_PRESETS,
     OPTIMIZE_PRESETS,
     type CompressionEngine,
     type CompressResult,
@@ -46,24 +47,16 @@ type GhostscriptSettings = {
     colorConversionStrategy: GhostscriptColorConversionStrategy;
     downsampleColorImages: boolean;
     downsampleGrayImages: boolean;
-    colorImageResolution: number;
-    grayImageResolution: number;
-    jpegQuality: number;
+    colorImageResolution?: number;
+    grayImageResolution?: number;
 };
 
 const QPDF_PRESETS: QpdfOptimizePreset[] = ["default", "web", "archive"];
-const GHOSTSCRIPT_PRESETS: GhostscriptPdfSettings[] = ["default", "screen", "ebook", "printer", "prepress"];
+const GHOSTSCRIPT_PRESET_NAMES: GhostscriptPdfSettings[] = ["default", "screen", "ebook", "printer", "prepress"];
 const GHOSTSCRIPT_COMPATIBILITY_LEVELS: GhostscriptCompatibilityLevel[] = ["1.3", "1.4", "1.5", "1.6", "1.7"];
-const DEFAULT_GHOSTSCRIPT_SETTINGS: GhostscriptSettings = {
-    preset: "default",
-    compatibilityLevel: "1.7",
-    colorConversionStrategy: "LeaveColorUnchanged",
-    downsampleColorImages: true,
-    downsampleGrayImages: true,
-    colorImageResolution: 144,
-    grayImageResolution: 144,
-    jpegQuality: 75,
-};
+const GHOSTSCRIPT_ENGINE_PRESETS: Record<GhostscriptPdfSettings, Omit<GhostscriptSettings, "preset">> = GHOSTSCRIPT_PRESETS;
+const DEFAULT_GHOSTSCRIPT_SETTINGS: GhostscriptSettings = { preset: "default", ...GHOSTSCRIPT_ENGINE_PRESETS.default };
+const GHOSTSCRIPT_RESOLUTION_FALLBACK = 144;
 
 export function CompressTool() {
     const { t } = useTranslation();
@@ -161,12 +154,10 @@ export function CompressTool() {
             downsampleGrayImages: nextGhostscriptSettings.downsampleGrayImages,
             colorImageResolution: nextGhostscriptSettings.colorImageResolution,
             grayImageResolution: nextGhostscriptSettings.grayImageResolution,
-            jpegQuality: nextGhostscriptSettings.jpegQuality,
         };
     };
 
     const processFile = async (
-        nextFile: File,
         nextSourceData: Uint8Array,
         nextEngine: CompressionEngine = engine,
         nextQpdfSettings: QpdfSettings = qpdfSettings,
@@ -185,8 +176,8 @@ export function CompressTool() {
     };
 
     const debouncedProcessFile = useDebouncedCallback(
-        (nextFile: File, nextSourceData: Uint8Array, nextEngine: CompressionEngine, nextQpdfSettings: QpdfSettings, nextGhostscriptSettings: GhostscriptSettings) => {
-            void processFile(nextFile, nextSourceData, nextEngine, nextQpdfSettings, nextGhostscriptSettings);
+        (nextSourceData: Uint8Array, nextEngine: CompressionEngine, nextQpdfSettings: QpdfSettings, nextGhostscriptSettings: GhostscriptSettings) => {
+            void processFile(nextSourceData, nextEngine, nextQpdfSettings, nextGhostscriptSettings);
         },
         PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS,
     );
@@ -201,7 +192,7 @@ export function CompressTool() {
             return;
         }
 
-        debouncedProcessFile(file, sourceData, nextEngine, nextQpdfSettings, nextGhostscriptSettings);
+        debouncedProcessFile(sourceData, nextEngine, nextQpdfSettings, nextGhostscriptSettings);
     };
 
     const updateQpdfSettings = (patch: Partial<QpdfSettings>) => {
@@ -228,7 +219,7 @@ export function CompressTool() {
     };
 
     const selectGhostscriptPreset = (preset: GhostscriptPdfSettings) => {
-        updateGhostscriptSettings({ preset });
+        updateGhostscriptSettings({ preset, ...GHOSTSCRIPT_ENGINE_PRESETS[preset] });
     };
 
     const handleFiles = async (files: File[]) => {
@@ -248,7 +239,7 @@ export function CompressTool() {
             setPreviewPageCount(0);
             setFile(nextFile);
             setSourceData(nextSourceData);
-            void processFile(nextFile, nextSourceData);
+            void processFile(nextSourceData);
         } catch (error) {
             setStatus({ tone: "error", message: error instanceof Error ? error.message : t("common.selectPdf") });
         }
@@ -307,7 +298,7 @@ export function CompressTool() {
                                       {qpdfPresetLabels[preset]}
                                   </SidebarToggle>
                               ))
-                            : GHOSTSCRIPT_PRESETS.map((preset) => (
+                            : GHOSTSCRIPT_PRESET_NAMES.map((preset) => (
                                   <SidebarToggle
                                       key={preset}
                                       isActive={ghostscriptSettings.preset === preset}
@@ -380,15 +371,23 @@ export function CompressTool() {
                             <SidebarCheckbox
                                 checked={ghostscriptSettings.downsampleColorImages}
                                 label={t("compress.sidebar.downsampleColor")}
-                                onChange={(event) => updateGhostscriptSettings({ downsampleColorImages: event.currentTarget.checked })}
+                                onChange={(event) =>
+                                    updateGhostscriptSettings({
+                                        downsampleColorImages: event.currentTarget.checked,
+                                        colorImageResolution: event.currentTarget.checked
+                                            ? ghostscriptSettings.colorImageResolution ?? GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].colorImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK
+                                            : ghostscriptSettings.colorImageResolution,
+                                    })
+                                }
                             />
                             <SidebarField className="-mt-2 mb-2" label={t("compress.sidebar.colorResolution")}>
                                 <SidebarRange
+                                    disabled={!ghostscriptSettings.downsampleColorImages}
                                     max={300}
                                     min={36}
                                     step={6}
-                                    value={ghostscriptSettings.colorImageResolution}
-                                    valueLabel={`${ghostscriptSettings.colorImageResolution}`}
+                                    value={ghostscriptSettings.colorImageResolution ?? GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].colorImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}
+                                    valueLabel={ghostscriptSettings.downsampleColorImages ? `${ghostscriptSettings.colorImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}` : t("compress.sidebar.off")}
                                     onValueChange={(colorImageResolution) => updateGhostscriptSettings({ colorImageResolution }, { recompress: false })}
                                     onValueCommitted={(colorImageResolution: number) => updateGhostscriptSettings({ colorImageResolution })}
                                 />
@@ -396,27 +395,25 @@ export function CompressTool() {
                             <SidebarCheckbox
                                 checked={ghostscriptSettings.downsampleGrayImages}
                                 label={t("compress.sidebar.downsampleGray")}
-                                onChange={(event) => updateGhostscriptSettings({ downsampleGrayImages: event.currentTarget.checked })}
+                                onChange={(event) =>
+                                    updateGhostscriptSettings({
+                                        downsampleGrayImages: event.currentTarget.checked,
+                                        grayImageResolution: event.currentTarget.checked
+                                            ? ghostscriptSettings.grayImageResolution ?? GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].grayImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK
+                                            : ghostscriptSettings.grayImageResolution,
+                                    })
+                                }
                             />
                             <SidebarField className="-mt-2 mb-2" label={t("compress.sidebar.grayResolution")}>
                                 <SidebarRange
+                                    disabled={!ghostscriptSettings.downsampleGrayImages}
                                     max={300}
                                     min={36}
                                     step={6}
-                                    value={ghostscriptSettings.grayImageResolution}
-                                    valueLabel={`${ghostscriptSettings.grayImageResolution}`}
+                                    value={ghostscriptSettings.grayImageResolution ?? GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].grayImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}
+                                    valueLabel={ghostscriptSettings.downsampleGrayImages ? `${ghostscriptSettings.grayImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}` : t("compress.sidebar.off")}
                                     onValueChange={(grayImageResolution) => updateGhostscriptSettings({ grayImageResolution }, { recompress: false })}
                                     onValueCommitted={(grayImageResolution: number) => updateGhostscriptSettings({ grayImageResolution })}
-                                />
-                            </SidebarField>
-                            <SidebarField label={t("compress.sidebar.jpegQuality")}>
-                                <SidebarRange
-                                    max={100}
-                                    min={0}
-                                    value={ghostscriptSettings.jpegQuality}
-                                    valueLabel={ghostscriptSettings.jpegQuality}
-                                    onValueChange={(jpegQuality) => updateGhostscriptSettings({ jpegQuality }, { recompress: false })}
-                                    onValueCommitted={(jpegQuality: number) => updateGhostscriptSettings({ jpegQuality })}
                                 />
                             </SidebarField>
                         </SidebarContent>

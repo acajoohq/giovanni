@@ -1,6 +1,47 @@
 import { GhostscriptValidationError } from "../../errors/index.js";
 import type { GhostscriptColorConversionStrategy, GhostscriptCompatibilityLevel, GhostscriptCompressOptions, GhostscriptPdfSettings } from "../../types/ghostscript.types.js";
 
+export const GHOSTSCRIPT_PRESETS = {
+    default: {
+        compatibilityLevel: "1.7",
+        colorConversionStrategy: "LeaveColorUnchanged",
+        downsampleColorImages: false,
+        downsampleGrayImages: false,
+    },
+    screen: {
+        compatibilityLevel: "1.5",
+        colorConversionStrategy: "LeaveColorUnchanged",
+        downsampleColorImages: true,
+        downsampleGrayImages: true,
+        colorImageResolution: 72,
+        grayImageResolution: 72,
+    },
+    ebook: {
+        compatibilityLevel: "1.5",
+        colorConversionStrategy: "LeaveColorUnchanged",
+        downsampleColorImages: true,
+        downsampleGrayImages: true,
+        colorImageResolution: 150,
+        grayImageResolution: 150,
+    },
+    printer: {
+        compatibilityLevel: "1.7",
+        colorConversionStrategy: "LeaveColorUnchanged",
+        downsampleColorImages: true,
+        downsampleGrayImages: true,
+        colorImageResolution: 300,
+        grayImageResolution: 300,
+    },
+    prepress: {
+        compatibilityLevel: "1.7",
+        colorConversionStrategy: "LeaveColorUnchanged",
+        downsampleColorImages: true,
+        downsampleGrayImages: true,
+        colorImageResolution: 300,
+        grayImageResolution: 300,
+    },
+} satisfies Record<GhostscriptPdfSettings, Omit<GhostscriptCompressOptions, "preset" | "pdfSettings" | "downsampleMonoImages" | "monoImageResolution" | "jpegQuality">>;
+
 export interface NormalizedGhostscriptOptions {
     pdfSettings: GhostscriptPdfSettings;
     compatibilityLevel?: GhostscriptCompatibilityLevel;

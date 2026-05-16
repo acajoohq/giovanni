@@ -77,3 +77,4 @@ export { formatBytes, calculateSavings, formatPercentage } from "./utils/format.
 
 // preset constants
 export { OPTIMIZE_PRESETS } from "./utils/validation.js";
+export { GHOSTSCRIPT_PRESETS } from "./engines/ghostscript/options.js";

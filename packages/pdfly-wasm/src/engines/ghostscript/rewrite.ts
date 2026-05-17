@@ -1,7 +1,6 @@
 import { GhostscriptCompressionError, GhostscriptValidationError, type GhostscriptErrorOptions } from "../../errors/index.js";
-import { calculateSavings } from "../../utils/format.js";
 import { toUint8Array } from "../../utils/buffer.js";
-import type { CompressResult, GhostscriptCompressOptions } from "../../types/index.js";
+import type { GhostscriptCompressOptions } from "../../types/index.js";
 import { buildGhostscriptArgs, type NormalizedGhostscriptOptions, validateGhostscriptOptions } from "./options.js";
 import { withGhostscriptExecution } from "./execution.js";
 
@@ -27,25 +26,7 @@ export async function rewritePdfWithGhostscript(input: Uint8Array | ArrayBuffer,
     }
 }
 
-export async function compressPdfWithGhostscript(input: Uint8Array | ArrayBuffer, options?: GhostscriptCompressOptions): Promise<CompressResult> {
-    const inputBuffer = toUint8Array(input);
-    const normalizedOptions = validateGhostscriptOptions(options);
-    const outputBuffer = await rewritePdfWithNormalizedGhostscriptOptions(inputBuffer, normalizedOptions);
-    const { savedBytes, compressionRatio, percentageSaved } = calculateSavings(inputBuffer.byteLength, outputBuffer.byteLength);
-
-    return {
-        engine: "ghostscript",
-        data: outputBuffer,
-        preset: normalizedOptions.pdfSettings,
-        originalSize: inputBuffer.byteLength,
-        compressedSize: outputBuffer.byteLength,
-        compressionRatio,
-        savedBytes,
-        percentageSaved,
-    };
-}
-
-async function rewritePdfWithNormalizedGhostscriptOptions(inputBuffer: Uint8Array, options: NormalizedGhostscriptOptions): Promise<Uint8Array> {
+export async function rewritePdfWithNormalizedGhostscriptOptions(inputBuffer: Uint8Array, options: NormalizedGhostscriptOptions): Promise<Uint8Array> {
     return withGhostscriptExecution(async (module) => {
         const args = buildGhostscriptArgs(options);
         return module.rewritePdf(inputBuffer, args).slice();

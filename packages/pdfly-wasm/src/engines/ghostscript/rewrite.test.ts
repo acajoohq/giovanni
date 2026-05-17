@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GhostscriptCompressionError } from "../../errors/index.js";
-import { compressPdfWithGhostscript, rewritePdfWithGhostscript } from "./rewrite.js";
+import { rewritePdfWithGhostscript } from "./rewrite.js";
 import { withGhostscriptExecution } from "./execution.js";
 
 vi.mock("./execution.js");
@@ -50,23 +50,5 @@ describe("rewritePdfWithGhostscript", () => {
 
         await expect(rewritePdfWithGhostscript(new Uint8Array())).rejects.toBeInstanceOf(GhostscriptCompressionError);
         await expect(rewritePdfWithGhostscript(new Uint8Array())).rejects.toThrow("Failed to rewrite PDF with Ghostscript");
-    });
-});
-
-describe("compressPdfWithGhostscript", () => {
-    it("returns unified compression metrics", async () => {
-        mockWithGhostscriptExecution.mockImplementation(async (operation) =>
-            operation({
-                rewritePdf: () => new Uint8Array(400),
-                getVersion: () => "10.07",
-            } as never),
-        );
-
-        const result = await compressPdfWithGhostscript(new Uint8Array(1000), { preset: "ebook" });
-
-        expect(result.engine).toBe("ghostscript");
-        expect(result.preset).toBe("ebook");
-        expect(result.originalSize).toBe(1000);
-        expect(result.compressedSize).toBe(400);
     });
 });

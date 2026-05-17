@@ -1,7 +1,7 @@
 import { initQpdfModule } from "./engines/qpdf/module-loader.js";
 import { QpdfDocument } from "./engines/qpdf/document.js";
 import { QPDF_PRESETS } from "./engines/qpdf/options.js";
-import { optimizePdf, linearizePdf } from "./operations/compress.js";
+import { compressPdfWithQpdf, optimizePdf, linearizePdf } from "./engines/qpdf/optimize.js";
 
 export async function initQpdf(): Promise<void> {
     await initQpdfModule();
@@ -12,6 +12,6 @@ export async function getQpdfVersion(): Promise<string> {
     return module.getVersion();
 }
 
-export { linearizePdf, optimizePdf, QpdfDocument, QPDF_PRESETS };
+export { compressPdfWithQpdf, linearizePdf, optimizePdf, QpdfDocument, QPDF_PRESETS };
 
 export type { DecodeLevel, ObjectStreamMode, OptimizeOptions, OptimizeResult, QpdfCheckResult, QpdfDocumentInfo, QpdfOptimizePreset, WriteOptions } from "./types/qpdf.types.js";

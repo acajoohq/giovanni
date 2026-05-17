@@ -21,7 +21,7 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { linearizePdf, optimizePdf } from "../core/compress.js";
 import { QpdfCompressionError } from "../core/errors.js";
 import type { DecodeLevel, OptimizeOptions, OptimizeResult, QpdfOptimizePreset } from "../types/index.js";
@@ -174,30 +174,35 @@ type SkippedResult = {
 const sizeResults: SizeResult[] = [];
 const skippedResults: SkippedResult[] = [];
 
-for (const fixture of fixtures) {
-    for (const preset of ["default", "web", "archive"] as const) {
-        const result = await tryCompress(fixture.data, { preset });
-        if (result !== null) {
-            sizeResults.push({
-                name: fixture.name,
-                preset,
-                originalBytes: result.originalSize,
-                compressedBytes: result.compressedSize,
-                savedBytes: result.savedBytes,
-                percentageSaved: Math.round(result.percentageSaved * 10) / 10,
-                ratio: result.originalSize === 0 ? 1 : Math.round((result.compressedSize / result.originalSize) * 10000) / 10000,
-            });
-        } else {
-            skippedResults.push({ name: fixture.name, preset, originalBytes: fixture.data.length, reason: "wasm-abort" });
-        }
-    }
-}
-
-await writeCompressionReport(sizeResults, skippedResults);
-
 // ---------------------------------------------------------------------------
 
 describe("compression quality", () => {
+    // Pre-compute compression results for all fixtures × all presets inside
+    // beforeAll so that: (a) vitest enforces a timeout on stuck WASM calls,
+    // (b) failures surface as named suite errors rather than obscure
+    //     "error collecting test file" messages at module-evaluation time.
+    beforeAll(async () => {
+        for (const fixture of fixtures) {
+            for (const preset of ["default", "web", "archive"] as const) {
+                const result = await tryCompress(fixture.data, { preset });
+                if (result !== null) {
+                    sizeResults.push({
+                        name: fixture.name,
+                        preset,
+                        originalBytes: result.originalSize,
+                        compressedBytes: result.compressedSize,
+                        savedBytes: result.savedBytes,
+                        percentageSaved: Math.round(result.percentageSaved * 10) / 10,
+                        ratio: result.originalSize === 0 ? 1 : Math.round((result.compressedSize / result.originalSize) * 10000) / 10000,
+                    });
+                } else {
+                    skippedResults.push({ name: fixture.name, preset, originalBytes: fixture.data.length, reason: "wasm-abort" });
+                }
+            }
+        }
+        await writeCompressionReport(sizeResults, skippedResults);
+    }, 5 * 60_000);
+
     it("has at least one PDF fixture", () => {
         expect(fixtures.length).toBeGreaterThan(0);
     });
@@ -222,14 +227,19 @@ describe("compression quality", () => {
             expect(sizeResults.length).toBeGreaterThan(0);
         });
 
-        it.each(sizeResults)(
-            "$name ($preset): $originalBytes B → $compressedBytes B ($percentageSaved %)",
-            ({ originalBytes, compressedBytes, savedBytes }) => {
-                // The output must always be a non-empty file.
-                expect(compressedBytes).toBeGreaterThan(0);
-
-                // The reported saved bytes must match the difference.
-                expect(savedBytes).toBe(originalBytes - compressedBytes);
+        // it.each(sizeResults) is not used here because sizeResults is empty
+        // at test-registration time (populated by beforeAll above). Instead we
+        // iterate over fixtures — which are loaded at module level — and look
+        // up the pre-computed result inside the test body.
+        it.each(fixtures)(
+            "size bookkeeping is consistent for $name",
+            ({ name }) => {
+                for (const preset of ["default", "web", "archive"] as const) {
+                    const r = sizeResults.find((x) => x.name === name && x.preset === preset);
+                    if (!r) continue; // wasm-abort for this preset — acceptable
+                    expect(r.compressedBytes).toBeGreaterThan(0);
+                    expect(r.savedBytes).toBe(r.originalBytes - r.compressedBytes);
+                }
             },
             TEST_TIMEOUT_MS,
         );

@@ -50,6 +50,7 @@ lerna-debug.log*
 .agents/skills/
 vendor/qpdf/
 packages/pdfly-wasm/wasm/cmake-build/
+packages/pdfly-wasm/test-report/
 .claude/settings.local.json
 dogfood-output/
 packages/pdfly-wasm/.tmp

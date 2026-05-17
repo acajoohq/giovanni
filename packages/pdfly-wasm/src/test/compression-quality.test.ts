@@ -246,38 +246,28 @@ describe("compression quality", () => {
     });
 
     // -----------------------------------------------------------------------
-    // 1. Output validity — every preset × every fixture
-    //    Files that cause WASM aborts (known pre-existing bugs) are accepted
-    //    as null and skipped rather than failed.
+    // 1 & 2. Output validity + statistic consistency — every preset × every fixture.
+    //    tryCompress runs once per (preset, fixture) in beforeAll; both checks
+    //    share the same result to avoid redundant WASM calls.
     // -----------------------------------------------------------------------
 
-    describe.each(PRESETS)('preset "%s" — output validity', (preset) => {
-        it.each(fixtures)(
-            "produces a valid non-empty PDF for $name",
-            async ({ data }) => {
-                const result = await tryCompress(data, { preset });
-                if (result === null) return; // WASM abort on this fixture — skip
+    describe.each(PRESETS)('preset "%s"', (preset) => {
+        describe.each(fixtures)("$name", ({ data }) => {
+            let result!: OptimizeResult | null;
 
+            beforeAll(async () => {
+                result = await tryCompress(data, { preset });
+            }, TEST_TIMEOUT_MS);
+
+            it("produces a valid non-empty PDF", () => {
+                if (result === null) return; // WASM abort — skip
                 expect(result.data.byteLength).toBeGreaterThan(0);
                 expect(hasPdfHeader(result.data)).toBe(true);
                 expect(result.preset).toBe(preset);
-            },
-            TEST_TIMEOUT_MS,
-        );
-    });
+            });
 
-    // -----------------------------------------------------------------------
-    // 2. Metric consistency — every preset × every fixture
-    //    Only checked for files that compress successfully.
-    // -----------------------------------------------------------------------
-
-    describe.each(PRESETS)('preset "%s" — statistic consistency', (preset) => {
-        it.each(fixtures)(
-            "reports internally consistent statistics for $name",
-            async ({ data }) => {
-                const result = await tryCompress(data, { preset });
-                if (result === null) return; // WASM abort on this fixture — skip
-
+            it("reports internally consistent statistics", () => {
+                if (result === null) return; // WASM abort — skip
                 expect(result.originalSize).toBe(data.byteLength);
                 expect(result.compressedSize).toBe(result.data.byteLength);
 
@@ -289,9 +279,8 @@ describe("compression quality", () => {
 
                 const expectedPct = result.originalSize === 0 ? 0 : (result.savedBytes / result.originalSize) * 100;
                 expect(result.percentageSaved).toBeCloseTo(expectedPct, 3);
-            },
-            TEST_TIMEOUT_MS,
-        );
+            });
+        });
     });
 
     // -----------------------------------------------------------------------

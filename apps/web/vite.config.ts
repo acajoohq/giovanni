@@ -1,39 +1,39 @@
-import tailwindcss from "@tailwindcss/vite"
-import babel from "@rolldown/plugin-babel"
-import { tanstackStart } from "@tanstack/react-start/plugin/vite"
-import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react"
-import { codeInspectorPlugin } from "code-inspector-plugin"
-import { execFileSync } from "node:child_process"
-import { readFile } from "node:fs/promises"
-import { dirname, resolve } from "node:path"
-import { fileURLToPath, URL } from "node:url"
-import { defineConfig, type Plugin } from "vite"
-import appPackage from "./package.json"
+import tailwindcss from "@tailwindcss/vite";
+import babel from "@rolldown/plugin-babel";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react";
+import { codeInspectorPlugin } from "code-inspector-plugin";
+import { execFileSync } from "node:child_process";
+import { readFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath, URL } from "node:url";
+import { defineConfig, type Plugin } from "vite";
+import appPackage from "./package.json";
 
-const appDirectory = dirname(fileURLToPath(import.meta.url))
-const rootDirectory = resolve(appDirectory, "../..")
-const appVersion = appPackage.version
-const SHORT_GIT_SHA_LENGTH = 7
-const gitCommit = getGitCommit()
+const appDirectory = dirname(fileURLToPath(import.meta.url));
+const rootDirectory = resolve(appDirectory, "../..");
+const appVersion = appPackage.version;
+const SHORT_GIT_SHA_LENGTH = 7;
+const gitCommit = getGitCommit();
 
 function getGitCommit(): string {
-  const envCommit = process.env.SOURCE_SHA ?? process.env.GITHUB_SHA
+    const envCommit = process.env.SOURCE_SHA ?? process.env.GITHUB_SHA;
 
-  if (envCommit) {
-    return envCommit.slice(0, SHORT_GIT_SHA_LENGTH)
-  }
+    if (envCommit) {
+        return envCommit.slice(0, SHORT_GIT_SHA_LENGTH);
+    }
 
-  try {
-    return execFileSync("git", ["rev-parse", `--short=${SHORT_GIT_SHA_LENGTH}`, "HEAD"], {
-      cwd: rootDirectory,
-      encoding: "utf8",
-    }).trim()
-  } catch {
-    return "unknown"
-  }
+    try {
+        return execFileSync("git", ["rev-parse", `--short=${SHORT_GIT_SHA_LENGTH}`, "HEAD"], {
+            cwd: rootDirectory,
+            encoding: "utf8",
+        }).trim();
+    } catch {
+        return "unknown";
+    }
 }
 
-const PDFLY_WASM_RUNTIME_ASSETS = ["qpdf.js", "qpdf.wasm", "ghostscript.js", "ghostscript.wasm"] as const
+const PDFLY_WASM_RUNTIME_ASSETS = ["qpdf.js", "qpdf.wasm", "ghostscript.js", "ghostscript.wasm"] as const;
 
 /**
  * Emits the Emscripten runtime files into the client build's assets directory.
@@ -47,91 +47,91 @@ const PDFLY_WASM_RUNTIME_ASSETS = ["qpdf.js", "qpdf.wasm", "ghostscript.js", "gh
  * runtime files are not duplicated into the server bundle.
  */
 function copyPdflyWasmRuntimeAssetsPlugin(): Plugin {
-  return {
-    name: "copy-wasm-assets",
-    apply: "build",
-    applyToEnvironment(environment) {
-      return environment.name === "client"
-    },
-    async generateBundle() {
-      for (const assetFileName of PDFLY_WASM_RUNTIME_ASSETS) {
-        const assetPath = resolve(rootDirectory, "packages/pdfly-wasm/dist", assetFileName)
-        const source = await readFile(assetPath)
+    return {
+        name: "copy-wasm-assets",
+        apply: "build",
+        applyToEnvironment(environment) {
+            return environment.name === "client";
+        },
+        async generateBundle() {
+            for (const assetFileName of PDFLY_WASM_RUNTIME_ASSETS) {
+                const assetPath = resolve(rootDirectory, "packages/pdfly-wasm/dist", assetFileName);
+                const source = await readFile(assetPath);
 
-        this.emitFile({
-          type: "asset",
-          fileName: `assets/${assetFileName}`,
-          source,
-        })
-      }
-    },
-  }
+                this.emitFile({
+                    type: "asset",
+                    fileName: `assets/${assetFileName}`,
+                    source,
+                });
+            }
+        },
+    };
 }
 
 export default defineConfig(({ mode }) => {
-  const isTest = mode === "test"
+    const isTest = mode === "test";
 
-  return {
-    plugins: [
-      tailwindcss(),
-      copyPdflyWasmRuntimeAssetsPlugin(),
-      !isTest &&
-        codeInspectorPlugin({
-          bundler: "vite",
-        }),
-      tanstackStart({
-        prerender: {
-          enabled: true,
-          crawlLinks: true,
-        },
-        // Explicitly seed all locale * page paths so every locale
-        // is prerendered regardless of the build system's locale.
-        pages: [
-          { path: "/" },
-          { path: "/en/" },
-          { path: "/en/compress" },
-          { path: "/en/merge" },
-          { path: "/en/split" },
-          { path: "/en/organize" },
-          { path: "/en/extract-images" },
-          { path: "/en/pdf-to-jpg" },
-          { path: "/fr/" },
-          { path: "/fr/compress" },
-          { path: "/fr/merge" },
-          { path: "/fr/split" },
-          { path: "/fr/organize" },
-          { path: "/fr/extract-images" },
-          { path: "/fr/pdf-to-jpg" },
+    return {
+        plugins: [
+            tailwindcss(),
+            copyPdflyWasmRuntimeAssetsPlugin(),
+            !isTest &&
+                codeInspectorPlugin({
+                    bundler: "vite",
+                }),
+            tanstackStart({
+                prerender: {
+                    enabled: true,
+                    crawlLinks: true,
+                },
+                // Explicitly seed all locale * page paths so every locale
+                // is prerendered regardless of the build system's locale.
+                pages: [
+                    { path: "/" },
+                    { path: "/en/" },
+                    { path: "/en/compress" },
+                    { path: "/en/merge" },
+                    { path: "/en/split" },
+                    { path: "/en/organize" },
+                    { path: "/en/extract-images" },
+                    { path: "/en/pdf-to-jpg" },
+                    { path: "/fr/" },
+                    { path: "/fr/compress" },
+                    { path: "/fr/merge" },
+                    { path: "/fr/split" },
+                    { path: "/fr/organize" },
+                    { path: "/fr/extract-images" },
+                    { path: "/fr/pdf-to-jpg" },
+                ],
+            }),
+            viteReact(),
+            babel({ presets: [reactCompilerPreset()] }),
         ],
-      }),
-      viteReact(),
-      babel({ presets: [reactCompilerPreset()] }),
-    ],
-    optimizeDeps: {
-      exclude: ["pdfjs-dist"],
-    },
-    resolve: {
-      alias: {
-        "@": fileURLToPath(new URL("./src", import.meta.url)),
-      },
-    },
-    worker: {
-      format: "es",
-    },
-    define: {
-      "import.meta.env.VITE_APP_VERSION": JSON.stringify(appVersion),
-      "import.meta.env.VITE_GIT_COMMIT": JSON.stringify(gitCommit),
-    },
-    environments: {
-      // `canvas` and `.node` binaries are pulled in by `@pdfly/wasm` (noExternal by TanStack Start) but can't be bundled by Rolldown.
-      // `pdfjs-dist` uses DOM/Canvas APIs unavailable in Node.js — loading it during prerender crashes the SSR process.
-      ssr: {
-        build: {
-          rollupOptions: {
-            external: ["canvas", /\.node$/, "pdfjs-dist"],
-          },
+        optimizeDeps: {
+            exclude: ["pdfjs-dist"],
         },
-      },
-    },
-  }
-})
+        resolve: {
+            alias: {
+                "@": fileURLToPath(new URL("./src", import.meta.url)),
+            },
+        },
+        worker: {
+            format: "es",
+        },
+        define: {
+            "import.meta.env.VITE_APP_VERSION": JSON.stringify(appVersion),
+            "import.meta.env.VITE_GIT_COMMIT": JSON.stringify(gitCommit),
+        },
+        environments: {
+            // `canvas` and `.node` binaries are pulled in by `@pdfly/wasm` (noExternal by TanStack Start) but can't be bundled by Rolldown.
+            // `pdfjs-dist` uses DOM/Canvas APIs unavailable in Node.js — loading it during prerender crashes the SSR process.
+            ssr: {
+                build: {
+                    rollupOptions: {
+                        external: ["canvas", /\.node$/, "pdfjs-dist"],
+                    },
+                },
+            },
+        },
+    };
+});

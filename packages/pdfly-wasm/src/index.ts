@@ -76,5 +76,5 @@ export type {
 export { formatBytes, calculateSavings, formatPercentage } from "./utils/format.js";
 
 // preset constants
-export { OPTIMIZE_PRESETS } from "./utils/validation.js";
+export { QPDF_PRESETS } from "./engines/qpdf/options.js";
 export { GHOSTSCRIPT_PRESETS } from "./engines/ghostscript/options.js";

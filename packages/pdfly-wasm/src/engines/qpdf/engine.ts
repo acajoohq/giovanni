@@ -1,9 +1,10 @@
 import { QpdfCompressionError } from "../../errors/index.js";
 import { calculateSavings } from "../../utils/format.js";
-import { getOptimizePreset, normalizeBuffer, validateOptimizeOptions } from "../../utils/validation.js";
+import { normalizeBuffer } from "../../utils/validation.js";
 import type { CompressionEngineAdapter } from "../../compression/compressionEngine.interface.js";
 import type { OptimizeOptions, OptimizeResult } from "../../types/index.js";
 import { initQpdfModule } from "./module-loader.js";
+import { getQpdfPreset, validateQpdfOptions } from "./options.js";
 
 export const qpdfCompressionEngine: CompressionEngineAdapter<({ engine?: "qpdf" } & OptimizeOptions) | OptimizeOptions> = {
     engine: "qpdf",
@@ -14,7 +15,7 @@ export const qpdfCompressionEngine: CompressionEngineAdapter<({ engine?: "qpdf" 
         try {
             const module = await initQpdfModule();
             const inputBuffer = normalizeBuffer(input);
-            const validatedOptions = validateOptimizeOptions(options);
+            const validatedOptions = validateQpdfOptions(options);
             const optimizedBuffer = module.compressPdf(inputBuffer, validatedOptions).slice();
 
             const originalSize = inputBuffer.byteLength;
@@ -24,7 +25,7 @@ export const qpdfCompressionEngine: CompressionEngineAdapter<({ engine?: "qpdf" 
             return {
                 engine: "qpdf",
                 data: optimizedBuffer,
-                preset: getOptimizePreset(options),
+                preset: getQpdfPreset(options),
                 originalSize,
                 compressedSize,
                 compressionRatio,

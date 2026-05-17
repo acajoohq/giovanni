@@ -1,8 +1,9 @@
 import { initQpdfModule } from "./module-loader.js";
 import { QpdfCompressionError, QpdfInitError, QpdfValidationError } from "../../errors/index.js";
-import { normalizeBuffer, validateOptimizeOptions } from "../../utils/validation.js";
+import { normalizeBuffer } from "../../utils/validation.js";
 import type { OpenDocumentOptions, OptimizeOptions, QpdfDocumentInfo } from "../../types/index.js";
 import type { WasmQPDFWrapper } from "../../types/wasm.types.js";
+import { validateQpdfOptions } from "./options.js";
 
 /**
  * Advanced qpdf document for reusable workflows.
@@ -127,7 +128,7 @@ export class QpdfDocument {
 
         try {
             const module = await initQpdfModule();
-            const writeOptions = validateOptimizeOptions(options);
+            const writeOptions = validateQpdfOptions(options);
 
             const writeInstance = new module.QPDFWrapper();
             try {

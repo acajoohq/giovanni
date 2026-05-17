@@ -2,7 +2,7 @@ import {
     compressPdf,
     formatBytes,
     GHOSTSCRIPT_PRESETS,
-    OPTIMIZE_PRESETS,
+    QPDF_PRESETS,
     type CompressionEngine,
     type CompressResult,
     type DecodeLevel,
@@ -51,7 +51,7 @@ type GhostscriptSettings = {
     grayImageResolution?: number;
 };
 
-const QPDF_PRESETS: QpdfOptimizePreset[] = ["default", "web", "archive"];
+const QPDF_PRESET_NAMES: QpdfOptimizePreset[] = ["default", "web", "archive"];
 const GHOSTSCRIPT_PRESET_NAMES: GhostscriptPdfSettings[] = ["default", "screen", "ebook", "printer", "prepress"];
 const GHOSTSCRIPT_COMPATIBILITY_LEVELS: GhostscriptCompatibilityLevel[] = ["1.3", "1.4", "1.5", "1.6", "1.7"];
 const GHOSTSCRIPT_ENGINE_PRESETS: Record<GhostscriptPdfSettings, Omit<GhostscriptSettings, "preset">> = GHOSTSCRIPT_PRESETS;
@@ -67,7 +67,7 @@ export function CompressTool() {
     const [previewPage, setPreviewPage] = useState(1);
     const [previewPageCount, setPreviewPageCount] = useState(0);
     const [engine, setEngine] = useState<CompressionEngine>("qpdf");
-    const [qpdfSettings, setQpdfSettings] = useState<QpdfSettings>({ preset: "default", ...OPTIMIZE_PRESETS.default });
+    const [qpdfSettings, setQpdfSettings] = useState<QpdfSettings>({ preset: "default", ...QPDF_PRESETS.default });
     const [ghostscriptSettings, setGhostscriptSettings] = useState<GhostscriptSettings>(DEFAULT_GHOSTSCRIPT_SETTINGS);
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<CompressResult>();
 
@@ -215,7 +215,7 @@ export function CompressTool() {
     };
 
     const selectQpdfPreset = (preset: QpdfOptimizePreset) => {
-        updateQpdfSettings({ preset, ...OPTIMIZE_PRESETS[preset] });
+        updateQpdfSettings({ preset, ...QPDF_PRESETS[preset] });
     };
 
     const selectGhostscriptPreset = (preset: GhostscriptPdfSettings) => {
@@ -288,7 +288,7 @@ export function CompressTool() {
                 <SidebarContent>
                     <SidebarToggleGroup>
                         {engine === "qpdf"
-                            ? QPDF_PRESETS.map((preset) => (
+                            ? QPDF_PRESET_NAMES.map((preset) => (
                                   <SidebarToggle
                                       key={preset}
                                       isActive={qpdfSettings.preset === preset}

@@ -1,5 +1,5 @@
 import type { CompressOptions, CompressionEngine } from "../types/index.js";
-import type { CompressionEngineAdapter } from "./compressionEngine.interface.js";
+import type { CompressionEngineAdapter } from "./compression-engine.interface.js";
 import { ghostscriptCompressionEngine } from "../engines/ghostscript/engine.js";
 import { qpdfCompressionEngine } from "../engines/qpdf/engine.js";
 

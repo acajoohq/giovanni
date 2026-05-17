@@ -31,21 +31,21 @@ export function isGhostscriptError(error: unknown): error is GhostscriptError {
 }
 
 export class GhostscriptInitError extends GhostscriptError {
-    constructor(message: string, options?: ErrorOptions) {
+    constructor(message: string, options?: GhostscriptErrorOptions) {
         super(message, options);
         this.name = "GhostscriptInitError";
     }
 }
 
 export class GhostscriptCompressionError extends GhostscriptError {
-    constructor(message: string, options?: ErrorOptions) {
+    constructor(message: string, options?: GhostscriptErrorOptions) {
         super(message, options);
         this.name = "GhostscriptCompressionError";
     }
 }
 
 export class GhostscriptValidationError extends GhostscriptError {
-    constructor(message: string, options?: ErrorOptions) {
+    constructor(message: string, options?: GhostscriptErrorOptions) {
         super(message, options);
         this.name = "GhostscriptValidationError";
     }

@@ -2,6 +2,10 @@
 
 This package is split by responsibility.
 
+- `src/index.ts`, `src/qpdf.ts`, `src/ghostscript.ts`
+
+    Public package entrypoints: task-level root API plus engine-specific subpaths.
+
 - `src/operations/*.ts`
 
     Public PDF operations (compress, split, merge, inspect, organize, extract images).
@@ -12,7 +16,7 @@ This package is split by responsibility.
 
 - `src/engines/ghostscript/*`
 
-    Ghostscript WASM module loading, runtime, option mapping, rewrite path, and compression engine implementation.
+    Ghostscript WASM module loading, execution queue, option mapping, rewrite path, and compression engine implementation.
 
 - `src/compression/*`
 
@@ -32,7 +36,7 @@ This package is split by responsibility.
 
 - `src/utils/*`
 
-    Shared validation and formatting helpers.
+    Shared byte helpers and formatting helpers.
 
 Rule of thumb:
 

@@ -1,9 +1,9 @@
 import { initQpdfModule } from "./module-loader.js";
 import { QpdfCompressionError, QpdfInitError, QpdfValidationError } from "../../errors/index.js";
-import { normalizeBuffer } from "../../utils/validation.js";
-import type { OpenDocumentOptions, OptimizeOptions, QpdfDocumentInfo } from "../../types/index.js";
+import { toUint8Array } from "../../utils/buffer.js";
+import type { OpenDocumentOptions, QpdfDocumentInfo, WriteOptions } from "../../types/index.js";
 import type { WasmQPDFWrapper } from "../../types/wasm.types.js";
-import { validateQpdfOptions } from "./options.js";
+import { validateQpdfWriteOptions } from "./options.js";
 
 /**
  * Advanced qpdf document for reusable workflows.
@@ -16,8 +16,7 @@ import { validateQpdfOptions } from "./options.js";
  * // Inspect the PDF once, then choose an optimization preset based on its content
  * const document = await QpdfDocument.open(pdfBytes);
  *
- * const preset = document.pageCount > 50 ? "archive" : "web";
- * const optimizedPdfBytes = await document.write({ preset });
+ * const optimizedPdfBytes = await document.write({ linearize: document.pageCount < 10 });
  *
  * document.dispose();
  * ```
@@ -44,7 +43,7 @@ export class QpdfDocument {
     async open(input: Uint8Array | ArrayBuffer, options?: OpenDocumentOptions): Promise<void> {
         try {
             const module = await initQpdfModule();
-            const inputBuffer = normalizeBuffer(input);
+            const inputBuffer = toUint8Array(input);
 
             this.dispose();
             this.wasmInstance = new module.QPDFWrapper();
@@ -54,6 +53,9 @@ export class QpdfDocument {
             this.storedOpenOptions = options;
         } catch (error) {
             this.dispose();
+            if (error instanceof TypeError) {
+                throw new QpdfValidationError(error.message, { cause: error });
+            }
             if (error instanceof QpdfValidationError || error instanceof QpdfInitError || error instanceof QpdfCompressionError) {
                 throw error;
             }
@@ -121,14 +123,14 @@ export class QpdfDocument {
      * Write the PDF with the given options. Safe to call multiple times with different
      * options — each call processes a fresh instance so mutations don't accumulate.
      */
-    async write(options?: OptimizeOptions): Promise<Uint8Array> {
+    async write(options?: WriteOptions): Promise<Uint8Array> {
         if (!this.storedInput) {
             throw new QpdfValidationError("Document not open. Call QpdfDocument.open() first.");
         }
 
         try {
             const module = await initQpdfModule();
-            const writeOptions = validateQpdfOptions(options);
+            const writeOptions = validateQpdfWriteOptions(options);
 
             const writeInstance = new module.QPDFWrapper();
             try {

@@ -4,7 +4,7 @@ This directory is reserved for Ghostscript-specific native build definitions tha
 
 Current status:
 
-- Docker recipe exists at `native/docker/ghostscript.Dockerfile`
+- Docker recipe exists at `native/ghostscript/docker.Dockerfile`
 - Ghostscript-specific Emscripten bindings live at `native/ghostscript/bindings/emscripten/`
 - the current wrapper is a narrow `gsapi_*` adapter for rewrite/version operations
 - the TypeScript runtime no longer drives Ghostscript through `callMain(...)`

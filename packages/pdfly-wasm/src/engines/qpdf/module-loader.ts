@@ -1,5 +1,5 @@
 import { QpdfInitError } from "../../errors/index.js";
-import { createSingletonEmscriptenModuleLoader } from "../../runtime/wasmModule.loader.js";
+import { createSingletonEmscriptenModuleLoader } from "../../runtime/wasm-module.loader.js";
 import type { QpdfWasmModule } from "../../types/wasm.types.js";
 
 function normalizeModule(module: unknown): QpdfWasmModule {

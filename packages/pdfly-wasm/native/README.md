@@ -7,11 +7,8 @@ This directory contains native (CMake / Emscripten) and container build definiti
 - `tools/vendor/*`
   Orchestration only: pinned source definitions, target selection, Docker invocation
 
-- `native/docker/*`
-  Container recipes only: isolated build environments for each upstream engine
-
 - `native/qpdf/*`
-  qpdf-specific native build definition only: CMake, toolchains, Emscripten bindings
+  qpdf-specific native build definition only: Docker recipe, CMake, toolchains, Emscripten bindings
 
 - `native/ghostscript/*`
   Ghostscript-specific native build definition only: Docker-driven upstream build plus the narrow `gsapi_*` Emscripten wrapper
@@ -46,12 +43,12 @@ The TypeScript runtime mirrors the engine split:
   qpdf module loading, document API, and engine adapter
 
 - `src/engines/ghostscript/*`
-  Ghostscript module loading, runtime execution, option normalization, and engine adapter
+  Ghostscript module loading, execution queue, option normalization, and engine adapter
 
 - `src/compression/*`
   shared engine adapter contract and engine registry
 
-- `src/runtime/wasmModule.loader.ts`
+- `src/runtime/wasm-module.loader.ts`
   shared Emscripten module-loader helpers used by both engines
 
 - `src/ARCHITECTURE.md`

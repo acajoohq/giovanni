@@ -1,6 +1,6 @@
 # @pdfly/wasm
 
-[qpdf](https://github.com/qpdf/qpdf) and **Ghostscript** in the browser or Node via WebAssembly: compress, split, merge, extract images, inspect, organize. Helpers include `compressPdf`, `optimizePdf`, `splitPdf`, `mergePdfs`, `extractImages`. Advanced API: `QpdfDocument` (see [`src/index.ts`](./src/index.ts)).
+[qpdf](https://github.com/qpdf/qpdf) and **Ghostscript** in the browser or Node via WebAssembly: compress, split, merge, extract images, inspect, organize. The root package is task-oriented; engine-specific APIs such as `optimizePdf`, `QpdfDocument`, and `compressPdfWithGhostscript` live under `@pdfly/wasm/qpdf` and `@pdfly/wasm/ghostscript`.
 
 **PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@pdfly/pdf-render`**, not in this module.
 
@@ -16,24 +16,26 @@ Needs **Node 24+** for local dev ([`engines`](package.json)). Docker is the buil
 ## Usage
 
 ```ts
-import { inspectPdf, optimizePdf, splitPdf } from "@pdfly/wasm";
+import { compressPdf, inspectPdf, splitPdf } from "@pdfly/wasm";
 
 const input = await fetch("document.pdf").then((response) => response.arrayBuffer());
 
 const info = await inspectPdf(input);
 
-const optimized = await optimizePdf(input, {
+const compressed = await compressPdf(input, {
     preset: "web", // default | web | archive
     linearize: true,
 });
 
-const pages = await splitPdf(optimized.data);
+const pages = await splitPdf(compressed.data);
 ```
 
-Engine-aware compression is also available:
+If you want to work with engine-specific entrypoints, use the subpaths directly:
 
 ```ts
 import { compressPdf } from "@pdfly/wasm";
+import { optimizePdf, QpdfDocument } from "@pdfly/wasm/qpdf";
+import { compressPdfWithGhostscript } from "@pdfly/wasm/ghostscript";
 
 const qpdfResult = await compressPdf(input, {
     engine: "qpdf",
@@ -46,6 +48,12 @@ const ghostscriptResult = await compressPdf(input, {
     colorImageResolution: 96,
     jpegQuality: 75,
 });
+
+const optimized = await optimizePdf(input, { preset: "archive" });
+const document = await QpdfDocument.open(optimized.data);
+document.dispose();
+
+const screenResult = await compressPdfWithGhostscript(input, { preset: "screen" });
 ```
 
 In the web app, the compression tool now exposes both engines directly:
@@ -119,7 +127,7 @@ Runtime engine contract:
 - both engines use an engine-local module loader under `src/engines/<engine>/module-loader.ts`
 - both engines implement the same adapter shape under `src/engines/<engine>/engine.ts`
 - `src/compression/*` owns the shared adapter contract and engine registry
-- `src/runtime/wasmModule.loader.ts` owns the shared Emscripten loader pattern
+- `src/runtime/wasm-module.loader.ts` owns the shared Emscripten loader pattern
 - [`src/ARCHITECTURE.md`](./src/ARCHITECTURE.md) describes the directory contract
 
 ## Ghostscript WASM build
@@ -134,7 +142,7 @@ pnpm --filter @pdfly/wasm build:ghostscript:dev
 
 That flow:
 
-- uses `packages/pdfly-wasm/native/docker/ghostscript.Dockerfile`
+- uses `packages/pdfly-wasm/native/ghostscript/docker.Dockerfile`
 - uses a pinned `ghostpdl` source archive fetched inside Docker
 - keeps the Ghostscript build logic inside the Dockerfile
 - installs autotools inside the container

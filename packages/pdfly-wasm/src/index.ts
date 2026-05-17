@@ -2,25 +2,19 @@
  * @pdfly/wasm - qpdf WebAssembly API for local-first PDF workflows.
  */
 
-// qpdf api
+// compression api
 export {
     compressPdf,
     getAvailableCompressionEngines,
-    getGhostscriptVersion,
-    getQpdfVersion,
     initCompressionEngine,
-    initQpdf,
-    linearizePdf,
-    optimizePdf,
 } from "./operations/compress.js";
+
+// pdf operations
 export { inspectPdf, checkPdf } from "./operations/inspect.js";
 export { splitPdf } from "./operations/split.js";
 export { mergePdfs } from "./operations/merge.js";
 export { organizePdf } from "./operations/organize.js";
 export { extractImages } from "./operations/extract-images.js";
-
-// advanced api
-export { QpdfDocument } from "./engines/qpdf/document.js";
 
 // error classes
 export {
@@ -47,34 +41,20 @@ export type {
     CheckOptions,
     CompressOptions,
     CompressResult,
-    DecodeLevel,
-    GhostscriptColorConversionStrategy,
-    GhostscriptCompatibilityLevel,
-    GhostscriptCompressOptions,
-    GhostscriptPdfSettings,
-    InspectOptions,
-    MergeOptions,
-    ObjectStreamMode,
-    OpenDocumentOptions,
-    OptimizeOptions,
-    OrganizeOptions,
-    PdfData,
-    PdfInput,
-    QpdfOptimizePreset,
-    WriteOptions,
-    OptimizeResult,
-    SplitResult,
-    MergeResult,
-    QpdfCheckResult,
-    QpdfDocumentInfo,
+    ColorComponentCount,
     ExtractedImage,
     ExtractImagesResult,
+    InspectOptions,
+    MergeResult,
+    OrganizeOptions,
     OrganizeResult,
+    PdfData,
+    PdfInput,
+    PixelColorModel,
+    QpdfCheckResult,
+    QpdfDocumentInfo,
+    SplitResult,
 } from "./types/index.js";
 
 // utility functions
 export { formatBytes, calculateSavings, formatPercentage } from "./utils/format.js";
-
-// preset constants
-export { QPDF_PRESETS } from "./engines/qpdf/options.js";
-export { GHOSTSCRIPT_PRESETS } from "./engines/ghostscript/options.js";

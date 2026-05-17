@@ -21,7 +21,7 @@ const defaultCacheRoot = resolve(repoRoot, ".tmp", "docker-buildx-cache");
 
 const BUILD_TARGETS: Record<BuildTarget, BuildTargetConfig> = {
     qpdf: {
-        dockerfile: "native/docker/qpdf.Dockerfile",
+        dockerfile: "native/qpdf/docker.Dockerfile",
         outputDirectory: "build/qpdf",
         resolveBuildArgs(mode) {
             return {
@@ -34,14 +34,14 @@ const BUILD_TARGETS: Record<BuildTarget, BuildTargetConfig> = {
         },
     },
     ghostscript: {
-        dockerfile: "native/docker/ghostscript.Dockerfile",
+        dockerfile: "native/ghostscript/docker.Dockerfile",
         outputDirectory: "build/ghostscript",
         resolveBuildArgs(mode) {
             return {
                 GHOSTSCRIPT_BUILD_MODE: mode,
-                GHOSTPDL_VERSION: VENDOR_PINS.ghostpdl.version,
-                GHOSTPDL_ARCHIVE_URL: VENDOR_PINS.ghostpdl.archiveUrl,
-                GHOSTPDL_SHA256: VENDOR_PINS.ghostpdl.sha256 ?? "",
+                GHOSTPDL_VERSION: VENDOR_PINS.ghostscript.version,
+                GHOSTPDL_ARCHIVE_URL: VENDOR_PINS.ghostscript.archiveUrl,
+                GHOSTPDL_SHA256: VENDOR_PINS.ghostscript.sha256 ?? "",
                 JOBS: process.env.PDFLY_GHOSTSCRIPT_JOBS ?? "",
             };
         },

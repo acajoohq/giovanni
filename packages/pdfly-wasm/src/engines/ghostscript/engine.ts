@@ -1,4 +1,4 @@
-import type { CompressionEngineAdapter } from "../../compression/compressionEngine.interface.js";
+import type { CompressionEngineAdapter } from "../../compression/compression-engine.interface.js";
 import type { GhostscriptCompressOptions } from "../../types/index.js";
 import { initGhostscriptModule } from "./module-loader.js";
 import { compressPdfWithGhostscript } from "./rewrite.js";

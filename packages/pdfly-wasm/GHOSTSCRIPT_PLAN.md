@@ -6,7 +6,7 @@ This file is the working plan and progress ledger for the Ghostscript integratio
 
 Completed:
 
-- [x] Pinned upstream definition for `qpdf` and `ghostpdl`
+- [x] Pinned upstream definition for `qpdf` and `ghostscript`
 - [x] Removed host-side vendor sync; Docker now fetches pinned source archives directly
 - [x] Unified Docker-first build entrypoint for both upstream engines
 - [x] Verified qpdf and Ghostscript builds with Docker-owned source fetching

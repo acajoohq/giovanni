@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { extractImages, optimizePdf, splitPdf } from "@pdfly/wasm";
+import { compressPdf, extractImages, splitPdf } from "@pdfly/wasm";
 import { renderPdfPagesToJpg } from "@pdfly/pdf-render";
 import { describe, expect, it } from "vitest";
 
@@ -28,7 +28,7 @@ describe("pdf tools", () => {
     it.each(pdfFixtures)(
         "compresses $name into a readable PDF",
         async ({ data }) => {
-            const result = await optimizePdf(data);
+            const result = await compressPdf(data, { engine: "qpdf" });
 
             expect(result.originalSize).toBe(data.byteLength);
             expect(result.compressedSize).toBe(result.data.byteLength);
@@ -41,7 +41,7 @@ describe("pdf tools", () => {
     it.each(pdfFixturesWithCompressionGoals)(
         "keeps $name under the compression goal",
         async ({ data, maxCompressedSize }) => {
-            const result = await optimizePdf(data);
+            const result = await compressPdf(data, { engine: "qpdf" });
 
             expect(result.compressedSize).toBeLessThanOrEqual(maxCompressedSize);
         },

@@ -1,7 +1,7 @@
 import { initQpdfModule } from "../engines/qpdf/module-loader.js";
 import { QpdfImageExtractionError } from "../errors/index.js";
 import { encodeRawPixelsAsPng, rawPixelUnsupportedReason } from "./pixel-encoder.js";
-import { normalizeBuffer } from "../utils/validation.js";
+import { toUint8Array } from "../utils/buffer.js";
 import type { ExtractedImage, ExtractImagesResult } from "../types/index.js";
 import type { WasmExtractedImage } from "../types/wasm.types.js";
 
@@ -26,13 +26,16 @@ export async function extractImages(input: Uint8Array | ArrayBuffer): Promise<Ex
             throw new QpdfImageExtractionError("Failed to extract images: qpdf module is missing the extractImages export. Ensure qpdf.js and qpdf.wasm are up to date.");
         }
 
-        const inputBuffer = normalizeBuffer(input);
+        const inputBuffer = toUint8Array(input);
         const rawImages: WasmExtractedImage[] = module.extractImages(inputBuffer);
 
         const images = await Promise.all(rawImages.map((raw) => toExtractedImage(raw)));
 
         return { images, imageCount: images.length };
     } catch (error) {
+        if (error instanceof TypeError) {
+            throw new QpdfImageExtractionError(error.message, { cause: error });
+        }
         if (error instanceof QpdfImageExtractionError) {
             throw error;
         }

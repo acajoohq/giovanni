@@ -1,7 +1,7 @@
 import { splitPdf } from "./split.js";
 import { mergePdfs } from "./merge.js";
 import { QpdfOrganizeError } from "../errors/index.js";
-import { normalizeBuffer } from "../utils/validation.js";
+import { toUint8Array } from "../utils/buffer.js";
 import type { OrganizeOptions, OrganizeResult } from "../types/index.js";
 
 /**
@@ -26,7 +26,7 @@ export async function organizePdf(input: Uint8Array | ArrayBuffer, options: Orga
     }
 
     try {
-        const inputBuffer = normalizeBuffer(input);
+        const inputBuffer = toUint8Array(input);
         const { pages, pageCount } = await splitPdf(inputBuffer);
 
         for (const index of options.pages) {
@@ -44,6 +44,9 @@ export async function organizePdf(input: Uint8Array | ArrayBuffer, options: Orga
             originalPageCount: pageCount,
         };
     } catch (error) {
+        if (error instanceof TypeError) {
+            throw new QpdfOrganizeError(error.message, { cause: error });
+        }
         if (error instanceof QpdfOrganizeError) {
             throw error;
         }

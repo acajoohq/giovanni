@@ -1,4 +1,4 @@
-export type VendorName = "qpdf" | "ghostpdl";
+export type VendorName = "qpdf" | "ghostscript";
 
 export type VendorPin = {
     displayName: string;
@@ -15,7 +15,7 @@ export const VENDOR_PINS: Record<VendorName, VendorPin> = {
         version: "12.3.2",
         archiveUrl: "https://codeload.github.com/qpdf/qpdf/tar.gz/a898bb3a7289d1d05789d6d3f0d5dd534943a8da",
     },
-    ghostpdl: {
+    ghostscript: {
         displayName: "GhostPDL",
         directoryName: "ghostpdl",
         version: "10.07.0",

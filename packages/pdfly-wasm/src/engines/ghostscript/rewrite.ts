@@ -1,20 +1,22 @@
 import { GhostscriptCompressionError, GhostscriptValidationError, type GhostscriptErrorOptions } from "../../errors/index.js";
 import { calculateSavings } from "../../utils/format.js";
-import { normalizeBuffer } from "../../utils/validation.js";
+import { toUint8Array } from "../../utils/buffer.js";
 import type { CompressResult, GhostscriptCompressOptions } from "../../types/index.js";
 import { buildGhostscriptArgs, validateGhostscriptOptions } from "./options.js";
-import { withGhostscriptExecution } from "./runtime.js";
+import { withGhostscriptExecution } from "./execution.js";
 
 export async function rewritePdfWithGhostscript(input: Uint8Array | ArrayBuffer, options?: GhostscriptCompressOptions): Promise<Uint8Array> {
-    const inputBuffer = normalizeBuffer(input);
-    const normalizedOptions = validateGhostscriptOptions(options);
-
     try {
+        const inputBuffer = toUint8Array(input);
+        const normalizedOptions = validateGhostscriptOptions(options);
         return await withGhostscriptExecution(async (module) => {
             const args = buildGhostscriptArgs(normalizedOptions);
             return module.rewritePdf(inputBuffer, args).slice();
         });
     } catch (error) {
+        if (error instanceof TypeError) {
+            throw new GhostscriptValidationError(error.message, { cause: error, code: "invalid_input" });
+        }
         if (error instanceof GhostscriptValidationError || error instanceof GhostscriptCompressionError) {
             throw error;
         }
@@ -29,7 +31,7 @@ export async function rewritePdfWithGhostscript(input: Uint8Array | ArrayBuffer,
 }
 
 export async function compressPdfWithGhostscript(input: Uint8Array | ArrayBuffer, options?: GhostscriptCompressOptions): Promise<CompressResult> {
-    const inputBuffer = normalizeBuffer(input);
+    const inputBuffer = toUint8Array(input);
     const normalizedOptions = validateGhostscriptOptions(options);
     const outputBuffer = await rewritePdfWithGhostscript(inputBuffer, options);
     const { savedBytes, compressionRatio, percentageSaved } = calculateSavings(inputBuffer.byteLength, outputBuffer.byteLength);

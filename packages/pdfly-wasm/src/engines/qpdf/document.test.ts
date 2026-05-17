@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QpdfValidationError, QpdfCompressionError } from "../../errors/index.js";
 import { QpdfDocument } from "./document.js";
 import { initQpdfModule } from "./module-loader.js";
+import { QPDF_PRESETS } from "./options.js";
 
 vi.mock("./module-loader.js");
 
@@ -342,7 +343,7 @@ describe("QpdfDocument", () => {
             const document = await QpdfDocument.open(new Uint8Array());
 
             const preset = document.pageCount > 50 ? "archive" : "web";
-            const optimizedPdfBytes = await document.write({ preset });
+            const optimizedPdfBytes = await document.write(QPDF_PRESETS[preset]);
 
             expect(preset).toBe("archive");
             expect(optimizedPdfBytes).toBeInstanceOf(Uint8Array);

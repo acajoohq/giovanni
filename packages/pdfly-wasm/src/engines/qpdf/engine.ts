@@ -1,7 +1,7 @@
-import { QpdfCompressionError } from "../../errors/index.js";
+import { QpdfCompressionError, QpdfValidationError } from "../../errors/index.js";
 import { calculateSavings } from "../../utils/format.js";
-import { normalizeBuffer } from "../../utils/validation.js";
-import type { CompressionEngineAdapter } from "../../compression/compressionEngine.interface.js";
+import { toUint8Array } from "../../utils/buffer.js";
+import type { CompressionEngineAdapter } from "../../compression/compression-engine.interface.js";
 import type { OptimizeOptions, OptimizeResult } from "../../types/index.js";
 import { initQpdfModule } from "./module-loader.js";
 import { getQpdfPreset, validateQpdfOptions } from "./options.js";
@@ -14,7 +14,7 @@ export const qpdfCompressionEngine: CompressionEngineAdapter<({ engine?: "qpdf" 
     async compress(input, options = {}): Promise<OptimizeResult & { engine: "qpdf" }> {
         try {
             const module = await initQpdfModule();
-            const inputBuffer = normalizeBuffer(input);
+            const inputBuffer = toUint8Array(input);
             const validatedOptions = validateQpdfOptions(options);
             const optimizedBuffer = module.compressPdf(inputBuffer, validatedOptions).slice();
 
@@ -33,8 +33,14 @@ export const qpdfCompressionEngine: CompressionEngineAdapter<({ engine?: "qpdf" 
                 percentageSaved,
             };
         } catch (error) {
+            if (error instanceof QpdfValidationError) {
+                throw error;
+            }
             if (error instanceof QpdfCompressionError) {
                 throw error;
+            }
+            if (error instanceof TypeError) {
+                throw new QpdfValidationError(error.message, { cause: error, code: "invalid_input" });
             }
             throw new QpdfCompressionError("Failed to optimize PDF", { cause: error });
         }

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GhostscriptCompressionError } from "../../errors/index.js";
 import { compressPdfWithGhostscript, rewritePdfWithGhostscript } from "./rewrite.js";
-import { withGhostscriptExecution } from "./runtime.js";
+import { withGhostscriptExecution } from "./execution.js";
 
-vi.mock("./runtime.js");
+vi.mock("./execution.js");
 
 const mockWithGhostscriptExecution = vi.mocked(withGhostscriptExecution);
 

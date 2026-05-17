@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QpdfCompressionError } from "../errors/index.js";
-import { compressPdf, getAvailableCompressionEngines, getGhostscriptVersion, initCompressionEngine, linearizePdf, optimizePdf } from "./compress.js";
+import { compressPdf, getAvailableCompressionEngines, initCompressionEngine } from "./compress.js";
+import { getGhostscriptVersion } from "../ghostscript.js";
+import { linearizePdf, optimizePdf } from "../qpdf.js";
 import { initQpdfModule } from "../engines/qpdf/module-loader.js";
 import { initGhostscriptModule } from "../engines/ghostscript/module-loader.js";
 import { compressPdfWithGhostscript } from "../engines/ghostscript/rewrite.js";

@@ -1,4 +1,4 @@
-import { getCompressionEngine, getCompressionEngineAdapter, listCompressionEngines } from "../compression/compressionEngine.registry.js";
+import { getCompressionEngine, getCompressionEngineAdapter, listCompressionEngines } from "../compression/compression-engine.registry.js";
 import { initGhostscriptModule } from "../engines/ghostscript/module-loader.js";
 import { initQpdfModule } from "../engines/qpdf/module-loader.js";
 import type { CompressionEngine, CompressOptions, CompressResult, OptimizeOptions, OptimizeResult } from "../types/index.js";

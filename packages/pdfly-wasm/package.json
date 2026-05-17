@@ -43,6 +43,28 @@
                 "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
             }
+        },
+        "./qpdf": {
+            "source": "./src/qpdf.ts",
+            "import": {
+                "types": "./dist/qpdf.d.mts",
+                "default": "./dist/qpdf.mjs"
+            },
+            "require": {
+                "types": "./dist/qpdf.d.cts",
+                "default": "./dist/qpdf.cjs"
+            }
+        },
+        "./ghostscript": {
+            "source": "./src/ghostscript.ts",
+            "import": {
+                "types": "./dist/ghostscript.d.mts",
+                "default": "./dist/ghostscript.mjs"
+            },
+            "require": {
+                "types": "./dist/ghostscript.d.cts",
+                "default": "./dist/ghostscript.cjs"
+            }
         }
     },
     "publishConfig": {
@@ -55,6 +77,26 @@
                 "require": {
                     "types": "./dist/index.d.cts",
                     "default": "./dist/index.cjs"
+                }
+            },
+            "./qpdf": {
+                "import": {
+                    "types": "./dist/qpdf.d.mts",
+                    "default": "./dist/qpdf.mjs"
+                },
+                "require": {
+                    "types": "./dist/qpdf.d.cts",
+                    "default": "./dist/qpdf.cjs"
+                }
+            },
+            "./ghostscript": {
+                "import": {
+                    "types": "./dist/ghostscript.d.mts",
+                    "default": "./dist/ghostscript.mjs"
+                },
+                "require": {
+                    "types": "./dist/ghostscript.d.cts",
+                    "default": "./dist/ghostscript.cjs"
                 }
             }
         }

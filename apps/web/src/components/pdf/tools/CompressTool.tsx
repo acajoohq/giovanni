@@ -1,18 +1,16 @@
 import {
     compressPdf,
     formatBytes,
-    GHOSTSCRIPT_PRESETS,
-    QPDF_PRESETS,
     type CompressionEngine,
     type CompressResult,
-    type DecodeLevel,
+} from "@pdfly/wasm";
+import { QPDF_PRESETS, type DecodeLevel, type ObjectStreamMode, type QpdfOptimizePreset, type WriteOptions } from "@pdfly/wasm/qpdf";
+import {
+    GHOSTSCRIPT_PRESETS,
     type GhostscriptColorConversionStrategy,
     type GhostscriptCompatibilityLevel,
     type GhostscriptPdfSettings,
-    type ObjectStreamMode,
-    type QpdfOptimizePreset,
-    type WriteOptions,
-} from "@pdfly/wasm";
+} from "@pdfly/wasm/ghostscript";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";

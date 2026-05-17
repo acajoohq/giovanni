@@ -54,6 +54,31 @@ export const fr: Translations = {
         toolTitle: "Compresser PDF",
         emptyTitle: "Déposez un PDF à compresser",
         emptyDescription: "Traitement sécurisé et hors ligne.",
+        mode: {
+            header: "Mode",
+            simple: {
+                label: "Simple",
+                description: "Choisissez le résultat voulu. L'app sélectionne le moteur et les réglages.",
+            },
+            advanced: {
+                label: "Avancé",
+                description: "Ajustez le moteur, les presets et les réglages PDF avancés.",
+            },
+        },
+        simplePreset: {
+            recommended: {
+                label: "Recommandé",
+                description: "Compression équilibrée pour partager le PDF tout en gardant les pages lisibles.",
+            },
+            smallest: {
+                label: "Fichier minimal",
+                description: "Compression agressive pour les envois et les limites de taille.",
+            },
+            bestQuality: {
+                label: "Meilleure qualité",
+                description: "Nettoyage sans perte qui évite de modifier la qualité des images.",
+            },
+        },
         engine: {
             header: "Moteur",
             qpdf: {

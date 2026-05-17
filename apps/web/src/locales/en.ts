@@ -52,6 +52,31 @@
         toolTitle: "Compress PDF",
         emptyTitle: "Drop a PDF to compress",
         emptyDescription: "Secure, offline processing.",
+        mode: {
+            header: "Mode",
+            simple: {
+                label: "Simple",
+                description: "Choose the result you want. The app picks the compression engine and settings.",
+            },
+            advanced: {
+                label: "Advanced",
+                description: "Tune the compression engine, presets, and low-level PDF settings.",
+            },
+        },
+        simplePreset: {
+            recommended: {
+                label: "Recommended",
+                description: "Balanced compression for sharing while keeping pages readable.",
+            },
+            smallest: {
+                label: "Smallest file",
+                description: "Aggressive compression for uploads and file-size limits.",
+            },
+            bestQuality: {
+                label: "Best quality",
+                description: "Lossless cleanup that avoids changing image quality.",
+            },
+        },
         engine: {
             header: "Engine",
             qpdf: {

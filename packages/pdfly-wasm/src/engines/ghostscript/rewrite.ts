@@ -2,17 +2,14 @@ import { GhostscriptCompressionError, GhostscriptValidationError, type Ghostscri
 import { calculateSavings } from "../../utils/format.js";
 import { toUint8Array } from "../../utils/buffer.js";
 import type { CompressResult, GhostscriptCompressOptions } from "../../types/index.js";
-import { buildGhostscriptArgs, validateGhostscriptOptions } from "./options.js";
+import { buildGhostscriptArgs, type NormalizedGhostscriptOptions, validateGhostscriptOptions } from "./options.js";
 import { withGhostscriptExecution } from "./execution.js";
 
 export async function rewritePdfWithGhostscript(input: Uint8Array | ArrayBuffer, options?: GhostscriptCompressOptions): Promise<Uint8Array> {
     try {
         const inputBuffer = toUint8Array(input);
         const normalizedOptions = validateGhostscriptOptions(options);
-        return await withGhostscriptExecution(async (module) => {
-            const args = buildGhostscriptArgs(normalizedOptions);
-            return module.rewritePdf(inputBuffer, args).slice();
-        });
+        return await rewritePdfWithNormalizedGhostscriptOptions(inputBuffer, normalizedOptions);
     } catch (error) {
         if (error instanceof TypeError) {
             throw new GhostscriptValidationError(error.message, { cause: error, code: "invalid_input" });
@@ -33,7 +30,7 @@ export async function rewritePdfWithGhostscript(input: Uint8Array | ArrayBuffer,
 export async function compressPdfWithGhostscript(input: Uint8Array | ArrayBuffer, options?: GhostscriptCompressOptions): Promise<CompressResult> {
     const inputBuffer = toUint8Array(input);
     const normalizedOptions = validateGhostscriptOptions(options);
-    const outputBuffer = await rewritePdfWithGhostscript(inputBuffer, options);
+    const outputBuffer = await rewritePdfWithNormalizedGhostscriptOptions(inputBuffer, normalizedOptions);
     const { savedBytes, compressionRatio, percentageSaved } = calculateSavings(inputBuffer.byteLength, outputBuffer.byteLength);
 
     return {
@@ -46,4 +43,11 @@ export async function compressPdfWithGhostscript(input: Uint8Array | ArrayBuffer
         savedBytes,
         percentageSaved,
     };
+}
+
+async function rewritePdfWithNormalizedGhostscriptOptions(inputBuffer: Uint8Array, options: NormalizedGhostscriptOptions): Promise<Uint8Array> {
+    return withGhostscriptExecution(async (module) => {
+        const args = buildGhostscriptArgs(options);
+        return module.rewritePdf(inputBuffer, args).slice();
+    });
 }

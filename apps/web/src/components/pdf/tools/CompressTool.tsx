@@ -207,7 +207,13 @@ export function CompressTool() {
     };
 
     const selectGhostscriptPreset = (preset: GhostscriptPdfSettings) => {
-        updateGhostscriptSettings({ preset, ...GHOSTSCRIPT_ENGINE_PRESETS[preset] });
+        updateGhostscriptSettings({
+            ...ghostscriptSettings,
+            preset,
+            colorImageResolution: undefined,
+            grayImageResolution: undefined,
+            ...GHOSTSCRIPT_ENGINE_PRESETS[preset],
+        });
     };
 
     const handleFiles = async (files: File[]) => {

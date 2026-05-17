@@ -2,10 +2,8 @@ import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
 import { en } from "@/locales/en";
 import { fr } from "@/locales/fr";
-
-const SUPPORTED_LOCALES = ["en", "fr"] as const;
-type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
-const DEFAULT_LOCALE: SupportedLocale = "en";
+import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "@/locales/types";
+import type { SupportedLocale } from "@/locales/types";
 
 const resources = {
     en: { translation: en },

@@ -1,4 +1,4 @@
-﻿import type { Translations } from "./locales.types";
+﻿import type { Translations } from "./types";
 
 export const fr: Translations = {
     nav: {

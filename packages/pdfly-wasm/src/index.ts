@@ -3,11 +3,7 @@
  */
 
 // compression api
-export {
-    compressPdf,
-    getAvailableCompressionEngines,
-    initCompressionEngine,
-} from "./operations/compress.js";
+export { compressPdf, getAvailableCompressionEngines, initCompressionEngine } from "./operations/compress.js";
 
 // pdf operations
 export { inspectPdf, checkPdf } from "./operations/inspect.js";

@@ -14,13 +14,4 @@ export async function getQpdfVersion(): Promise<string> {
 
 export { linearizePdf, optimizePdf, QpdfDocument, QPDF_PRESETS };
 
-export type {
-    DecodeLevel,
-    ObjectStreamMode,
-    OptimizeOptions,
-    OptimizeResult,
-    QpdfCheckResult,
-    QpdfDocumentInfo,
-    QpdfOptimizePreset,
-    WriteOptions,
-} from "./types/qpdf.types.js";
+export type { DecodeLevel, ObjectStreamMode, OptimizeOptions, OptimizeResult, QpdfCheckResult, QpdfDocumentInfo, QpdfOptimizePreset, WriteOptions } from "./types/qpdf.types.js";

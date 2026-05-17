@@ -4,10 +4,10 @@
     "version": "0.1.0",
     "identifier": "com.semoule.pdfly-desktop",
     "build": {
-        "beforeDevCommand": "pnpm dev",
-        "devUrl": "http://localhost:1420",
-        "beforeBuildCommand": "pnpm build",
-        "frontendDist": "../dist"
+        "beforeDevCommand": "pnpm --filter web dev",
+        "devUrl": "http://localhost:5173",
+        "beforeBuildCommand": "pnpm --filter web build",
+        "frontendDist": "../../web/dist/client"
     },
     "app": {
         "windows": [
@@ -18,7 +18,7 @@
             }
         ],
         "security": {
-            "csp": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: data: blob:; font-src 'self' data:; connect-src 'self' http://localhost:1420 ws://localhost:1420;"
+            "csp": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: data: blob:; font-src 'self' data:; worker-src 'self' blob:; connect-src 'self' blob: http://localhost:5173 ws://localhost:5173;"
         }
     },
     "bundle": {

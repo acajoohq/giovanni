@@ -25,7 +25,7 @@ import {
     makeArchiveName,
     makePageJpgName,
     pdfBaseName,
-} from "@/utils/pdfToolUtils.utils";
+} from "@/utils/pdfTool.utils";
 
 interface RenderPagesToJpgSettings {
     qualityPercent: number;

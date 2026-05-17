@@ -34,7 +34,7 @@ import {
 } from "@/lib/features/pdfTools/constants/compressTool.constants";
 import type { GhostscriptSettings, SimpleCompressionPreset } from "@/lib/features/pdfTools/types/compressTool.types";
 import { applyGhostscriptPreset, getSimpleCompressionOptions } from "@/lib/features/pdfTools/utils/compressTool.utils";
-import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdfToolUtils.utils";
+import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdfTool.utils";
 
 type QpdfSettings = { preset: QpdfOptimizePreset } & Required<WriteOptions>;
 type CompressionUiMode = "simple" | "advanced";

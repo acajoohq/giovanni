@@ -1,4 +1,4 @@
-﻿import type { Translations } from "./types";
+import type { Translations } from "./types/locales.types";
 
 export const fr: Translations = {
     nav: {
@@ -17,7 +17,7 @@ export const fr: Translations = {
         backHome: "Retour à l'accueil",
     },
     about: {
-        tagline: "Outils PDF \u00b7 hors ligne & privé",
+        tagline: "Outils PDF · hors ligne & privé",
         madeBy: "Créé par",
         poweredBy: "Propulsé par <qpdf>qpdf</qpdf> compilé en WebAssembly. Aucun fichier ne quitte votre navigateur.",
     },
@@ -231,7 +231,7 @@ export const fr: Translations = {
         toolTitle: "PDF en JPG",
         emptyTitle: "Déposez un PDF à convertir",
         emptyDescription: "Chaque page est convertie en image JPG.",
-        pageLabel: "Page {{page}} \u00b7 {{width}}x{{height}}",
+        pageLabel: "Page {{page}} · {{width}}x{{height}}",
         jpgAlt: "Page JPG convertie {{page}}",
         sidebar: {
             conversion: "Conversion",

@@ -1,9 +1,9 @@
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
-import { en } from "./features/locales/en";
-import { fr } from "./features/locales/fr";
-import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "./features/locales/constants/locales.constants";
-import type { SupportedLocale } from "./features/locales/constants/locales.constants";
+import { en } from "./en";
+import { fr } from "./fr";
+import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "./constants/locales.constants";
+import type { SupportedLocale } from "./constants/locales.constants";
 
 const resources = {
     en: { translation: en },
@@ -44,7 +44,7 @@ function resolveClientLocale() {
     return normalizeLocale(pathnameLocale);
 }
 
-// Client singleton — initialized once, safe (single user, no concurrency) banania
+// Client singleton — initialized once, safe (single user, no concurrency)
 const clientI18n = i18next.createInstance();
 export const i18nReady = clientI18n.use(initReactI18next).init({
     ...baseConfig,

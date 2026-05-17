@@ -1,7 +1,7 @@
 ﻿import { createRouter } from "@tanstack/react-router";
 import type { i18n as I18nType } from "i18next";
 import { routeTree } from "@/routeTree.gen";
-import clientI18n, { createI18nInstance } from "@/lib/i18n";
+import clientI18n, { createI18nInstance } from "@/lib/features/locales/i18n";
 
 export interface RouterContext {
     i18n: I18nType;

@@ -15,13 +15,13 @@ import {
     makeArchiveName,
     makePageJpgName,
     makePagePdfName,
-} from "./pdfToolUtils.utils";
+} from "./pdfTool.utils";
 
 function makeFile(name: string, type = "application/octet-stream") {
     return new File(["content"], name, { type });
 }
 
-describe("pdfToolUtils", () => {
+describe("pdfTool", () => {
     it("detects PDFs by MIME type or extension", () => {
         expect(isPdfFile(makeFile("document.bin", "application/pdf"))).toBe(true);
         expect(isPdfFile(makeFile("document.PDF"))).toBe(true);

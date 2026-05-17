@@ -2,7 +2,7 @@
  * Compression quality integration tests.
  *
  * These tests use the real WASM module (no mocks) and all PDF fixtures in
- * src/test/fixtures/pdfs to verify that:
+ * src/test/fixtures/pdfs/compression to verify that:
  *
  *  1. Every preset produces a valid, non-empty PDF for every fixture
  *     (or throws QpdfCompressionError — accepted as a known WASM limitation
@@ -30,7 +30,7 @@ import type { DecodeLevel, OptimizeOptions, OptimizeResult, QpdfOptimizePreset }
 // Fixtures
 // ---------------------------------------------------------------------------
 
-const FIXTURE_DIR = join(dirname(fileURLToPath(import.meta.url)), "fixtures/pdfs");
+const FIXTURE_DIR = join(dirname(fileURLToPath(import.meta.url)), "fixtures/pdfs/compression");
 const TEST_TIMEOUT_MS = 60_000;
 
 type PdfFixture = {

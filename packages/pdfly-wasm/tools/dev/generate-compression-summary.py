@@ -17,6 +17,14 @@ REPORT_DIR = Path(__file__).resolve().parents[2] / "test-report"
 XML_PATH = REPORT_DIR / "compression-results.xml"
 MD_PATH = REPORT_DIR / "compression-summary.md"
 
+SCENARIOS = [
+    ("simple-recommended", "Recommended"),
+    ("simple-smallest", "Smallest file"),
+    ("simple-best-quality", "Best quality"),
+    ("recommended-qpdf", "Recommended qpdf"),
+    ("recommended-ghostscript", "Recommended Ghostscript"),
+]
+
 
 def fmt_bytes(b: int) -> str:
     if b < 1024:
@@ -27,17 +35,17 @@ def fmt_bytes(b: int) -> str:
 
 
 def parse_xml(path: Path) -> dict:
-    """Return {(file_name, preset): {"compressedBytes": int} | {"status": "wasm-abort"}}"""
+    """Return {(file_name, scenario): {"compressedBytes": int} | {"status": "wasm-abort"}}"""
     root = ET.parse(path).getroot()
     results: dict = {}
     for f in root.findall("file"):
         name = f.get("name", "")
         for r in f.findall("result"):
-            preset = r.get("preset", "")
+            scenario = r.get("scenario") or r.get("preset", "")
             if r.get("status") == "wasm-abort":
-                results[(name, preset)] = {"status": "wasm-abort"}
+                results[(name, scenario)] = {"status": "wasm-abort"}
             else:
-                results[(name, preset)] = {"compressedBytes": int(r.get("compressedBytes", "0"))}
+                results[(name, scenario)] = {"compressedBytes": int(r.get("compressedBytes", "0"))}
     return results
 
 
@@ -59,18 +67,20 @@ def main() -> None:
 
     title = "## Compression Results" + (" (vs master)" if baseline else "")
     no_baseline_note = "" if baseline else "\n> ℹ️ No master baseline available\n"
+    scenario_header = " | ".join(label for _, label in SCENARIOS)
+    scenario_separator = "|".join("-" * (len(label) + 2) for _, label in SCENARIOS)
     lines = [
         f"{title}\n",
-        "| File | Original | default | web | archive |",
-        "|------|----------|---------|-----|---------|",
+        "| File | Original | " + scenario_header + " |",
+        "|------|----------|" + scenario_separator + "|",
     ]
 
     for f in root.findall("file"):
         name = f.get("name", "")
         orig = fmt_bytes(int(f.get("originalBytes", "0")))
         cells = []
-        for preset in ("default", "web", "archive"):
-            r = next((r for r in f.findall("result") if r.get("preset") == preset), None)
+        for scenario, _ in SCENARIOS:
+            r = next((r for r in f.findall("result") if (r.get("scenario") or r.get("preset")) == scenario), None)
             if r is None:
                 cells.append("—")
             elif r.get("status") == "wasm-abort":
@@ -82,7 +92,7 @@ def main() -> None:
                 cell = f"{fmt_bytes(cb)} ({sign}{abs(pct):.1f}%)"
 
                 if baseline is not None:
-                    base = baseline.get((name, preset))
+                    base = baseline.get((name, scenario))
                     if base is None:
                         cell += " 🆕"
                         has_changes = True

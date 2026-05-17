@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_GHOSTSCRIPT_SETTINGS, DEFAULT_SIMPLE_COMPRESSION_PRESET } from "../constants/compressTool.constants";
+import { SIMPLE_COMPRESSION_PRESET_NAMES } from "../types/compressTool.types";
 import { applyGhostscriptPreset, getSimpleCompressionOptions } from "./compressTool.utils";
 
 describe("getSimpleCompressionOptions", () => {
+    it("keeps simple presets in UI display order", () => {
+        expect(SIMPLE_COMPRESSION_PRESET_NAMES).toEqual(["recommended", "smallest", "bestQuality"]);
+    });
+
     it("defaults simple compression to the recommended preset", () => {
         expect(DEFAULT_SIMPLE_COMPRESSION_PRESET).toBe("recommended");
     });

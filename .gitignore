@@ -53,3 +53,4 @@ packages/pdfly-wasm/test-report/
 .claude/settings.local.json
 dogfood-output/
 .tmp/
+__pycache__

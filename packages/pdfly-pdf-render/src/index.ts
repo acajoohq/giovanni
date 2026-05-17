@@ -2,6 +2,8 @@ import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
 import type { Canvas as NodeCanvas } from "canvas";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api.js";
 
+// TODO Split the code / reorganize
+
 export class PdfRenderError extends Error {
     declare readonly cause: unknown;
 

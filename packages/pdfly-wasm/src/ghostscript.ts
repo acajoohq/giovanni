@@ -12,9 +12,4 @@ export async function getGhostscriptVersion(): Promise<string> {
 export { compressPdfWithGhostscript } from "./engines/ghostscript/rewrite.js";
 export { GHOSTSCRIPT_PRESETS } from "./engines/ghostscript/options.js";
 
-export type {
-    GhostscriptColorConversionStrategy,
-    GhostscriptCompatibilityLevel,
-    GhostscriptCompressOptions,
-    GhostscriptPdfSettings,
-} from "./types/ghostscript.types.js";
+export type { GhostscriptColorConversionStrategy, GhostscriptCompatibilityLevel, GhostscriptCompressOptions, GhostscriptPdfSettings } from "./types/ghostscript.types.js";

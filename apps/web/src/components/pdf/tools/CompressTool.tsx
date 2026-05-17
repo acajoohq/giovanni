@@ -1,16 +1,6 @@
-import {
-    compressPdf,
-    formatBytes,
-    type CompressionEngine,
-    type CompressResult,
-} from "@pdfly/wasm";
+import { compressPdf, formatBytes, type CompressionEngine, type CompressResult } from "@pdfly/wasm";
 import { QPDF_PRESETS, type DecodeLevel, type ObjectStreamMode, type QpdfOptimizePreset, type WriteOptions } from "@pdfly/wasm/qpdf";
-import {
-    GHOSTSCRIPT_PRESETS,
-    type GhostscriptColorConversionStrategy,
-    type GhostscriptCompatibilityLevel,
-    type GhostscriptPdfSettings,
-} from "@pdfly/wasm/ghostscript";
+import { GHOSTSCRIPT_PRESETS, type GhostscriptColorConversionStrategy, type GhostscriptCompatibilityLevel, type GhostscriptPdfSettings } from "@pdfly/wasm/ghostscript";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -373,7 +363,9 @@ export function CompressTool() {
                                     updateGhostscriptSettings({
                                         downsampleColorImages: event.currentTarget.checked,
                                         colorImageResolution: event.currentTarget.checked
-                                            ? ghostscriptSettings.colorImageResolution ?? GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].colorImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK
+                                            ? (ghostscriptSettings.colorImageResolution ??
+                                              GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].colorImageResolution ??
+                                              GHOSTSCRIPT_RESOLUTION_FALLBACK)
                                             : ghostscriptSettings.colorImageResolution,
                                     })
                                 }
@@ -384,8 +376,16 @@ export function CompressTool() {
                                     max={300}
                                     min={36}
                                     step={6}
-                                    value={ghostscriptSettings.colorImageResolution ?? GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].colorImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}
-                                    valueLabel={ghostscriptSettings.downsampleColorImages ? `${ghostscriptSettings.colorImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}` : t("compress.sidebar.off")}
+                                    value={
+                                        ghostscriptSettings.colorImageResolution ??
+                                        GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].colorImageResolution ??
+                                        GHOSTSCRIPT_RESOLUTION_FALLBACK
+                                    }
+                                    valueLabel={
+                                        ghostscriptSettings.downsampleColorImages
+                                            ? `${ghostscriptSettings.colorImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}`
+                                            : t("compress.sidebar.off")
+                                    }
                                     onValueChange={(colorImageResolution) => updateGhostscriptSettings({ colorImageResolution }, { recompress: false })}
                                     onValueCommitted={(colorImageResolution: number) => updateGhostscriptSettings({ colorImageResolution })}
                                 />
@@ -397,7 +397,9 @@ export function CompressTool() {
                                     updateGhostscriptSettings({
                                         downsampleGrayImages: event.currentTarget.checked,
                                         grayImageResolution: event.currentTarget.checked
-                                            ? ghostscriptSettings.grayImageResolution ?? GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].grayImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK
+                                            ? (ghostscriptSettings.grayImageResolution ??
+                                              GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].grayImageResolution ??
+                                              GHOSTSCRIPT_RESOLUTION_FALLBACK)
                                             : ghostscriptSettings.grayImageResolution,
                                     })
                                 }
@@ -408,8 +410,16 @@ export function CompressTool() {
                                     max={300}
                                     min={36}
                                     step={6}
-                                    value={ghostscriptSettings.grayImageResolution ?? GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].grayImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}
-                                    valueLabel={ghostscriptSettings.downsampleGrayImages ? `${ghostscriptSettings.grayImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}` : t("compress.sidebar.off")}
+                                    value={
+                                        ghostscriptSettings.grayImageResolution ??
+                                        GHOSTSCRIPT_ENGINE_PRESETS[ghostscriptSettings.preset].grayImageResolution ??
+                                        GHOSTSCRIPT_RESOLUTION_FALLBACK
+                                    }
+                                    valueLabel={
+                                        ghostscriptSettings.downsampleGrayImages
+                                            ? `${ghostscriptSettings.grayImageResolution ?? GHOSTSCRIPT_RESOLUTION_FALLBACK}`
+                                            : t("compress.sidebar.off")
+                                    }
                                     onValueChange={(grayImageResolution) => updateGhostscriptSettings({ grayImageResolution }, { recompress: false })}
                                     onValueCommitted={(grayImageResolution: number) => updateGhostscriptSettings({ grayImageResolution })}
                                 />

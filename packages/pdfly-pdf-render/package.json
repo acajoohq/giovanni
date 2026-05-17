@@ -2,7 +2,13 @@
     "name": "@pdfly/pdf-render",
     "version": "0.1.0",
     "description": "PDF.js-based page rasterisation to JPEG (browser and Node with optional canvas)",
-    "keywords": ["jpg", "pdf", "pdf.js", "pdf-render", "rasterize"],
+    "keywords": [
+        "jpg",
+        "pdf",
+        "pdf-render",
+        "pdf.js",
+        "rasterize"
+    ],
     "homepage": "https://github.com/MatteoGauthier/qpdf-wasm#readme",
     "bugs": {
         "url": "https://github.com/MatteoGauthier/qpdf-wasm/issues"
@@ -14,7 +20,10 @@
         "url": "git+https://github.com/MatteoGauthier/qpdf-wasm.git",
         "directory": "packages/pdfly-pdf-render"
     },
-    "files": ["dist", "README.md"],
+    "files": [
+        "dist",
+        "README.md"
+    ],
     "type": "module",
     "sideEffects": false,
     "main": "./dist/index.cjs",

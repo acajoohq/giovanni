@@ -3,6 +3,8 @@ import { GHOSTSCRIPT_PRESETS, type GhostscriptPdfSettings } from "@pdfly/wasm/gh
 import { QPDF_PRESETS } from "@pdfly/wasm/qpdf";
 import type { GhostscriptSettings, SimpleCompressionPreset } from "../types/compressTool.types";
 
+export const SIMPLE_COMPRESSION_PRESET_NAMES = ["recommended", "smallest", "bestQuality"] as const satisfies readonly SimpleCompressionPreset[];
+
 export const DEFAULT_SIMPLE_COMPRESSION_PRESET: SimpleCompressionPreset = "recommended";
 
 export const SIMPLE_COMPRESSION_PRESETS: Record<SimpleCompressionPreset, CompressOptions> = {

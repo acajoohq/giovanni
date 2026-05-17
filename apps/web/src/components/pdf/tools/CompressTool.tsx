@@ -26,8 +26,13 @@ import { ComparisonSlider } from "@/components/viewer/ComparisonSlider";
 import { PDF_WASM_SIDE_EFFECT_DEBOUNCE_MS } from "@/constants/pdfToolDebounce.constants";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
-import { DEFAULT_GHOSTSCRIPT_SETTINGS, DEFAULT_SIMPLE_COMPRESSION_PRESET, GHOSTSCRIPT_ENGINE_PRESETS } from "@/lib/features/pdfTools/constants/compressTool.constants";
-import { SIMPLE_COMPRESSION_PRESET_NAMES, type GhostscriptSettings, type SimpleCompressionPreset } from "@/lib/features/pdfTools/types/compressTool.types";
+import {
+    DEFAULT_GHOSTSCRIPT_SETTINGS,
+    DEFAULT_SIMPLE_COMPRESSION_PRESET,
+    GHOSTSCRIPT_ENGINE_PRESETS,
+    SIMPLE_COMPRESSION_PRESET_NAMES,
+} from "@/lib/features/pdfTools/constants/compressTool.constants";
+import type { GhostscriptSettings, SimpleCompressionPreset } from "@/lib/features/pdfTools/types/compressTool.types";
 import { applyGhostscriptPreset, getSimpleCompressionOptions } from "@/lib/features/pdfTools/utils/compressTool.utils";
 import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdfToolUtils.utils";
 

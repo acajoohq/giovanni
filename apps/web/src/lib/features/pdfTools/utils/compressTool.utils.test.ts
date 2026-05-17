@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_GHOSTSCRIPT_SETTINGS, DEFAULT_SIMPLE_COMPRESSION_PRESET } from "../constants/compressTool.constants";
-import { SIMPLE_COMPRESSION_PRESET_NAMES } from "../types/compressTool.types";
+import {
+    DEFAULT_GHOSTSCRIPT_SETTINGS,
+    DEFAULT_SIMPLE_COMPRESSION_PRESET,
+    SIMPLE_COMPRESSION_PRESET_NAMES,
+} from "../constants/compressTool.constants";
 import { applyGhostscriptPreset, getSimpleCompressionOptions } from "./compressTool.utils";
 
 describe("getSimpleCompressionOptions", () => {

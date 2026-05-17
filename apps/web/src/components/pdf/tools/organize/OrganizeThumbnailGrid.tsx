@@ -13,6 +13,7 @@ interface OrganizeThumbnailGridProps {
     onDrop: () => void;
     onDragEnd: () => void;
     onMove: (index: number, direction: -1 | 1) => void;
+    onDelete: (index: number) => void;
 }
 
 export function OrganizeThumbnailGrid({
@@ -26,6 +27,7 @@ export function OrganizeThumbnailGrid({
     onDrop,
     onDragEnd,
     onMove,
+    onDelete,
 }: OrganizeThumbnailGridProps) {
     return (
         <div className="h-full w-full overflow-y-auto p-3 pb-24">
@@ -44,6 +46,7 @@ export function OrganizeThumbnailGrid({
                             onDragStart={() => onDragStart(currentIndex)}
                             onDrop={onDrop}
                             onMove={(dir) => onMove(currentIndex, dir)}
+                            onDelete={() => onDelete(currentIndex)}
                         />
                     </Fragment>
                 ))}

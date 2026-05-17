@@ -118,6 +118,13 @@ export function OrganizeTool() {
         resetReorganize();
     };
 
+    const handleDelete = (index: number) => {
+        const newOrder = [...pageOrder];
+        newOrder.splice(index, 1);
+        setPageOrder(newOrder);
+        resetReorganize();
+    };
+
     const handleApply = async () => {
         if (!file || pages.length === 0 || pageOrder.length === 0) return;
         await runReorganizeJob({
@@ -132,7 +139,7 @@ export function OrganizeTool() {
     };
 
     const normalizedOutputName = ensurePdfExtension(outputName);
-    const isOrderChanged = pageOrder.length > 0 && !pageOrder.every((v, i) => v === i);
+    const isOrderChanged = pageOrder.length > 0 && (pageOrder.length !== pages.length || !pageOrder.every((v, i) => v === i));
     const activeStatus = reorganizeStatus ?? splitStatus;
 
     // dragOverIndex: insert-before slot in 0..n, null when there is no active drop target
@@ -153,11 +160,12 @@ export function OrganizeTool() {
                 onDragStart={handleDragStart}
                 onDrop={handleDrop}
                 onMove={handleMove}
+                onDelete={handleDelete}
             />
         ) : null;
 
     const resultMetrics = [
-        ...(pages.length > 0 ? [{ label: t("common.metrics.pages"), value: pages.length, tone: "accent" as const }] : []),
+        ...(pageOrder.length > 0 ? [{ label: t("common.metrics.pages"), value: pageOrder.length, tone: "accent" as const }] : []),
         ...(reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
         ...(file && reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.throughput"), value: formatThroughput(file.size, elapsedMs) }] : []),
     ];

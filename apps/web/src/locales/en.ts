@@ -230,6 +230,7 @@
         pageLabelWas: "(was {{original}})",
         moveUp: "Move page {{page}} up",
         moveDown: "Move page {{page}} down",
+        deletePage: "Delete page {{page}}",
         actions: {
             applyOrder: "Apply Order",
             applyNoChanges: "Apply (no changes)",

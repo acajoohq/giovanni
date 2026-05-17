@@ -53,6 +53,10 @@ def main() -> None:
     root = ET.parse(XML_PATH).getroot()
     baseline = parse_xml(args.baseline) if args.baseline and args.baseline.exists() else None
 
+    # When no baseline is available we always post (first run, informational).
+    # When a baseline exists we only post if at least one result changed.
+    has_changes = baseline is None
+
     title = "## Compression Results" + (" (vs master)" if baseline else "")
     no_baseline_note = "" if baseline else "\n> ℹ️ No master baseline available\n"
     lines = [
@@ -81,16 +85,20 @@ def main() -> None:
                     base = baseline.get((name, preset))
                     if base is None:
                         cell += " 🆕"
+                        has_changes = True
                     elif base.get("status") == "wasm-abort":
                         cell += " 🟢"  # was failing before, now works
+                        has_changes = True
                     else:
                         delta = cb - base["compressedBytes"]
                         if delta == 0:
                             cell += " ✅"
                         elif delta > 0:
                             cell += f" ⚠️ (+{fmt_bytes(delta)})"
+                            has_changes = True
                         else:
                             cell += f" 🟢 (-{fmt_bytes(abs(delta))})"
+                            has_changes = True
 
                 cells.append(cell)
         lines.append(f"| {name} | {orig} | {' | '.join(cells)} |")
@@ -101,14 +109,21 @@ def main() -> None:
     content = no_baseline_note + "\n".join(lines) + "\n"
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    MD_PATH.write_text(content, encoding="utf-8")
-    print(f"Written {MD_PATH}")
 
+    # Always write to the CI step summary so engineers can inspect results.
     step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if step_summary:
         with open(step_summary, "a", encoding="utf-8") as fh:
             fh.write(content)
-        print(f"Appended to $GITHUB_STEP_SUMMARY")
+        print("Appended to $GITHUB_STEP_SUMMARY")
+
+    # Only write the markdown file (consumed by the PR comment step) when
+    # something actually changed vs the baseline.
+    if has_changes:
+        MD_PATH.write_text(content, encoding="utf-8")
+        print(f"Written {MD_PATH}")
+    else:
+        print("No compression changes detected — skipping PR comment.")
 
 
 if __name__ == "__main__":

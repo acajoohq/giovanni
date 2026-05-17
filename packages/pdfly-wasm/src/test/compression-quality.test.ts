@@ -277,9 +277,7 @@ describe("compression quality", () => {
                 }
 
                 const result =
-                    scenario.reportSourceKey !== undefined
-                        ? (resultsByScenario.get(scenario.reportSourceKey) ?? null)
-                        : await tryCompressScenario(fixture.data, scenario);
+                    scenario.reportSourceKey !== undefined ? (resultsByScenario.get(scenario.reportSourceKey) ?? null) : await tryCompressScenario(fixture.data, scenario);
                 resultsByScenario.set(scenario.key, result);
 
                 if (result !== null) {

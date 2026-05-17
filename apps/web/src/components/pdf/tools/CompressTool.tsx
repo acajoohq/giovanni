@@ -60,6 +60,7 @@ export function CompressTool() {
     const [engine, setEngine] = useState<CompressionEngine>("qpdf");
     const [qpdfSettings, setQpdfSettings] = useState<QpdfSettings>({ preset: "default", ...QPDF_PRESETS.default });
     const [ghostscriptSettings, setGhostscriptSettings] = useState<GhostscriptSettings>(DEFAULT_GHOSTSCRIPT_SETTINGS);
+    const [resultSettings, setResultSettings] = useState<CompressionJobSettings | null>(null);
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<CompressResult>();
 
     const modeLabels: Record<CompressionUiMode, string> = {
@@ -159,6 +160,12 @@ export function CompressTool() {
         ghostscriptSettings,
     });
 
+    const snapshotJobSettings = (settings: CompressionJobSettings): CompressionJobSettings => ({
+        ...settings,
+        qpdfSettings: { ...settings.qpdfSettings },
+        ghostscriptSettings: { ...settings.ghostscriptSettings },
+    });
+
     const buildCompressionOptions = (settings: CompressionJobSettings): CompressOptions => {
         if (settings.uiMode === "simple") {
             return getSimpleCompressionOptions(settings.simplePreset);
@@ -189,6 +196,9 @@ export function CompressTool() {
                 return compressPdf(nextSourceData, buildCompressionOptions(settings)); // pouet
             },
             errorMessage: t("compress.status.failed"),
+            onSuccess: () => {
+                setResultSettings(snapshotJobSettings(settings));
+            },
             successStatus: (nextResult) =>
                 nextResult.savedBytes >= 0
                     ? { tone: "success", message: t("compress.status.savedBytes", { bytes: formatBytes(nextResult.savedBytes) }) }
@@ -259,6 +269,7 @@ export function CompressTool() {
 
             reset();
             debouncedProcessFile.cancel();
+            setResultSettings(null);
             setPreviewPage(1);
             setPreviewPageCount(0);
             setFile(nextFile);
@@ -290,6 +301,9 @@ export function CompressTool() {
     const getResultPresetLabel = (nextResult: CompressResult) => {
         return nextResult.engine === "qpdf" ? qpdfPresetLabels[nextResult.preset as QpdfOptimizePreset] : ghostscriptPresetLabels[nextResult.preset as GhostscriptPdfSettings];
     };
+
+    const resultUiMode = resultSettings?.uiMode ?? compressionUiMode;
+    const resultSimplePreset = resultSettings?.simplePreset ?? simplePreset;
 
     const sidebar = (
         <Sidebar>
@@ -557,11 +571,11 @@ export function CompressTool() {
                 fileSize={formatBytes(file.size)}
                 metrics={
                     result
-                        ? compressionUiMode === "simple"
+                        ? resultUiMode === "simple"
                             ? [
                                   { label: t("compress.metrics.saved"), value: `${result.percentageSaved.toFixed(1)}%`, tone: "accent" },
                                   { label: t("common.metrics.output"), value: formatBytes(result.compressedSize) },
-                                  { label: t("compress.preset.header"), value: simplePresetLabels[simplePreset] },
+                                  { label: t("compress.preset.header"), value: simplePresetLabels[resultSimplePreset] },
                                   ...(elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
                               ]
                             : [

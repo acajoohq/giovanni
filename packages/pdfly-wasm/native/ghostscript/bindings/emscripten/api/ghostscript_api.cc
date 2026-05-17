@@ -190,7 +190,8 @@ val rewritePdf(const val& inputArray, const val& argsArray)
     GhostscriptRunContext context{};
     void* instance = nullptr;
     bool instanceCreated = false;
-    bool initialized = false;
+    bool exitRequired = false;
+    bool exited = false;
 
     try {
         writeBinaryFile(inputPath, input);
@@ -212,17 +213,14 @@ val rewritePdf(const val& inputArray, const val& argsArray)
 
         std::vector<char*> argv = toArgv(args);
         code = gsapi_init_with_args(instance, static_cast<int>(argv.size()), argv.data());
-
-        if (code != gs_error_Info) {
-            initialized = true;
-        }
+        exitRequired = true;
 
         int finalCode = code;
-        if (code == 0 || code == gs_error_Quit || code <= gs_error_Fatal) {
+        if (exitRequired) {
             const int exitCode = gsapi_exit(instance);
-            initialized = false;
+            exited = true;
 
-            if (code == 0 || code == gs_error_Quit) {
+            if (code >= 0 || code == gs_error_Quit) {
                 finalCode = exitCode;
             }
             if (finalCode == gs_error_Quit) {
@@ -235,7 +233,7 @@ val rewritePdf(const val& inputArray, const val& argsArray)
         const std::vector<unsigned char> output = readBinaryFile(outputPath);
         outputBytes = vectorToUint8Array(output);
     } catch (...) {
-        if (initialized && instance != nullptr) {
+        if (exitRequired && !exited && instance != nullptr) {
             gsapi_exit(instance);
         }
         if (instanceCreated && instance != nullptr) {

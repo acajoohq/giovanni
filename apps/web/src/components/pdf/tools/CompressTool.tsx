@@ -186,7 +186,7 @@ export function CompressTool() {
     const processFile = async (nextSourceData: Uint8Array, settings: CompressionJobSettings = getCurrentJobSettings()) => {
         await runJob({
             execute: async () => {
-                return compressPdf(nextSourceData, buildCompressionOptions(settings));
+                return compressPdf(nextSourceData, buildCompressionOptions(settings)); // pouet
             },
             errorMessage: t("compress.status.failed"),
             successStatus: (nextResult) =>

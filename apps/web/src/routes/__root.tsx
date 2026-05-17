@@ -81,6 +81,7 @@ function RootNotFoundPage() {
 }
 
 function RootErrorPage({ error }: Readonly<{ error: unknown }>) {
+    const { locale = "en" } = useParams({ strict: false });
     const message = error instanceof Error ? error.message : "Unknown application error";
 
     return (
@@ -92,7 +93,7 @@ function RootErrorPage({ error }: Readonly<{ error: unknown }>) {
                 <main className="mx-auto max-w-lg p-8">
                     <h1 className="text-2xl font-semibold tracking-tight text-foreground">Something went wrong</h1>
                     <p className="mt-3 text-sm text-muted-foreground">{message}</p>
-                    <Link className="mt-4 inline-flex text-brand hover:underline" to="/">
+                    <Link className="mt-4 inline-flex text-brand hover:underline" to="/$locale" params={{ locale }}>
                         Back home
                     </Link>
                 </main>

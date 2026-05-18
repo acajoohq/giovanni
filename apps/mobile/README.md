@@ -27,3 +27,11 @@ The JavaScript pipeline calls a `DocumentRectifier` native bridge for tensor pre
 ## License Note
 
 The bundled DocScanner model comes from `/Users/matteolemni/dev/PeopleProjects/DocScanner`. That project license is non-commercial unless the upstream author grants commercial permission.
+
+## Todo
+
+- [ ] Reorganize codebase
+- [ ] Add tests
+- [ ] Make sure it works on iOS
+- [ ] Put the nitro module in a dedicated monorepo package
+- [ ] Make sure the Agents can easyly debug / work with the app / simulator

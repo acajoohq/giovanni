@@ -35,3 +35,6 @@ The bundled DocScanner model comes from `/Users/matteolemni/dev/PeopleProjects/D
 - [ ] Make sure it works on iOS
 - [ ] Put the nitro module in a dedicated monorepo package
 - [ ] Make sure the Agents can easyly debug / work with the app / simulator
+- [ ] Use skia for the comparison before / after
+- [ ] List is broken
+- [ ] Make sure we can choose which model to use

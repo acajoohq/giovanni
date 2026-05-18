@@ -11,9 +11,10 @@ import {
   usePhotoOutput,
 } from 'react-native-vision-camera';
 
+import { ScanCard } from '@/components/scanner/ScanCard';
 import { ScannerButton } from '@/components/scanner/ScannerButton';
 import { StatusPill } from '@/components/scanner/StatusPill';
-import type { ScanSource, ScanTiming } from '@/lib/scanner/scan.types';
+import type { ScanRecord, ScanSource, ScanTiming } from '@/lib/scanner/scan.types';
 import { processScan } from '@/lib/scanner/processScan';
 import { initializeScansRepository } from '@/lib/storage/scans.repository';
 
@@ -30,6 +31,7 @@ export default function ScanScreen() {
   const [processingLabel, setProcessingLabel] = useState('Ready');
   const [error, setError] = useState<string | null>(null);
   const [lastTimings, setLastTimings] = useState<ScanTiming[]>([]);
+  const [lastScan, setLastScan] = useState<ScanRecord | null>(null);
 
   const canCapture = useMemo(
     () => hasPermission && device && !isProcessing && Platform.OS !== 'web',
@@ -55,8 +57,9 @@ export default function ScanScreen() {
 
     try {
       const result = await processScan(uri, source);
+      setLastScan(result.scan);
       setLastTimings(result.timings);
-      router.push({ pathname: '/scan/[scanId]', params: { scanId: result.scan.id } });
+      router.push('/recents');
     } catch (scanError) {
       setError(scanError instanceof Error ? scanError.message : 'Scan failed.');
     } finally {
@@ -141,6 +144,26 @@ export default function ScanScreen() {
             </Text>
           ) : null}
         </View>
+
+        {lastScan ? (
+          <View style={styles.latestPanel}>
+            <View style={styles.latestHeader}>
+              <View>
+                <Text style={styles.latestTitle}>Latest scan saved</Text>
+                <Text style={styles.latestSubtitle}>
+                  {lastScan.status === 'fallback' ? 'Fallback image stored' : 'Rectified image stored'}
+                </Text>
+              </View>
+              <ScannerButton label="Open" tone="secondary" onPress={() => router.push('/recents')} />
+            </View>
+            <ScanCard
+              scan={lastScan}
+              onPress={() =>
+                router.push({ pathname: '/scan/[scanId]', params: { scanId: lastScan.id } })
+              }
+            />
+          </View>
+        ) : null}
       </SafeAreaView>
     </View>
   );
@@ -246,5 +269,23 @@ const styles = StyleSheet.create({
     color: '#7F8B94',
     fontSize: 11,
     lineHeight: 16,
+  },
+  latestPanel: {
+    gap: 10,
+  },
+  latestHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  latestTitle: {
+    color: '#F4F7F4',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  latestSubtitle: {
+    color: '#9AA6AF',
+    fontSize: 12,
+    marginTop: 2,
   },
 });

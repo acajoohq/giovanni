@@ -1,0 +1,34 @@
+{
+  "name": "react-native-document-rectifier",
+  "version": "0.1.0",
+  "description": "Nitro module for DocScanner tensor preparation and image rectification.",
+  "main": "src/index",
+  "types": "src/index.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "android",
+    "nitrogen",
+    "src",
+    "nitro.json",
+    "react-native.config.js"
+  ],
+  "keywords": [
+    "react-native",
+    "nitro",
+    "document-scanner"
+  ],
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-nitro-modules": "*"
+  },
+  "devDependencies": {
+    "nitrogen": "0.35.6",
+    "react-native-nitro-modules": "0.35.6"
+  },
+  "scripts": {
+    "specs": "nitrogen"
+  }
+}

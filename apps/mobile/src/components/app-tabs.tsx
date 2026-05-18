@@ -1,5 +1,5 @@
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import { useColorScheme } from 'react-native';
+import { Tabs } from 'expo-router';
+import { Image, StyleSheet, useColorScheme } from 'react-native';
 
 import { Colors } from '@/constants/theme';
 
@@ -8,25 +8,44 @@ export default function AppTabs() {
   const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
 
   return (
-    <NativeTabs
-      backgroundColor={colors.background}
-      indicatorColor={colors.backgroundElement}
-      labelStyle={{ selected: { color: colors.text } }}>
-      <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Scan</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="recents">
-        <NativeTabs.Trigger.Label>Recents</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-    </NativeTabs>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.text,
+        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: colors.backgroundElement,
+        },
+      }}>
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Scan',
+          tabBarIcon: ({ color }) => (
+            <Image source={require('@/assets/images/tabIcons/home.png')} style={[styles.icon, { tintColor: color }]} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="recents"
+        options={{
+          title: 'Recents',
+          tabBarIcon: ({ color }) => (
+            <Image
+              source={require('@/assets/images/tabIcons/explore.png')}
+              style={[styles.icon, { tintColor: color }]}
+            />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  icon: {
+    height: 24,
+    width: 24,
+  },
+});

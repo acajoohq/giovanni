@@ -1,45 +1,37 @@
-import { NativeModules } from 'react-native';
+import { getDocumentRectifier } from 'react-native-document-rectifier';
 
 import type { PreparedDocumentImage, RectifyFlowInput } from '@/lib/scanner/scan.types';
 
-interface DocumentRectifierNativeModule {
-  prepareInputTensor(sourceUri: string): Promise<{
-    input: number[] | Float32Array;
-    width: number;
-    height: number;
-  }>;
-  remapAndSave(input: RectifyFlowInput): Promise<{ uri: string }>;
-}
-
-function getNativeModule(): DocumentRectifierNativeModule | null {
-  return (NativeModules.DocumentRectifier as DocumentRectifierNativeModule | undefined) ?? null;
-}
-
 export async function prepareInputTensor(sourceUri: string): Promise<PreparedDocumentImage> {
-  const nativeModule = getNativeModule();
+  const rectifier = getDocumentRectifier();
+  const prepared = await rectifier.prepareInputTensor(sourceUri);
 
-  if (!nativeModule) {
-    throw new Error('DocumentRectifier native module is not available in this build.');
-  }
-
-  const prepared = await nativeModule.prepareInputTensor(sourceUri);
   return {
-    input:
-      prepared.input instanceof Float32Array
-        ? prepared.input
-        : Float32Array.from(prepared.input),
+    input: new Float32Array(prepared.tensorBuffer),
     width: prepared.width,
     height: prepared.height,
   };
 }
 
 export async function remapAndSave(input: RectifyFlowInput): Promise<string> {
-  const nativeModule = getNativeModule();
+  const rectifier = getDocumentRectifier();
+  const flowBuffer = toExactArrayBuffer(input.flow);
+  const result = await rectifier.remapAndSave(
+    input.sourceUri,
+    input.outputUri,
+    input.width,
+    input.height,
+    flowBuffer,
+  );
+  return result.uri;
+}
 
-  if (!nativeModule) {
-    throw new Error('DocumentRectifier native module is not available in this build.');
+function toExactArrayBuffer(value: Float32Array): ArrayBuffer {
+  const { buffer, byteLength, byteOffset } = value;
+
+  if (byteOffset === 0 && byteLength === buffer.byteLength && buffer instanceof ArrayBuffer) {
+    return buffer;
   }
 
-  const result = await nativeModule.remapAndSave(input);
-  return result.uri;
+  return buffer.slice(byteOffset, byteOffset + byteLength) as ArrayBuffer;
 }

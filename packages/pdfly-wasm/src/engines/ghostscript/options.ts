@@ -42,6 +42,8 @@ export const GHOSTSCRIPT_PRESETS = {
     },
 } satisfies Record<GhostscriptPdfSettings, Omit<GhostscriptCompressOptions, "preset" | "pdfSettings" | "downsampleMonoImages" | "monoImageResolution" | "jpegQuality">>;
 
+export const GHOSTSCRIPT_PDF_SETTINGS = Object.freeze(Object.keys(GHOSTSCRIPT_PRESETS) as GhostscriptPdfSettings[]);
+
 export interface NormalizedGhostscriptOptions {
     pdfSettings: GhostscriptPdfSettings;
     compatibilityLevel?: GhostscriptCompatibilityLevel;
@@ -125,9 +127,8 @@ function normalizePdfSettings(options?: GhostscriptCompressOptions): Ghostscript
     }
 
     const value = pdfSettings ?? preset ?? "default";
-    const valid: GhostscriptPdfSettings[] = ["screen", "ebook", "printer", "prepress", "default"];
-    if (!valid.includes(value)) {
-        throw new GhostscriptValidationError(`pdfSettings must be one of: ${valid.join(", ")}`);
+    if (!GHOSTSCRIPT_PDF_SETTINGS.includes(value)) {
+        throw new GhostscriptValidationError(`pdfSettings must be one of: ${GHOSTSCRIPT_PDF_SETTINGS.join(", ")}`);
     }
 
     return value;

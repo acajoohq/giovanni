@@ -2,7 +2,6 @@ import { Asset } from 'expo-asset';
 import { InferenceSession, Tensor } from 'onnxruntime-react-native';
 
 import docscannerFp16Onnx from '@/assets/models/docscanner-fp16.onnx';
-import docscannerFp16Ort from '@/assets/models/docscanner-fp16.ort';
 import {
   DOCSCANNER_FLOW_LENGTH,
   DOCSCANNER_INPUT_SHAPE,
@@ -30,9 +29,7 @@ async function createSessionFromAsset(moduleId: number): Promise<InferenceSessio
 }
 
 export async function getDocScannerSession(): Promise<InferenceSession> {
-  sessionPromise ??= createSessionFromAsset(docscannerFp16Ort).catch(async () =>
-    createSessionFromAsset(docscannerFp16Onnx),
-  );
+  sessionPromise ??= createSessionFromAsset(docscannerFp16Onnx);
 
   return sessionPromise;
 }

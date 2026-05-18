@@ -3,9 +3,4 @@ declare module '*.onnx' {
   export default asset;
 }
 
-declare module '*.ort' {
-  const asset: number;
-  export default asset;
-}
-
 declare module '*.css';

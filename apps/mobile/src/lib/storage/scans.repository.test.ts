@@ -35,7 +35,7 @@ describe('scans repository', () => {
       width: 1200,
       height: 1600,
       processingMs: 420,
-      modelVersion: 'docscanner-fp16',
+      modelVersion: 'docscanner-fp16-onnx',
       warning: null,
     };
 

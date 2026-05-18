@@ -1,6 +1,6 @@
 # @pdfly/ui
 
-Workspace package with shared UI for [`apps/pdfly-desktop`](../../apps/pdfly-desktop). The main product surface lives in [`apps/web`](../../apps/web).
+Workspace package with shared UI for [`apps/desktop`](../../apps/desktop). The main product surface lives in [`apps/web`](../../apps/web).
 
 ## Todo
 

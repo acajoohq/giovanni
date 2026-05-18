@@ -27,7 +27,7 @@ importers:
         specifier: ^4.88.0
         version: 4.88.0
 
-  apps/pdfly-desktop:
+  apps/desktop:
     dependencies:
       '@tauri-apps/api':
         specifier: ^2.11.0

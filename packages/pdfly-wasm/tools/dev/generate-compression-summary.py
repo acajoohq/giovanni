@@ -21,8 +21,6 @@ SCENARIOS = [
     ("simple-recommended", "Recommended"),
     ("simple-smallest", "Smallest file"),
     ("simple-best-quality", "Best quality"),
-    ("recommended-qpdf", "Recommended qpdf"),
-    ("recommended-ghostscript", "Recommended Ghostscript"),
 ]
 
 

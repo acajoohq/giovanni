@@ -16,6 +16,7 @@ export function resolveInitialClientLocale() {
         return DEFAULT_LOCALE;
     }
 
+    // prefer the hydrated route locale; "/" already handles navigator language redirects
     const hydratedRouteLocale = resolveSupportedLocale(document.documentElement.lang.trim().toLowerCase());
     const pathnameLocale = resolveSupportedLocale(window.location.pathname.split("/")[1]?.toLowerCase());
 

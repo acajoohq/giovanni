@@ -1,18 +1,13 @@
 ﻿import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-
-const SUPPORTED_LOCALES = ["en", "fr"] as const;
-export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
-
-export function isSupportedLocale(locale: string): locale is SupportedLocale {
-    return (SUPPORTED_LOCALES as readonly string[]).includes(locale);
-}
+import { DEFAULT_LOCALE } from "@/lib/features/locales/constants/locales.constants";
+import { isSupportedLocale } from "@/lib/features/locales/utils/locales.utils";
 
 export const Route = createFileRoute("/$locale")({
     beforeLoad: async ({ params, context }) => {
         if (!isSupportedLocale(params.locale)) {
-            throw redirect({ to: "/$locale", params: { locale: "en" }, replace: true });
+            throw redirect({ to: "/$locale", params: { locale: DEFAULT_LOCALE }, replace: true });
         }
         // Mutate only the request-scoped instance from router context —
         // safe for concurrent SSR (each request has its own instance).

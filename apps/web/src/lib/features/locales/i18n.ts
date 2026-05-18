@@ -20,35 +20,33 @@ function isSupportedLocale(locale: string): locale is SupportedLocale {
     return (SUPPORTED_LOCALES as readonly string[]).includes(locale);
 }
 
-function normalizeLocale(locale: string | undefined) {
+function resolveSupportedLocale(locale: string | undefined): SupportedLocale | undefined {
     if (locale && isSupportedLocale(locale)) {
         return locale;
     }
-
-    return DEFAULT_LOCALE;
 }
 
-function resolveClientLocale() {
+function getHydratedRouteLocale(): SupportedLocale | undefined {
+    return resolveSupportedLocale(document.documentElement.lang.trim().toLowerCase());
+}
+
+function getPathnameLocale(): SupportedLocale | undefined {
+    return resolveSupportedLocale(window.location.pathname.split("/")[1]?.toLowerCase());
+}
+
+function resolveInitialClientLocale() {
     if (typeof document === "undefined") {
         return DEFAULT_LOCALE;
     }
 
-    const documentLocale = document.documentElement.lang.trim().toLowerCase();
-
-    if (isSupportedLocale(documentLocale)) {
-        return documentLocale;
-    }
-
-    const pathnameLocale = window.location.pathname.split("/")[1]?.toLowerCase();
-
-    return normalizeLocale(pathnameLocale);
+    return getHydratedRouteLocale() ?? getPathnameLocale() ?? DEFAULT_LOCALE;
 }
 
 // Client singleton — initialized once, safe (single user, no concurrency)
 const clientI18n = i18next.createInstance();
 export const i18nReady = clientI18n.use(initReactI18next).init({
     ...baseConfig,
-    lng: resolveClientLocale(),
+    lng: resolveInitialClientLocale(),
 });
 export default clientI18n;
 
@@ -60,7 +58,7 @@ export function createI18nInstance(locale = DEFAULT_LOCALE) {
     const instance = i18next.createInstance();
     instance.use(initReactI18next).init({
         ...baseConfig,
-        lng: normalizeLocale(locale),
+        lng: resolveSupportedLocale(locale) ?? DEFAULT_LOCALE,
     });
     return instance;
 }

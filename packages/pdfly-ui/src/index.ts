@@ -509,7 +509,7 @@ export function initApp(): void {
         }
     }
 
-    // extract images tab (optional markup - e.g. pdfly-web includes it, pdfly-desktop may not)
+    // extract images tab (optional markup - e.g. web includes it, desktop may not)
     const imagesUploadCandidate = document.getElementById("images-upload");
     const imagesInputCandidate = document.getElementById("images-input");
     if (imagesUploadCandidate instanceof HTMLButtonElement && imagesInputCandidate instanceof HTMLInputElement) {

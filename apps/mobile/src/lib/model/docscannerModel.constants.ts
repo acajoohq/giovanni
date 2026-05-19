@@ -6,11 +6,13 @@ export const DOCSCANNER_MODEL_OPTIONS = [
   {
     id: 'docscanner-fp32-onnx',
     label: 'Reference FP32',
+    sizeLabel: '35 MB',
     description: 'Python docscanner.onnx · same weights as PyTorch',
   },
   {
     id: 'docscanner-fp16-onnx',
     label: 'Mobile FP16',
+    sizeLabel: '19 MB',
     description: 'Python docscanner-fp16.onnx · faster, tiny drift',
   },
 ] as const satisfies readonly DocScannerModelOption[];

@@ -1,79 +1,127 @@
-import { Image } from 'expo-image';
-import { useMemo, useState } from 'react';
-import { PanResponder, StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import {
+  Canvas,
+  Circle,
+  Fill,
+  Group,
+  Image,
+  Rect,
+  Text as SkiaText,
+  matchFont,
+  rect,
+  useImage,
+} from '@shopify/react-native-skia';
+import { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 interface BeforeAfterSliderProps {
   beforeUri: string;
   afterUri: string;
 }
 
-const MIN_POSITION = 0.08;
-const MAX_POSITION = 0.92;
-const HANDLE_HALF_WIDTH = 16;
+const MIN_RATIO = 0.08;
+const MAX_RATIO = 0.92;
+const HANDLE_RADIUS = 16;
+const DIVIDER_COLOR = '#E7FF5F';
+const HANDLE_FONT = matchFont({ fontSize: 13, fontWeight: '900' });
 
-function clampPosition(x: number, width: number) {
+/* eslint-disable react-hooks/immutability -- reanimated shared values update on the UI thread */
+
+function clampDivider(x: number, width: number) {
+  'worklet';
   if (width <= 0) {
-    return 0.5;
+    return 0;
   }
 
-  return Math.min(MAX_POSITION, Math.max(MIN_POSITION, x / width));
+  return Math.min(width * MAX_RATIO, Math.max(width * MIN_RATIO, x));
 }
 
 export function BeforeAfterSlider({ beforeUri, afterUri }: BeforeAfterSliderProps) {
-  const [layoutWidth, setLayoutWidth] = useState(0);
-  const containerWidth = useSharedValue(0);
-  const position = useSharedValue(0.5);
+  const beforeImage = useImage(beforeUri);
+  const afterImage = useImage(afterUri);
 
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
-        onStartShouldSetPanResponder: () => true,
-        onPanResponderGrant: (event) => {
-          position.value = clampPosition(event.nativeEvent.locationX, containerWidth.value);
-        },
-        onPanResponderMove: (event) => {
-          position.value = clampPosition(event.nativeEvent.locationX, containerWidth.value);
-        },
-      }),
-    [containerWidth, position],
+  const canvasSize = useSharedValue({ width: 0, height: 0 });
+  const dividerX = useSharedValue(0);
+
+  const canvasWidth = useDerivedValue(() => canvasSize.value.width);
+  const canvasHeight = useDerivedValue(() => canvasSize.value.height);
+  const beforeClip = useDerivedValue(() => rect(0, 0, dividerX.value, canvasSize.value.height));
+  const dividerLineX = useDerivedValue(() => dividerX.value - 1);
+  const handleCenterY = useDerivedValue(() => canvasSize.value.height * 0.48);
+  const handleLabelX = useDerivedValue(() => dividerX.value - 8);
+  const handleLabelY = useDerivedValue(() => canvasSize.value.height * 0.48 + 5);
+
+  useAnimatedReaction(
+    () => canvasSize.value.width,
+    (width) => {
+      if (width > 0 && dividerX.value === 0) {
+        dividerX.value = width * 0.5;
+      }
+    },
   );
 
-  const beforeClipStyle = useAnimatedStyle(() => ({
-    width: containerWidth.value * position.value,
-  }));
+  const gesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetX([-8, 8])
+        .failOffsetY([-12, 12])
+        .onBegin((event) => {
+          dividerX.value = clampDivider(event.x, canvasSize.value.width);
+        })
+        .onUpdate((event) => {
+          dividerX.value = clampDivider(event.x, canvasSize.value.width);
+        }),
+    [canvasSize, dividerX],
+  );
 
-  const handleStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: containerWidth.value * position.value - HANDLE_HALF_WIDTH }],
-  }));
+  const imagesReady = beforeImage !== null && afterImage !== null;
 
   return (
-    <View
-      {...panResponder.panHandlers}
-      style={styles.container}
-      onLayout={(event) => {
-        const width = event.nativeEvent.layout.width;
-        setLayoutWidth(width);
-        containerWidth.value = width;
-      }}>
-      <Image source={{ uri: afterUri }} style={styles.image} contentFit="cover" />
-      <Animated.View collapsable={false} style={[styles.beforeClip, beforeClipStyle]}>
-        {layoutWidth > 0 ? (
-          <Image
-            source={{ uri: beforeUri }}
-            style={[styles.image, styles.beforeImage, { width: layoutWidth }]}
-            contentFit="cover"
-          />
-        ) : null}
-      </Animated.View>
-      <Animated.View style={[styles.handle, handleStyle]}>
-        <View style={styles.handleLine} />
-        <View style={styles.handleKnob}>
-          <Text style={styles.handleText}>{'<>'}</Text>
-        </View>
-      </Animated.View>
-      <View style={styles.badgeRow} pointerEvents="none">
+    <View style={styles.container}>
+      <GestureDetector gesture={gesture}>
+        <Canvas style={styles.canvas} onSize={canvasSize}>
+          <Fill color="#080B0E" />
+          {imagesReady ? (
+            <>
+              <Image
+                image={afterImage}
+                x={0}
+                y={0}
+                width={canvasWidth}
+                height={canvasHeight}
+                fit="cover"
+              />
+              <Group clip={beforeClip}>
+                <Image
+                  image={beforeImage}
+                  x={0}
+                  y={0}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  fit="cover"
+                />
+              </Group>
+              <Rect
+                x={dividerLineX}
+                y={0}
+                width={2}
+                height={canvasHeight}
+                color={DIVIDER_COLOR}
+              />
+              <Circle cx={dividerX} cy={handleCenterY} r={HANDLE_RADIUS} color={DIVIDER_COLOR} />
+              <SkiaText
+                x={handleLabelX}
+                y={handleLabelY}
+                text="<>"
+                font={HANDLE_FONT}
+                color="#101214"
+              />
+            </>
+          ) : null}
+        </Canvas>
+      </GestureDetector>
+      <View pointerEvents="none" style={styles.badgeRow}>
         <Text style={styles.badge}>Before</Text>
         <Text style={styles.badge}>After</Text>
       </View>
@@ -89,49 +137,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: '100%',
   },
-  image: {
-    height: '100%',
-    width: '100%',
-  },
-  beforeImage: {
-    left: 0,
-    position: 'absolute',
-    top: 0,
-  },
-  beforeClip: {
-    bottom: 0,
-    left: 0,
-    overflow: 'hidden',
-    position: 'absolute',
-    top: 0,
-  },
-  handle: {
-    alignItems: 'center',
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    top: 0,
-    width: 32,
-  },
-  handleLine: {
-    backgroundColor: '#E7FF5F',
+  canvas: {
     flex: 1,
-    width: 2,
-  },
-  handleKnob: {
-    alignItems: 'center',
-    backgroundColor: '#E7FF5F',
-    borderRadius: 16,
-    height: 32,
-    justifyContent: 'center',
-    position: 'absolute',
-    top: '48%',
-    width: 32,
-  },
-  handleText: {
-    color: '#101214',
-    fontSize: 13,
-    fontWeight: '900',
   },
   badgeRow: {
     flexDirection: 'row',

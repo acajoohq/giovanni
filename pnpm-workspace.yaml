@@ -2,6 +2,7 @@ packages:
   - apps/*
   - packages/*
 allowBuilds:
+  '@shopify/react-native-skia': true
   canvas: true
   esbuild: true
   msw: true

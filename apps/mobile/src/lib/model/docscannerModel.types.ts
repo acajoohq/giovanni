@@ -5,6 +5,7 @@ export type DocScannerModelId = (typeof DOCSCANNER_MODEL_IDS)[number];
 export type DocScannerModelOption = {
   id: DocScannerModelId;
   label: string;
+  sizeLabel: string;
   description: string;
 };
 

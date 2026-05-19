@@ -30,9 +30,14 @@ export function ModelPicker({ value, onChange, disabled = false }: ModelPickerPr
                 disabled && styles.optionDisabled,
                 pressed && !disabled && styles.optionPressed,
               ]}>
-              <Text style={[styles.optionLabel, isSelected && styles.optionLabelSelected]}>
-                {option.label}
-              </Text>
+              <View style={styles.optionHeader}>
+                <Text style={[styles.optionLabel, isSelected && styles.optionLabelSelected]}>
+                  {option.label}
+                </Text>
+                <Text style={[styles.optionSize, isSelected && styles.optionSizeSelected]}>
+                  {option.sizeLabel}
+                </Text>
+              </View>
               <Text style={[styles.optionDescription, isSelected && styles.optionDescriptionSelected]}>
                 {option.description}
               </Text>
@@ -80,13 +85,27 @@ const styles = StyleSheet.create({
   optionPressed: {
     opacity: 0.82,
   },
+  optionHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   optionLabel: {
     color: '#E2E8ED',
+    flex: 1,
     fontSize: 14,
     fontWeight: '900',
   },
   optionLabelSelected: {
     color: '#E7FF5F',
+  },
+  optionSize: {
+    color: '#9AA6AF',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  optionSizeSelected: {
+    color: '#D4E88A',
   },
   optionDescription: {
     color: '#7F8B94',

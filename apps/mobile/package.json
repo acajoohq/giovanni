@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~56.0.8",
+    "@shopify/react-native-skia": "2.6.2",
     "expo": "~56.0.0-preview.12",
     "expo-asset": "^56.0.10",
     "expo-constants": "~56.0.11",

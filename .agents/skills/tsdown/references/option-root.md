@@ -18,9 +18,9 @@ tsdown --root src
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts', 'src/utils/helper.ts'],
-  root: 'src',
-})
+    entry: ["src/index.ts", "src/utils/helper.ts"],
+    root: "src",
+});
 ```
 
 ## How It Works
@@ -65,20 +65,20 @@ dist/
 
 ```ts
 export default defineConfig({
-  entry: ['src/**/*.ts', '!**/*.test.ts'],
-  root: '.',
-  unbundle: true,
-})
+    entry: ["src/**/*.ts", "!**/*.test.ts"],
+    root: ".",
+    unbundle: true,
+});
 ```
 
 ### Monorepo Package
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  root: 'src',
-  unbundle: true,
-})
+    entry: ["src/index.ts"],
+    root: "src",
+    unbundle: true,
+});
 ```
 
 ## Related Options

@@ -15,9 +15,9 @@ tsdown auto-reads from `package.json`:
 ```json
 // package.json
 {
-  "engines": {
-    "node": ">=18.0.0"
-  }
+    "engines": {
+        "node": ">=18.0.0"
+    }
 }
 ```
 
@@ -31,15 +31,17 @@ Set to `false` to preserve modern syntax:
 
 ```ts
 export default defineConfig({
-  target: false,
-})
+    target: false,
+});
 ```
 
 **Result:**
+
 - No JavaScript downleveling
 - Modern features preserved (optional chaining `?.`, nullish coalescing `??`, etc.)
 
 **Use when:**
+
 - Targeting modern environments
 - Handling transformations elsewhere
 - Building libraries for further processing
@@ -64,18 +66,18 @@ tsdown --no-target
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  target: 'es2020',
-})
+    entry: ["src/index.ts"],
+    target: "es2020",
+});
 ```
 
 ### Multiple Targets
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  target: ['chrome100', 'safari15', 'node18'],
-})
+    entry: ["src/index.ts"],
+    target: ["chrome100", "safari15", "node18"],
+});
 ```
 
 ## Supported Targets
@@ -98,46 +100,46 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  target: ['chrome100', 'safari15', 'firefox100'],
-})
+    entry: ["src/index.ts"],
+    format: ["esm"],
+    target: ["chrome100", "safari15", "firefox100"],
+});
 ```
 
 ### Node.js Library
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  target: 'node18',
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    target: "node18",
+});
 ```
 
 ### Legacy Support
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  target: 'es2015',  // Maximum compatibility
-})
+    entry: ["src/index.ts"],
+    format: ["esm"],
+    target: "es2015", // Maximum compatibility
+});
 ```
 
 ### Per-Format Targets
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: {
-    esm: {
-      target: 'es2020',
+    entry: ["src/index.ts"],
+    format: {
+        esm: {
+            target: "es2020",
+        },
+        cjs: {
+            target: "node16",
+        },
     },
-    cjs: {
-      target: 'node16',
-    },
-  },
-})
+});
 ```
 
 ## Decorators
@@ -148,9 +150,9 @@ Enable in `tsconfig.json`:
 
 ```json
 {
-  "compilerOptions": {
-    "experimentalDecorators": true
-  }
+    "compilerOptions": {
+        "experimentalDecorators": true
+    }
 }
 ```
 
@@ -166,31 +168,31 @@ See [oxc issue #9170](https://github.com/oxc-project/oxc/issues/9170).
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  target: 'es2020',  // Wide compatibility
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    target: "es2020", // Wide compatibility
+});
 ```
 
 ### Modern-Only Library
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  target: false,  // No transformations
-})
+    entry: ["src/index.ts"],
+    format: ["esm"],
+    target: false, // No transformations
+});
 ```
 
 ### Browser Component
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.tsx'],
-  format: ['esm'],
-  target: ['chrome100', 'safari15', 'firefox100'],
-  platform: 'browser',
-})
+    entry: ["src/index.tsx"],
+    format: ["esm"],
+    target: ["chrome100", "safari15", "firefox100"],
+    platform: "browser",
+});
 ```
 
 ## CSS Targeting
@@ -199,8 +201,8 @@ When `@tsdown/css` is installed and a browser target is set, CSS syntax is also 
 
 ```ts
 export default defineConfig({
-  target: 'chrome108',  // CSS nesting will be flattened
-})
+    target: "chrome108", // CSS nesting will be flattened
+});
 ```
 
 See [CSS](option-css.md) for full CSS configuration options.

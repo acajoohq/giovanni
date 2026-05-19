@@ -1,18 +1,18 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from "expo-sqlite";
 
-import type { ScanRecord } from '@/lib/scanner/scan.types';
+import type { ScanRecord } from "@/lib/scanner/scan.types";
 
 let databasePromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 function getDatabase(): Promise<SQLite.SQLiteDatabase> {
-  databasePromise ??= SQLite.openDatabaseAsync('doc-scanner.db');
-  return databasePromise;
+    databasePromise ??= SQLite.openDatabaseAsync("doc-scanner.db");
+    return databasePromise;
 }
 
 export async function initializeScansRepository(): Promise<void> {
-  const database = await getDatabase();
+    const database = await getDatabase();
 
-  await database.execAsync(`
+    await database.execAsync(`
     CREATE TABLE IF NOT EXISTS scans (
       id TEXT PRIMARY KEY NOT NULL,
       source TEXT NOT NULL,
@@ -30,43 +30,26 @@ export async function initializeScansRepository(): Promise<void> {
 }
 
 export async function insertScan(scan: ScanRecord): Promise<void> {
-  const database = await getDatabase();
+    const database = await getDatabase();
 
-  await database.runAsync(
-    `INSERT OR REPLACE INTO scans (
+    await database.runAsync(
+        `INSERT OR REPLACE INTO scans (
       id, source, status, createdAt, originalUri, rectifiedUri,
       width, height, processingMs, modelVersion, warning
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      scan.id,
-      scan.source,
-      scan.status,
-      scan.createdAt,
-      scan.originalUri,
-      scan.rectifiedUri,
-      scan.width,
-      scan.height,
-      scan.processingMs,
-      scan.modelVersion,
-      scan.warning,
-    ],
-  );
+        [scan.id, scan.source, scan.status, scan.createdAt, scan.originalUri, scan.rectifiedUri, scan.width, scan.height, scan.processingMs, scan.modelVersion, scan.warning],
+    );
 }
 
 export async function listRecentScans(): Promise<ScanRecord[]> {
-  const database = await getDatabase();
+    const database = await getDatabase();
 
-  return database.getAllAsync<ScanRecord>(
-    'SELECT * FROM scans ORDER BY createdAt DESC LIMIT 50',
-  );
+    return database.getAllAsync<ScanRecord>("SELECT * FROM scans ORDER BY createdAt DESC LIMIT 50");
 }
 
 export async function getScanById(id: string): Promise<ScanRecord | null> {
-  const database = await getDatabase();
-  const rows = await database.getAllAsync<ScanRecord>(
-    'SELECT * FROM scans WHERE id = ? LIMIT 1',
-    [id],
-  );
+    const database = await getDatabase();
+    const rows = await database.getAllAsync<ScanRecord>("SELECT * FROM scans WHERE id = ? LIMIT 1", [id]);
 
-  return rows[0] ?? null;
+    return rows[0] ?? null;
 }

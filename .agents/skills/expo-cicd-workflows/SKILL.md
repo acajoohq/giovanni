@@ -20,20 +20,20 @@ node {baseDir}/scripts/fetch.js <url>
 ```
 
 1. **JSON Schema** — https://api.expo.dev/v2/workflows/schema
-   - It is NECESSARY to fetch this schema
-   - Source of truth for validation
-   - All job types and their required/optional parameters
-   - Trigger types and configurations
-   - Runner types, VM images, and all enums
+    - It is NECESSARY to fetch this schema
+    - Source of truth for validation
+    - All job types and their required/optional parameters
+    - Trigger types and configurations
+    - Runner types, VM images, and all enums
 
 2. **Syntax Documentation** — https://raw.githubusercontent.com/expo/expo/refs/heads/main/docs/pages/eas/workflows/syntax.mdx
-   - Overview of workflow YAML syntax
-   - Examples and English explanations
-   - Expression syntax and contexts
+    - Overview of workflow YAML syntax
+    - Examples and English explanations
+    - Expression syntax and contexts
 
 3. **Pre-packaged Jobs** — https://raw.githubusercontent.com/expo/expo/refs/heads/main/docs/pages/eas/workflows/pre-packaged-jobs.mdx
-   - Documentation for supported pre-packaged job types
-   - Job-specific parameters and outputs
+    - Documentation for supported pre-packaged job types
+    - Job-specific parameters and outputs
 
 Do not rely on memorized values; these resources evolve as new features are added.
 

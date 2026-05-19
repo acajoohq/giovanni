@@ -11,9 +11,9 @@
 
 ```ts
 export default defineConfig({
-  entry: ['src/cli.ts'],
-  exe: true,
-})
+    entry: ["src/cli.ts"],
+    exe: true,
+});
 ```
 
 ## Behavior When Enabled
@@ -28,38 +28,38 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  entry: ['src/cli.ts'],
-  exe: {
-    fileName: 'my-tool',
-    seaConfig: {
-      disableExperimentalSEAWarning: true,
-      useCodeCache: true,
-      useSnapshot: false,
+    entry: ["src/cli.ts"],
+    exe: {
+        fileName: "my-tool",
+        seaConfig: {
+            disableExperimentalSEAWarning: true,
+            useCodeCache: true,
+            useSnapshot: false,
+        },
     },
-  },
-})
+});
 ```
 
 ## `ExeOptions`
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `seaConfig` | `Omit<SeaConfig, 'main' \| 'output' \| 'mainFormat'>` | Node.js configuration options |
-| `fileName` | `string \| ((chunk) => string)` | Custom output file name (without `.exe` or platform suffixes) |
-| `targets` | `ExeTarget[]` | Cross-platform build targets (requires `@tsdown/exe`) |
+| Option      | Type                                                  | Description                                                   |
+| ----------- | ----------------------------------------------------- | ------------------------------------------------------------- |
+| `seaConfig` | `Omit<SeaConfig, 'main' \| 'output' \| 'mainFormat'>` | Node.js configuration options                                 |
+| `fileName`  | `string \| ((chunk) => string)`                       | Custom output file name (without `.exe` or platform suffixes) |
+| `targets`   | `ExeTarget[]`                                         | Cross-platform build targets (requires `@tsdown/exe`)         |
 
 ## `SeaConfig`
 
 See [Node.js Single Executable Applications documentation](https://nodejs.org/api/single-executable-applications.html).
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `disableExperimentalSEAWarning` | `boolean` | `true` | Disable the experimental warning |
-| `useSnapshot` | `boolean` | `false` | Use V8 snapshot |
-| `useCodeCache` | `boolean` | `false` | Use V8 code cache |
-| `execArgv` | `string[]` | - | Extra Node.js arguments |
-| `execArgvExtension` | `'none' \| 'env' \| 'cli'` | `'env'` | How to extend execArgv |
-| `assets` | `Record<string, string>` | - | Assets to embed |
+| Option                          | Type                       | Default | Description                      |
+| ------------------------------- | -------------------------- | ------- | -------------------------------- |
+| `disableExperimentalSEAWarning` | `boolean`                  | `true`  | Disable the experimental warning |
+| `useSnapshot`                   | `boolean`                  | `false` | Use V8 snapshot                  |
+| `useCodeCache`                  | `boolean`                  | `false` | Use V8 code cache                |
+| `execArgv`                      | `string[]`                 | -       | Extra Node.js arguments          |
+| `execArgvExtension`             | `'none' \| 'env' \| 'cli'` | `'env'` | How to extend execArgv           |
+| `assets`                        | `Record<string, string>`   | -       | Assets to embed                  |
 
 ## Cross-Platform Builds
 
@@ -71,15 +71,15 @@ pnpm add -D @tsdown/exe
 
 ```ts
 export default defineConfig({
-  entry: ['src/cli.ts'],
-  exe: {
-    targets: [
-      { platform: 'linux', arch: 'x64', nodeVersion: '25.7.0' },
-      { platform: 'darwin', arch: 'arm64', nodeVersion: '25.7.0' },
-      { platform: 'win', arch: 'x64', nodeVersion: '25.7.0' },
-    ],
-  },
-})
+    entry: ["src/cli.ts"],
+    exe: {
+        targets: [
+            { platform: "linux", arch: "x64", nodeVersion: "25.7.0" },
+            { platform: "darwin", arch: "arm64", nodeVersion: "25.7.0" },
+            { platform: "win", arch: "x64", nodeVersion: "25.7.0" },
+        ],
+    },
+});
 ```
 
 This downloads the target platform's Node.js binary, caches it locally, and produces platform-suffixed output:
@@ -93,15 +93,16 @@ dist/
 
 ### `ExeTarget`
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `platform` | `'win' \| 'darwin' \| 'linux'` | Target OS (nodejs.org naming) |
-| `arch` | `'x64' \| 'arm64'` | Target CPU architecture |
-| `nodeVersion` | `string` | Node.js version (must be `>=25.7.0`) |
+| Field         | Type                           | Description                          |
+| ------------- | ------------------------------ | ------------------------------------ |
+| `platform`    | `'win' \| 'darwin' \| 'linux'` | Target OS (nodejs.org naming)        |
+| `arch`        | `'x64' \| 'arm64'`             | Target CPU architecture              |
+| `nodeVersion` | `string`                       | Node.js version (must be `>=25.7.0`) |
 
 ### Caching
 
 Downloaded Node.js binaries are cached in system cache directories:
+
 - **macOS:** `~/Library/Caches/tsdown/node/`
 - **Linux:** `~/.cache/tsdown/node/`
 - **Windows:** `%LOCALAPPDATA%/tsdown/Caches/node/`

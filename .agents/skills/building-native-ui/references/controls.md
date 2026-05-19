@@ -18,13 +18,7 @@ const [enabled, setEnabled] = useState(false);
 ### Customization
 
 ```tsx
-<Switch
-  value={enabled}
-  onValueChange={setEnabled}
-  trackColor={{ false: "#767577", true: "#81b0ff" }}
-  thumbColor={enabled ? "#f5dd4b" : "#f4f3f4"}
-  ios_backgroundColor="#3e3e3e"
-/>
+<Switch value={enabled} onValueChange={setEnabled} trackColor={{ false: "#767577", true: "#81b0ff" }} thumbColor={enabled ? "#f5dd4b" : "#f4f3f4"} ios_backgroundColor="#3e3e3e" />
 ```
 
 ## Segmented Control
@@ -37,11 +31,7 @@ import { useState } from "react";
 
 const [index, setIndex] = useState(0);
 
-<SegmentedControl
-  values={["All", "Active", "Done"]}
-  selectedIndex={index}
-  onChange={({ nativeEvent }) => setIndex(nativeEvent.selectedSegmentIndex)}
-/>;
+<SegmentedControl values={["All", "Active", "Done"]} selectedIndex={index} onChange={({ nativeEvent }) => setIndex(nativeEvent.selectedSegmentIndex)} />;
 ```
 
 ### Rules
@@ -54,12 +44,12 @@ const [index, setIndex] = useState(0);
 
 ```tsx
 <SegmentedControl
-  values={[
-    { label: "List", icon: "list.bullet" },
-    { label: "Grid", icon: "square.grid.2x2" },
-  ]}
-  selectedIndex={index}
-  onChange={({ nativeEvent }) => setIndex(nativeEvent.selectedSegmentIndex)}
+    values={[
+        { label: "List", icon: "list.bullet" },
+        { label: "Grid", icon: "square.grid.2x2" },
+    ]}
+    selectedIndex={index}
+    onChange={({ nativeEvent }) => setIndex(nativeEvent.selectedSegmentIndex)}
 />
 ```
 
@@ -73,39 +63,28 @@ import { useState } from "react";
 
 const [value, setValue] = useState(0.5);
 
-<Slider
-  value={value}
-  onValueChange={setValue}
-  minimumValue={0}
-  maximumValue={1}
-/>;
+<Slider value={value} onValueChange={setValue} minimumValue={0} maximumValue={1} />;
 ```
 
 ### Customization
 
 ```tsx
 <Slider
-  value={value}
-  onValueChange={setValue}
-  minimumValue={0}
-  maximumValue={100}
-  step={1}
-  minimumTrackTintColor="#007AFF"
-  maximumTrackTintColor="#E5E5EA"
-  thumbTintColor="#007AFF"
+    value={value}
+    onValueChange={setValue}
+    minimumValue={0}
+    maximumValue={100}
+    step={1}
+    minimumTrackTintColor="#007AFF"
+    maximumTrackTintColor="#E5E5EA"
+    thumbTintColor="#007AFF"
 />
 ```
 
 ### Discrete Steps
 
 ```tsx
-<Slider
-  value={value}
-  onValueChange={setValue}
-  minimumValue={0}
-  maximumValue={10}
-  step={1}
-/>
+<Slider value={value} onValueChange={setValue} minimumValue={0} maximumValue={10} step={1} />
 ```
 
 ## Date/Time Picker
@@ -119,11 +98,11 @@ import { useState } from "react";
 const [date, setDate] = useState(new Date());
 
 <DateTimePicker
-  value={date}
-  onChange={(event, selectedDate) => {
-    if (selectedDate) setDate(selectedDate);
-  }}
-  mode="datetime"
+    value={date}
+    onChange={(event, selectedDate) => {
+        if (selectedDate) setDate(selectedDate);
+    }}
+    mode="datetime"
 />;
 ```
 
@@ -154,22 +133,13 @@ const [date, setDate] = useState(new Date());
 ### Time Intervals
 
 ```tsx
-<DateTimePicker
-  value={date}
-  mode="time"
-  minuteInterval={15}
-/>
+<DateTimePicker value={date} mode="time" minuteInterval={15} />
 ```
 
 ### Min/Max Dates
 
 ```tsx
-<DateTimePicker
-  value={date}
-  mode="date"
-  minimumDate={new Date(2020, 0, 1)}
-  maximumDate={new Date(2030, 11, 31)}
-/>
+<DateTimePicker value={date} mode="date" minimumDate={new Date(2020, 0, 1)} maximumDate={new Date(2030, 11, 31)} />
 ```
 
 ## Stepper
@@ -182,12 +152,7 @@ import { useState } from "react";
 
 const [count, setCount] = useState(0);
 
-<Stepper
-  value={count}
-  onValueChange={setCount}
-  minimumValue={0}
-  maximumValue={10}
-/>;
+<Stepper value={count} onValueChange={setCount} minimumValue={0} maximumValue={10} />;
 ```
 
 ## TextInput
@@ -198,15 +163,15 @@ Native text input with various keyboard types.
 import { TextInput } from "react-native";
 
 <TextInput
-  placeholder="Enter text..."
-  placeholderTextColor="#999"
-  style={{
-    padding: 12,
-    fontSize: 16,
-    borderRadius: 8,
-    backgroundColor: "#f0f0f0",
-  }}
-/>
+    placeholder="Enter text..."
+    placeholderTextColor="#999"
+    style={{
+        padding: 12,
+        fontSize: 16,
+        borderRadius: 8,
+        backgroundColor: "#f0f0f0",
+    }}
+/>;
 ```
 
 ### Keyboard Types
@@ -234,12 +199,7 @@ import { TextInput } from "react-native";
 ### Multiline
 
 ```tsx
-<TextInput
-  multiline
-  numberOfLines={4}
-  textAlignVertical="top"
-  style={{ minHeight: 100 }}
-/>
+<TextInput multiline numberOfLines={4} textAlignVertical="top" style={{ minHeight: 100 }} />
 ```
 
 ## Picker (Wheel)
@@ -253,10 +213,10 @@ import { useState } from "react";
 const [selected, setSelected] = useState("js");
 
 <Picker selectedValue={selected} onValueChange={setSelected}>
-  <Picker.Item label="JavaScript" value="js" />
-  <Picker.Item label="TypeScript" value="ts" />
-  <Picker.Item label="Python" value="py" />
-  <Picker.Item label="Go" value="go" />
+    <Picker.Item label="JavaScript" value="js" />
+    <Picker.Item label="TypeScript" value="ts" />
+    <Picker.Item label="Python" value="py" />
+    <Picker.Item label="Go" value="go" />
 </Picker>;
 ```
 

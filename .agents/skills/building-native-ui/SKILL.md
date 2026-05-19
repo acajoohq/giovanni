@@ -15,7 +15,7 @@ Consult these resources as needed:
 references/
   animations.md          Reanimated: entering, exiting, layout, scroll-driven, gestures
   controls.md            Native iOS: Switch, Slider, SegmentedControl, DateTimePicker, Picker
-  form-sheet.md          Form sheets in expo-router: configuration, footers and background interaction. 
+  form-sheet.md          Form sheets in expo-router: configuration, footers and background interaction.
   gradients.md           CSS gradients via experimental_backgroundImage (New Arch only)
   icons.md               SF Symbols via expo-image (sf: source), names, animations, weights
   media.md               Camera, audio, video, and file saving
@@ -181,33 +181,19 @@ Add long press context menus to Link components:
 import { Link } from "expo-router";
 
 <Link href="/settings" asChild>
-  <Link.Trigger>
-    <Pressable>
-      <Card />
-    </Pressable>
-  </Link.Trigger>
-  <Link.Menu>
-    <Link.MenuAction
-      title="Share"
-      icon="square.and.arrow.up"
-      onPress={handleSharePress}
-    />
-    <Link.MenuAction
-      title="Block"
-      icon="nosign"
-      destructive
-      onPress={handleBlockPress}
-    />
-    <Link.Menu title="More" icon="ellipsis">
-      <Link.MenuAction title="Copy" icon="doc.on.doc" onPress={() => {}} />
-      <Link.MenuAction
-        title="Delete"
-        icon="trash"
-        destructive
-        onPress={() => {}}
-      />
+    <Link.Trigger>
+        <Pressable>
+            <Card />
+        </Pressable>
+    </Link.Trigger>
+    <Link.Menu>
+        <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={handleSharePress} />
+        <Link.MenuAction title="Block" icon="nosign" destructive onPress={handleBlockPress} />
+        <Link.Menu title="More" icon="ellipsis">
+            <Link.MenuAction title="Copy" icon="doc.on.doc" onPress={() => {}} />
+            <Link.MenuAction title="Delete" icon="trash" destructive onPress={() => {}} />
+        </Link.Menu>
     </Link.Menu>
-  </Link.Menu>
 </Link>;
 ```
 
@@ -217,12 +203,12 @@ Use link previews frequently to enhance navigation:
 
 ```tsx
 <Link href="/settings">
-  <Link.Trigger>
-    <Pressable>
-      <Card />
-    </Pressable>
-  </Link.Trigger>
-  <Link.Preview />
+    <Link.Trigger>
+        <Pressable>
+            <Card />
+        </Pressable>
+    </Link.Trigger>
+    <Link.Preview />
 </Link>
 ```
 
@@ -244,13 +230,13 @@ Present a screen as a dynamic form sheet:
 
 ```tsx
 <Stack.Screen
-  name="sheet"
-  options={{
-    presentation: "formSheet",
-    sheetGrabberVisible: true,
-    sheetAllowedDetents: [0.5, 1.0],
-    contentStyle: { backgroundColor: "transparent" },
-  }}
+    name="sheet"
+    options={{
+        presentation: "formSheet",
+        sheetGrabberVisible: true,
+        sheetAllowedDetents: [0.5, 1.0],
+        contentStyle: { backgroundColor: "transparent" },
+    }}
 />
 ```
 
@@ -275,17 +261,17 @@ import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 import { Theme } from "../components/theme";
 
 export default function Layout() {
-  return (
-    <Theme>
-      <NativeTabs>
-        <NativeTabs.Trigger name="(index)">
-          <Icon sf="list.dash" />
-          <Label>Items</Label>
-        </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="(search)" role="search" />
-      </NativeTabs>
-    </Theme>
-  );
+    return (
+        <Theme>
+            <NativeTabs>
+                <NativeTabs.Trigger name="(index)">
+                    <Icon sf="list.dash" />
+                    <Label>Items</Label>
+                </NativeTabs.Trigger>
+                <NativeTabs.Trigger name="(search)" role="search" />
+            </NativeTabs>
+        </Theme>
+    );
 }
 ```
 
@@ -297,25 +283,25 @@ import { Stack } from "expo-router/stack";
 import { PlatformColor } from "react-native";
 
 export default function Layout({ segment }) {
-  const screen = segment.match(/\((.*)\)/)?.[1]!;
-  const titles: Record<string, string> = { index: "Items", search: "Search" };
+    const screen = segment.match(/\((.*)\)/)?.[1]!;
+    const titles: Record<string, string> = { index: "Items", search: "Search" };
 
-  return (
-    <Stack
-      screenOptions={{
-        headerTransparent: true,
-        headerShadowVisible: false,
-        headerLargeTitleShadowVisible: false,
-        headerLargeStyle: { backgroundColor: "transparent" },
-        headerTitleStyle: { color: PlatformColor("label") },
-        headerLargeTitle: true,
-        headerBlurEffect: "none",
-        headerBackButtonDisplayMode: "minimal",
-      }}
-    >
-      <Stack.Screen name={screen} options={{ title: titles[screen] }} />
-      <Stack.Screen name="i/[id]" options={{ headerLargeTitle: false }} />
-    </Stack>
-  );
+    return (
+        <Stack
+            screenOptions={{
+                headerTransparent: true,
+                headerShadowVisible: false,
+                headerLargeTitleShadowVisible: false,
+                headerLargeStyle: { backgroundColor: "transparent" },
+                headerTitleStyle: { color: PlatformColor("label") },
+                headerLargeTitle: true,
+                headerBlurEffect: "none",
+                headerBackButtonDisplayMode: "minimal",
+            }}
+        >
+            <Stack.Screen name={screen} options={{ title: titles[screen] }} />
+            <Stack.Screen name="i/[id]" options={{ headerLargeTitle: false }} />
+        </Stack>
+    );
 }
 ```

@@ -6,13 +6,13 @@ Add a search bar to the stack header with `headerSearchBarOptions`:
 
 ```tsx
 <Stack.Screen
-  name="index"
-  options={{
-    headerSearchBarOptions: {
-      placeholder: "Search",
-      onChangeText: (event) => console.log(event.nativeEvent.text),
-    },
-  }}
+    name="index"
+    options={{
+        headerSearchBarOptions: {
+            placeholder: "Search",
+            onChangeText: (event) => console.log(event.nativeEvent.text),
+        },
+    }}
 />
 ```
 
@@ -62,31 +62,31 @@ import { useEffect, useState } from "react";
 import { useNavigation } from "expo-router";
 
 export function useSearch(options: any = {}) {
-  const [search, setSearch] = useState("");
-  const navigation = useNavigation();
+    const [search, setSearch] = useState("");
+    const navigation = useNavigation();
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: true,
-      headerSearchBarOptions: {
-        ...options,
-        onChangeText(e: any) {
-          setSearch(e.nativeEvent.text);
-          options.onChangeText?.(e);
-        },
-        onSearchButtonPress(e: any) {
-          setSearch(e.nativeEvent.text);
-          options.onSearchButtonPress?.(e);
-        },
-        onCancelButtonPress(e: any) {
-          setSearch("");
-          options.onCancelButtonPress?.(e);
-        },
-      },
-    });
-  }, [options, navigation]);
+    useEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            headerSearchBarOptions: {
+                ...options,
+                onChangeText(e: any) {
+                    setSearch(e.nativeEvent.text);
+                    options.onChangeText?.(e);
+                },
+                onSearchButtonPress(e: any) {
+                    setSearch(e.nativeEvent.text);
+                    options.onSearchButtonPress?.(e);
+                },
+                onCancelButtonPress(e: any) {
+                    setSearch("");
+                    options.onCancelButtonPress?.(e);
+                },
+            },
+        });
+    }, [options, navigation]);
 
-  return search;
+    return search;
 }
 ```
 
@@ -94,18 +94,11 @@ export function useSearch(options: any = {}) {
 
 ```tsx
 function SearchScreen() {
-  const search = useSearch({ placeholder: "Search items..." });
+    const search = useSearch({ placeholder: "Search items..." });
 
-  const filteredItems = items.filter(item =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+    const filteredItems = items.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
 
-  return (
-    <FlatList
-      data={filteredItems}
-      renderItem={({ item }) => <ItemRow item={item} />}
-    />
-  );
+    return <FlatList data={filteredItems} renderItem={({ item }) => <ItemRow item={item} />} />;
 }
 ```
 
@@ -114,21 +107,15 @@ function SearchScreen() {
 ### Simple Text Filter
 
 ```tsx
-const filtered = items.filter(item =>
-  item.name.toLowerCase().includes(search.toLowerCase())
-);
+const filtered = items.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
 ```
 
 ### Multiple Fields
 
 ```tsx
-const filtered = items.filter(item => {
-  const query = search.toLowerCase();
-  return (
-    item.name.toLowerCase().includes(query) ||
-    item.description.toLowerCase().includes(query) ||
-    item.tags.some(tag => tag.toLowerCase().includes(query))
-  );
+const filtered = items.filter((item) => {
+    const query = search.toLowerCase();
+    return item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query) || item.tags.some((tag) => tag.toLowerCase().includes(query));
 });
 ```
 
@@ -140,28 +127,23 @@ For expensive filtering or API calls:
 import { useState, useEffect, useMemo } from "react";
 
 function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
+    const [debounced, setDebounced] = useState(value);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
+    useEffect(() => {
+        const timer = setTimeout(() => setDebounced(value), delay);
+        return () => clearTimeout(timer);
+    }, [value, delay]);
 
-  return debounced;
+    return debounced;
 }
 
 function SearchScreen() {
-  const search = useSearch();
-  const debouncedSearch = useDebounce(search, 300);
+    const search = useSearch();
+    const debouncedSearch = useDebounce(search, 300);
 
-  const filteredItems = useMemo(() =>
-    items.filter(item =>
-      item.name.toLowerCase().includes(debouncedSearch.toLowerCase())
-    ),
-    [debouncedSearch]
-  );
+    const filteredItems = useMemo(() => items.filter((item) => item.name.toLowerCase().includes(debouncedSearch.toLowerCase())), [debouncedSearch]);
 
-  return <FlatList data={filteredItems} />;
+    return <FlatList data={filteredItems} />;
 }
 ```
 
@@ -172,28 +154,28 @@ When using NativeTabs with a search role, the search bar integrates with the tab
 ```tsx
 // app/_layout.tsx
 <NativeTabs>
-  <NativeTabs.Trigger name="(home)">
-    <Label>Home</Label>
-    <Icon sf="house.fill" />
-  </NativeTabs.Trigger>
-  <NativeTabs.Trigger name="(search)" role="search">
-    <Label>Search</Label>
-  </NativeTabs.Trigger>
+    <NativeTabs.Trigger name="(home)">
+        <Label>Home</Label>
+        <Icon sf="house.fill" />
+    </NativeTabs.Trigger>
+    <NativeTabs.Trigger name="(search)" role="search">
+        <Label>Search</Label>
+    </NativeTabs.Trigger>
 </NativeTabs>
 ```
 
 ```tsx
 // app/(search)/_layout.tsx
 <Stack>
-  <Stack.Screen
-    name="index"
-    options={{
-      headerSearchBarOptions: {
-        placeholder: "Search...",
-        onChangeText: (e) => setSearch(e.nativeEvent.text),
-      },
-    }}
-  />
+    <Stack.Screen
+        name="index"
+        options={{
+            headerSearchBarOptions: {
+                placeholder: "Search...",
+                onChangeText: (e) => setSearch(e.nativeEvent.text),
+            },
+        }}
+    />
 </Stack>
 ```
 
@@ -203,19 +185,17 @@ Show appropriate UI when search returns no results:
 
 ```tsx
 function SearchResults({ search, items }) {
-  const filtered = items.filter(/* ... */);
+    const filtered = items.filter(/* ... */);
 
-  if (search && filtered.length === 0) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ color: PlatformColor("secondaryLabel") }}>
-          No results for "{search}"
-        </Text>
-      </View>
-    );
-  }
+    if (search && filtered.length === 0) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <Text style={{ color: PlatformColor("secondaryLabel") }}>No results for "{search}"</Text>
+            </View>
+        );
+    }
 
-  return <FlatList data={filtered} />;
+    return <FlatList data={filtered} />;
 }
 ```
 

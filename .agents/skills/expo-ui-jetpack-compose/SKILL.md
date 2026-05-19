@@ -27,10 +27,10 @@ import { Host, Column, Button, Text } from "@expo/ui/jetpack-compose";
 import { fillMaxWidth, paddingAll } from "@expo/ui/jetpack-compose/modifiers";
 
 <Host matchContents>
-  <Column verticalArrangement={{ spacedBy: 8 }} modifiers={[fillMaxWidth(), paddingAll(16)]}>
-    <Text style={{ typography: "titleLarge" }}>Hello</Text>
-    <Button onPress={() => alert("Pressed!")}>Press me</Button>
-  </Column>
+    <Column verticalArrangement={{ spacedBy: 8 }} modifiers={[fillMaxWidth(), paddingAll(16)]}>
+        <Text style={{ typography: "titleLarge" }}>Hello</Text>
+        <Button onPress={() => alert("Pressed!")}>Press me</Button>
+    </Column>
 </Host>;
 ```
 

@@ -25,39 +25,39 @@ npx create-tsdown@latest -t react-compiler
 ```ts
 // tsdown.config.ts
 export default defineConfig({
-  entry: ['./src/index.ts'],
-  format: ['esm', 'cjs'],
-  platform: 'neutral',
-  deps: {
-    neverBundle: ['react', 'react-dom'],
-  },
-  dts: true,
-})
+    entry: ["./src/index.ts"],
+    format: ["esm", "cjs"],
+    platform: "neutral",
+    deps: {
+        neverBundle: ["react", "react-dom"],
+    },
+    dts: true,
+});
 ```
 
 ### Component Example
 
 ```tsx
 // src/MyButton.tsx
-import React from 'react'
+import React from "react";
 
 interface MyButtonProps {
-  type?: 'primary' | 'secondary'
-  onClick?: () => void
+    type?: "primary" | "secondary";
+    onClick?: () => void;
 }
 
-export const MyButton: React.FC<MyButtonProps> = ({ type = 'primary', onClick }) => {
-  return (
-    <button className={`btn btn-${type}`} onClick={onClick}>
-      Click me
-    </button>
-  )
-}
+export const MyButton: React.FC<MyButtonProps> = ({ type = "primary", onClick }) => {
+    return (
+        <button className={`btn btn-${type}`} onClick={onClick}>
+            Click me
+        </button>
+    );
+};
 ```
 
 ```ts
 // src/index.ts
-export { MyButton } from './MyButton'
+export { MyButton } from "./MyButton";
 ```
 
 ## JSX Transform
@@ -68,12 +68,13 @@ Modern JSX transform (React 17+):
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.tsx'],
-  // Automatic JSX is default
-})
+    entry: ["src/index.tsx"],
+    // Automatic JSX is default
+});
 ```
 
 **Characteristics:**
+
 - No `import React` needed
 - Smaller bundle size
 - React 17+ required
@@ -84,16 +85,17 @@ Legacy JSX transform:
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.tsx'],
-  inputOptions: {
-    transform: {
-      jsx: 'react',  // Classic transform
+    entry: ["src/index.tsx"],
+    inputOptions: {
+        transform: {
+            jsx: "react", // Classic transform
+        },
     },
-  },
-})
+});
 ```
 
 **Characteristics:**
+
 - Requires `import React from 'react'`
 - Compatible with older React versions
 
@@ -110,27 +112,27 @@ pnpm add -D @rollup/plugin-babel babel-plugin-react-compiler
 ### Configure
 
 ```ts
-import pluginBabel from '@rollup/plugin-babel'
+import pluginBabel from "@rollup/plugin-babel";
 
 export default defineConfig({
-  entry: ['src/index.tsx'],
-  format: ['esm', 'cjs'],
-  deps: {
-    neverBundle: ['react', 'react-dom'],
-  },
-  plugins: [
-    pluginBabel({
-      babelHelpers: 'bundled',
-      parserOpts: {
-        sourceType: 'module',
-        plugins: ['jsx', 'typescript'],
-      },
-      plugins: ['babel-plugin-react-compiler'],
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    }),
-  ],
-  dts: true,
-})
+    entry: ["src/index.tsx"],
+    format: ["esm", "cjs"],
+    deps: {
+        neverBundle: ["react", "react-dom"],
+    },
+    plugins: [
+        pluginBabel({
+            babelHelpers: "bundled",
+            parserOpts: {
+                sourceType: "module",
+                plugins: ["jsx", "typescript"],
+            },
+            plugins: ["babel-plugin-react-compiler"],
+            extensions: [".js", ".jsx", ".ts", ".tsx"],
+        }),
+    ],
+    dts: true,
+});
 ```
 
 ## Common Patterns
@@ -139,70 +141,70 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  platform: 'neutral',
-  deps: {
-    neverBundle: [
-      'react',
-      'react-dom',
-      /^react\//,  // react/jsx-runtime, etc.
-    ],
-  },
-  dts: true,
-  clean: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    platform: "neutral",
+    deps: {
+        neverBundle: [
+            "react",
+            "react-dom",
+            /^react\//, // react/jsx-runtime, etc.
+        ],
+    },
+    dts: true,
+    clean: true,
+});
 ```
 
 ### Multiple Components
 
 ```ts
 export default defineConfig({
-  entry: {
-    index: 'src/index.ts',
-    Button: 'src/Button.tsx',
-    Input: 'src/Input.tsx',
-    Modal: 'src/Modal.tsx',
-  },
-  format: ['esm', 'cjs'],
-  deps: {
-    neverBundle: ['react', 'react-dom'],
-  },
-  dts: true,
-})
+    entry: {
+        index: "src/index.ts",
+        Button: "src/Button.tsx",
+        Input: "src/Input.tsx",
+        Modal: "src/Modal.tsx",
+    },
+    format: ["esm", "cjs"],
+    deps: {
+        neverBundle: ["react", "react-dom"],
+    },
+    dts: true,
+});
 ```
 
 ### Hooks Library
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  platform: 'neutral',
-  deps: {
-    neverBundle: ['react'],  // Only React needed
-  },
-  dts: true,
-  treeshake: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    platform: "neutral",
+    deps: {
+        neverBundle: ["react"], // Only React needed
+    },
+    dts: true,
+    treeshake: true,
+});
 ```
 
 ### Monorepo React Packages
 
 ```ts
 export default defineConfig({
-  workspace: 'packages/*',
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  deps: {
-    neverBundle: [
-      'react',
-      'react-dom',
-      /^@mycompany\//,  // Other workspace packages
-    ],
-  },
-  dts: true,
-})
+    workspace: "packages/*",
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    deps: {
+        neverBundle: [
+            "react",
+            "react-dom",
+            /^@mycompany\//, // Other workspace packages
+        ],
+    },
+    dts: true,
+});
 ```
 
 ## TypeScript Configuration
@@ -211,18 +213,18 @@ export default defineConfig({
 
 ```json
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",  // or "react" for classic
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "strict": true,
-    "isolatedDeclarations": true,  // Fast DTS generation
-    "skipLibCheck": true
-  },
-  "include": ["src"]
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "jsx": "react-jsx", // or "react" for classic
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "strict": true,
+        "isolatedDeclarations": true, // Fast DTS generation
+        "skipLibCheck": true
+    },
+    "include": ["src"]
 }
 ```
 
@@ -230,32 +232,32 @@ export default defineConfig({
 
 ```json
 {
-  "name": "my-react-library",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+    "name": "my-react-library",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": ["dist"],
+    "peerDependencies": {
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.0.0",
+        "@types/react-dom": "^18.0.0",
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0",
+        "tsdown": "^0.9.0",
+        "typescript": "^5.0.0"
     }
-  },
-  "files": ["dist"],
-  "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "tsdown": "^0.9.0",
-    "typescript": "^5.0.0"
-  }
 }
 ```
 
@@ -264,21 +266,21 @@ export default defineConfig({
 ### With Fast Refresh (Development)
 
 ```ts
-import react from '@vitejs/plugin-react'
+import react from "@vitejs/plugin-react";
 
 export default defineConfig((options) => ({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  deps: {
-    neverBundle: ['react', 'react-dom'],
-  },
-  plugins: options.watch
-    ? [
-        // @ts-expect-error Vite plugin
-        react({ fastRefresh: true }),
-      ]
-    : [],
-}))
+    entry: ["src/index.ts"],
+    format: ["esm"],
+    deps: {
+        neverBundle: ["react", "react-dom"],
+    },
+    plugins: options.watch
+        ? [
+              // @ts-expect-error Vite plugin
+              react({ fastRefresh: true }),
+          ]
+        : [],
+}));
 ```
 
 ## Tips
@@ -309,9 +311,9 @@ Check `tsconfig.json`:
 
 ```json
 {
-  "compilerOptions": {
-    "jsx": "react-jsx"  // or "react"
-  }
+    "compilerOptions": {
+        "jsx": "react-jsx" // or "react"
+    }
 }
 ```
 

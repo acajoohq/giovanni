@@ -1,38 +1,38 @@
 {
-  "name": "react-native-document-rectifier",
-  "version": "0.1.0",
-  "description": "Nitro module for DocScanner tensor preparation and image rectification.",
-  "main": "src/index",
-  "types": "src/index.ts",
-  "react-native": "src/index",
-  "source": "src/index",
-  "files": [
-    "android",
-    "app.plugin.js",
-    "nitrogen",
-    "src",
-    "nitro.json",
-    "react-native.config.js"
-  ],
-  "keywords": [
-    "react-native",
-    "nitro",
-    "document-scanner"
-  ],
-  "license": "UNLICENSED",
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*",
-    "react-native-nitro-modules": "*"
-  },
-  "dependencies": {
-    "@expo/config-plugins": "56.0.5"
-  },
-  "devDependencies": {
-    "nitrogen": "0.35.6",
-    "react-native-nitro-modules": "0.35.6"
-  },
-  "scripts": {
-    "specs": "nitrogen"
-  }
+    "name": "react-native-document-rectifier",
+    "version": "0.1.0",
+    "description": "Nitro module for DocScanner tensor preparation and image rectification.",
+    "keywords": [
+        "document-scanner",
+        "nitro",
+        "react-native"
+    ],
+    "license": "UNLICENSED",
+    "source": "src/index",
+    "files": [
+        "android",
+        "app.plugin.js",
+        "nitrogen",
+        "src",
+        "nitro.json",
+        "react-native.config.js"
+    ],
+    "main": "src/index",
+    "types": "src/index.ts",
+    "react-native": "src/index",
+    "scripts": {
+        "specs": "nitrogen"
+    },
+    "dependencies": {
+        "@expo/config-plugins": "56.0.5"
+    },
+    "devDependencies": {
+        "nitrogen": "0.35.6",
+        "react-native-nitro-modules": "0.35.6"
+    },
+    "peerDependencies": {
+        "react": "*",
+        "react-native": "*",
+        "react-native-nitro-modules": "*"
+    }
 }

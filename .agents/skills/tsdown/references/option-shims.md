@@ -41,10 +41,10 @@ tsdown --shims
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  shims: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm"],
+    shims: true,
+});
 ```
 
 ## Generated Code
@@ -52,56 +52,62 @@ export default defineConfig({
 ### ESM with Shims
 
 **Source:**
+
 ```ts
-console.log(__dirname)
-console.log(__filename)
+console.log(__dirname);
+console.log(__filename);
 ```
 
 **Output (shims: true):**
+
 ```js
-import { fileURLToPath } from 'node:url'
-import { dirname } from 'node:path'
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-console.log(__dirname)
-console.log(__filename)
+console.log(__dirname);
+console.log(__filename);
 ```
 
 ### ESM with require
 
 **Source:**
+
 ```ts
-const mod = require('some-module')
+const mod = require("some-module");
 ```
 
 **Output (automatic on Node.js):**
-```js
-import { createRequire } from 'node:module'
-const require = createRequire(import.meta.url)
 
-const mod = require('some-module')
+```js
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+
+const mod = require("some-module");
 ```
 
 ### CJS with import.meta
 
 **Source:**
+
 ```ts
-console.log(import.meta.url)
-console.log(import.meta.dirname)
+console.log(import.meta.url);
+console.log(import.meta.dirname);
 ```
 
 **Output (automatic):**
+
 ```js
 const import_meta = {
-  url: require('url').pathToFileURL(__filename).toString(),
-  dirname: __dirname,
-  filename: __filename
-}
+    url: require("url").pathToFileURL(__filename).toString(),
+    dirname: __dirname,
+    filename: __filename,
+};
 
-console.log(import_meta.url)
-console.log(import_meta.dirname)
+console.log(import_meta.url);
+console.log(import_meta.dirname);
 ```
 
 ## Common Patterns
@@ -110,57 +116,57 @@ console.log(import_meta.dirname)
 
 ```ts
 export default defineConfig({
-  entry: ['src/cli.ts'],
-  format: ['esm'],
-  platform: 'node',
-  shims: true,  // Add __dirname, __filename
-})
+    entry: ["src/cli.ts"],
+    format: ["esm"],
+    platform: "node",
+    shims: true, // Add __dirname, __filename
+});
 ```
 
 ### Dual Format Library
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  platform: 'node',
-  shims: true,  // ESM gets __dirname/__filename
-                // CJS gets import.meta.* (automatic)
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    platform: "node",
+    shims: true, // ESM gets __dirname/__filename
+    // CJS gets import.meta.* (automatic)
+});
 ```
 
 ### Server-Side Code
 
 ```ts
 export default defineConfig({
-  entry: ['src/server.ts'],
-  format: ['esm'],
-  platform: 'node',
-  shims: true,
-  deps: {
-    neverBundle: [/.*/],  // External all deps
-  },
-})
+    entry: ["src/server.ts"],
+    format: ["esm"],
+    platform: "node",
+    shims: true,
+    deps: {
+        neverBundle: [/.*/], // External all deps
+    },
+});
 ```
 
 ### File System Operations
 
 ```ts
 // Source code
-import { readFileSync } from 'fs'
-import { join } from 'path'
+import { readFileSync } from "fs";
+import { join } from "path";
 
 // Read file relative to current module
-const content = readFileSync(join(__dirname, 'data.json'), 'utf-8')
+const content = readFileSync(join(__dirname, "data.json"), "utf-8");
 ```
 
 ```ts
 // tsdown config
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  shims: true,  // Enables __dirname
-})
+    entry: ["src/index.ts"],
+    format: ["esm"],
+    shims: true, // Enables __dirname
+});
 ```
 
 ## When to Use Shims
@@ -188,11 +194,11 @@ Shims add minimal runtime overhead:
 
 ```js
 // Added to output when shims enabled
-import { fileURLToPath } from 'node:url'
-import { dirname } from 'node:path'
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 ```
 
 ### Tree Shaking
@@ -205,10 +211,10 @@ If `__dirname` or `__filename` are not used, they're automatically removed durin
 
 ```ts
 export default defineConfig({
-  platform: 'node',
-  format: ['esm'],
-  shims: true,  // Recommended for Node.js
-})
+    platform: "node",
+    format: ["esm"],
+    shims: true, // Recommended for Node.js
+});
 ```
 
 - `require` shim added automatically
@@ -218,10 +224,10 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  platform: 'browser',
-  format: ['esm'],
-  shims: false,  // Not needed for browser
-})
+    platform: "browser",
+    format: ["esm"],
+    shims: false, // Not needed for browser
+});
 ```
 
 - Shims not needed (no Node.js variables)
@@ -231,10 +237,10 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  platform: 'neutral',
-  format: ['esm'],
-  shims: false,  // Avoid platform-specific code
-})
+    platform: "neutral",
+    format: ["esm"],
+    shims: false, // Avoid platform-specific code
+});
 ```
 
 - Avoid shims for maximum portability
@@ -260,8 +266,8 @@ Enable shims:
 
 ```ts
 export default defineConfig({
-  shims: true,
-})
+    shims: true,
+});
 ```
 
 ### `require is not defined` in ESM
@@ -270,8 +276,8 @@ Automatic on Node.js platform. If not working:
 
 ```ts
 export default defineConfig({
-  platform: 'node',  // Ensure Node.js platform
-})
+    platform: "node", // Ensure Node.js platform
+});
 ```
 
 ### Import.meta not working in CJS
@@ -280,8 +286,8 @@ Automatic - no configuration needed. If still failing, check output format:
 
 ```ts
 export default defineConfig({
-  format: ['cjs'],  // Shims added automatically
-})
+    format: ["cjs"], // Shims added automatically
+});
 ```
 
 ## Tips

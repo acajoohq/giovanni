@@ -8,11 +8,11 @@ Add to `app.json`:
 
 ```json
 {
-  "expo": {
-    "experiments": {
-      "reactCompiler": true
+    "expo": {
+        "experiments": {
+            "reactCompiler": true
+        }
     }
-  }
 }
 ```
 

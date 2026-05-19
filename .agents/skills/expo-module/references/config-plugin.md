@@ -18,33 +18,23 @@ my-module/
 Plugin functions follow the `with` prefix naming convention.
 
 ```typescript
-import {
-  ConfigPlugin,
-  withInfoPlist,
-  withAndroidManifest,
-  AndroidConfig,
-} from "expo/config-plugins";
+import { ConfigPlugin, withInfoPlist, withAndroidManifest, AndroidConfig } from "expo/config-plugins";
 
 const withMyConfig: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
-  // iOS: modify Info.plist
-  config = withInfoPlist(config, (config) => {
-    config.modResults["MY_API_KEY"] = apiKey;
-    return config;
-  });
+    // iOS: modify Info.plist
+    config = withInfoPlist(config, (config) => {
+        config.modResults["MY_API_KEY"] = apiKey;
+        return config;
+    });
 
-  // Android: modify AndroidManifest.xml
-  config = withAndroidManifest(config, (config) => {
-    const mainApp =
-      AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
-    AndroidConfig.Manifest.addMetaDataItemToMainApplication(
-      mainApp,
-      "MY_API_KEY",
-      apiKey
-    );
-    return config;
-  });
+    // Android: modify AndroidManifest.xml
+    config = withAndroidManifest(config, (config) => {
+        const mainApp = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApp, "MY_API_KEY", apiKey);
+        return config;
+    });
 
-  return config;
+    return config;
 };
 
 export default withMyConfig;
@@ -54,9 +44,9 @@ export default withMyConfig;
 
 ```json
 {
-  "expo": {
-    "plugins": [["my-module", { "apiKey": "secret_key" }]]
-  }
+    "expo": {
+        "plugins": [["my-module", { "apiKey": "secret_key" }]]
+    }
 }
 ```
 

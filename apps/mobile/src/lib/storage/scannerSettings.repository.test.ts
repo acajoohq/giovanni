@@ -28,11 +28,11 @@ describe('scanner settings repository', () => {
     expect(execAsync).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS app_settings'));
   });
 
-  it('returns the default model when nothing is stored', async () => {
+  it('returns the reference fp32 model by default', async () => {
     getAllAsync.mockResolvedValueOnce([]);
     const { getSelectedDocScannerModelId } = await import('@/lib/storage/scannerSettings.repository');
 
-    await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-fp16-onnx');
+    await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-fp32-onnx');
   });
 
   it('persists the selected model id', async () => {
@@ -46,10 +46,10 @@ describe('scanner settings repository', () => {
     ]);
   });
 
-  it('ignores unknown stored model ids', async () => {
-    getAllAsync.mockResolvedValueOnce([{ value: 'unknown-model' }]);
+  it('ignores legacy or unknown stored model ids', async () => {
+    getAllAsync.mockResolvedValueOnce([{ value: 'original' }]);
     const { getSelectedDocScannerModelId } = await import('@/lib/storage/scannerSettings.repository');
 
-    await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-fp16-onnx');
+    await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-fp32-onnx');
   });
 });

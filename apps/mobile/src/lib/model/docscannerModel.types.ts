@@ -1,4 +1,4 @@
-export const DOCSCANNER_MODEL_IDS = ['docscanner-fp16-onnx', 'docscanner-fp32-onnx'] as const;
+export const DOCSCANNER_MODEL_IDS = ['docscanner-fp32-onnx', 'docscanner-fp16-onnx'] as const;
 
 export type DocScannerModelId = (typeof DOCSCANNER_MODEL_IDS)[number];
 

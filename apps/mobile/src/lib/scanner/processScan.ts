@@ -33,6 +33,7 @@ export async function processScan(sourceUri: string, source: ScanSource): Promis
     );
     width = prepared.width;
     height = prepared.height;
+
     const { runDocScanner } = await import('@/lib/model/docscannerModel');
     const flow = await measureStep('onnx inference', timings, () =>
       runDocScanner(prepared.input, modelId),

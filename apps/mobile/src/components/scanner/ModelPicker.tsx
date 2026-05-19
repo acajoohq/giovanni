@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     gap: 4,
-    minHeight: 68,
+    minHeight: 72,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },

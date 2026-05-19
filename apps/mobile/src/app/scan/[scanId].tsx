@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BeforeAfterSlider } from '@/components/scanner/BeforeAfterSlider';
 import { ScannerButton } from '@/components/scanner/ScannerButton';
 import { StatusPill } from '@/components/scanner/StatusPill';
+import { getDocScannerModelOption } from '@/lib/model/docscannerModel.constants';
+import { isDocScannerModelId } from '@/lib/model/docscannerModel.types';
 import type { ScanRecord } from '@/lib/scanner/scan.types';
 import { getScanById, initializeScansRepository } from '@/lib/storage/scans.repository';
 
@@ -83,7 +85,12 @@ export default function ScanDetailScreen() {
             <Text style={styles.panelTitle}>Run details</Text>
             <Text style={styles.detail}>Source: {scan.source}</Text>
             <Text style={styles.detail}>Processing: {scan.processingMs} ms</Text>
-            <Text style={styles.detail}>Model: {scan.modelVersion}</Text>
+            <Text style={styles.detail}>
+              Model:{' '}
+              {isDocScannerModelId(scan.modelVersion)
+                ? getDocScannerModelOption(scan.modelVersion).label
+                : scan.modelVersion}
+            </Text>
             {scan.width && scan.height ? (
               <Text style={styles.detail}>Image: {scan.width} x {scan.height}</Text>
             ) : null}

@@ -1,17 +1,17 @@
 import type { DocScannerModelId, DocScannerModelOption } from '@/lib/model/docscannerModel.types';
 
-export const DEFAULT_DOCSCANNER_MODEL_ID = 'docscanner-fp16-onnx' satisfies DocScannerModelId;
+export const DEFAULT_DOCSCANNER_MODEL_ID = 'docscanner-fp32-onnx' satisfies DocScannerModelId;
 
 export const DOCSCANNER_MODEL_OPTIONS = [
   {
-    id: 'docscanner-fp16-onnx',
-    label: 'FP16',
-    description: '19 MB · matches Python docscanner-fp16.onnx',
+    id: 'docscanner-fp32-onnx',
+    label: 'Reference FP32',
+    description: 'Python docscanner.onnx · same weights as PyTorch',
   },
   {
-    id: 'docscanner-fp32-onnx',
-    label: 'FP32',
-    description: '35 MB · matches Python docscanner.onnx',
+    id: 'docscanner-fp16-onnx',
+    label: 'Mobile FP16',
+    description: 'Python docscanner-fp16.onnx · faster, tiny drift',
   },
 ] as const satisfies readonly DocScannerModelOption[];
 

@@ -2,8 +2,8 @@ import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
 import { en } from "./en";
 import { fr } from "./fr";
-import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "./constants/locales.constants";
-import type { SupportedLocale } from "./constants/locales.constants";
+import { DEFAULT_LOCALE } from "./constants/locales.constants";
+import { resolveInitialClientLocale, resolveSupportedLocale } from "./utils/locales.utils";
 
 const resources = {
     en: { translation: en },
@@ -16,39 +16,11 @@ const baseConfig = {
     interpolation: { escapeValue: false },
 } as const;
 
-function isSupportedLocale(locale: string): locale is SupportedLocale {
-    return (SUPPORTED_LOCALES as readonly string[]).includes(locale);
-}
-
-function normalizeLocale(locale: string | undefined) {
-    if (locale && isSupportedLocale(locale)) {
-        return locale;
-    }
-
-    return DEFAULT_LOCALE;
-}
-
-function resolveClientLocale() {
-    if (typeof document === "undefined") {
-        return DEFAULT_LOCALE;
-    }
-
-    const documentLocale = document.documentElement.lang.trim().toLowerCase();
-
-    if (isSupportedLocale(documentLocale)) {
-        return documentLocale;
-    }
-
-    const pathnameLocale = window.location.pathname.split("/")[1]?.toLowerCase();
-
-    return normalizeLocale(pathnameLocale);
-}
-
 // Client singleton — initialized once, safe (single user, no concurrency)
 const clientI18n = i18next.createInstance();
 export const i18nReady = clientI18n.use(initReactI18next).init({
     ...baseConfig,
-    lng: resolveClientLocale(),
+    lng: resolveInitialClientLocale(),
 });
 export default clientI18n;
 
@@ -60,7 +32,7 @@ export function createI18nInstance(locale = DEFAULT_LOCALE) {
     const instance = i18next.createInstance();
     instance.use(initReactI18next).init({
         ...baseConfig,
-        lng: normalizeLocale(locale),
+        lng: resolveSupportedLocale(locale) ?? DEFAULT_LOCALE,
     });
     return instance;
 }

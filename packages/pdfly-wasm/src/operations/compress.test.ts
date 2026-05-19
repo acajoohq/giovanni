@@ -5,6 +5,7 @@ import { linearizePdf, optimizePdf } from "../qpdf.js";
 import { initQpdfModule } from "../engines/qpdf/module-loader.js";
 import { initGhostscriptModule } from "../engines/ghostscript/module-loader.js";
 import { compressPdfWithGhostscript } from "../engines/ghostscript/compress.js";
+import { GHOSTSCRIPT_PDF_SETTINGS } from "../engines/ghostscript/options.js";
 
 vi.mock("../engines/qpdf/module-loader.js");
 vi.mock("../engines/ghostscript/module-loader.js");
@@ -96,11 +97,11 @@ describe("compressPdf", () => {
         expect(result.preset).toBe("default");
     });
 
-    it("dispatches to Ghostscript when requested", async () => {
+    it.each(GHOSTSCRIPT_PDF_SETTINGS)("dispatches the %s preset to Ghostscript", async (preset) => {
         mockCompressPdfWithGhostscript.mockResolvedValue({
             engine: "ghostscript",
             data: new Uint8Array(400),
-            preset: "screen",
+            preset,
             originalSize: 1000,
             compressedSize: 400,
             compressionRatio: 0.4,
@@ -108,9 +109,9 @@ describe("compressPdf", () => {
             percentageSaved: 60,
         });
 
-        const result = await compressPdf(new Uint8Array(1000), { engine: "ghostscript", preset: "screen" });
+        const result = await compressPdf(new Uint8Array(1000), { engine: "ghostscript", preset });
 
-        expect(mockCompressPdfWithGhostscript).toHaveBeenCalledWith(expect.any(Uint8Array), expect.objectContaining({ engine: "ghostscript", preset: "screen" }));
+        expect(mockCompressPdfWithGhostscript).toHaveBeenCalledWith(expect.any(Uint8Array), expect.objectContaining({ engine: "ghostscript", preset }));
         expect(result.engine).toBe("ghostscript");
     });
 });

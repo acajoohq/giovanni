@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GhostscriptCompressionError, GhostscriptValidationError } from "../../errors/index.js";
 import { withGhostscriptExecution } from "./execution.js";
 import { compressPdfWithGhostscript } from "./compress.js";
+import { GHOSTSCRIPT_PDF_SETTINGS } from "./options.js";
 
 vi.mock("./execution.js");
 
@@ -26,6 +27,19 @@ describe("compressPdfWithGhostscript", () => {
         expect(result.preset).toBe("ebook");
         expect(result.originalSize).toBe(1000);
         expect(result.compressedSize).toBe(400);
+    });
+
+    it.each(GHOSTSCRIPT_PDF_SETTINGS)("accepts the %s preset", async (preset) => {
+        mockWithGhostscriptExecution.mockImplementation(async (operation) =>
+            operation({
+                rewritePdf: () => new Uint8Array(400),
+                getVersion: () => "10.07",
+            } as never),
+        );
+
+        const result = await compressPdfWithGhostscript(new Uint8Array(1000), { preset });
+
+        expect(result.preset).toBe(preset);
     });
 
     it("wraps native failures in GhostscriptCompressionError", async () => {

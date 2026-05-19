@@ -1,3 +1,2 @@
 export const SUPPORTED_LOCALES = ["en", "fr"] as const;
-export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
-export const DEFAULT_LOCALE: SupportedLocale = "en";
+export const DEFAULT_LOCALE = "en" satisfies (typeof SUPPORTED_LOCALES)[number];

@@ -155,7 +155,7 @@ const fixtures = await loadFixtures();
 // Constants
 // ---------------------------------------------------------------------------
 
-type CompressionScenarioKey = "simple-recommended" | "simple-smallest" | "simple-best-quality" | "recommended-qpdf" | "recommended-ghostscript";
+type CompressionScenarioKey = "simple-recommended" | "simple-smallest" | "simple-best-quality";
 
 type CompressionScenario = {
     key: CompressionScenarioKey;
@@ -163,7 +163,6 @@ type CompressionScenario = {
     engine: "qpdf" | "ghostscript";
     expectedPreset: QpdfOptimizePreset | GhostscriptPdfSettings;
     options: CompressOptions;
-    reportSourceKey?: CompressionScenarioKey;
 };
 
 const COMPRESSION_SCENARIOS: CompressionScenario[] = [
@@ -198,30 +197,6 @@ const COMPRESSION_SCENARIOS: CompressionScenario[] = [
             engine: "qpdf",
             preset: "archive",
             ...QPDF_PRESETS.archive,
-        },
-    },
-    {
-        key: "recommended-qpdf",
-        label: "Recommended qpdf",
-        engine: "qpdf",
-        expectedPreset: "archive",
-        reportSourceKey: "simple-best-quality",
-        options: {
-            engine: "qpdf",
-            preset: "archive",
-            ...QPDF_PRESETS.archive,
-        },
-    },
-    {
-        key: "recommended-ghostscript",
-        label: "Recommended Ghostscript",
-        engine: "ghostscript",
-        expectedPreset: "ebook",
-        reportSourceKey: "simple-recommended",
-        options: {
-            engine: "ghostscript",
-            preset: "ebook",
-            ...GHOSTSCRIPT_PRESETS.ebook,
         },
     },
 ];
@@ -269,16 +244,8 @@ describe("compression quality", () => {
     //     "error collecting test file" messages at module-evaluation time.
     beforeAll(async () => {
         for (const fixture of fixtures) {
-            const resultsByScenario = new Map<CompressionScenarioKey, CompressResult | null>();
-
             for (const scenario of COMPRESSION_SCENARIOS) {
-                if (scenario.reportSourceKey !== undefined && !resultsByScenario.has(scenario.reportSourceKey)) {
-                    throw new Error(`Missing compression result for report source scenario: ${scenario.reportSourceKey}`);
-                }
-
-                const result =
-                    scenario.reportSourceKey !== undefined ? (resultsByScenario.get(scenario.reportSourceKey) ?? null) : await tryCompressScenario(fixture.data, scenario);
-                resultsByScenario.set(scenario.key, result);
+                const result = await tryCompressScenario(fixture.data, scenario);
 
                 if (result !== null) {
                     sizeResults.push({

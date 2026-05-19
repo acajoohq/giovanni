@@ -1,3 +1,11 @@
+/**
+ * Release-package verification for `package:check`.
+ *
+ * Expects `dist/` to already contain the bundled JS entrypoints and copied WASM
+ * artifacts. Fails if required artifacts are missing or if the root, qpdf, and
+ * Ghostscript exports cannot run compression against a PDF fixture.
+ */
+
 import assert from "node:assert/strict";
 import { access, readFile, stat } from "node:fs/promises";
 import { dirname, resolve } from "node:path";

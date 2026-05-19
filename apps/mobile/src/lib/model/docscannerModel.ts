@@ -1,13 +1,15 @@
 import { Asset } from 'expo-asset';
 import { InferenceSession, Tensor } from 'onnxruntime-react-native';
 
-import docscannerFp16Onnx from '@/assets/models/docscanner-fp16.onnx';
+import { DOCSCANNER_MODEL_ASSETS } from '@/lib/model/docscannerModel.assets';
+import type { DocScannerModelId } from '@/lib/model/docscannerModel.types';
 import {
   DOCSCANNER_FLOW_LENGTH,
   DOCSCANNER_INPUT_SHAPE,
 } from '@/lib/scanner/scan.constants';
 import { assertDocScannerFlow, assertDocScannerInput } from '@/lib/scanner/shapeValidation';
 
+let activeModelId: DocScannerModelId | null = null;
 let sessionPromise: Promise<InferenceSession> | null = null;
 
 async function getAssetUri(moduleId: number): Promise<string> {
@@ -28,16 +30,29 @@ async function createSessionFromAsset(moduleId: number): Promise<InferenceSessio
   });
 }
 
-export async function getDocScannerSession(): Promise<InferenceSession> {
-  sessionPromise ??= createSessionFromAsset(docscannerFp16Onnx);
+export function invalidateDocScannerSession(): void {
+  activeModelId = null;
+  sessionPromise = null;
+}
+
+export async function getDocScannerSession(modelId: DocScannerModelId): Promise<InferenceSession> {
+  if (activeModelId !== modelId) {
+    invalidateDocScannerSession();
+    activeModelId = modelId;
+  }
+
+  sessionPromise ??= createSessionFromAsset(DOCSCANNER_MODEL_ASSETS[modelId]);
 
   return sessionPromise;
 }
 
-export async function runDocScanner(input: Float32Array): Promise<Float32Array> {
+export async function runDocScanner(
+  input: Float32Array,
+  modelId: DocScannerModelId,
+): Promise<Float32Array> {
   assertDocScannerInput(input);
 
-  const session = await getDocScannerSession();
+  const session = await getDocScannerSession(modelId);
   const inputName = session.inputNames[0];
 
   if (!inputName) {

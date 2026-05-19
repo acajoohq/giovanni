@@ -18,7 +18,7 @@ This app uses native packages, so use a development build instead of Expo Go.
 ## Model Pipeline
 
 - Model assets live in `assets/models/`.
-- The app ships `docscanner-fp16.onnx`, selected from the DocScanner export work because it is the best current size/quality tradeoff: 19 MB, visually equivalent to fp32 in sample comparisons, and smaller than the generated fp16 `.ort` artifact.
+- The app ships both `docscanner-fp16.onnx` (19 MB, default) and `docscanner-fp32.onnx` (35 MB). Use the **ONNX model** picker on the scan screen to switch between them when comparing against the Python reference.
 - The expected model input is `Float32Array [1, 3, 288, 288]`, RGB `[0, 1]`, CHW.
 - The expected model output is `Float32Array [1, 2, 288, 288]`, a normalized backward-flow field.
 

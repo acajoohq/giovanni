@@ -11,11 +11,20 @@ import {
   usePhotoOutput,
 } from 'react-native-vision-camera';
 
+import { ModelPicker } from '@/components/scanner/ModelPicker';
 import { ScanCard } from '@/components/scanner/ScanCard';
 import { ScannerButton } from '@/components/scanner/ScannerButton';
 import { StatusPill } from '@/components/scanner/StatusPill';
+import { invalidateDocScannerSession } from '@/lib/model/docscannerModel';
+import { getDocScannerModelOption } from '@/lib/model/docscannerModel.constants';
+import type { DocScannerModelId } from '@/lib/model/docscannerModel.types';
 import type { ScanRecord, ScanSource, ScanTiming } from '@/lib/scanner/scan.types';
 import { processScan } from '@/lib/scanner/processScan';
+import {
+  getSelectedDocScannerModelId,
+  initializeScannerSettings,
+  setSelectedDocScannerModelId,
+} from '@/lib/storage/scannerSettings.repository';
 import { initializeScansRepository } from '@/lib/storage/scans.repository';
 
 export default function ScanScreen() {
@@ -32,6 +41,7 @@ export default function ScanScreen() {
   const [error, setError] = useState<string | null>(null);
   const [lastTimings, setLastTimings] = useState<ScanTiming[]>([]);
   const [lastScan, setLastScan] = useState<ScanRecord | null>(null);
+  const [selectedModelId, setSelectedModelId] = useState<DocScannerModelId | null>(null);
 
   const canCapture = useMemo(
     () => hasPermission && device && !isProcessing && Platform.OS !== 'web',
@@ -39,10 +49,26 @@ export default function ScanScreen() {
   );
 
   useEffect(() => {
-    initializeScansRepository().catch((initError: unknown) => {
-      setError(initError instanceof Error ? initError.message : 'Could not open scan storage.');
-    });
+    Promise.all([initializeScansRepository(), initializeScannerSettings()])
+      .then(() => getSelectedDocScannerModelId())
+      .then(setSelectedModelId)
+      .catch((initError: unknown) => {
+        setError(initError instanceof Error ? initError.message : 'Could not open scan storage.');
+      });
   }, []);
+
+  async function handleModelChange(modelId: DocScannerModelId) {
+    setSelectedModelId(modelId);
+    invalidateDocScannerSession();
+
+    try {
+      await setSelectedDocScannerModelId(modelId);
+    } catch (settingsError) {
+      setError(
+        settingsError instanceof Error ? settingsError.message : 'Could not save model preference.',
+      );
+    }
+  }
 
   useEffect(() => {
     if (!hasPermission) {
@@ -127,6 +153,13 @@ export default function ScanScreen() {
         </View>
 
         <View style={styles.statusPanel}>
+          {selectedModelId ? (
+            <ModelPicker
+              value={selectedModelId}
+              onChange={handleModelChange}
+              disabled={isProcessing}
+            />
+          ) : null}
           {isProcessing ? (
             <View style={styles.processingRow}>
               <ActivityIndicator color="#E7FF5F" />
@@ -134,7 +167,9 @@ export default function ScanScreen() {
             </View>
           ) : (
             <Text style={styles.statusText}>
-              Capture or import a document. Recent scans keep both original and rectified images.
+              {selectedModelId
+                ? `Using ${getDocScannerModelOption(selectedModelId).label}. Capture or import a document to compare models.`
+                : 'Capture or import a document. Recent scans keep both original and rectified images.'}
             </Text>
           )}
           {error ? <Text style={styles.errorText}>{error}</Text> : null}

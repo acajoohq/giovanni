@@ -1,22 +1,29 @@
 import { Image } from 'expo-image';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 interface BeforeAfterSliderProps {
   beforeUri: string;
   afterUri: string;
 }
 
-export function BeforeAfterSlider({ beforeUri, afterUri }: BeforeAfterSliderProps) {
-  const [containerWidth, setContainerWidth] = useState(1);
-  const [position, setPosition] = useState(0.5);
+const MIN_POSITION = 0.08;
+const MAX_POSITION = 0.92;
+const HANDLE_HALF_WIDTH = 16;
 
-  const setPositionFromX = useCallback(
-    (x: number) => {
-      setPosition(Math.min(0.92, Math.max(0.08, x / containerWidth)));
-    },
-    [containerWidth],
-  );
+function clampPosition(x: number, width: number) {
+  if (width <= 0) {
+    return 0.5;
+  }
+
+  return Math.min(MAX_POSITION, Math.max(MIN_POSITION, x / width));
+}
+
+export function BeforeAfterSlider({ beforeUri, afterUri }: BeforeAfterSliderProps) {
+  const [layoutWidth, setLayoutWidth] = useState(0);
+  const containerWidth = useSharedValue(0);
+  const position = useSharedValue(0.5);
 
   const panResponder = useMemo(
     () =>
@@ -24,35 +31,49 @@ export function BeforeAfterSlider({ beforeUri, afterUri }: BeforeAfterSliderProp
         onMoveShouldSetPanResponder: () => true,
         onStartShouldSetPanResponder: () => true,
         onPanResponderGrant: (event) => {
-          setPositionFromX(event.nativeEvent.locationX);
+          position.value = clampPosition(event.nativeEvent.locationX, containerWidth.value);
         },
         onPanResponderMove: (event) => {
-          setPositionFromX(event.nativeEvent.locationX);
+          position.value = clampPosition(event.nativeEvent.locationX, containerWidth.value);
         },
       }),
-    [setPositionFromX],
+    [containerWidth, position],
   );
+
+  const beforeClipStyle = useAnimatedStyle(() => ({
+    width: containerWidth.value * position.value,
+  }));
+
+  const handleStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: containerWidth.value * position.value - HANDLE_HALF_WIDTH }],
+  }));
 
   return (
     <View
       {...panResponder.panHandlers}
       style={styles.container}
-      onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}>
+      onLayout={(event) => {
+        const width = event.nativeEvent.layout.width;
+        setLayoutWidth(width);
+        containerWidth.value = width;
+      }}>
       <Image source={{ uri: afterUri }} style={styles.image} contentFit="cover" />
-      <View style={[styles.beforeClip, { width: containerWidth * position }]}>
-        <Image
-          source={{ uri: beforeUri }}
-          style={[styles.image, { width: containerWidth }]}
-          contentFit="cover"
-        />
-      </View>
-      <View style={[styles.handle, { left: `${position * 100}%` }]}>
+      <Animated.View collapsable={false} style={[styles.beforeClip, beforeClipStyle]}>
+        {layoutWidth > 0 ? (
+          <Image
+            source={{ uri: beforeUri }}
+            style={[styles.image, styles.beforeImage, { width: layoutWidth }]}
+            contentFit="cover"
+          />
+        ) : null}
+      </Animated.View>
+      <Animated.View style={[styles.handle, handleStyle]}>
         <View style={styles.handleLine} />
         <View style={styles.handleKnob}>
           <Text style={styles.handleText}>{'<>'}</Text>
         </View>
-      </View>
-      <View style={styles.badgeRow}>
+      </Animated.View>
+      <View style={styles.badgeRow} pointerEvents="none">
         <Text style={styles.badge}>Before</Text>
         <Text style={styles.badge}>After</Text>
       </View>
@@ -72,6 +93,11 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
+  beforeImage: {
+    left: 0,
+    position: 'absolute',
+    top: 0,
+  },
   beforeClip: {
     bottom: 0,
     left: 0,
@@ -82,9 +108,9 @@ const styles = StyleSheet.create({
   handle: {
     alignItems: 'center',
     bottom: 0,
+    left: 0,
     position: 'absolute',
     top: 0,
-    transform: [{ translateX: -16 }],
     width: 32,
   },
   handleLine: {

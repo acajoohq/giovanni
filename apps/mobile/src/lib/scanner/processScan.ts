@@ -1,7 +1,7 @@
-import { DOCSCANNER_MODEL_VERSION } from '@/lib/scanner/scan.constants';
 import type { ProcessScanResult, ScanSource, ScanTiming } from '@/lib/scanner/scan.types';
 import { measureStep, totalTiming } from '@/lib/scanner/timing';
 import { prepareInputTensor, remapAndSave } from '@/lib/native/documentRectifier';
+import { getSelectedDocScannerModelId } from '@/lib/storage/scannerSettings.repository';
 import {
   copyFallbackRectifiedImage,
   copyOriginalImage,
@@ -25,16 +25,17 @@ export async function processScan(sourceUri: string, source: ScanSource): Promis
   let height: number | null = null;
   let warning: string | null = null;
 
+  const modelId = await getSelectedDocScannerModelId();
+
   try {
     const prepared = await measureStep('prepare tensor', timings, () =>
       prepareInputTensor(originalUri),
     );
     width = prepared.width;
     height = prepared.height;
-
     const { runDocScanner } = await import('@/lib/model/docscannerModel');
     const flow = await measureStep('onnx inference', timings, () =>
-      runDocScanner(prepared.input),
+      runDocScanner(prepared.input, modelId),
     );
 
     rectifiedUri = await measureStep('native remap', timings, () =>
@@ -63,7 +64,7 @@ export async function processScan(sourceUri: string, source: ScanSource): Promis
     width,
     height,
     processingMs: totalTiming(timings),
-    modelVersion: DOCSCANNER_MODEL_VERSION,
+    modelVersion: modelId,
     warning,
   } as const;
 

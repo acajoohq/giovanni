@@ -1,21 +1,28 @@
-import type { DocScannerModelId, DocScannerModelOption } from '@/lib/model/docscannerModel.types';
+import type { DocScannerModelId, DocScannerModelMode, DocScannerModelOption } from '@/lib/model/docscannerModel.types';
 
-export const DEFAULT_DOCSCANNER_MODEL_ID = 'docscanner-fp32-onnx' satisfies DocScannerModelId;
+export const DEFAULT_DOCSCANNER_MODEL_ID = 'docscanner-e2e-onnx' satisfies DocScannerModelId;
 
 export const DOCSCANNER_MODEL_OPTIONS = [
   {
-    id: 'docscanner-fp32-onnx',
-    label: 'Reference FP32',
+    id: 'docscanner-e2e-onnx',
+    label: 'E2E FP32',
     sizeLabel: '35 MB',
-    description: 'Python docscanner.onnx · same weights as PyTorch',
+    description: 'Python docscanner-e2e.onnx · image in → rectified out',
+    mode: 'e2e',
   },
   {
-    id: 'docscanner-fp16-onnx',
-    label: 'Mobile FP16',
-    sizeLabel: '19 MB',
-    description: 'Python docscanner-fp16.onnx · faster, tiny drift',
+    id: 'docscanner-fp32-onnx',
+    label: 'Flow FP32',
+    sizeLabel: '35 MB',
+    description: 'Python docscanner.onnx · flow field + native warp',
+    mode: 'flow',
   },
 ] as const satisfies readonly DocScannerModelOption[];
+
+export function getDocScannerModelMode(modelId: DocScannerModelId): DocScannerModelMode {
+  const option = getDocScannerModelOption(modelId);
+  return option.mode;
+}
 
 export function getDocScannerModelOption(modelId: DocScannerModelId): DocScannerModelOption {
   const option = DOCSCANNER_MODEL_OPTIONS.find((entry) => entry.id === modelId);

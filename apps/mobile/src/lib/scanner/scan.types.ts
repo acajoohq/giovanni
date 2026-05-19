@@ -38,3 +38,10 @@ export interface RectifyFlowInput {
   height: number;
   flow: Float32Array;
 }
+
+export interface SaveRectifiedTensorInput {
+  tensor: Float32Array;
+  outputUri: string;
+  width: number;
+  height: number;
+}

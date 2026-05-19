@@ -36,7 +36,15 @@ abstract class HybridDocumentRectifierSpec: HybridObject() {
   
   @DoNotStrip
   @Keep
+  abstract fun prepareE2eInputTensor(sourceUri: String): Promise<TensorPrepResult>
+  
+  @DoNotStrip
+  @Keep
   abstract fun remapAndSave(sourceUri: String, outputUri: String, width: Double, height: Double, flowBuffer: ArrayBuffer): Promise<RectifyResult>
+  
+  @DoNotStrip
+  @Keep
+  abstract fun saveRectifiedTensor(tensorBuffer: ArrayBuffer, outputUri: String, width: Double, height: Double): Promise<RectifyResult>
 
   // Default implementation of `HybridObject.toString()`
   override fun toString(): String {

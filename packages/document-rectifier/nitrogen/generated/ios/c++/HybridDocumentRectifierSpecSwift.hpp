@@ -84,8 +84,24 @@ namespace margelo::nitro::docscanner::documentrectifier {
       auto __value = std::move(__result.value());
       return __value;
     }
+    inline std::shared_ptr<Promise<TensorPrepResult>> prepareE2eInputTensor(const std::string& sourceUri) override {
+      auto __result = _swiftPart.prepareE2eInputTensor(sourceUri);
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+      auto __value = std::move(__result.value());
+      return __value;
+    }
     inline std::shared_ptr<Promise<RectifyResult>> remapAndSave(const std::string& sourceUri, const std::string& outputUri, double width, double height, const std::shared_ptr<ArrayBuffer>& flowBuffer) override {
       auto __result = _swiftPart.remapAndSave(sourceUri, outputUri, std::forward<decltype(width)>(width), std::forward<decltype(height)>(height), ArrayBufferHolder(flowBuffer));
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+      auto __value = std::move(__result.value());
+      return __value;
+    }
+    inline std::shared_ptr<Promise<RectifyResult>> saveRectifiedTensor(const std::shared_ptr<ArrayBuffer>& tensorBuffer, const std::string& outputUri, double width, double height) override {
+      auto __result = _swiftPart.saveRectifiedTensor(ArrayBufferHolder(tensorBuffer), outputUri, std::forward<decltype(width)>(width), std::forward<decltype(height)>(height));
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
       }

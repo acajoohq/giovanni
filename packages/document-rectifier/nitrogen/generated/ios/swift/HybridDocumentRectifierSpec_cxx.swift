@@ -144,9 +144,47 @@ open class HybridDocumentRectifierSpec_cxx {
   }
   
   @inline(__always)
+  public final func prepareE2eInputTensor(sourceUri: std.string) -> bridge.Result_std__shared_ptr_Promise_TensorPrepResult___ {
+    do {
+      let __result = try self.__implementation.prepareE2eInputTensor(sourceUri: String(sourceUri))
+      let __resultCpp = { () -> bridge.std__shared_ptr_Promise_TensorPrepResult__ in
+        let __promise = bridge.create_std__shared_ptr_Promise_TensorPrepResult__()
+        let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_TensorPrepResult__(__promise)
+        __result
+          .then({ __result in __promiseHolder.resolve(__result) })
+          .catch({ __error in __promiseHolder.reject(__error.toCpp()) })
+        return __promise
+      }()
+      return bridge.create_Result_std__shared_ptr_Promise_TensorPrepResult___(__resultCpp)
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_std__shared_ptr_Promise_TensorPrepResult___(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
   public final func remapAndSave(sourceUri: std.string, outputUri: std.string, width: Double, height: Double, flowBuffer: ArrayBuffer) -> bridge.Result_std__shared_ptr_Promise_RectifyResult___ {
     do {
       let __result = try self.__implementation.remapAndSave(sourceUri: String(sourceUri), outputUri: String(outputUri), width: width, height: height, flowBuffer: flowBuffer)
+      let __resultCpp = { () -> bridge.std__shared_ptr_Promise_RectifyResult__ in
+        let __promise = bridge.create_std__shared_ptr_Promise_RectifyResult__()
+        let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_RectifyResult__(__promise)
+        __result
+          .then({ __result in __promiseHolder.resolve(__result) })
+          .catch({ __error in __promiseHolder.reject(__error.toCpp()) })
+        return __promise
+      }()
+      return bridge.create_Result_std__shared_ptr_Promise_RectifyResult___(__resultCpp)
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_std__shared_ptr_Promise_RectifyResult___(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
+  public final func saveRectifiedTensor(tensorBuffer: ArrayBuffer, outputUri: std.string, width: Double, height: Double) -> bridge.Result_std__shared_ptr_Promise_RectifyResult___ {
+    do {
+      let __result = try self.__implementation.saveRectifiedTensor(tensorBuffer: tensorBuffer, outputUri: String(outputUri), width: width, height: height)
       let __resultCpp = { () -> bridge.std__shared_ptr_Promise_RectifyResult__ in
         let __promise = bridge.create_std__shared_ptr_Promise_RectifyResult__()
         let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_RectifyResult__(__promise)

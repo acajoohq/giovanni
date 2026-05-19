@@ -14,7 +14,9 @@ public protocol HybridDocumentRectifierSpec_protocol: HybridObject {
 
   // Methods
   func prepareInputTensor(sourceUri: String) throws -> Promise<TensorPrepResult>
+  func prepareE2eInputTensor(sourceUri: String) throws -> Promise<TensorPrepResult>
   func remapAndSave(sourceUri: String, outputUri: String, width: Double, height: Double, flowBuffer: ArrayBuffer) throws -> Promise<RectifyResult>
+  func saveRectifiedTensor(tensorBuffer: ArrayBuffer, outputUri: String, width: Double, height: Double) throws -> Promise<RectifyResult>
 }
 
 public extension HybridDocumentRectifierSpec_protocol {

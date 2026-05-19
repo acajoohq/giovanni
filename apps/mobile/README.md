@@ -18,13 +18,20 @@ This app uses native packages, so use a development build instead of Expo Go.
 ## Model Pipeline
 
 - Model assets live in `assets/models/`.
-- The scan screen **model picker** compares the two Python ONNX exports (PyTorch weights, on-device via ONNX Runtime):
-  - **Reference FP32** — `docscanner.onnx` (35 MB, default; use this to match `uv run infer_onnx.py --model docscanner.onnx`)
-  - **Mobile FP16** — `docscanner-fp16.onnx` (19 MB; matches `--model docscanner-fp16.onnx`)
-- The expected model input is `Float32Array [1, 3, 288, 288]`, RGB `[0, 1]`, CHW.
-- The expected model output is `Float32Array [1, 2, 288, 288]`, a normalized backward-flow field.
+- The scan screen **model picker** compares the two Python ONNX exports from [DocScanner](https://github.com/fh2019ustc/DocScanner) (local fork):
+  - **E2E FP32** (default) — `docscanner-e2e.onnx` (35 MB). Full pipeline in ONNX: image in → rectified out. Matches `uv run infer_onnx.py --model docscanner-e2e.onnx`.
+  - **Flow FP32** — `docscanner-fp32.onnx` (35 MB). Flow field at 288×288 + native warp. Matches `--model docscanner.onnx`.
+- Do not use fp16/int8 for quality work; the DocScanner fork documents visible quality loss.
 
-The JavaScript pipeline calls the workspace `react-native-document-rectifier` Nitro package for tensor prep and full-resolution remapping. ONNX inference stays in JavaScript for v1 through `onnxruntime-react-native`.
+### E2E I/O contract
+
+- **Input:** `Float32Array [1, 3, H, W]` — full-resolution RGB in `[0, 1]`, CHW, no normalization (max long edge 2400).
+- **Output:** `Float32Array [1, 3, H, W]` — rectified RGB in `[0, 1]`.
+
+### Flow I/O contract (legacy)
+
+- **Input:** `Float32Array [1, 3, 288, 288]`
+- **Output:** `Float32Array [1, 2, 288, 288]` backward-flow field — warped natively via `react-native-document-rectifier`.
 
 ## License Note
 

@@ -32,6 +32,10 @@ export async function getSelectedDocScannerModelId(): Promise<DocScannerModelId>
   );
   const storedValue = rows[0]?.value;
 
+  if (storedValue === 'docscanner-fp16-onnx') {
+    return DEFAULT_DOCSCANNER_MODEL_ID;
+  }
+
   if (storedValue && isDocScannerModelId(storedValue)) {
     return storedValue;
   }

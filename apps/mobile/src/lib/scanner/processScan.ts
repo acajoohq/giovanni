@@ -1,6 +1,12 @@
+import { getDocScannerModelMode } from '@/lib/model/docscannerModel.constants';
 import type { ProcessScanResult, ScanSource, ScanTiming } from '@/lib/scanner/scan.types';
 import { measureStep, totalTiming } from '@/lib/scanner/timing';
-import { prepareInputTensor, remapAndSave } from '@/lib/native/documentRectifier';
+import {
+  prepareE2eInputTensor,
+  prepareInputTensor,
+  remapAndSave,
+  saveRectifiedTensor,
+} from '@/lib/native/documentRectifier';
 import { getSelectedDocScannerModelId } from '@/lib/storage/scannerSettings.repository';
 import {
   copyFallbackRectifiedImage,
@@ -26,28 +32,51 @@ export async function processScan(sourceUri: string, source: ScanSource): Promis
   let warning: string | null = null;
 
   const modelId = await getSelectedDocScannerModelId();
+  const modelMode = getDocScannerModelMode(modelId);
 
   try {
-    const prepared = await measureStep('prepare tensor', timings, () =>
-      prepareInputTensor(originalUri),
-    );
-    width = prepared.width;
-    height = prepared.height;
+    if (modelMode === 'e2e') {
+      const prepared = await measureStep('prepare e2e tensor', timings, () =>
+        prepareE2eInputTensor(originalUri),
+      );
+      width = prepared.width;
+      height = prepared.height;
 
-    const { runDocScanner } = await import('@/lib/model/docscannerModel');
-    const flow = await measureStep('onnx inference', timings, () =>
-      runDocScanner(prepared.input, modelId),
-    );
+      const { runDocScannerE2e } = await import('@/lib/model/docscannerModel');
+      const rectified = await measureStep('onnx inference', timings, () =>
+        runDocScannerE2e(prepared.input, prepared.width, prepared.height, modelId),
+      );
 
-    rectifiedUri = await measureStep('native remap', timings, () =>
-      remapAndSave({
-        sourceUri: originalUri,
-        outputUri: getRectifiedImageUri(scanId),
-        width: prepared.width,
-        height: prepared.height,
-        flow,
-      }),
-    );
+      rectifiedUri = await measureStep('save rectified', timings, () =>
+        saveRectifiedTensor({
+          tensor: rectified,
+          outputUri: getRectifiedImageUri(scanId),
+          width: prepared.width,
+          height: prepared.height,
+        }),
+      );
+    } else {
+      const prepared = await measureStep('prepare tensor', timings, () =>
+        prepareInputTensor(originalUri),
+      );
+      width = prepared.width;
+      height = prepared.height;
+
+      const { runDocScannerFlow } = await import('@/lib/model/docscannerModel');
+      const flow = await measureStep('onnx inference', timings, () =>
+        runDocScannerFlow(prepared.input, modelId),
+      );
+
+      rectifiedUri = await measureStep('native remap', timings, () =>
+        remapAndSave({
+          sourceUri: originalUri,
+          outputUri: getRectifiedImageUri(scanId),
+          width: prepared.width,
+          height: prepared.height,
+          flow,
+        }),
+      );
+    }
   } catch (error) {
     warning = error instanceof Error ? error.message : 'Rectification failed.';
     rectifiedUri = await measureStep('fallback copy', timings, () =>

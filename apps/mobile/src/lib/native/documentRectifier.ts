@@ -1,10 +1,21 @@
 import { getDocumentRectifier } from 'react-native-document-rectifier';
 
-import type { PreparedDocumentImage, RectifyFlowInput } from '@/lib/scanner/scan.types';
+import type { PreparedDocumentImage, RectifyFlowInput, SaveRectifiedTensorInput } from '@/lib/scanner/scan.types';
 
 export async function prepareInputTensor(sourceUri: string): Promise<PreparedDocumentImage> {
   const rectifier = getDocumentRectifier();
   const prepared = await rectifier.prepareInputTensor(sourceUri);
+
+  return {
+    input: new Float32Array(prepared.tensorBuffer),
+    width: prepared.width,
+    height: prepared.height,
+  };
+}
+
+export async function prepareE2eInputTensor(sourceUri: string): Promise<PreparedDocumentImage> {
+  const rectifier = getDocumentRectifier();
+  const prepared = await rectifier.prepareE2eInputTensor(sourceUri);
 
   return {
     input: new Float32Array(prepared.tensorBuffer),
@@ -22,6 +33,18 @@ export async function remapAndSave(input: RectifyFlowInput): Promise<string> {
     input.width,
     input.height,
     flowBuffer,
+  );
+  return result.uri;
+}
+
+export async function saveRectifiedTensor(input: SaveRectifiedTensorInput): Promise<string> {
+  const rectifier = getDocumentRectifier();
+  const tensorBuffer = toExactArrayBuffer(input.tensor);
+  const result = await rectifier.saveRectifiedTensor(
+    tensorBuffer,
+    input.outputUri,
+    input.width,
+    input.height,
   );
   return result.uri;
 }

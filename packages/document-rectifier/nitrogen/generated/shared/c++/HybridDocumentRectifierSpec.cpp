@@ -15,7 +15,9 @@ namespace margelo::nitro::docscanner::documentrectifier {
     // load custom methods/properties
     registerHybrids(this, [](Prototype& prototype) {
       prototype.registerHybridMethod("prepareInputTensor", &HybridDocumentRectifierSpec::prepareInputTensor);
+      prototype.registerHybridMethod("prepareE2eInputTensor", &HybridDocumentRectifierSpec::prepareE2eInputTensor);
       prototype.registerHybridMethod("remapAndSave", &HybridDocumentRectifierSpec::remapAndSave);
+      prototype.registerHybridMethod("saveRectifiedTensor", &HybridDocumentRectifierSpec::saveRectifiedTensor);
     });
   }
 

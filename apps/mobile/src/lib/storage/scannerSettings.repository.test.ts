@@ -28,11 +28,11 @@ describe('scanner settings repository', () => {
     expect(execAsync).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS app_settings'));
   });
 
-  it('returns the reference fp32 model by default', async () => {
+  it('returns the e2e fp32 model by default', async () => {
     getAllAsync.mockResolvedValueOnce([]);
     const { getSelectedDocScannerModelId } = await import('@/lib/storage/scannerSettings.repository');
 
-    await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-fp32-onnx');
+    await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-e2e-onnx');
   });
 
   it('persists the selected model id', async () => {
@@ -46,10 +46,17 @@ describe('scanner settings repository', () => {
     ]);
   });
 
-  it('ignores legacy or unknown stored model ids', async () => {
-    getAllAsync.mockResolvedValueOnce([{ value: 'original' }]);
+  it('migrates deprecated fp16 selection to the e2e model', async () => {
+    getAllAsync.mockResolvedValueOnce([{ value: 'docscanner-fp16-onnx' }]);
     const { getSelectedDocScannerModelId } = await import('@/lib/storage/scannerSettings.repository');
 
-    await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-fp32-onnx');
+    await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-e2e-onnx');
+  });
+
+  it('ignores unknown stored model ids', async () => {
+    getAllAsync.mockResolvedValueOnce([{ value: 'unknown-model' }]);
+    const { getSelectedDocScannerModelId } = await import('@/lib/storage/scannerSettings.repository');
+
+    await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-e2e-onnx');
   });
 });

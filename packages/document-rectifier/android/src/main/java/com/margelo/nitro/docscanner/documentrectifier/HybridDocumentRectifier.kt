@@ -51,6 +51,37 @@ class HybridDocumentRectifier : HybridDocumentRectifierSpec() {
     }
   }
 
+  override fun prepareE2eInputTensor(sourceUri: String): Promise<TensorPrepResult> {
+    return Promise.async {
+      val source = decodeProcessingBitmap(sourceUri)
+      val width = source.width
+      val height = source.height
+      val planeLength = width * height
+      val tensorBuffer = ByteBuffer
+        .allocateDirect(planeLength * 3 * BytesPerFloat)
+        .order(ByteOrder.nativeOrder())
+      val tensorFloats = tensorBuffer.asFloatBuffer()
+      val pixels = IntArray(planeLength)
+
+      source.getPixels(pixels, 0, width, 0, 0, width, height)
+      for (index in pixels.indices) {
+        val pixel = pixels[index]
+        tensorFloats.put(index, Color.red(pixel) / 255f)
+        tensorFloats.put(planeLength + index, Color.green(pixel) / 255f)
+        tensorFloats.put((planeLength * 2) + index, Color.blue(pixel) / 255f)
+      }
+
+      tensorBuffer.rewind()
+      source.recycle()
+
+      return@async TensorPrepResult(
+        width.toDouble(),
+        height.toDouble(),
+        ArrayBuffer.wrap(tensorBuffer),
+      )
+    }
+  }
+
   override fun remapAndSave(
     sourceUri: String,
     outputUri: String,
@@ -98,6 +129,56 @@ class HybridDocumentRectifier : HybridDocumentRectifierSpec() {
       saveJpeg(outputBitmap, outputUri)
       outputBitmap.recycle()
       source.recycle()
+
+      return@async RectifyResult(
+        outputUri,
+        width,
+        height,
+        processingWidth.toDouble(),
+        processingHeight.toDouble(),
+      )
+    }
+  }
+
+  override fun saveRectifiedTensor(
+    tensorBuffer: ArrayBuffer,
+    outputUri: String,
+    width: Double,
+    height: Double,
+  ): Promise<RectifyResult> {
+    val owningTensorBuffer = tensorBuffer.asOwning()
+
+    return Promise.async {
+      val processingWidth = width.roundToInt().coerceAtLeast(1)
+      val processingHeight = height.roundToInt().coerceAtLeast(1)
+      val planeLength = processingWidth * processingHeight
+      val expectedBytes = planeLength * 3 * BytesPerFloat
+      val byteBuffer = owningTensorBuffer.getBuffer(true).order(ByteOrder.nativeOrder())
+
+      if (byteBuffer.capacity() != expectedBytes) {
+        throw Error(
+          "DocScanner rectified tensor has ${byteBuffer.capacity()} bytes; expected $expectedBytes.",
+        )
+      }
+
+      val tensorFloats = byteBuffer.asFloatBuffer()
+      val pixels = IntArray(planeLength)
+
+      for (index in pixels.indices) {
+        val red = (tensorFloats.get(index).coerceIn(0f, 1f) * 255f).roundToInt()
+        val green = (tensorFloats.get(planeLength + index).coerceIn(0f, 1f) * 255f).roundToInt()
+        val blue = (tensorFloats.get((planeLength * 2) + index).coerceIn(0f, 1f) * 255f).roundToInt()
+        pixels[index] = (0xff shl 24) or (red shl 16) or (green shl 8) or blue
+      }
+
+      val outputBitmap = Bitmap.createBitmap(
+        pixels,
+        processingWidth,
+        processingHeight,
+        Bitmap.Config.ARGB_8888,
+      )
+      saveJpeg(outputBitmap, outputUri)
+      outputBitmap.recycle()
 
       return@async RectifyResult(
         outputUri,

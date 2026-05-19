@@ -20,6 +20,9 @@
         ".pnpm-store/**",
         "apps/*/src/routeTree.gen.ts",
         "apps/*/dist/**",
+        "apps/mobile/android/**",
+        "apps/mobile/ios/**",
+        "apps/mobile/.expo/**",
         "packages/*/dist/**",
         "packages/*/build/**"
     ]

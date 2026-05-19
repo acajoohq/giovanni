@@ -1,6 +1,12 @@
 packages:
   - apps/*
   - packages/*
+
+catalog:
+  eslint-plugin-expo: ^1.0.3
+  oxfmt: ^0.48.0
+  oxlint: ^1.63.0
+  oxlint-config-universe: ^0.0.3
 allowBuilds:
   '@shopify/react-native-skia': true
   canvas: true

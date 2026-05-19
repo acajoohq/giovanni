@@ -10,6 +10,10 @@ pnpm --dir apps/mobile run ios
 pnpm --dir apps/mobile run android
 pnpm --dir apps/mobile run typecheck
 pnpm --dir apps/mobile run lint
+pnpm --dir apps/mobile run format
+
+Linting is configured in `oxlint.config.ts` ([TypeScript config](https://oxc.rs/docs/guide/usage/linter/config#typescript-config-file-oxlint-configts)): `oxlint-config-universe/native`, `eslint-plugin-expo` via `jsPlugins`, and repo-wide `oxlintrc.shared.json`.
+pnpm --dir apps/mobile run format:check
 pnpm --dir apps/mobile run test
 ```
 

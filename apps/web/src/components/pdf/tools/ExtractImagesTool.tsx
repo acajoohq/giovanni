@@ -13,7 +13,7 @@ import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { useObjectUrls } from "@/hooks/useObjectUrls";
-import { buildExtractedImageEntries, downloadBlob, downloadZip, findFirstPdfFile, imageDownloadName, makeArchiveName, pdfBaseName } from "@/utils/pdfToolUtils.utils";
+import { buildExtractedImageEntries, downloadBlob, downloadZip, findFirstPdfFile, imageDownloadName, makeArchiveName, pdfBaseName } from "@/utils/pdfTool.utils";
 
 const EMPTY_IMAGES: ExtractedImage[] = [];
 

@@ -10,7 +10,7 @@ import { EmptyOrganize } from "@/components/pdf/emptyState/EmptyOrganize";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
-import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, formatThroughput, pdfBaseName } from "@/utils/pdfToolUtils.utils";
+import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, formatThroughput, pdfBaseName } from "@/utils/pdfTool.utils";
 import { OrganizeThumbnailGrid } from "./OrganizeThumbnailGrid";
 
 interface SplitJobResult {

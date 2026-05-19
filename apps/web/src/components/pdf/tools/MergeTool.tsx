@@ -12,7 +12,7 @@ import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { EmptyMerge } from "@/components/pdf/emptyState/EmptyMerge";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
-import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/utils/pdfToolUtils.utils";
+import { downloadPdf, ensurePdfExtension, filterPdfFiles } from "@/utils/pdfTool.utils";
 
 export function MergeTool() {
     const { t } = useTranslation();

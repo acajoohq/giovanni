@@ -1,15 +1,17 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-    entry: ["src/index.ts", "src/render.ts"],
+    entry: ["src/index.ts", "src/qpdf.ts", "src/ghostscript.ts"],
     format: ["esm", "cjs"],
     dts: true,
     clean: true,
     minify: false,
     sourcemap: true,
     copy: [
-        { from: "build/wasm/qpdf.js", to: "dist", verbose: true },
-        { from: "build/wasm/qpdf.wasm", to: "dist", verbose: true },
+        { from: "build/qpdf/qpdf.js", to: "dist", verbose: true },
+        { from: "build/qpdf/qpdf.wasm", to: "dist", verbose: true },
+        { from: "build/ghostscript/ghostscript.js", to: "dist", verbose: true },
+        { from: "build/ghostscript/ghostscript.wasm", to: "dist", verbose: true },
     ],
     publint: {
         level: "error",

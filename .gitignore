@@ -13,6 +13,7 @@ packages/*/build/
 apps/*/.turbo/
 packages/*/.turbo/
 packages/*/python/
+packages/*/.tmp/
 
 # Coverage
 coverage/
@@ -22,14 +23,11 @@ coverage/
 Thumbs.db
 
 # IDE
-
 .idea/
 *.swp
 *.swo
 .claude/
 !.vscode/extensions.json
-.idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
@@ -48,9 +46,11 @@ lerna-debug.log*
 .env
 .env.local
 .agents/skills/
+/vendor/
 vendor/qpdf/
 packages/pdfly-wasm/wasm/cmake-build/
 packages/pdfly-wasm/test-report/
 .claude/settings.local.json
 dogfood-output/
-packages/pdfly-wasm/.tmp
+.tmp/
+__pycache__

@@ -4,10 +4,9 @@
  * These tests use the real WASM module (no mocks) and all PDF fixtures in
  * src/test/fixtures/pdfs/compression to verify that:
  *
- *  1. Every preset produces a valid, non-empty PDF for every fixture
- *     (or throws QpdfCompressionError — accepted as a known WASM limitation
- *     for certain malformed/exotic fixtures, matching pre-existing failures
- *     in extract-images.test.ts for the same files).
+ *  1. Every UI-facing compression scenario produces a valid, non-empty PDF for
+ *     every fixture (or throws an engine compression error — accepted as a known
+ *     WASM limitation for certain malformed/exotic fixtures).
  *  2. The result statistics (savedBytes, compressionRatio, percentageSaved) are
  *     internally consistent for every file that compresses successfully.
  *  3. The "archive" preset never meaningfully inflates files vs. "default"
@@ -22,9 +21,11 @@ import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
-import { linearizePdf, optimizePdf } from "../core/compress.js";
-import { QpdfCompressionError } from "../core/errors.js";
-import type { DecodeLevel, OptimizeOptions, OptimizeResult, QpdfOptimizePreset } from "../types/index.js";
+import { compressPdf, linearizePdf, optimizePdf } from "../operations/compress.js";
+import { GhostscriptCompressionError, QpdfCompressionError } from "../errors/index.js";
+import { GHOSTSCRIPT_PRESETS } from "../engines/ghostscript/options.js";
+import { QPDF_PRESETS } from "../engines/qpdf/options.js";
+import type { CompressOptions, CompressResult, DecodeLevel, GhostscriptPdfSettings, OptimizeOptions, OptimizeResult, QpdfOptimizePreset } from "../types/index.js";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -87,7 +88,7 @@ async function writeCompressionReport(results: SizeResult[], skipped: SkippedRes
 
     const lines: string[] = [
         '<?xml version="1.0" encoding="UTF-8"?>',
-        `<compression-report generated="${new Date().toISOString()}" fixtures="${allFileNames.length}" presets="3">`,
+        `<compression-report generated="${new Date().toISOString()}" fixtures="${allFileNames.length}" scenarios="${COMPRESSION_SCENARIOS.length}">`,
     ];
 
     for (const name of allFileNames) {
@@ -98,16 +99,17 @@ async function writeCompressionReport(results: SizeResult[], skipped: SkippedRes
 
         lines.push(`  <file name="${escapeXml(name)}" originalBytes="${originalBytes}"${allAborted ? ' status="wasm-abort"' : ""}>`);
 
-        for (const preset of ["default", "web", "archive"] as const) {
-            const r = fileResults.find((x) => x.preset === preset);
-            const s = fileSkipped.find((x) => x.preset === preset);
+        for (const scenario of COMPRESSION_SCENARIOS) {
+            const r = fileResults.find((x) => x.scenario === scenario.key);
+            const s = fileSkipped.find((x) => x.scenario === scenario.key);
+            const attributes = `scenario="${scenario.key}" label="${escapeXml(scenario.label)}" engine="${scenario.engine}" preset="${scenario.expectedPreset}"`;
 
             if (r) {
                 lines.push(
-                    `    <result preset="${preset}" compressedBytes="${r.compressedBytes}" savedBytes="${r.savedBytes}" percentageSaved="${r.percentageSaved}" ratio="${r.ratio}"/>`,
+                    `    <result ${attributes} compressedBytes="${r.compressedBytes}" savedBytes="${r.savedBytes}" percentageSaved="${r.percentageSaved}" ratio="${r.ratio}"/>`,
                 );
             } else if (s) {
-                lines.push(`    <result preset="${preset}" status="wasm-abort"/>`);
+                lines.push(`    <result ${attributes} status="wasm-abort"/>`);
             }
         }
 
@@ -135,6 +137,17 @@ async function tryCompress(data: Uint8Array, options?: OptimizeOptions): Promise
     }
 }
 
+async function tryCompressScenario(data: Uint8Array, scenario: CompressionScenario): Promise<CompressResult | null> {
+    try {
+        return await compressPdf(data, scenario.options);
+    } catch (error) {
+        if (error instanceof QpdfCompressionError || error instanceof GhostscriptCompressionError) {
+            return null;
+        }
+        throw error;
+    }
+}
+
 // Top-level await is fine in ESM vitest tests.
 const fixtures = await loadFixtures();
 
@@ -142,7 +155,53 @@ const fixtures = await loadFixtures();
 // Constants
 // ---------------------------------------------------------------------------
 
-const PRESETS: QpdfOptimizePreset[] = ["default", "web", "archive"];
+type CompressionScenarioKey = "simple-recommended" | "simple-smallest" | "simple-best-quality";
+
+type CompressionScenario = {
+    key: CompressionScenarioKey;
+    label: string;
+    engine: "qpdf" | "ghostscript";
+    expectedPreset: QpdfOptimizePreset | GhostscriptPdfSettings;
+    options: CompressOptions;
+};
+
+const COMPRESSION_SCENARIOS: CompressionScenario[] = [
+    {
+        key: "simple-recommended",
+        label: "Recommended",
+        engine: "ghostscript",
+        expectedPreset: "ebook",
+        options: {
+            engine: "ghostscript",
+            preset: "ebook",
+            ...GHOSTSCRIPT_PRESETS.ebook,
+        },
+    },
+    {
+        key: "simple-smallest",
+        label: "Smallest file",
+        engine: "ghostscript",
+        expectedPreset: "screen",
+        options: {
+            engine: "ghostscript",
+            preset: "screen",
+            ...GHOSTSCRIPT_PRESETS.screen,
+        },
+    },
+    {
+        key: "simple-best-quality",
+        label: "Best quality",
+        engine: "qpdf",
+        expectedPreset: "archive",
+        options: {
+            engine: "qpdf",
+            preset: "archive",
+            ...QPDF_PRESETS.archive,
+        },
+    },
+];
+
+const QPDF_PRESET_NAMES: QpdfOptimizePreset[] = ["default", "web", "archive"];
 const DECODE_LEVELS: DecodeLevel[] = ["none", "generalized", "specialized", "all"];
 
 // ---------------------------------------------------------------------------
@@ -150,13 +209,15 @@ const DECODE_LEVELS: DecodeLevel[] = ["none", "generalized", "specialized", "all
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// Pre-compute compression results for all fixtures × all presets so that
+// Pre-compute compression results for all fixtures × all scenarios so that
 // the size-reporting suite can reference them without re-running the WASM.
 // ---------------------------------------------------------------------------
 
 type SizeResult = {
     name: string;
-    preset: QpdfOptimizePreset;
+    scenario: CompressionScenarioKey;
+    engine: "qpdf" | "ghostscript";
+    preset: QpdfOptimizePreset | GhostscriptPdfSettings;
     originalBytes: number;
     compressedBytes: number;
     savedBytes: number;
@@ -166,7 +227,7 @@ type SizeResult = {
 
 type SkippedResult = {
     name: string;
-    preset: QpdfOptimizePreset;
+    scenario: CompressionScenarioKey;
     originalBytes: number;
     reason: "wasm-abort";
 };
@@ -177,18 +238,21 @@ const skippedResults: SkippedResult[] = [];
 // ---------------------------------------------------------------------------
 
 describe("compression quality", () => {
-    // Pre-compute compression results for all fixtures × all presets inside
+    // Pre-compute compression results for all fixtures × all scenarios inside
     // beforeAll so that: (a) vitest enforces a timeout on stuck WASM calls,
     // (b) failures surface as named suite errors rather than obscure
     //     "error collecting test file" messages at module-evaluation time.
     beforeAll(async () => {
         for (const fixture of fixtures) {
-            for (const preset of ["default", "web", "archive"] as const) {
-                const result = await tryCompress(fixture.data, { preset });
+            for (const scenario of COMPRESSION_SCENARIOS) {
+                const result = await tryCompressScenario(fixture.data, scenario);
+
                 if (result !== null) {
                     sizeResults.push({
                         name: fixture.name,
-                        preset,
+                        scenario: scenario.key,
+                        engine: result.engine,
+                        preset: result.preset,
                         originalBytes: result.originalSize,
                         compressedBytes: result.compressedSize,
                         savedBytes: result.savedBytes,
@@ -196,7 +260,7 @@ describe("compression quality", () => {
                         ratio: result.originalSize === 0 ? 1 : Math.round((result.compressedSize / result.originalSize) * 10000) / 10000,
                     });
                 } else {
-                    skippedResults.push({ name: fixture.name, preset, originalBytes: fixture.data.length, reason: "wasm-abort" });
+                    skippedResults.push({ name: fixture.name, scenario: scenario.key, originalBytes: fixture.data.length, reason: "wasm-abort" });
                 }
             }
         }
@@ -209,7 +273,7 @@ describe("compression quality", () => {
 
     // -----------------------------------------------------------------------
     // 0. Size report — logs a table of actual sizes so CI output and junit
-    //    artifacts show concrete byte counts for every fixture × preset.
+    //    artifacts show concrete byte counts for every fixture × scenario.
     //    Each test name encodes the result so it is visible in the junit XML.
     // -----------------------------------------------------------------------
 
@@ -217,6 +281,8 @@ describe("compression quality", () => {
         it("prints a summary table of all compression results", () => {
             const rows = sizeResults.map((r) => ({
                 fixture: r.name,
+                scenario: r.scenario,
+                engine: r.engine,
                 preset: r.preset,
                 original: formatBytes(r.originalBytes),
                 compressed: formatBytes(r.compressedBytes),
@@ -234,9 +300,9 @@ describe("compression quality", () => {
         it.each(fixtures)(
             "size bookkeeping is consistent for $name",
             ({ name }) => {
-                for (const preset of ["default", "web", "archive"] as const) {
-                    const r = sizeResults.find((x) => x.name === name && x.preset === preset);
-                    if (!r) continue; // wasm-abort for this preset — acceptable
+                for (const scenario of COMPRESSION_SCENARIOS) {
+                    const r = sizeResults.find((x) => x.name === name && x.scenario === scenario.key);
+                    if (!r) continue; // wasm-abort for this scenario — acceptable
                     expect(r.compressedBytes).toBeGreaterThan(0);
                     expect(r.savedBytes).toBe(r.originalBytes - r.compressedBytes);
                 }
@@ -246,24 +312,26 @@ describe("compression quality", () => {
     });
 
     // -----------------------------------------------------------------------
-    // 1 & 2. Output validity + statistic consistency — every preset × every fixture.
-    //    tryCompress runs once per (preset, fixture) in beforeAll; both checks
-    //    share the same result to avoid redundant WASM calls.
+    // 1 & 2. Output validity + statistic consistency — every scenario × every
+    //    fixture. tryCompressScenario runs once per (scenario, fixture) in
+    //    beforeAll; both checks share the same result to avoid redundant WASM
+    //    calls.
     // -----------------------------------------------------------------------
 
-    describe.each(PRESETS)('preset "%s"', (preset) => {
+    describe.each(COMPRESSION_SCENARIOS)("$label", (scenario) => {
         describe.each(fixtures)("$name", ({ data }) => {
-            let result!: OptimizeResult | null;
+            let result!: CompressResult | null;
 
             beforeAll(async () => {
-                result = await tryCompress(data, { preset });
+                result = await tryCompressScenario(data, scenario);
             }, TEST_TIMEOUT_MS);
 
             it("produces a valid non-empty PDF", () => {
                 if (result === null) return; // WASM abort — skip
                 expect(result.data.byteLength).toBeGreaterThan(0);
                 expect(hasPdfHeader(result.data)).toBe(true);
-                expect(result.preset).toBe(preset);
+                expect(result.engine).toBe(scenario.engine);
+                expect(result.preset).toBe(scenario.expectedPreset);
             });
 
             it("reports internally consistent statistics", () => {
@@ -352,7 +420,26 @@ describe("compression quality", () => {
     });
 
     // -----------------------------------------------------------------------
-    // 6. Decode levels
+    // 6. QPDF presets
+    // -----------------------------------------------------------------------
+
+    describe.each(QPDF_PRESET_NAMES)('qpdf preset "%s"', (preset) => {
+        it.each(fixtures)(
+            "produces a valid non-empty PDF for $name",
+            async ({ data }) => {
+                const result = await tryCompress(data, { preset });
+                if (result === null) return; // skip on WASM abort
+
+                expect(hasPdfHeader(result.data)).toBe(true);
+                expect(result.compressedSize).toBeGreaterThan(0);
+                expect(result.preset).toBe(preset);
+            },
+            TEST_TIMEOUT_MS,
+        );
+    });
+
+    // -----------------------------------------------------------------------
+    // 7. Decode levels
     // -----------------------------------------------------------------------
 
     describe.each(DECODE_LEVELS)('decodeLevel "%s"', (decodeLevel) => {
@@ -370,7 +457,7 @@ describe("compression quality", () => {
     });
 
     // -----------------------------------------------------------------------
-    // 7. objectStreams mode
+    // 8. objectStreams mode
     // -----------------------------------------------------------------------
 
     describe.each(["preserve", "disable", "generate"] as const)('objectStreams "%s"', (objectStreams) => {

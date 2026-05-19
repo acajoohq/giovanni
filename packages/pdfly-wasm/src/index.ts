@@ -2,16 +2,15 @@
  * @pdfly/wasm - qpdf WebAssembly API for local-first PDF workflows.
  */
 
-// qpdf api
-export { initQpdf, getQpdfVersion, linearizePdf, optimizePdf } from "./core/compress.js";
-export { inspectPdf, checkPdf } from "./core/inspect.js";
-export { splitPdf } from "./core/split.js";
-export { mergePdfs } from "./core/merge.js";
-export { organizePdf } from "./core/organize.js";
-export { extractImages } from "./core/extract-images.js";
+// compression api
+export { compressPdf, getAvailableCompressionEngines, initCompressionEngine } from "./operations/compress.js";
 
-// advanced api
-export { QpdfDocument } from "./core/qpdf.js";
+// pdf operations
+export { inspectPdf, checkPdf } from "./operations/inspect.js";
+export { splitPdf } from "./operations/split.js";
+export { mergePdfs } from "./operations/merge.js";
+export { organizePdf } from "./operations/organize.js";
+export { extractImages } from "./operations/extract-images.js";
 
 // error classes
 export {
@@ -25,34 +24,33 @@ export {
     QpdfImageExtractionError,
     QpdfConversionError,
     QpdfOrganizeError,
-} from "./core/errors.js";
+    isGhostscriptError,
+    GhostscriptError,
+    GhostscriptInitError,
+    GhostscriptCompressionError,
+    GhostscriptValidationError,
+} from "./errors/index.js";
 
 // types
 export type {
+    CompressionEngine,
     CheckOptions,
-    DecodeLevel,
-    InspectOptions,
-    MergeOptions,
-    ObjectStreamMode,
-    OpenDocumentOptions,
-    OptimizeOptions,
-    OrganizeOptions,
-    PdfData,
-    PdfInput,
-    QpdfOptimizePreset,
-    WriteOptions,
-    OptimizeResult,
-    SplitResult,
-    MergeResult,
-    QpdfCheckResult,
-    QpdfDocumentInfo,
+    CompressOptions,
+    CompressResult,
+    ColorComponentCount,
     ExtractedImage,
     ExtractImagesResult,
+    InspectOptions,
+    MergeResult,
+    OrganizeOptions,
     OrganizeResult,
+    PdfData,
+    PdfInput,
+    PixelColorModel,
+    QpdfCheckResult,
+    QpdfDocumentInfo,
+    SplitResult,
 } from "./types/index.js";
 
 // utility functions
 export { formatBytes, calculateSavings, formatPercentage } from "./utils/format.js";
-
-// preset constants
-export { OPTIMIZE_PRESETS } from "./utils/validation.js";

@@ -21,6 +21,7 @@
         "@base-ui/react": "^1.4.1",
         "@fontsource-variable/inter": "^5.2.8",
         "@fontsource-variable/roboto-slab": "^5.2.8",
+        "@pdfly/pdf-render": "workspace:*",
         "@pdfly/wasm": "workspace:*",
         "@remixicon/react": "^4.9.0",
         "@tanstack/react-router": "^1.169.2",

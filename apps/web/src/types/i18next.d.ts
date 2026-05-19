@@ -1,5 +1,5 @@
 ﻿import "i18next";
-import type { en } from "@/locales/en";
+import type { en } from "@/lib/features/locales/en";
 
 declare module "i18next" {
     interface CustomTypeOptions {

@@ -1,30 +1,42 @@
+export type { CompressionEngine, CompressOptions, CompressResult } from "./compression.types.js";
+export type { GhostscriptColorConversionStrategy, GhostscriptCompatibilityLevel, GhostscriptCompressOptions, GhostscriptPdfSettings } from "./ghostscript.types.js";
 export type {
     CheckOptions,
-    DecodeLevel,
-    InspectOptions,
-    MergeOptions,
-    ObjectStreamMode,
-    OpenDocumentOptions,
-    OptimizeOptions,
-    OrganizeOptions,
-    PdfInput,
-    QpdfOptimizePreset,
-    RenderPdfPagesToJpgOptions,
-    SplitOptions,
-    WriteOptions,
-} from "./options.js";
-export type {
     ColorComponentCount,
     ExtractedImage,
     ExtractImagesResult,
+    InspectOptions,
     MergeResult,
-    OptimizeResult,
+    OpenDocumentOptions,
+    OrganizeOptions,
+    OrganizeResult,
     PdfData,
+    PdfInput,
     PixelColorModel,
+    SplitOptions,
+    SplitResult,
+} from "./pdf.types.js";
+export type {
+    DecodeLevel,
+    MergeOptions,
+    ObjectStreamMode,
+    OptimizeOptions,
+    OptimizeResult,
     QpdfCheckResult,
     QpdfDocumentInfo,
-    SplitResult,
-    PdfPageJpg,
-    RenderPdfPagesToJpgResult,
-    OrganizeResult,
-} from "./results.js";
+    QpdfOptimizePreset,
+    WriteOptions,
+} from "./qpdf.types.js";
+export type {
+    CreateGhostscriptModule,
+    CreateQpdfModule,
+    GhostscriptModuleOptions,
+    GhostscriptWasmModule,
+    QpdfWasmModule,
+    WasmColorComponentCount,
+    WasmCompressionOptions,
+    WasmExtractedImage,
+    WasmPixelColorModel,
+    WasmQPDFWrapper,
+    WasmQPDFWriter,
+} from "./wasm.types.js";

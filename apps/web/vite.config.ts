@@ -24,42 +24,46 @@ function getGitCommit(): string {
     }
 
     try {
-        return execFileSync("git", ["rev-parse", `--short=${SHORT_GIT_SHA_LENGTH}`, "HEAD"], { cwd: rootDirectory, encoding: "utf8" }).trim();
+        return execFileSync("git", ["rev-parse", `--short=${SHORT_GIT_SHA_LENGTH}`, "HEAD"], {
+            cwd: rootDirectory,
+            encoding: "utf8",
+        }).trim();
     } catch {
         return "unknown";
     }
 }
 
+const PDFLY_WASM_RUNTIME_ASSETS = ["qpdf.js", "qpdf.wasm", "ghostscript.js", "ghostscript.wasm"] as const;
+
 /**
- * Emits `qpdf.wasm` into the client build's assets directory so that the
- * Emscripten runtime in `qpdf.js` can fetch it at `<origin>/assets/qpdf.wasm`.
+ * Emits the Emscripten runtime files into the client build's assets directory.
  *
- * Vite automatically emits `qpdf.js` (via the `new URL(…, import.meta.url)`
- * pattern in module-loader.ts) but it cannot statically trace the `.wasm`
- * binary that Emscripten fetches at runtime — hence it must be explicitly
- * emitted here. The desktop app uses the same strategy.
+ * The WASM module loader computes runtime URLs relative to the bundled chunk
+ * URL and imports the generated Emscripten `.js` files with `@vite-ignore`.
+ * Because Vite cannot trace those ignored dynamic imports, these files must be
+ * present at fixed `/assets/*` URLs in production preview/build output.
  *
  * `applyToEnvironment` limits the hook to the "client" environment so the
- * binary is not duplicated into the server bundle.
+ * runtime files are not duplicated into the server bundle.
  */
-function copyQpdfWasmPlugin(): Plugin {
+function copyPdflyWasmRuntimeAssetsPlugin(): Plugin {
     return {
-        name: "copy-qpdf-wasm",
+        name: "copy-wasm-assets",
         apply: "build",
         applyToEnvironment(environment) {
             return environment.name === "client";
         },
         async generateBundle() {
-            const wasmPath = resolve(rootDirectory, "packages/pdfly-wasm/dist/qpdf.wasm");
-            const source = await readFile(wasmPath);
+            for (const assetFileName of PDFLY_WASM_RUNTIME_ASSETS) {
+                const assetPath = resolve(rootDirectory, "packages/pdfly-wasm/dist", assetFileName);
+                const source = await readFile(assetPath);
 
-            this.emitFile({
-                type: "asset",
-                // Fixed path (no hash) so Emscripten can resolve it relative to
-                // the hashed `qpdf-[hash].js` script that lives in the same dir.
-                fileName: "assets/qpdf.wasm",
-                source,
-            });
+                this.emitFile({
+                    type: "asset",
+                    fileName: `assets/${assetFileName}`,
+                    source,
+                });
+            }
         },
     };
 }
@@ -70,7 +74,7 @@ export default defineConfig(({ mode }) => {
     return {
         plugins: [
             tailwindcss(),
-            copyQpdfWasmPlugin(),
+            copyPdflyWasmRuntimeAssetsPlugin(),
             !isTest &&
                 codeInspectorPlugin({
                     bundler: "vite",

@@ -1,6 +1,10 @@
 import { beforeEach } from "vitest";
-import { resetModule } from "../core/module-loader.js";
+import { resetQpdfModule } from "../engines/qpdf/module-loader.js";
+import { resetGhostscriptModule } from "../engines/ghostscript/module-loader.js";
+import { resetGhostscriptRuntime } from "../engines/ghostscript/execution.js";
 
 beforeEach(() => {
-    resetModule();
+    resetQpdfModule();
+    resetGhostscriptModule();
+    resetGhostscriptRuntime();
 });

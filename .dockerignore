@@ -1,0 +1,15 @@
+.git
+.github
+.turbo
+node_modules
+.pnpm-store
+dist
+build
+coverage
+apps/*/dist
+apps/*/.turbo
+packages/*/dist
+packages/*/build
+packages/*/.turbo
+packages/*/.tmp
+vendor/

@@ -1,5 +1,5 @@
 import { formatBytes } from "@pdfly/wasm";
-import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@pdfly/wasm/render";
+import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@pdfly/pdf-render";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,7 +25,7 @@ import {
     makeArchiveName,
     makePageJpgName,
     pdfBaseName,
-} from "@/utils/pdfToolUtils.utils";
+} from "@/utils/pdfTool.utils";
 
 interface RenderPagesToJpgSettings {
     qualityPercent: number;

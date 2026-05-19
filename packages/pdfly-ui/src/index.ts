@@ -1,9 +1,10 @@
 import "./styles.css";
 import { zip } from "fflate";
 import type { ExtractedImage } from "@pdfly/wasm";
-import type { PdfPageJpg } from "@pdfly/wasm/render";
-import { extractImages, formatBytes, getQpdfVersion, mergePdfs, optimizePdf, splitPdf } from "@pdfly/wasm";
-import { renderPdfPagesToJpg } from "@pdfly/wasm/render";
+import type { PdfPageJpg } from "@pdfly/pdf-render";
+import { compressPdf, extractImages, formatBytes, mergePdfs, splitPdf } from "@pdfly/wasm";
+import { getQpdfVersion } from "@pdfly/wasm/qpdf";
+import { renderPdfPagesToJpg } from "@pdfly/pdf-render";
 
 export function initApp(): void {
     const SPLIT_LIST_PAGE_SIZE = 10;
@@ -136,7 +137,7 @@ export function initApp(): void {
             };
 
             const startTime = performance.now();
-            const result = await optimizePdf(arrayBuffer, options);
+            const result = await compressPdf(arrayBuffer, { engine: "qpdf", ...options });
             const elapsedSeconds = (performance.now() - startTime) / 1000;
             const savingsPercent = ((result.savedBytes / result.originalSize) * 100).toFixed(1);
 

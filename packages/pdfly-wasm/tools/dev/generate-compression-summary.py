@@ -1,0 +1,138 @@
+"""
+Reads test-report/compression-results.xml and writes a markdown summary to:
+  - test-report/compression-summary.md
+  - $GITHUB_STEP_SUMMARY (when running in GitHub Actions)
+
+Optional --baseline <path> compares current results against a previous XML file
+and shows regression indicators in the table.
+"""
+
+import argparse
+import os
+import sys
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+REPORT_DIR = Path(__file__).resolve().parents[2] / "test-report"
+XML_PATH = REPORT_DIR / "compression-results.xml"
+MD_PATH = REPORT_DIR / "compression-summary.md"
+
+SCENARIOS = [
+    ("simple-recommended", "Recommended"),
+    ("simple-smallest", "Smallest file"),
+    ("simple-best-quality", "Best quality"),
+]
+
+
+def fmt_bytes(b: int) -> str:
+    if b < 1024:
+        return f"{b} B"
+    if b < 1024 * 1024:
+        return f"{b / 1024:.1f} KB"
+    return f"{b / 1024 / 1024:.2f} MB"
+
+
+def parse_xml(path: Path) -> dict:
+    """Return {(file_name, scenario): {"compressedBytes": int} | {"status": "wasm-abort"}}"""
+    root = ET.parse(path).getroot()
+    results: dict = {}
+    for f in root.findall("file"):
+        name = f.get("name", "")
+        for r in f.findall("result"):
+            scenario = r.get("scenario") or r.get("preset", "")
+            if r.get("status") == "wasm-abort":
+                results[(name, scenario)] = {"status": "wasm-abort"}
+            else:
+                results[(name, scenario)] = {"compressedBytes": int(r.get("compressedBytes", "0"))}
+    return results
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--baseline", type=Path, help="Path to baseline compression-results.xml for regression comparison")
+    args = parser.parse_args()
+
+    if not XML_PATH.exists():
+        print(f"No report found at {XML_PATH}, skipping summary.", file=sys.stderr)
+        return
+
+    root = ET.parse(XML_PATH).getroot()
+    baseline = parse_xml(args.baseline) if args.baseline and args.baseline.exists() else None
+
+    # When no baseline is available we always post (first run, informational).
+    # When a baseline exists we only post if at least one result changed.
+    has_changes = baseline is None
+
+    title = "## Compression Results" + (" (vs master)" if baseline else "")
+    no_baseline_note = "" if baseline else "\n> ℹ️ No master baseline available\n"
+    scenario_header = " | ".join(label for _, label in SCENARIOS)
+    scenario_separator = "|".join("-" * (len(label) + 2) for _, label in SCENARIOS)
+    lines = [
+        f"{title}\n",
+        "| File | Original | " + scenario_header + " |",
+        "|------|----------|" + scenario_separator + "|",
+    ]
+
+    for f in root.findall("file"):
+        name = f.get("name", "")
+        orig = fmt_bytes(int(f.get("originalBytes", "0")))
+        cells = []
+        for scenario, _ in SCENARIOS:
+            r = next((r for r in f.findall("result") if (r.get("scenario") or r.get("preset")) == scenario), None)
+            if r is None:
+                cells.append("—")
+            elif r.get("status") == "wasm-abort":
+                cells.append("⚠️ skip")
+            else:
+                cb = int(r.get("compressedBytes", "0"))
+                pct = float(r.get("percentageSaved", "0"))
+                sign = "-" if pct > 0 else "+"
+                cell = f"{fmt_bytes(cb)} ({sign}{abs(pct):.1f}%)"
+
+                if baseline is not None:
+                    base = baseline.get((name, scenario))
+                    if base is None:
+                        cell += " 🆕"
+                        has_changes = True
+                    elif base.get("status") == "wasm-abort":
+                        cell += " 🟢"  # was failing before, now works
+                        has_changes = True
+                    else:
+                        delta = cb - base["compressedBytes"]
+                        if delta == 0:
+                            cell += " ✅"
+                        elif delta > 0:
+                            cell += f" ⚠️ (+{fmt_bytes(delta)})"
+                            has_changes = True
+                        else:
+                            cell += f" 🟢 (-{fmt_bytes(abs(delta))})"
+                            has_changes = True
+
+                cells.append(cell)
+        lines.append(f"| {name} | {orig} | {' | '.join(cells)} |")
+
+    if baseline is not None:
+        lines.append("\n> ✅ unchanged &nbsp;|&nbsp; 🟢 improved &nbsp;|&nbsp; ⚠️ regression &nbsp;|&nbsp; 🆕 new fixture")
+
+    content = no_baseline_note + "\n".join(lines) + "\n"
+
+    REPORT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Always write to the CI step summary so engineers can inspect results.
+    step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if step_summary:
+        with open(step_summary, "a", encoding="utf-8") as fh:
+            fh.write(content)
+        print("Appended to $GITHUB_STEP_SUMMARY")
+
+    # Only write the markdown file (consumed by the PR comment step) when
+    # something actually changed vs the baseline.
+    if has_changes:
+        MD_PATH.write_text(content, encoding="utf-8")
+        print(f"Written {MD_PATH}")
+    else:
+        print("No compression changes detected — skipping PR comment.")
+
+
+if __name__ == "__main__":
+    main()

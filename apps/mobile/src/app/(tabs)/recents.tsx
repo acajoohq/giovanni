@@ -41,10 +41,7 @@ export default function RecentsScreen() {
   return (
     <View style={styles.screen}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <Text style={styles.eyebrow}>Local history</Text>
-          <Text style={styles.title}>Recent scans</Text>
-        </View>
+        <Text style={styles.title}>Recents</Text>
 
         {isLoading ? (
           <View style={styles.empty}>
@@ -53,7 +50,7 @@ export default function RecentsScreen() {
         ) : scans.length === 0 ? (
           <View style={styles.empty}>
             <Text style={styles.emptyTitle}>No scans yet</Text>
-            <Text style={styles.emptyText}>Capture or import a document to build a local before/after history.</Text>
+            <Text style={styles.emptyText}>Scanned documents appear here.</Text>
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
@@ -80,26 +77,15 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    gap: 18,
+    gap: 16,
     paddingBottom: 92,
-    paddingHorizontal: 18,
-    paddingTop: 10,
-  },
-  header: {
-    gap: 4,
-  },
-  eyebrow: {
-    color: '#A7B2BA',
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.7,
-    textTransform: 'uppercase',
+    paddingHorizontal: 16,
+    paddingTop: 12,
   },
   title: {
     color: '#F5F7F2',
-    fontSize: 34,
-    fontWeight: '900',
-    letterSpacing: 0,
+    fontSize: 28,
+    fontWeight: '700',
   },
   list: {
     gap: 14,

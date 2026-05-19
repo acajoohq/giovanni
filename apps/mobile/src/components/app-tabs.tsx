@@ -21,7 +21,7 @@ export default function AppTabs() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Scan',
+          title: 'Capture',
           tabBarIcon: ({ color }) => (
             <Image source={require('@/assets/images/tabIcons/home.png')} style={[styles.icon, { tintColor: color }]} />
           ),

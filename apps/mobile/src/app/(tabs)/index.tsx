@@ -1,8 +1,16 @@
 import * as ImagePicker from 'expo-image-picker';
+import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Camera,
   CommonResolutions,
@@ -11,18 +19,13 @@ import {
   usePhotoOutput,
 } from 'react-native-vision-camera';
 
-import { ModelPicker } from '@/components/scanner/ModelPicker';
-import { ProcessingResolutionPicker } from '@/components/scanner/ProcessingResolutionPicker';
-import { ScanCard } from '@/components/scanner/ScanCard';
-import { ScannerButton } from '@/components/scanner/ScannerButton';
-import { StatusPill } from '@/components/scanner/StatusPill';
+import { DocumentScanFrame } from '@/components/scanner/DocumentScanFrame';
+import { ScannerSettingsSheet } from '@/components/scanner/ScannerSettingsSheet';
+import { BottomTabInset } from '@/constants/theme';
 import { invalidateDocScannerSession } from '@/lib/model/docscannerModel';
-import { getDocScannerModelOption } from '@/lib/model/docscannerModel.constants';
 import type { DocScannerModelId } from '@/lib/model/docscannerModel.types';
-import { getProcessingLongEdgeOption } from '@/lib/scanner/processingResolution.constants';
-import type { ProcessingLongEdge } from '@/lib/scanner/processingResolution.constants';
-import type { ScanRecord, ScanSource, ScanTiming } from '@/lib/scanner/scan.types';
-import { CAMERA_PREVIEW_ASPECT_RATIO } from '@/lib/scanner/scan.constants';
+import type { ScanSource } from '@/lib/scanner/scan.types';
+import { DOCUMENT_CAPTURE_ASPECT_RATIO } from '@/lib/scanner/scan.constants';
 import { processScan } from '@/lib/scanner/processScan';
 import {
   getMaxProcessingLongEdge,
@@ -32,9 +35,11 @@ import {
   setSelectedDocScannerModelId,
 } from '@/lib/storage/scannerSettings.repository';
 import { initializeScansRepository } from '@/lib/storage/scans.repository';
+import type { ProcessingLongEdge } from '@/lib/scanner/processingResolution.constants';
 
 export default function ScanScreen() {
-  const device = useCameraDevice('back');
+  const insets = useSafeAreaInsets();
+  const device = useCameraDevice('back', { physicalDevices: ['wide-angle'] });
   const { hasPermission, requestPermission } = useCameraPermission();
   const photoOutput = usePhotoOutput({
     targetResolution: CommonResolutions.FHD_4_3,
@@ -43,14 +48,15 @@ export default function ScanScreen() {
     qualityPrioritization: 'balanced',
   });
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processingLabel, setProcessingLabel] = useState('Ready');
+  const [processingLabel, setProcessingLabel] = useState('Processing…');
   const [error, setError] = useState<string | null>(null);
-  const [lastTimings, setLastTimings] = useState<ScanTiming[]>([]);
-  const [lastScan, setLastScan] = useState<ScanRecord | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedModelId, setSelectedModelId] = useState<DocScannerModelId | null>(null);
   const [maxProcessingLongEdge, setMaxProcessingLongEdgeState] = useState<ProcessingLongEdge | null>(
     null,
   );
+
+  const bottomInset = insets.bottom + BottomTabInset;
 
   const canCapture = useMemo(
     () => hasPermission && device && !isProcessing && Platform.OS !== 'web',
@@ -59,9 +65,7 @@ export default function ScanScreen() {
 
   useEffect(() => {
     Promise.all([initializeScansRepository(), initializeScannerSettings()])
-      .then(() =>
-        Promise.all([getSelectedDocScannerModelId(), getMaxProcessingLongEdge()]),
-      )
+      .then(() => Promise.all([getSelectedDocScannerModelId(), getMaxProcessingLongEdge()]))
       .then(([modelId, processingLongEdge]) => {
         setSelectedModelId(modelId);
         setMaxProcessingLongEdgeState(processingLongEdge);
@@ -70,6 +74,12 @@ export default function ScanScreen() {
         setError(initError instanceof Error ? initError.message : 'Could not open scan storage.');
       });
   }, []);
+
+  useEffect(() => {
+    if (!hasPermission) {
+      requestPermission();
+    }
+  }, [hasPermission, requestPermission]);
 
   async function handleProcessingLongEdgeChange(value: ProcessingLongEdge) {
     setMaxProcessingLongEdgeState(value);
@@ -98,27 +108,19 @@ export default function ScanScreen() {
     }
   }
 
-  useEffect(() => {
-    if (!hasPermission) {
-      requestPermission();
-    }
-  }, [hasPermission, requestPermission]);
-
   async function processUri(uri: string, source: ScanSource) {
     setError(null);
     setIsProcessing(true);
     setProcessingLabel('Preparing image');
 
     try {
-      const result = await processScan(uri, source);
-      setLastScan(result.scan);
-      setLastTimings(result.timings);
+      await processScan(uri, source);
       router.push('/recents');
     } catch (scanError) {
       setError(scanError instanceof Error ? scanError.message : 'Scan failed.');
     } finally {
       setIsProcessing(false);
-      setProcessingLabel('Ready');
+      setProcessingLabel('Processing…');
     }
   }
 
@@ -127,7 +129,7 @@ export default function ScanScreen() {
       return;
     }
 
-    setProcessingLabel('Capturing document');
+    setProcessingLabel('Capturing');
     const photo = await photoOutput.capturePhotoToFile({ flashMode: 'off' }, {});
     await processUri(`file://${photo.filePath}`, 'camera');
   }
@@ -146,161 +148,131 @@ export default function ScanScreen() {
 
   return (
     <View style={styles.screen}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.eyebrow}>On-device rectification</Text>
-            <Text style={styles.title}>Document Scan</Text>
-          </View>
-          <StatusPill label={isProcessing ? 'Working' : 'Ready'} tone={isProcessing ? 'working' : 'ready'} />
-        </View>
-
-        <View style={styles.cameraFrame}>
+      <View style={[styles.previewRegion, { paddingTop: insets.top + 8 }]}>
+        <View style={styles.previewAspect}>
           {hasPermission && device ? (
             <Camera
               device={device}
-              isActive={!isProcessing}
+              isActive={!isProcessing && !settingsOpen}
               outputs={[photoOutput]}
+              orientationSource="interface"
               resizeMode="cover"
+              implementationMode={Platform.OS === 'android' ? 'compatible' : undefined}
               style={StyleSheet.absoluteFill}
             />
           ) : (
             <View style={styles.cameraFallback}>
               <Text style={styles.cameraFallbackTitle}>Camera unavailable</Text>
               <Text style={styles.cameraFallbackText}>
-                Grant camera permission or import an image from your gallery.
+                Allow camera access, or import a photo from your library.
               </Text>
             </View>
           )}
-          <View style={styles.scanGuide} pointerEvents="none" />
+          <DocumentScanFrame />
         </View>
+      </View>
 
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
-        <View style={styles.controls}>
-          <ScannerButton label="Capture" disabled={!canCapture} onPress={captureDocument} />
-          <ScannerButton label="Import image" tone="secondary" disabled={isProcessing} onPress={pickDocument} />
-        </View>
-
-        <View style={styles.statusPanel}>
-          {selectedModelId ? (
-            <ModelPicker
-              value={selectedModelId}
-              onChange={handleModelChange}
-              disabled={isProcessing}
-            />
-          ) : null}
-          {maxProcessingLongEdge ? (
-            <ProcessingResolutionPicker
-              value={maxProcessingLongEdge}
-              onChange={handleProcessingLongEdgeChange}
-              disabled={isProcessing}
-            />
-          ) : null}
-          {isProcessing ? (
-            <View style={styles.processingRow}>
-              <ActivityIndicator color="#E7FF5F" />
-              <Text style={styles.statusText}>{processingLabel}</Text>
-            </View>
+      <View style={[styles.topBar, { top: insets.top + 8 }]}>
+        <Pressable
+          accessibilityLabel="Scanner options"
+          accessibilityRole="button"
+          hitSlop={12}
+          onPress={() => setSettingsOpen(true)}
+          style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
+          {Platform.OS === 'ios' ? (
+            <SymbolView name="slider.horizontal.3" size={22} tintColor="#F4F7F4" weight="medium" />
           ) : (
-            <Text style={styles.statusText}>
-              {selectedModelId && maxProcessingLongEdge
-                ? `Using ${getDocScannerModelOption(selectedModelId).label} at ${getProcessingLongEdgeOption(maxProcessingLongEdge).label} map resolution (${maxProcessingLongEdge}px long edge).`
-                : 'Capture or import a document. Recent scans keep both original and rectified images.'}
-            </Text>
+            <Text style={styles.iconButtonLabel}>Options</Text>
           )}
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          {lastTimings.length > 0 ? (
-            <Text style={styles.timingText}>
-              Last run: {lastTimings.map((timing) => `${timing.label} ${timing.ms}ms`).join(' / ')}
-            </Text>
-          ) : null}
-        </View>
+        </Pressable>
+      </View>
 
-        {lastScan ? (
-          <View style={styles.latestPanel}>
-            <View style={styles.latestHeader}>
-              <View>
-                <Text style={styles.latestTitle}>Latest scan saved</Text>
-                <Text style={styles.latestSubtitle}>
-                  {lastScan.status === 'fallback' ? 'Fallback image stored' : 'Rectified image stored'}
-                </Text>
-              </View>
-              <ScannerButton label="Open" tone="secondary" onPress={() => router.push('/recents')} />
-            </View>
-            <ScanCard
-              scan={lastScan}
-              onPress={() =>
-                router.push({ pathname: '/scan/[scanId]', params: { scanId: lastScan.id } })
-              }
-            />
-          </View>
-        ) : null}
-        </ScrollView>
-      </SafeAreaView>
+      <View style={[styles.bottomBar, { paddingBottom: bottomInset }]}>
+        <Pressable
+          accessibilityLabel="Import from library"
+          accessibilityRole="button"
+          disabled={isProcessing}
+          onPress={pickDocument}
+          style={({ pressed }) => [
+            styles.sideButton,
+            isProcessing && styles.sideButtonDisabled,
+            pressed && !isProcessing && styles.iconButtonPressed,
+          ]}>
+          {Platform.OS === 'ios' ? (
+            <SymbolView name="photo.on.rectangle" size={26} tintColor="#F4F7F4" weight="medium" />
+          ) : (
+            <Text style={styles.sideButtonLabel}>Import</Text>
+          )}
+        </Pressable>
+
+        <Pressable
+          accessibilityLabel="Capture document"
+          accessibilityRole="button"
+          disabled={!canCapture}
+          onPress={captureDocument}
+          style={({ pressed }) => [
+            styles.shutterOuter,
+            !canCapture && styles.shutterDisabled,
+            pressed && canCapture && styles.shutterPressed,
+          ]}>
+          <View style={styles.shutterInner} />
+        </Pressable>
+
+        <View style={styles.sideButton} />
+      </View>
+
+      {isProcessing ? (
+        <View style={styles.processingOverlay}>
+          <ActivityIndicator color="#E7FF5F" size="large" />
+          <Text style={styles.processingLabel}>{processingLabel}</Text>
+        </View>
+      ) : null}
+
+      {error ? (
+        <View style={[styles.errorBanner, { bottom: bottomInset + 88 }]}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      ) : null}
+
+      <ScannerSettingsSheet
+        visible={settingsOpen}
+        selectedModelId={selectedModelId}
+        maxProcessingLongEdge={maxProcessingLongEdge}
+        disabled={isProcessing}
+        onClose={() => setSettingsOpen(false)}
+        onModelChange={handleModelChange}
+        onProcessingLongEdgeChange={handleProcessingLongEdgeChange}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: '#0B0F12',
+    backgroundColor: '#000',
     flex: 1,
   },
-  safeArea: {
+  previewRegion: {
     flex: 1,
-    paddingHorizontal: 18,
-    paddingTop: 10,
+    justifyContent: 'center',
   },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    gap: 18,
-    paddingBottom: 108,
-    paddingTop: 18,
-  },
-  header: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  eyebrow: {
-    color: '#A7B2BA',
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.7,
-    textTransform: 'uppercase',
-  },
-  title: {
-    color: '#F5F7F2',
-    fontSize: 34,
-    fontWeight: '900',
-    letterSpacing: 0,
-    marginTop: 4,
-  },
-  cameraFrame: {
-    aspectRatio: CAMERA_PREVIEW_ASPECT_RATIO,
-    backgroundColor: '#050708',
-    borderColor: '#29323B',
-    borderRadius: 8,
-    borderWidth: 1,
+  previewAspect: {
+    aspectRatio: DOCUMENT_CAPTURE_ASPECT_RATIO,
+    backgroundColor: '#000',
     overflow: 'hidden',
     width: '100%',
   },
   cameraFallback: {
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
-    flex: 1,
+    backgroundColor: '#0B0F12',
     justifyContent: 'center',
-    padding: 24,
+    padding: 32,
   },
   cameraFallbackTitle: {
     color: '#F4F7F4',
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: 18,
+    fontWeight: '700',
   },
   cameraFallbackText: {
     color: '#9AA6AF',
@@ -309,65 +281,95 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: 'center',
   },
-  scanGuide: {
-    borderColor: 'rgba(231, 255, 95, 0.82)',
-    borderRadius: 6,
-    borderWidth: 2,
-    bottom: '12%',
-    left: '10%',
+  topBar: {
+    left: 16,
     position: 'absolute',
-    right: '10%',
-    top: '12%',
   },
-  controls: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  statusPanel: {
-    backgroundColor: '#151A1F',
-    borderColor: '#27313A',
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    padding: 14,
-  },
-  processingRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 10,
-  },
-  statusText: {
-    color: '#CED6DC',
-    flex: 1,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  errorText: {
-    color: '#FFB267',
-    fontSize: 12,
-    lineHeight: 17,
-  },
-  timingText: {
-    color: '#7F8B94',
-    fontSize: 11,
-    lineHeight: 16,
-  },
-  latestPanel: {
-    gap: 10,
-  },
-  latestHeader: {
+  bottomBar: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: 28,
+    paddingTop: 8,
   },
-  latestTitle: {
+  iconButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    borderRadius: 22,
+    height: 44,
+    justifyContent: 'center',
+    minWidth: 44,
+    paddingHorizontal: 12,
+  },
+  iconButtonPressed: {
+    opacity: 0.7,
+  },
+  iconButtonLabel: {
     color: '#F4F7F4',
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: 13,
+    fontWeight: '700',
   },
-  latestSubtitle: {
-    color: '#9AA6AF',
-    fontSize: 12,
-    marginTop: 2,
+  sideButton: {
+    alignItems: 'center',
+    height: 48,
+    justifyContent: 'center',
+    width: 64,
+  },
+  sideButtonDisabled: {
+    opacity: 0.4,
+  },
+  sideButtonLabel: {
+    color: '#F4F7F4',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  shutterOuter: {
+    alignItems: 'center',
+    borderColor: '#FFF',
+    borderRadius: 40,
+    borderWidth: 4,
+    height: 76,
+    justifyContent: 'center',
+    width: 76,
+  },
+  shutterDisabled: {
+    opacity: 0.45,
+  },
+  shutterPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.96 }],
+  },
+  shutterInner: {
+    backgroundColor: '#FFF',
+    borderRadius: 30,
+    height: 60,
+    width: 60,
+  },
+  processingOverlay: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    gap: 12,
+    justifyContent: 'center',
+  },
+  processingLabel: {
+    color: '#F4F7F4',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  errorBanner: {
+    backgroundColor: 'rgba(20, 24, 28, 0.92)',
+    borderRadius: 10,
+    left: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    position: 'absolute',
+    right: 16,
+  },
+  errorText: {
+    color: '#FFB267',
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'center',
   },
 });

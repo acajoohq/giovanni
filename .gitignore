@@ -45,7 +45,6 @@ lerna-debug.log*
 # Environment
 .env
 .env.local
-.agents/skills/
 /vendor/
 vendor/qpdf/
 packages/pdfly-wasm/wasm/cmake-build/

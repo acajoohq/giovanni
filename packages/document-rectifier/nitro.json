@@ -1,0 +1,20 @@
+{
+    "$schema": "https://nitro.margelo.com/nitro.schema.json",
+    "cxxNamespace": ["docscanner", "documentrectifier"],
+    "ios": {
+        "iosModuleName": "DocumentRectifier"
+    },
+    "android": {
+        "androidNamespace": ["docscanner", "documentrectifier"],
+        "androidCxxLibName": "DocumentRectifier"
+    },
+    "autolinking": {
+        "DocumentRectifier": {
+            "android": {
+                "language": "kotlin",
+                "implementationClassName": "HybridDocumentRectifier"
+            }
+        }
+    },
+    "ignorePaths": ["node_modules", "lib"]
+}

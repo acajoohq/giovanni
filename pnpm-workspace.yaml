@@ -2,8 +2,11 @@ packages:
     - apps/*
     - packages/*
 allowBuilds:
+    "@shopify/react-native-skia": true
     canvas: true
     esbuild: true
     msw: true
     sharp: true
     workerd: true
+patchedDependencies:
+    onnxruntime-react-native@1.24.3: patches/onnxruntime-react-native@1.24.3.patch

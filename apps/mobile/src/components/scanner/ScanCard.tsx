@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { resolveImageAspectRatio } from '@/lib/scanner/imageAspect.utils';
 import type { ScanRecord } from '@/lib/scanner/scan.types';
 
 interface ScanCardProps {
@@ -10,12 +11,13 @@ interface ScanCardProps {
 
 export function ScanCard({ scan, onPress }: ScanCardProps) {
   const createdAt = new Date(scan.createdAt);
+  const previewAspectRatio = resolveImageAspectRatio(scan.width, scan.height) * 2;
 
   return (
     <Pressable style={({ pressed }) => [styles.card, pressed && styles.pressed]} onPress={onPress}>
-      <View style={styles.previewRow}>
-        <Image source={{ uri: scan.originalUri }} style={styles.preview} contentFit="cover" />
-        <Image source={{ uri: scan.rectifiedUri }} style={styles.preview} contentFit="cover" />
+      <View style={[styles.previewRow, { aspectRatio: previewAspectRatio }]}>
+        <Image source={{ uri: scan.originalUri }} style={styles.preview} contentFit="contain" />
+        <Image source={{ uri: scan.rectifiedUri }} style={styles.preview} contentFit="contain" />
       </View>
       <View style={styles.meta}>
         <View>
@@ -44,7 +46,6 @@ const styles = StyleSheet.create({
     opacity: 0.78,
   },
   previewRow: {
-    aspectRatio: 2.2,
     flexDirection: 'row',
     gap: 1,
   },

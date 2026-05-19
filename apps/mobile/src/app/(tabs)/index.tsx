@@ -22,6 +22,7 @@ import type { DocScannerModelId } from '@/lib/model/docscannerModel.types';
 import { getProcessingLongEdgeOption } from '@/lib/scanner/processingResolution.constants';
 import type { ProcessingLongEdge } from '@/lib/scanner/processingResolution.constants';
 import type { ScanRecord, ScanSource, ScanTiming } from '@/lib/scanner/scan.types';
+import { CAMERA_PREVIEW_ASPECT_RATIO } from '@/lib/scanner/scan.constants';
 import { processScan } from '@/lib/scanner/processScan';
 import {
   getMaxProcessingLongEdge,
@@ -154,11 +155,6 @@ export default function ScanScreen() {
           <StatusPill label={isProcessing ? 'Working' : 'Ready'} tone={isProcessing ? 'working' : 'ready'} />
         </View>
 
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
         <View style={styles.cameraFrame}>
           {hasPermission && device ? (
             <Camera
@@ -179,6 +175,11 @@ export default function ScanScreen() {
           <View style={styles.scanGuide} pointerEvents="none" />
         </View>
 
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
         <View style={styles.controls}>
           <ScannerButton label="Capture" disabled={!canCapture} onPress={captureDocument} />
           <ScannerButton label="Import image" tone="secondary" disabled={isProcessing} onPress={pickDocument} />
@@ -260,6 +261,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     gap: 18,
     paddingBottom: 108,
+    paddingTop: 18,
   },
   header: {
     alignItems: 'flex-start',
@@ -281,12 +283,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   cameraFrame: {
+    aspectRatio: CAMERA_PREVIEW_ASPECT_RATIO,
     backgroundColor: '#050708',
     borderColor: '#29323B',
     borderRadius: 8,
     borderWidth: 1,
-    height: 300,
     overflow: 'hidden',
+    width: '100%',
   },
   cameraFallback: {
     alignItems: 'center',

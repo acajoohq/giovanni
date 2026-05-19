@@ -18,6 +18,7 @@ import { useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-nati
 interface BeforeAfterSliderProps {
   beforeUri: string;
   afterUri: string;
+  aspectRatio?: number;
 }
 
 const MIN_RATIO = 0.08;
@@ -37,7 +38,7 @@ function clampDivider(x: number, width: number) {
   return Math.min(width * MAX_RATIO, Math.max(width * MIN_RATIO, x));
 }
 
-export function BeforeAfterSlider({ beforeUri, afterUri }: BeforeAfterSliderProps) {
+export function BeforeAfterSlider({ beforeUri, afterUri, aspectRatio = 3 / 4 }: BeforeAfterSliderProps) {
   const beforeImage = useImage(beforeUri);
   const afterImage = useImage(afterUri);
 
@@ -78,7 +79,7 @@ export function BeforeAfterSlider({ beforeUri, afterUri }: BeforeAfterSliderProp
   const imagesReady = beforeImage !== null && afterImage !== null;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { aspectRatio }]}>
       <GestureDetector gesture={gesture}>
         <Canvas style={styles.canvas} onSize={canvasSize}>
           <Fill color="#080B0E" />
@@ -90,7 +91,7 @@ export function BeforeAfterSlider({ beforeUri, afterUri }: BeforeAfterSliderProp
                 y={0}
                 width={canvasWidth}
                 height={canvasHeight}
-                fit="cover"
+                fit="contain"
               />
               <Group clip={beforeClip}>
                 <Image
@@ -99,7 +100,7 @@ export function BeforeAfterSlider({ beforeUri, afterUri }: BeforeAfterSliderProp
                   y={0}
                   width={canvasWidth}
                   height={canvasHeight}
-                  fit="cover"
+                  fit="contain"
                 />
               </Group>
               <Rect
@@ -131,7 +132,6 @@ export function BeforeAfterSlider({ beforeUri, afterUri }: BeforeAfterSliderProp
 
 const styles = StyleSheet.create({
   container: {
-    aspectRatio: 3 / 4,
     backgroundColor: '#080B0E',
     borderRadius: 8,
     overflow: 'hidden',

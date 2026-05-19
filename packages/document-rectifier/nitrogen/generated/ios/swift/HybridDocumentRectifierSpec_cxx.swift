@@ -125,9 +125,9 @@ open class HybridDocumentRectifierSpec_cxx {
 
   // Methods
   @inline(__always)
-  public final func prepareInputTensor(sourceUri: std.string) -> bridge.Result_std__shared_ptr_Promise_TensorPrepResult___ {
+  public final func prepareInputTensor(sourceUri: std.string, maxProcessingLongEdge: Double) -> bridge.Result_std__shared_ptr_Promise_TensorPrepResult___ {
     do {
-      let __result = try self.__implementation.prepareInputTensor(sourceUri: String(sourceUri))
+      let __result = try self.__implementation.prepareInputTensor(sourceUri: String(sourceUri), maxProcessingLongEdge: maxProcessingLongEdge)
       let __resultCpp = { () -> bridge.std__shared_ptr_Promise_TensorPrepResult__ in
         let __promise = bridge.create_std__shared_ptr_Promise_TensorPrepResult__()
         let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_TensorPrepResult__(__promise)
@@ -144,9 +144,9 @@ open class HybridDocumentRectifierSpec_cxx {
   }
   
   @inline(__always)
-  public final func prepareE2eInputTensor(sourceUri: std.string) -> bridge.Result_std__shared_ptr_Promise_TensorPrepResult___ {
+  public final func prepareE2eInputTensor(sourceUri: std.string, maxProcessingLongEdge: Double) -> bridge.Result_std__shared_ptr_Promise_TensorPrepResult___ {
     do {
-      let __result = try self.__implementation.prepareE2eInputTensor(sourceUri: String(sourceUri))
+      let __result = try self.__implementation.prepareE2eInputTensor(sourceUri: String(sourceUri), maxProcessingLongEdge: maxProcessingLongEdge)
       let __resultCpp = { () -> bridge.std__shared_ptr_Promise_TensorPrepResult__ in
         let __promise = bridge.create_std__shared_ptr_Promise_TensorPrepResult__()
         let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_TensorPrepResult__(__promise)
@@ -163,9 +163,9 @@ open class HybridDocumentRectifierSpec_cxx {
   }
   
   @inline(__always)
-  public final func remapAndSave(sourceUri: std.string, outputUri: std.string, width: Double, height: Double, flowBuffer: ArrayBuffer) -> bridge.Result_std__shared_ptr_Promise_RectifyResult___ {
+  public final func remapAndSave(sourceUri: std.string, outputUri: std.string, width: Double, height: Double, flowBuffer: ArrayBuffer, maxProcessingLongEdge: Double) -> bridge.Result_std__shared_ptr_Promise_RectifyResult___ {
     do {
-      let __result = try self.__implementation.remapAndSave(sourceUri: String(sourceUri), outputUri: String(outputUri), width: width, height: height, flowBuffer: flowBuffer)
+      let __result = try self.__implementation.remapAndSave(sourceUri: String(sourceUri), outputUri: String(outputUri), width: width, height: height, flowBuffer: flowBuffer, maxProcessingLongEdge: maxProcessingLongEdge)
       let __resultCpp = { () -> bridge.std__shared_ptr_Promise_RectifyResult__ in
         let __promise = bridge.create_std__shared_ptr_Promise_RectifyResult__()
         let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_RectifyResult__(__promise)

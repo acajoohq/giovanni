@@ -32,15 +32,15 @@ abstract class HybridDocumentRectifierSpec: HybridObject() {
   // Methods
   @DoNotStrip
   @Keep
-  abstract fun prepareInputTensor(sourceUri: String): Promise<TensorPrepResult>
+  abstract fun prepareInputTensor(sourceUri: String, maxProcessingLongEdge: Double): Promise<TensorPrepResult>
   
   @DoNotStrip
   @Keep
-  abstract fun prepareE2eInputTensor(sourceUri: String): Promise<TensorPrepResult>
+  abstract fun prepareE2eInputTensor(sourceUri: String, maxProcessingLongEdge: Double): Promise<TensorPrepResult>
   
   @DoNotStrip
   @Keep
-  abstract fun remapAndSave(sourceUri: String, outputUri: String, width: Double, height: Double, flowBuffer: ArrayBuffer): Promise<RectifyResult>
+  abstract fun remapAndSave(sourceUri: String, outputUri: String, width: Double, height: Double, flowBuffer: ArrayBuffer, maxProcessingLongEdge: Double): Promise<RectifyResult>
   
   @DoNotStrip
   @Keep

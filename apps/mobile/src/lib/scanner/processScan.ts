@@ -7,7 +7,10 @@ import {
   remapAndSave,
   saveRectifiedTensor,
 } from '@/lib/native/documentRectifier';
-import { getSelectedDocScannerModelId } from '@/lib/storage/scannerSettings.repository';
+import {
+  getMaxProcessingLongEdge,
+  getSelectedDocScannerModelId,
+} from '@/lib/storage/scannerSettings.repository';
 import {
   copyFallbackRectifiedImage,
   copyOriginalImage,
@@ -33,11 +36,12 @@ export async function processScan(sourceUri: string, source: ScanSource): Promis
 
   const modelId = await getSelectedDocScannerModelId();
   const modelMode = getDocScannerModelMode(modelId);
+  const maxProcessingLongEdge = await getMaxProcessingLongEdge();
 
   try {
     if (modelMode === 'e2e') {
       const prepared = await measureStep('prepare e2e tensor', timings, () =>
-        prepareE2eInputTensor(originalUri),
+        prepareE2eInputTensor(originalUri, maxProcessingLongEdge),
       );
       width = prepared.width;
       height = prepared.height;
@@ -57,7 +61,7 @@ export async function processScan(sourceUri: string, source: ScanSource): Promis
       );
     } else {
       const prepared = await measureStep('prepare tensor', timings, () =>
-        prepareInputTensor(originalUri),
+        prepareInputTensor(originalUri, maxProcessingLongEdge),
       );
       width = prepared.width;
       height = prepared.height;
@@ -74,6 +78,7 @@ export async function processScan(sourceUri: string, source: ScanSource): Promis
           width: prepared.width,
           height: prepared.height,
           flow,
+          maxProcessingLongEdge,
         }),
       );
     }

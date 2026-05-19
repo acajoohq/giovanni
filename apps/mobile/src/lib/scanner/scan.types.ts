@@ -37,6 +37,7 @@ export interface RectifyFlowInput {
   width: number;
   height: number;
   flow: Float32Array;
+  maxProcessingLongEdge: number;
 }
 
 export interface SaveRectifiedTensorInput {

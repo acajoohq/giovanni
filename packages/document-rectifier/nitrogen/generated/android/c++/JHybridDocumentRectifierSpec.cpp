@@ -55,9 +55,9 @@ namespace margelo::nitro::docscanner::documentrectifier {
   
 
   // Methods
-  std::shared_ptr<Promise<TensorPrepResult>> JHybridDocumentRectifierSpec::prepareInputTensor(const std::string& sourceUri) {
-    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* sourceUri */)>("prepareInputTensor");
-    auto __result = method(_javaPart, jni::make_jstring(sourceUri));
+  std::shared_ptr<Promise<TensorPrepResult>> JHybridDocumentRectifierSpec::prepareInputTensor(const std::string& sourceUri, double maxProcessingLongEdge) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* sourceUri */, double /* maxProcessingLongEdge */)>("prepareInputTensor");
+    auto __result = method(_javaPart, jni::make_jstring(sourceUri), maxProcessingLongEdge);
     return [&]() {
       auto __promise = Promise<TensorPrepResult>::create();
       __result->cthis()->addOnResolvedListener([=](const jni::alias_ref<jni::JObject>& __boxedResult) {
@@ -71,9 +71,9 @@ namespace margelo::nitro::docscanner::documentrectifier {
       return __promise;
     }();
   }
-  std::shared_ptr<Promise<TensorPrepResult>> JHybridDocumentRectifierSpec::prepareE2eInputTensor(const std::string& sourceUri) {
-    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* sourceUri */)>("prepareE2eInputTensor");
-    auto __result = method(_javaPart, jni::make_jstring(sourceUri));
+  std::shared_ptr<Promise<TensorPrepResult>> JHybridDocumentRectifierSpec::prepareE2eInputTensor(const std::string& sourceUri, double maxProcessingLongEdge) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* sourceUri */, double /* maxProcessingLongEdge */)>("prepareE2eInputTensor");
+    auto __result = method(_javaPart, jni::make_jstring(sourceUri), maxProcessingLongEdge);
     return [&]() {
       auto __promise = Promise<TensorPrepResult>::create();
       __result->cthis()->addOnResolvedListener([=](const jni::alias_ref<jni::JObject>& __boxedResult) {
@@ -87,9 +87,9 @@ namespace margelo::nitro::docscanner::documentrectifier {
       return __promise;
     }();
   }
-  std::shared_ptr<Promise<RectifyResult>> JHybridDocumentRectifierSpec::remapAndSave(const std::string& sourceUri, const std::string& outputUri, double width, double height, const std::shared_ptr<ArrayBuffer>& flowBuffer) {
-    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* sourceUri */, jni::alias_ref<jni::JString> /* outputUri */, double /* width */, double /* height */, jni::alias_ref<JArrayBuffer::javaobject> /* flowBuffer */)>("remapAndSave");
-    auto __result = method(_javaPart, jni::make_jstring(sourceUri), jni::make_jstring(outputUri), width, height, JArrayBuffer::wrap(flowBuffer));
+  std::shared_ptr<Promise<RectifyResult>> JHybridDocumentRectifierSpec::remapAndSave(const std::string& sourceUri, const std::string& outputUri, double width, double height, const std::shared_ptr<ArrayBuffer>& flowBuffer, double maxProcessingLongEdge) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* sourceUri */, jni::alias_ref<jni::JString> /* outputUri */, double /* width */, double /* height */, jni::alias_ref<JArrayBuffer::javaobject> /* flowBuffer */, double /* maxProcessingLongEdge */)>("remapAndSave");
+    auto __result = method(_javaPart, jni::make_jstring(sourceUri), jni::make_jstring(outputUri), width, height, JArrayBuffer::wrap(flowBuffer), maxProcessingLongEdge);
     return [&]() {
       auto __promise = Promise<RectifyResult>::create();
       __result->cthis()->addOnResolvedListener([=](const jni::alias_ref<jni::JObject>& __boxedResult) {

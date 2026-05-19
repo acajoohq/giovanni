@@ -21,9 +21,12 @@ import kotlin.math.roundToInt
 
 @DoNotStrip
 class HybridDocumentRectifier : HybridDocumentRectifierSpec() {
-  override fun prepareInputTensor(sourceUri: String): Promise<TensorPrepResult> {
+  override fun prepareInputTensor(
+    sourceUri: String,
+    maxProcessingLongEdge: Double,
+  ): Promise<TensorPrepResult> {
     return Promise.async {
-      val source = decodeProcessingBitmap(sourceUri)
+      val source = decodeProcessingBitmap(sourceUri, maxProcessingLongEdge)
       val tensorBitmap = Bitmap.createScaledBitmap(source, ModelSize, ModelSize, true)
       val tensorBuffer = ByteBuffer
         .allocateDirect(TensorLength * BytesPerFloat)
@@ -51,9 +54,12 @@ class HybridDocumentRectifier : HybridDocumentRectifierSpec() {
     }
   }
 
-  override fun prepareE2eInputTensor(sourceUri: String): Promise<TensorPrepResult> {
+  override fun prepareE2eInputTensor(
+    sourceUri: String,
+    maxProcessingLongEdge: Double,
+  ): Promise<TensorPrepResult> {
     return Promise.async {
-      val source = decodeProcessingBitmap(sourceUri)
+      val source = decodeProcessingBitmap(sourceUri, maxProcessingLongEdge)
       val width = source.width
       val height = source.height
       val planeLength = width * height
@@ -88,11 +94,12 @@ class HybridDocumentRectifier : HybridDocumentRectifierSpec() {
     width: Double,
     height: Double,
     flowBuffer: ArrayBuffer,
+    maxProcessingLongEdge: Double,
   ): Promise<RectifyResult> {
     val owningFlowBuffer = flowBuffer.asOwning()
 
     return Promise.async {
-      val source = decodeProcessingBitmap(sourceUri)
+      val source = decodeProcessingBitmap(sourceUri, maxProcessingLongEdge)
       val processingWidth = source.width
       val processingHeight = source.height
       val flow = readFlow(owningFlowBuffer)
@@ -202,12 +209,19 @@ class HybridDocumentRectifier : HybridDocumentRectifierSpec() {
     return flow
   }
 
-  private fun decodeProcessingBitmap(uri: String): Bitmap {
+  private fun resolveMaxProcessingLongEdge(maxProcessingLongEdge: Double): Int {
+    return maxProcessingLongEdge.roundToInt().coerceIn(
+      MinProcessingLongEdge,
+      AbsoluteMaxProcessingLongEdge,
+    )
+  }
+
+  private fun decodeProcessingBitmap(uri: String, maxProcessingLongEdge: Double): Bitmap {
     val path = uriToPath(uri)
     val decoded = BitmapFactory.decodeFile(path)
       ?: throw Error("Unable to decode image: $uri")
     val oriented = applyExifOrientation(decoded, path)
-    val scaled = scaleToMaxLongEdge(oriented, MaxProcessingLongEdge)
+    val scaled = scaleToMaxLongEdge(oriented, resolveMaxProcessingLongEdge(maxProcessingLongEdge))
 
     if (oriented !== decoded) decoded.recycle()
     if (scaled !== oriented) oriented.recycle()
@@ -389,7 +403,8 @@ class HybridDocumentRectifier : HybridDocumentRectifierSpec() {
     const val ModelSize = 288
     const val BytesPerFloat = 4
     const val JpegQuality = 95
-    const val MaxProcessingLongEdge = 2400
+    const val MinProcessingLongEdge = 960
+    const val AbsoluteMaxProcessingLongEdge = 2400
     const val ModelPlaneLength = ModelSize * ModelSize
     const val TensorLength = ModelPlaneLength * 3
     const val FlowLength = ModelPlaneLength * 2

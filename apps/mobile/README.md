@@ -23,9 +23,13 @@ This app uses native packages, so use a development build instead of Expo Go.
   - **Flow FP32** — `docscanner-fp32.onnx` (35 MB). Flow field at 288×288 + native warp. Matches `--model docscanner.onnx`.
 - Do not use fp16/int8 for quality work; the DocScanner fork documents visible quality loss.
 
+### Map resolution (processing long edge)
+
+The **Map long edge** picker caps how large the image is before rectification (independent of camera capture resolution). Presets: **1200 / 1600 / 1920** (default) / **2400** px. Lower values speed up E2E ONNX; the original capture is still shown in before/after.
+
 ### E2E I/O contract
 
-- **Input:** `Float32Array [1, 3, H, W]` — full-resolution RGB in `[0, 1]`, CHW, no normalization (max long edge 2400).
+- **Input:** `Float32Array [1, 3, H, W]` — RGB in `[0, 1]`, CHW, no normalization, at the selected map long edge (≤ 2400).
 - **Output:** `Float32Array [1, 3, H, W]` — rectified RGB in `[0, 1]`.
 
 ### Flow I/O contract (legacy)

@@ -76,24 +76,24 @@ namespace margelo::nitro::docscanner::documentrectifier {
 
   public:
     // Methods
-    inline std::shared_ptr<Promise<TensorPrepResult>> prepareInputTensor(const std::string& sourceUri) override {
-      auto __result = _swiftPart.prepareInputTensor(sourceUri);
+    inline std::shared_ptr<Promise<TensorPrepResult>> prepareInputTensor(const std::string& sourceUri, double maxProcessingLongEdge) override {
+      auto __result = _swiftPart.prepareInputTensor(sourceUri, std::forward<decltype(maxProcessingLongEdge)>(maxProcessingLongEdge));
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
       }
       auto __value = std::move(__result.value());
       return __value;
     }
-    inline std::shared_ptr<Promise<TensorPrepResult>> prepareE2eInputTensor(const std::string& sourceUri) override {
-      auto __result = _swiftPart.prepareE2eInputTensor(sourceUri);
+    inline std::shared_ptr<Promise<TensorPrepResult>> prepareE2eInputTensor(const std::string& sourceUri, double maxProcessingLongEdge) override {
+      auto __result = _swiftPart.prepareE2eInputTensor(sourceUri, std::forward<decltype(maxProcessingLongEdge)>(maxProcessingLongEdge));
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
       }
       auto __value = std::move(__result.value());
       return __value;
     }
-    inline std::shared_ptr<Promise<RectifyResult>> remapAndSave(const std::string& sourceUri, const std::string& outputUri, double width, double height, const std::shared_ptr<ArrayBuffer>& flowBuffer) override {
-      auto __result = _swiftPart.remapAndSave(sourceUri, outputUri, std::forward<decltype(width)>(width), std::forward<decltype(height)>(height), ArrayBufferHolder(flowBuffer));
+    inline std::shared_ptr<Promise<RectifyResult>> remapAndSave(const std::string& sourceUri, const std::string& outputUri, double width, double height, const std::shared_ptr<ArrayBuffer>& flowBuffer, double maxProcessingLongEdge) override {
+      auto __result = _swiftPart.remapAndSave(sourceUri, outputUri, std::forward<decltype(width)>(width), std::forward<decltype(height)>(height), ArrayBufferHolder(flowBuffer), std::forward<decltype(maxProcessingLongEdge)>(maxProcessingLongEdge));
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
       }

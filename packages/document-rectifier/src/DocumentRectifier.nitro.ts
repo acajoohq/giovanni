@@ -16,14 +16,18 @@ export interface RectifyResult {
 
 export interface DocumentRectifier
   extends HybridObject<{ ios: 'swift'; android: 'kotlin' }> {
-  prepareInputTensor(sourceUri: string): Promise<TensorPrepResult>;
-  prepareE2eInputTensor(sourceUri: string): Promise<TensorPrepResult>;
+  prepareInputTensor(sourceUri: string, maxProcessingLongEdge: number): Promise<TensorPrepResult>;
+  prepareE2eInputTensor(
+    sourceUri: string,
+    maxProcessingLongEdge: number,
+  ): Promise<TensorPrepResult>;
   remapAndSave(
     sourceUri: string,
     outputUri: string,
     width: number,
     height: number,
     flowBuffer: ArrayBuffer,
+    maxProcessingLongEdge: number,
   ): Promise<RectifyResult>;
   saveRectifiedTensor(
     tensorBuffer: ArrayBuffer,

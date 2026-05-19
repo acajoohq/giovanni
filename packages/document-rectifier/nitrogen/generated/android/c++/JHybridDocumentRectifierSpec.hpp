@@ -54,9 +54,9 @@ namespace margelo::nitro::docscanner::documentrectifier {
 
   public:
     // Methods
-    std::shared_ptr<Promise<TensorPrepResult>> prepareInputTensor(const std::string& sourceUri) override;
-    std::shared_ptr<Promise<TensorPrepResult>> prepareE2eInputTensor(const std::string& sourceUri) override;
-    std::shared_ptr<Promise<RectifyResult>> remapAndSave(const std::string& sourceUri, const std::string& outputUri, double width, double height, const std::shared_ptr<ArrayBuffer>& flowBuffer) override;
+    std::shared_ptr<Promise<TensorPrepResult>> prepareInputTensor(const std::string& sourceUri, double maxProcessingLongEdge) override;
+    std::shared_ptr<Promise<TensorPrepResult>> prepareE2eInputTensor(const std::string& sourceUri, double maxProcessingLongEdge) override;
+    std::shared_ptr<Promise<RectifyResult>> remapAndSave(const std::string& sourceUri, const std::string& outputUri, double width, double height, const std::shared_ptr<ArrayBuffer>& flowBuffer, double maxProcessingLongEdge) override;
     std::shared_ptr<Promise<RectifyResult>> saveRectifiedTensor(const std::shared_ptr<ArrayBuffer>& tensorBuffer, const std::string& outputUri, double width, double height) override;
 
   private:

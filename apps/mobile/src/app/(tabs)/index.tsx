@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Camera,
@@ -12,17 +12,22 @@ import {
 } from 'react-native-vision-camera';
 
 import { ModelPicker } from '@/components/scanner/ModelPicker';
+import { ProcessingResolutionPicker } from '@/components/scanner/ProcessingResolutionPicker';
 import { ScanCard } from '@/components/scanner/ScanCard';
 import { ScannerButton } from '@/components/scanner/ScannerButton';
 import { StatusPill } from '@/components/scanner/StatusPill';
 import { invalidateDocScannerSession } from '@/lib/model/docscannerModel';
 import { getDocScannerModelOption } from '@/lib/model/docscannerModel.constants';
 import type { DocScannerModelId } from '@/lib/model/docscannerModel.types';
+import { getProcessingLongEdgeOption } from '@/lib/scanner/processingResolution.constants';
+import type { ProcessingLongEdge } from '@/lib/scanner/processingResolution.constants';
 import type { ScanRecord, ScanSource, ScanTiming } from '@/lib/scanner/scan.types';
 import { processScan } from '@/lib/scanner/processScan';
 import {
+  getMaxProcessingLongEdge,
   getSelectedDocScannerModelId,
   initializeScannerSettings,
+  setMaxProcessingLongEdge,
   setSelectedDocScannerModelId,
 } from '@/lib/storage/scannerSettings.repository';
 import { initializeScansRepository } from '@/lib/storage/scans.repository';
@@ -42,6 +47,9 @@ export default function ScanScreen() {
   const [lastTimings, setLastTimings] = useState<ScanTiming[]>([]);
   const [lastScan, setLastScan] = useState<ScanRecord | null>(null);
   const [selectedModelId, setSelectedModelId] = useState<DocScannerModelId | null>(null);
+  const [maxProcessingLongEdge, setMaxProcessingLongEdgeState] = useState<ProcessingLongEdge | null>(
+    null,
+  );
 
   const canCapture = useMemo(
     () => hasPermission && device && !isProcessing && Platform.OS !== 'web',
@@ -50,12 +58,31 @@ export default function ScanScreen() {
 
   useEffect(() => {
     Promise.all([initializeScansRepository(), initializeScannerSettings()])
-      .then(() => getSelectedDocScannerModelId())
-      .then(setSelectedModelId)
+      .then(() =>
+        Promise.all([getSelectedDocScannerModelId(), getMaxProcessingLongEdge()]),
+      )
+      .then(([modelId, processingLongEdge]) => {
+        setSelectedModelId(modelId);
+        setMaxProcessingLongEdgeState(processingLongEdge);
+      })
       .catch((initError: unknown) => {
         setError(initError instanceof Error ? initError.message : 'Could not open scan storage.');
       });
   }, []);
+
+  async function handleProcessingLongEdgeChange(value: ProcessingLongEdge) {
+    setMaxProcessingLongEdgeState(value);
+
+    try {
+      await setMaxProcessingLongEdge(value);
+    } catch (settingsError) {
+      setError(
+        settingsError instanceof Error
+          ? settingsError.message
+          : 'Could not save map resolution preference.',
+      );
+    }
+  }
 
   async function handleModelChange(modelId: DocScannerModelId) {
     setSelectedModelId(modelId);
@@ -127,6 +154,11 @@ export default function ScanScreen() {
           <StatusPill label={isProcessing ? 'Working' : 'Ready'} tone={isProcessing ? 'working' : 'ready'} />
         </View>
 
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
         <View style={styles.cameraFrame}>
           {hasPermission && device ? (
             <Camera
@@ -160,6 +192,13 @@ export default function ScanScreen() {
               disabled={isProcessing}
             />
           ) : null}
+          {maxProcessingLongEdge ? (
+            <ProcessingResolutionPicker
+              value={maxProcessingLongEdge}
+              onChange={handleProcessingLongEdgeChange}
+              disabled={isProcessing}
+            />
+          ) : null}
           {isProcessing ? (
             <View style={styles.processingRow}>
               <ActivityIndicator color="#E7FF5F" />
@@ -167,8 +206,8 @@ export default function ScanScreen() {
             </View>
           ) : (
             <Text style={styles.statusText}>
-              {selectedModelId
-                ? `Using ${getDocScannerModelOption(selectedModelId).label}. Capture or import a document to compare models.`
+              {selectedModelId && maxProcessingLongEdge
+                ? `Using ${getDocScannerModelOption(selectedModelId).label} at ${getProcessingLongEdgeOption(maxProcessingLongEdge).label} map resolution (${maxProcessingLongEdge}px long edge).`
                 : 'Capture or import a document. Recent scans keep both original and rectified images.'}
             </Text>
           )}
@@ -199,6 +238,7 @@ export default function ScanScreen() {
             />
           </View>
         ) : null}
+        </ScrollView>
       </SafeAreaView>
     </View>
   );
@@ -211,10 +251,15 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    gap: 18,
-    paddingBottom: 92,
     paddingHorizontal: 18,
     paddingTop: 10,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    gap: 18,
+    paddingBottom: 108,
   },
   header: {
     alignItems: 'flex-start',
@@ -240,8 +285,7 @@ const styles = StyleSheet.create({
     borderColor: '#29323B',
     borderRadius: 8,
     borderWidth: 1,
-    flex: 1,
-    minHeight: 420,
+    height: 300,
     overflow: 'hidden',
   },
   cameraFallback: {

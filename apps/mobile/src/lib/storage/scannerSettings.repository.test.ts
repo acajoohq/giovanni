@@ -59,4 +59,29 @@ describe('scanner settings repository', () => {
 
     await expect(getSelectedDocScannerModelId()).resolves.toBe('docscanner-e2e-onnx');
   });
+
+  it('returns the default map long edge when nothing is stored', async () => {
+    getAllAsync.mockResolvedValueOnce([]);
+    const { getMaxProcessingLongEdge } = await import('@/lib/storage/scannerSettings.repository');
+
+    await expect(getMaxProcessingLongEdge()).resolves.toBe(1920);
+  });
+
+  it('persists the map long edge preference', async () => {
+    const { setMaxProcessingLongEdge } = await import('@/lib/storage/scannerSettings.repository');
+
+    await setMaxProcessingLongEdge(1200);
+
+    expect(runAsync).toHaveBeenCalledWith(expect.stringContaining('INSERT OR REPLACE INTO app_settings'), [
+      'max_processing_long_edge',
+      '1200',
+    ]);
+  });
+
+  it('ignores invalid stored map long edge values', async () => {
+    getAllAsync.mockResolvedValueOnce([{ value: '99999' }]);
+    const { getMaxProcessingLongEdge } = await import('@/lib/storage/scannerSettings.repository');
+
+    await expect(getMaxProcessingLongEdge()).resolves.toBe(1920);
+  });
 });

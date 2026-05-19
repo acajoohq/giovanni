@@ -8,12 +8,12 @@ tsdown can generate bundles in multiple formats. Default is ESM.
 
 ## Available Formats
 
-| Format | Description | Use Case |
-|--------|-------------|----------|
-| `esm` | ECMAScript Module (default) | Modern Node.js, browsers, Deno |
-| `cjs` | CommonJS | Legacy Node.js, require() |
-| `iife` | Immediately Invoked Function Expression | Browser `<script>` tags |
-| `umd` | Universal Module Definition | AMD, CommonJS, and globals |
+| Format | Description                             | Use Case                       |
+| ------ | --------------------------------------- | ------------------------------ |
+| `esm`  | ECMAScript Module (default)             | Modern Node.js, browsers, Deno |
+| `cjs`  | CommonJS                                | Legacy Node.js, require()      |
+| `iife` | Immediately Invoked Function Expression | Browser `<script>` tags        |
+| `umd`  | Universal Module Definition             | AMD, CommonJS, and globals     |
 
 ## Usage
 
@@ -36,18 +36,18 @@ tsdown --format esm,cjs
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: 'esm',
-})
+    entry: ["src/index.ts"],
+    format: "esm",
+});
 ```
 
 #### Multiple Formats
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+});
 ```
 
 ## Per-Format Configuration
@@ -56,16 +56,16 @@ Override options for specific formats:
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: {
-    esm: {
-      target: ['es2015'],
+    entry: ["src/index.ts"],
+    format: {
+        esm: {
+            target: ["es2015"],
+        },
+        cjs: {
+            target: ["node20"],
+        },
     },
-    cjs: {
-      target: ['node20'],
-    },
-  },
-})
+});
 ```
 
 This allows different targets, platforms, or other settings per format.
@@ -76,13 +76,14 @@ This allows different targets, platforms, or other settings per format.
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+});
 ```
 
 Output:
+
 - `dist/index.mjs` (ESM)
 - `dist/index.cjs` (CJS)
 - `dist/index.d.ts` (Types)
@@ -91,12 +92,12 @@ Output:
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['iife'],
-  globalName: 'MyLib',
-  platform: 'browser',
-  minify: true,
-})
+    entry: ["src/index.ts"],
+    format: ["iife"],
+    globalName: "MyLib",
+    platform: "browser",
+    minify: true,
+});
 ```
 
 Output: `dist/index.global.js` (IIFE with global `MyLib`)
@@ -105,11 +106,11 @@ Output: `dist/index.global.js` (IIFE with global `MyLib`)
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['umd'],
-  globalName: 'MyLib',
-  platform: 'neutral',
-})
+    entry: ["src/index.ts"],
+    format: ["umd"],
+    globalName: "MyLib",
+    platform: "neutral",
+});
 ```
 
 Works with AMD, CommonJS, and browser globals.
@@ -118,37 +119,37 @@ Works with AMD, CommonJS, and browser globals.
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  platform: 'node',
-  dts: true,
-  shims: true, // Add __dirname, __filename for CJS compat
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    platform: "node",
+    dts: true,
+    shims: true, // Add __dirname, __filename for CJS compat
+});
 ```
 
 ### Framework Component Library
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.tsx'],
-  format: ['esm', 'cjs'],
-  deps: {
-    neverBundle: ['react', 'react-dom'], // Don't bundle dependencies
-  },
-  dts: true,
-})
+    entry: ["src/index.tsx"],
+    format: ["esm", "cjs"],
+    deps: {
+        neverBundle: ["react", "react-dom"], // Don't bundle dependencies
+    },
+    dts: true,
+});
 ```
 
 ## Format-Specific Outputs
 
 ### File Extensions
 
-| Format | Extension |
-|--------|-----------|
-| ESM | `.mjs` or `.js` (with `"type": "module"`) |
-| CJS | `.cjs` or `.js` (without `"type": "module"`) |
-| IIFE | `.global.js` |
-| UMD | `.umd.js` |
+| Format | Extension                                    |
+| ------ | -------------------------------------------- |
+| ESM    | `.mjs` or `.js` (with `"type": "module"`)    |
+| CJS    | `.cjs` or `.js` (without `"type": "module"`) |
+| IIFE   | `.global.js`                                 |
+| UMD    | `.umd.js`                                    |
 
 ### Customize Extensions
 
@@ -156,12 +157,12 @@ Use `outExtensions` to override:
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  outExtensions: ({ format }) => ({
-    js: format === 'esm' ? '.js' : '.cjs',
-  }),
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    outExtensions: ({ format }) => ({
+        js: format === "esm" ? ".js" : ".cjs",
+    }),
+});
 ```
 
 ## Tips

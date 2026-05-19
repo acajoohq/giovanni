@@ -9,6 +9,7 @@ tsdown searches for config files automatically in the current directory and pare
 ## Supported File Names
 
 tsdown looks for these files (in order):
+
 - `tsdown.config.ts`
 - `tsdown.config.mts`
 - `tsdown.config.cts`
@@ -25,14 +26,14 @@ tsdown looks for these files (in order):
 
 ```ts
 // tsdown.config.ts
-import { defineConfig } from 'tsdown'
+import { defineConfig } from "tsdown";
 
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-  clean: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+    clean: true,
+});
 ```
 
 ### JavaScript Config
@@ -40,10 +41,10 @@ export default defineConfig({
 ```js
 // tsdown.config.js
 export default {
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-}
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+};
 ```
 
 ### JSON Config
@@ -51,9 +52,9 @@ export default {
 ```json
 // tsdown.config.json
 {
-  "entry": ["src/index.ts"],
-  "format": ["esm", "cjs"],
-  "dts": true
+    "entry": ["src/index.ts"],
+    "format": ["esm", "cjs"],
+    "dts": true
 }
 ```
 
@@ -62,12 +63,12 @@ export default {
 ```json
 // package.json
 {
-  "name": "my-library",
-  "tsdown": {
-    "entry": ["src/index.ts"],
-    "format": ["esm", "cjs"],
-    "dts": true
-  }
+    "name": "my-library",
+    "tsdown": {
+        "entry": ["src/index.ts"],
+        "format": ["esm", "cjs"],
+        "dts": true
+    }
 }
 ```
 
@@ -77,20 +78,20 @@ Build multiple outputs with different settings:
 
 ```ts
 export default defineConfig([
-  {
-    entry: 'src/index.ts',
-    format: ['esm', 'cjs'],
-    platform: 'node',
-    dts: true,
-  },
-  {
-    entry: 'src/browser.ts',
-    format: ['iife'],
-    platform: 'browser',
-    globalName: 'MyLib',
-    minify: true,
-  },
-])
+    {
+        entry: "src/index.ts",
+        format: ["esm", "cjs"],
+        platform: "node",
+        dts: true,
+    },
+    {
+        entry: "src/browser.ts",
+        format: ["iife"],
+        platform: "browser",
+        globalName: "MyLib",
+        minify: true,
+    },
+]);
 ```
 
 Each configuration runs as a separate build.
@@ -101,19 +102,20 @@ Use a function for conditional config:
 
 ```ts
 export default defineConfig((options) => {
-  const isDev = options.watch
+    const isDev = options.watch;
 
-  return {
-    entry: ['src/index.ts'],
-    format: ['esm', 'cjs'],
-    minify: !isDev,
-    sourcemap: isDev,
-    clean: !isDev,
-  }
-})
+    return {
+        entry: ["src/index.ts"],
+        format: ["esm", "cjs"],
+        minify: !isDev,
+        sourcemap: isDev,
+        clean: !isDev,
+    };
+});
 ```
 
 Available options:
+
 - `watch` - Whether watch mode is enabled
 - Other CLI flags passed to config
 
@@ -185,11 +187,11 @@ Build multiple packages with a single config:
 
 ```ts
 export default defineConfig({
-  workspace: 'packages/*',
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-})
+    workspace: "packages/*",
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+});
 ```
 
 Each package directory matching the glob pattern will be built with the same configuration.
@@ -200,33 +202,33 @@ Each package directory matching the glob pattern will be built with the same con
 
 ```ts
 export default defineConfig([
-  // Node.js build
-  {
-    entry: ['src/index.ts'],
-    format: ['esm', 'cjs'],
-    platform: 'node',
-    dts: true,
-  },
-  // Browser build
-  {
-    entry: ['src/browser.ts'],
-    format: ['iife'],
-    platform: 'browser',
-    globalName: 'MyLib',
-  },
-])
+    // Node.js build
+    {
+        entry: ["src/index.ts"],
+        format: ["esm", "cjs"],
+        platform: "node",
+        dts: true,
+    },
+    // Browser build
+    {
+        entry: ["src/browser.ts"],
+        format: ["iife"],
+        platform: "browser",
+        globalName: "MyLib",
+    },
+]);
 ```
 
 ### Development vs Production
 
 ```ts
 export default defineConfig((options) => ({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  minify: !options.watch,
-  sourcemap: options.watch ? true : false,
-  clean: !options.watch,
-}))
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    minify: !options.watch,
+    sourcemap: options.watch ? true : false,
+    clean: !options.watch,
+}));
 ```
 
 ### Monorepo Root Config
@@ -234,13 +236,13 @@ export default defineConfig((options) => ({
 ```ts
 // Root tsdown.config.ts
 export default defineConfig({
-  workspace: 'packages/*',
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-  clean: true,
-  // Shared config for all packages
-})
+    workspace: "packages/*",
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+    clean: true,
+    // Shared config for all packages
+});
 ```
 
 ### Per-Package Override
@@ -248,10 +250,10 @@ export default defineConfig({
 ```ts
 // packages/special/tsdown.config.ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'], // Override: only ESM
-  platform: 'browser', // Override: browser only
-})
+    entry: ["src/index.ts"],
+    format: ["esm"], // Override: only ESM
+    platform: "browser", // Override: browser only
+});
 ```
 
 ## Config Precedence

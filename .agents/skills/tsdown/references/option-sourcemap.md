@@ -21,9 +21,9 @@ tsdown --sourcemap inline
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  sourcemap: true,
-})
+    entry: ["src/index.ts"],
+    sourcemap: true,
+});
 ```
 
 ## Source Map Types
@@ -34,15 +34,17 @@ Generates separate `.map` files:
 
 ```ts
 export default defineConfig({
-  sourcemap: true,  // or 'external'
-})
+    sourcemap: true, // or 'external'
+});
 ```
 
 **Output:**
+
 - `dist/index.mjs`
 - `dist/index.mjs.map`
 
 **Pros:**
+
 - Smaller bundle size
 - Can be excluded from production
 - Faster parsing
@@ -53,18 +55,21 @@ Embeds source maps in the bundle:
 
 ```ts
 export default defineConfig({
-  sourcemap: 'inline',
-})
+    sourcemap: "inline",
+});
 ```
 
 **Output:**
+
 - `dist/index.mjs` (includes source map as data URL)
 
 **Pros:**
+
 - Single file deployment
 - Guaranteed to be available
 
 **Cons:**
+
 - Larger bundle size
 - Exposed in production
 
@@ -74,15 +79,17 @@ Generates map files without reference comment:
 
 ```ts
 export default defineConfig({
-  sourcemap: 'hidden',
-})
+    sourcemap: "hidden",
+});
 ```
 
 **Output:**
+
 - `dist/index.mjs` (no `//# sourceMappingURL` comment)
 - `dist/index.mjs.map`
 
 **Use when:**
+
 - You want maps for error reporting tools
 - But don't want them exposed to users
 
@@ -95,9 +102,9 @@ If `declarationMap` is enabled in `tsconfig.json`, source maps are automatically
 ```json
 // tsconfig.json
 {
-  "compilerOptions": {
-    "declarationMap": true
-  }
+    "compilerOptions": {
+        "declarationMap": true
+    }
 }
 ```
 
@@ -109,21 +116,21 @@ This also generates `.d.ts.map` files for TypeScript declarations.
 
 ```ts
 export default defineConfig((options) => ({
-  entry: ['src/index.ts'],
-  sourcemap: options.watch,  // Only in dev
-  minify: !options.watch,
-}))
+    entry: ["src/index.ts"],
+    sourcemap: options.watch, // Only in dev
+    minify: !options.watch,
+}));
 ```
 
 ### Production with External Maps
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  sourcemap: true,  // External maps
-  minify: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    sourcemap: true, // External maps
+    minify: true,
+});
 ```
 
 Deploy maps to separate error reporting service.
@@ -132,42 +139,43 @@ Deploy maps to separate error reporting service.
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  sourcemap: 'inline',
-})
+    entry: ["src/index.ts"],
+    format: ["esm"],
+    sourcemap: "inline",
+});
 ```
 
 ### Per-Format Source Maps
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: {
-    esm: {
-      sourcemap: true,
+    entry: ["src/index.ts"],
+    format: {
+        esm: {
+            sourcemap: true,
+        },
+        iife: {
+            sourcemap: "inline", // Inline for browser
+        },
     },
-    iife: {
-      sourcemap: 'inline',  // Inline for browser
-    },
-  },
-})
+});
 ```
 
 ### TypeScript Library with Declaration Maps
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  sourcemap: true,
-  dts: {
-    sourcemap: true,  // Enable declaration maps
-  },
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    sourcemap: true,
+    dts: {
+        sourcemap: true, // Enable declaration maps
+    },
+});
 ```
 
 **Output:**
+
 - `dist/index.mjs` + `dist/index.mjs.map`
 - `dist/index.cjs` + `dist/index.cjs.map`
 - `dist/index.d.ts` + `dist/index.d.ts.map`
@@ -188,12 +196,12 @@ export default defineConfig({
 
 ## Performance Impact
 
-| Type | Bundle Size | Parse Speed | Debugging |
-|------|-------------|-------------|-----------|
-| None | Smallest | Fastest | Hard |
-| External | Small | Fast | Easy |
-| Inline | Largest | Slower | Easy |
-| Hidden | Small | Fast | Tools only |
+| Type     | Bundle Size | Parse Speed | Debugging  |
+| -------- | ----------- | ----------- | ---------- |
+| None     | Smallest    | Fastest     | Hard       |
+| External | Small       | Fast        | Easy       |
+| Inline   | Largest     | Slower      | Easy       |
+| Hidden   | Small       | Fast        | Tools only |
 
 ## CLI Examples
 
@@ -223,40 +231,40 @@ tsdown --no-sourcemap
 
 ```ts
 export default defineConfig({
-  sourcemap: true,
-  minify: false,
-})
+    sourcemap: true,
+    minify: false,
+});
 ```
 
 ### Production Build
 
 ```ts
 export default defineConfig({
-  sourcemap: 'external',  // Upload to error service
-  minify: true,
-})
+    sourcemap: "external", // Upload to error service
+    minify: true,
+});
 ```
 
 ### Browser Library
 
 ```ts
 export default defineConfig({
-  format: ['iife'],
-  platform: 'browser',
-  sourcemap: 'inline',  // Self-contained
-  globalName: 'MyLib',
-})
+    format: ["iife"],
+    platform: "browser",
+    sourcemap: "inline", // Self-contained
+    globalName: "MyLib",
+});
 ```
 
 ### Node.js CLI Tool
 
 ```ts
 export default defineConfig({
-  format: ['esm'],
-  platform: 'node',
-  sourcemap: true,
-  shims: true,
-})
+    format: ["esm"],
+    platform: "node",
+    sourcemap: true,
+    shims: true,
+});
 ```
 
 ## Troubleshooting
@@ -274,8 +282,8 @@ Use external source maps instead of inline:
 
 ```ts
 export default defineConfig({
-  sourcemap: true,  // Not 'inline'
-})
+    sourcemap: true, // Not 'inline'
+});
 ```
 
 ### Source Not Found

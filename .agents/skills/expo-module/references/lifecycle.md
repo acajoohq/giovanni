@@ -65,13 +65,14 @@ Register in `expo-module.config.json`:
 
 ```json
 {
-  "apple": {
-    "appDelegateSubscribers": ["MyAppDelegateSubscriber"]
-  }
+    "apple": {
+        "appDelegateSubscribers": ["MyAppDelegateSubscriber"]
+    }
 }
 ```
 
 Result aggregation:
+
 - `didFinishLaunchingWithOptions`: Returns `true` if **any** subscriber returns `true`
 - `didReceiveRemoteNotification`: Priority: `failed` > `newData` > `noData`
 

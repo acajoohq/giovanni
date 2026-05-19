@@ -12,14 +12,11 @@ Use `withAppleZoom` on `Link.Trigger` to zoom the entire trigger element into th
 
 ```tsx
 <Link href="/photo" asChild>
-  <Link.Trigger withAppleZoom>
-    <Pressable>
-      <Image
-        source={{ uri: "https://example.com/thumb.jpg" }}
-        style={{ width: 120, height: 120, borderRadius: 12 }}
-      />
-    </Pressable>
-  </Link.Trigger>
+    <Link.Trigger withAppleZoom>
+        <Pressable>
+            <Image source={{ uri: "https://example.com/thumb.jpg" }} style={{ width: 120, height: 120, borderRadius: 12 }} />
+        </Pressable>
+    </Link.Trigger>
 </Link>
 ```
 
@@ -29,17 +26,14 @@ Wrap only the element that should animate. Siblings outside `Link.AppleZoom` are
 
 ```tsx
 <Link href="/photo" asChild>
-  <Link.Trigger>
-    <Pressable style={{ alignItems: "center" }}>
-      <Link.AppleZoom>
-        <Image
-          source={{ uri: "https://example.com/thumb.jpg" }}
-          style={{ width: 200, aspectRatio: 4 / 3 }}
-        />
-      </Link.AppleZoom>
-      <Text>Caption text (not zoomed)</Text>
-    </Pressable>
-  </Link.Trigger>
+    <Link.Trigger>
+        <Pressable style={{ alignItems: "center" }}>
+            <Link.AppleZoom>
+                <Image source={{ uri: "https://example.com/thumb.jpg" }} style={{ width: 200, aspectRatio: 4 / 3 }} />
+            </Link.AppleZoom>
+            <Text>Caption text (not zoomed)</Text>
+        </Pressable>
+    </Link.Trigger>
 </Link>
 ```
 
@@ -54,17 +48,14 @@ Use `Link.AppleZoomTarget` on the destination screen to align the zoom animation
 import { Link } from "expo-router";
 
 export default function PhotoScreen() {
-  return (
-    <View style={{ flex: 1 }}>
-      <Link.AppleZoomTarget>
-        <Image
-          source={{ uri: "https://example.com/full.jpg" }}
-          style={{ width: "100%", aspectRatio: 4 / 3 }}
-        />
-      </Link.AppleZoomTarget>
-      <Text>Photo details below</Text>
-    </View>
-  );
+    return (
+        <View style={{ flex: 1 }}>
+            <Link.AppleZoomTarget>
+                <Image source={{ uri: "https://example.com/full.jpg" }} style={{ width: "100%", aspectRatio: 4 / 3 }} />
+            </Link.AppleZoomTarget>
+            <Text>Photo details below</Text>
+        </View>
+    );
 }
 ```
 
@@ -76,7 +67,7 @@ For manual control over where the zoom lands on the destination, use `alignmentR
 
 ```tsx
 <Link.AppleZoom alignmentRect={{ x: 0, y: 0, width: 200, height: 300 }}>
-  <Image source={{ uri: "https://example.com/thumb.jpg" }} />
+    <Image source={{ uri: "https://example.com/thumb.jpg" }} />
 </Link.AppleZoom>
 ```
 
@@ -92,8 +83,8 @@ Zoom screens support interactive dismissal gestures by default (pinch, swipe dow
 import { usePreventZoomTransitionDismissal } from "expo-router";
 
 export default function PhotoScreen() {
-  usePreventZoomTransitionDismissal();
-  return <Image source={{ uri: "https://example.com/full.jpg" }} />;
+    usePreventZoomTransitionDismissal();
+    return <Image source={{ uri: "https://example.com/full.jpg" }} />;
 }
 ```
 
@@ -103,12 +94,12 @@ Use `unstable_dismissalBoundsRect` to prevent conflicts with scrollable content:
 
 ```tsx
 usePreventZoomTransitionDismissal({
-  unstable_dismissalBoundsRect: {
-    minX: 0,
-    minY: 0,
-    maxX: 300,
-    maxY: 300,
-  },
+    unstable_dismissalBoundsRect: {
+        minX: 0,
+        minY: 0,
+        maxX: 300,
+        maxY: 300,
+    },
 });
 ```
 
@@ -120,32 +111,32 @@ Zoom transitions work alongside long-press previews:
 
 ```tsx
 <Link href="/photo" asChild>
-  <Link.Trigger withAppleZoom>
-    <Pressable>
-      <Image
-        source={{ uri: "https://example.com/thumb.jpg" }}
-        style={{ width: 120, height: 120 }}
-      />
-    </Pressable>
-  </Link.Trigger>
-  <Link.Preview />
+    <Link.Trigger withAppleZoom>
+        <Pressable>
+            <Image source={{ uri: "https://example.com/thumb.jpg" }} style={{ width: 120, height: 120 }} />
+        </Pressable>
+    </Link.Trigger>
+    <Link.Preview />
 </Link>
 ```
 
 ## Best Practices
 
 **Good use cases:**
+
 - Thumbnail → full image (gallery, profile photos)
 - Card → detail screen with similar visual content
 - Source and destination with similar aspect ratios
 
 **Avoid:**
+
 - Skinny full-width list rows as zoom sources — the transition looks unnatural
 - Mismatched aspect ratios between source and destination without `alignmentRect`
 - Using zoom with sheets or popovers — only works in Stack navigator
 - Hiding the navigation bar — known issues with header visibility during transitions
 
 **Tips:**
+
 - Always provide a close or back button — dismissal gestures are not discoverable
 - If the destination has a zoomable scroll view, use `unstable_dismissalBoundsRect` to avoid gesture conflicts
 - Source view doesn't need to match the tap target — only the `Link.AppleZoom` wrapped element animates

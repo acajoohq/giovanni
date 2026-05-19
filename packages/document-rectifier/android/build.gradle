@@ -135,7 +135,8 @@ repositories {
 }
 
 dependencies {
-  implementation "com.facebook.react:react-native:+"
+  // compileOnly: app already ships react-android; implementation duplicates fbreact specs at dex merge.
+  compileOnly "com.facebook.react:react-native:+"
   implementation project(":react-native-nitro-modules")
   implementation "androidx.exifinterface:exifinterface:1.4.2"
 }

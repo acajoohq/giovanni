@@ -1,18 +1,18 @@
 packages:
-  - apps/*
-  - packages/*
+    - apps/*
+    - packages/*
 
 catalog:
-  eslint-plugin-expo: ^1.0.3
-  oxfmt: ^0.48.0
-  oxlint: ^1.63.0
-  oxlint-config-universe: ^0.0.3
+    eslint-plugin-expo: ^1.0.3
+    oxfmt: ^0.48.0
+    oxlint: ^1.63.0
+    oxlint-config-universe: ^0.0.3
 allowBuilds:
-  '@shopify/react-native-skia': true
-  canvas: true
-  esbuild: true
-  msw: true
-  sharp: true
-  workerd: true
+    "@shopify/react-native-skia": true
+    canvas: true
+    esbuild: true
+    msw: true
+    sharp: true
+    workerd: true
 patchedDependencies:
-  onnxruntime-react-native@1.24.3: patches/onnxruntime-react-native@1.24.3.patch
+    onnxruntime-react-native@1.24.3: patches/onnxruntime-react-native@1.24.3.patch

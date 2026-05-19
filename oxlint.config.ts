@@ -1,7 +1,10 @@
-{
-    "$schema": "./node_modules/oxlint/configuration_schema.json",
-    "extends": ["./oxlintrc.shared.json"],
-    "ignorePatterns": [
+import { defineConfig } from "oxlint";
+
+import shared from "./oxlintrc.shared.ts";
+
+export default defineConfig({
+    extends: [shared],
+    ignorePatterns: [
         "node_modules/**",
         "vendor/**",
         "dist/**",
@@ -14,6 +17,6 @@
         "apps/mobile/ios/**",
         "apps/mobile/.expo/**",
         "packages/*/dist/**",
-        "packages/*/build/**"
-    ]
-}
+        "packages/*/build/**",
+    ],
+});

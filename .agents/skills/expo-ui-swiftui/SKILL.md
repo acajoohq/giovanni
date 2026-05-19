@@ -27,12 +27,12 @@ import { Host, VStack, RNHostView } from "@expo-ui/swift-ui";
 import { Pressable } from "react-native";
 
 <Host matchContents>
-  <VStack>
-    <RNHostView matchContents>
-      // Here, `Pressable` is an RN component so it is wrapped in `RNHostView`.
-      <Pressable />
-    </RNHostView>
-  </VStack>
+    <VStack>
+        <RNHostView matchContents>
+            // Here, `Pressable` is an RN component so it is wrapped in `RNHostView`.
+            <Pressable />
+        </RNHostView>
+    </VStack>
 </Host>;
 ```
 

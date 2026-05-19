@@ -1,6 +1,7 @@
 import { defineConfig } from "oxlint";
 import native from "oxlint-config-universe/native";
-import shared from "../../oxlintrc.shared.json" with { type: "json" };
+
+import shared from "../../oxlintrc.shared.ts";
 
 /**
  * Oxlint port of eslint-config-expo:

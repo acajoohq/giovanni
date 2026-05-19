@@ -20,11 +20,11 @@ tsdown --exports
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-  exports: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+    exports: true,
+});
 ```
 
 ## What Gets Generated
@@ -32,64 +32,68 @@ export default defineConfig({
 ### Single Entry
 
 **Config:**
+
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-  exports: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+    exports: true,
+});
 ```
 
 **Generated in package.json:**
+
 ```json
 {
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
     }
-  }
 }
 ```
 
 ### Multiple Entries
 
 **Config:**
+
 ```ts
 export default defineConfig({
-  entry: {
-    index: 'src/index.ts',
-    utils: 'src/utils.ts',
-  },
-  format: ['esm', 'cjs'],
-  dts: true,
-  exports: true,
-})
+    entry: {
+        index: "src/index.ts",
+        utils: "src/utils.ts",
+    },
+    format: ["esm", "cjs"],
+    dts: true,
+    exports: true,
+});
 ```
 
 **Generated in package.json:**
+
 ```json
 {
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "./utils": {
-      "types": "./dist/utils.d.ts",
-      "import": "./dist/utils.mjs",
-      "require": "./dist/utils.cjs"
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        },
+        "./utils": {
+            "types": "./dist/utils.d.ts",
+            "import": "./dist/utils.mjs",
+            "require": "./dist/utils.cjs"
+        }
     }
-  }
 }
 ```
 
@@ -99,12 +103,12 @@ Include all output files, not just entry points:
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  exports: {
-    all: true,
-  },
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    exports: {
+        all: true,
+    },
+});
 ```
 
 **Result:** All `.mjs`, `.cjs`, and `.d.ts` files will be added to exports.
@@ -117,28 +121,29 @@ Link to source files during development:
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  exports: {
-    devExports: true,
-  },
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    exports: {
+        devExports: true,
+    },
+});
 ```
 
 **Generated:**
+
 ```json
 {
-  "exports": {
-    ".": "./src/index.ts"  // Points to source
-  },
-  "publishConfig": {
     "exports": {
-      ".": {
-        "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs"
-      }
+        ".": "./src/index.ts" // Points to source
+    },
+    "publishConfig": {
+        "exports": {
+            ".": {
+                "import": "./dist/index.mjs",
+                "require": "./dist/index.cjs"
+            }
+        }
     }
-  }
 }
 ```
 
@@ -150,32 +155,34 @@ Use specific condition for dev exports:
 
 ```ts
 export default defineConfig({
-  exports: {
-    devExports: '@my-org/source',
-  },
-})
+    exports: {
+        devExports: "@my-org/source",
+    },
+});
 ```
 
 **Generated:**
+
 ```json
 {
-  "exports": {
-    ".": {
-      "@my-org/source": "./src/index.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+    "exports": {
+        ".": {
+            "@my-org/source": "./src/index.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
     }
-  }
 }
 ```
 
 **Use with TypeScript customConditions:**
+
 ```json
 // tsconfig.json
 {
-  "compilerOptions": {
-    "customConditions": ["@my-org/source"]
-  }
+    "compilerOptions": {
+        "customConditions": ["@my-org/source"]
+    }
 }
 ```
 
@@ -185,19 +192,19 @@ Add custom export mappings:
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  exports: {
-    customExports(pkg, context) {
-      // Add custom export
-      pkg['./foo'] = './dist/foo.js'
+    entry: ["src/index.ts"],
+    exports: {
+        customExports(pkg, context) {
+            // Add custom export
+            pkg["./foo"] = "./dist/foo.js";
 
-      // Add package.json export
-      pkg['./package.json'] = './package.json'
+            // Add package.json export
+            pkg["./package.json"] = "./package.json";
 
-      return pkg
+            return pkg;
+        },
     },
-  },
-})
+});
 ```
 
 ## Common Patterns
@@ -206,42 +213,42 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-  exports: true,
-  clean: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+    exports: true,
+    clean: true,
+});
 ```
 
 ### Multiple Exports with Dev Mode
 
 ```ts
 export default defineConfig({
-  entry: {
-    index: 'src/index.ts',
-    client: 'src/client.ts',
-    server: 'src/server.ts',
-  },
-  format: ['esm', 'cjs'],
-  dts: true,
-  exports: {
-    all: false,  // Only entries
-    devExports: '@my-org/source',
-  },
-})
+    entry: {
+        index: "src/index.ts",
+        client: "src/client.ts",
+        server: "src/server.ts",
+    },
+    format: ["esm", "cjs"],
+    dts: true,
+    exports: {
+        all: false, // Only entries
+        devExports: "@my-org/source",
+    },
+});
 ```
 
 ### Monorepo Package
 
 ```ts
 export default defineConfig({
-  workspace: 'packages/*',
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-  exports: true,  // Generate for each package
-})
+    workspace: "packages/*",
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+    exports: true, // Generate for each package
+});
 ```
 
 ## Validation
@@ -258,9 +265,9 @@ Or in config:
 
 ```ts
 export default defineConfig({
-  exports: true,
-  publint: true,  // Validate exports
-})
+    exports: true,
+    publint: true, // Validate exports
+});
 ```
 
 ## Tips

@@ -12,7 +12,7 @@ pnpm --dir apps/mobile run typecheck
 pnpm --dir apps/mobile run lint
 pnpm --dir apps/mobile run format
 
-Linting is configured in `oxlint.config.ts` ([TypeScript config](https://oxc.rs/docs/guide/usage/linter/config#typescript-config-file-oxlint-configts)): `oxlint-config-universe/native`, `eslint-plugin-expo` via `jsPlugins`, and repo-wide `oxlintrc.shared.json`.
+Linting is configured in `oxlint.config.ts` ([TypeScript config](https://oxc.rs/docs/guide/usage/linter/config#typescript-config-file-oxlint-configts)): `oxlint-config-universe/native`, `eslint-plugin-expo` via `jsPlugins`, and repo-wide `oxlintrc.shared.ts`.
 pnpm --dir apps/mobile run format:check
 pnpm --dir apps/mobile run test
 ```
@@ -23,8 +23,8 @@ This app uses native packages, so use a development build instead of Expo Go.
 
 - Model assets live in `assets/models/`.
 - The scan screen **model picker** compares the two Python ONNX exports from [DocScanner](https://github.com/fh2019ustc/DocScanner) (local fork):
-  - **E2E FP32** (default) — `docscanner-e2e.onnx` (35 MB). Full pipeline in ONNX: image in → rectified out. Matches `uv run infer_onnx.py --model docscanner-e2e.onnx`.
-  - **Flow FP32** — `docscanner-fp32.onnx` (35 MB). Flow field at 288×288 + native warp. Matches `--model docscanner.onnx`.
+    - **E2E FP32** (default) — `docscanner-e2e.onnx` (35 MB). Full pipeline in ONNX: image in → rectified out. Matches `uv run infer_onnx.py --model docscanner-e2e.onnx`.
+    - **Flow FP32** — `docscanner-fp32.onnx` (35 MB). Flow field at 288×288 + native warp. Matches `--model docscanner.onnx`.
 - Do not use fp16/int8 for quality work; the DocScanner fork documents visible quality loss.
 
 ### Map resolution (processing long edge)

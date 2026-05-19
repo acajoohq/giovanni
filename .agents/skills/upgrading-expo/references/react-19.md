@@ -48,12 +48,12 @@ Components can now receive `ref` as a regular prop. `forwardRef` is no longer ne
 import { forwardRef } from "react";
 
 const Input = forwardRef<TextInput, Props>((props, ref) => {
-  return <TextInput ref={ref} {...props} />;
+    return <TextInput ref={ref} {...props} />;
 });
 
 // After (React 19)
 function Input({ ref, ...props }: Props & { ref?: React.Ref<TextInput> }) {
-  return <TextInput ref={ref} {...props} />;
+    return <TextInput ref={ref} {...props} />;
 }
 ```
 

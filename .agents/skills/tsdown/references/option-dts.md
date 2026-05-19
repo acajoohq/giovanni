@@ -7,6 +7,7 @@ Generate `.d.ts` type declaration files for your library.
 tsdown uses [rolldown-plugin-dts](https://github.com/sxzz/rolldown-plugin-dts) to generate and bundle TypeScript declaration files.
 
 **Requirements:**
+
 - TypeScript must be installed in your project
 
 ## Enabling DTS Generation
@@ -14,6 +15,7 @@ tsdown uses [rolldown-plugin-dts](https://github.com/sxzz/rolldown-plugin-dts) t
 ### Auto-Enabled
 
 DTS generation is **automatically enabled** if `package.json` contains:
+
 - `types` field, or
 - `typings` field
 
@@ -29,8 +31,8 @@ tsdown --dts
 
 ```ts
 export default defineConfig({
-  dts: true,
-})
+    dts: true,
+});
 ```
 
 ## Performance
@@ -42,9 +44,9 @@ export default defineConfig({
 ```json
 // tsconfig.json
 {
-  "compilerOptions": {
-    "isolatedDeclarations": true
-  }
+    "compilerOptions": {
+        "isolatedDeclarations": true
+    }
 }
 ```
 
@@ -60,9 +62,9 @@ Map `.d.ts` files back to original `.ts` sources (useful for monorepos).
 
 ```json
 {
-  "compilerOptions": {
-    "declarationMap": true
-  }
+    "compilerOptions": {
+        "declarationMap": true
+    }
 }
 ```
 
@@ -70,10 +72,10 @@ Map `.d.ts` files back to original `.ts` sources (useful for monorepos).
 
 ```ts
 export default defineConfig({
-  dts: {
-    sourcemap: true,
-  },
-})
+    dts: {
+        sourcemap: true,
+    },
+});
 ```
 
 ## Advanced Options
@@ -84,12 +86,12 @@ Override TypeScript compiler options:
 
 ```ts
 export default defineConfig({
-  dts: {
-    compilerOptions: {
-      removeComments: false,
+    dts: {
+        compilerOptions: {
+            removeComments: false,
+        },
     },
-  },
-})
+});
 ```
 
 ## Build Process
@@ -103,13 +105,14 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+});
 ```
 
 Output:
+
 - `dist/index.mjs`
 - `dist/index.cjs`
 - `dist/index.d.ts`
@@ -118,16 +121,17 @@ Output:
 
 ```ts
 export default defineConfig({
-  entry: {
-    index: 'src/index.ts',
-    utils: 'src/utils.ts',
-  },
-  format: ['esm', 'cjs'],
-  dts: true,
-})
+    entry: {
+        index: "src/index.ts",
+        utils: "src/utils.ts",
+    },
+    format: ["esm", "cjs"],
+    dts: true,
+});
 ```
 
 Output:
+
 - `dist/index.mjs`, `dist/index.cjs`, `dist/index.d.ts`
 - `dist/utils.mjs`, `dist/utils.cjs`, `dist/utils.d.ts`
 
@@ -135,12 +139,12 @@ Output:
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: {
-    sourcemap: true, // Enable declaration maps
-  },
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: {
+        sourcemap: true, // Enable declaration maps
+    },
+});
 ```
 
 ### Fast Build (Isolated Declarations)
@@ -148,21 +152,21 @@ export default defineConfig({
 ```json
 // tsconfig.json
 {
-  "compilerOptions": {
-    "isolatedDeclarations": true,
-    "declaration": true,
-    "declarationMap": true
-  }
+    "compilerOptions": {
+        "isolatedDeclarations": true,
+        "declaration": true,
+        "declarationMap": true
+    }
 }
 ```
 
 ```ts
 // tsdown.config.ts
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true, // Will use fast oxc-transform
-})
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true, // Will use fast oxc-transform
+});
 ```
 
 ## Troubleshooting
@@ -193,10 +197,10 @@ Enable Vue component type generation (requires `vue-tsc`):
 
 ```ts
 export default defineConfig({
-  dts: {
-    vue: true,
-  },
-})
+    dts: {
+        vue: true,
+    },
+});
 ```
 
 ### Oxc Transform
@@ -205,10 +209,10 @@ Control Oxc usage for declaration generation:
 
 ```ts
 export default defineConfig({
-  dts: {
-    oxc: true,  // Use oxc-transform (fast, requires isolatedDeclarations)
-  },
-})
+    dts: {
+        oxc: true, // Use oxc-transform (fast, requires isolatedDeclarations)
+    },
+});
 ```
 
 ### Custom TSConfig
@@ -217,24 +221,24 @@ Specify a different tsconfig for DTS generation:
 
 ```ts
 export default defineConfig({
-  dts: {
-    tsconfig: './tsconfig.build.json',
-  },
-})
+    dts: {
+        tsconfig: "./tsconfig.build.json",
+    },
+});
 ```
 
 ## Available DTS Options
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `sourcemap` | `boolean` | Generate declaration source maps |
-| `compilerOptions` | `object` | Override TypeScript compiler options |
-| `vue` | `boolean` | Enable Vue type generation (requires vue-tsc) |
-| `oxc` | `boolean` | Use oxc-transform for fast generation |
-| `tsconfig` | `string` | Path to tsconfig file |
-| `resolver` | `'oxc' \| 'tsc'` | Module resolver: `'oxc'` (default, fast) or `'tsc'` (more compatible) |
-| `cjsDefault` | `boolean` | CJS default export handling |
-| `sideEffects` | `boolean` | Preserve side effects in declarations |
+| Option            | Type             | Description                                                           |
+| ----------------- | ---------------- | --------------------------------------------------------------------- |
+| `sourcemap`       | `boolean`        | Generate declaration source maps                                      |
+| `compilerOptions` | `object`         | Override TypeScript compiler options                                  |
+| `vue`             | `boolean`        | Enable Vue type generation (requires vue-tsc)                         |
+| `oxc`             | `boolean`        | Use oxc-transform for fast generation                                 |
+| `tsconfig`        | `string`         | Path to tsconfig file                                                 |
+| `resolver`        | `'oxc' \| 'tsc'` | Module resolver: `'oxc'` (default, fast) or `'tsc'` (more compatible) |
+| `cjsDefault`      | `boolean`        | CJS default export handling                                           |
+| `sideEffects`     | `boolean`        | Preserve side effects in declarations                                 |
 
 ## Tips
 

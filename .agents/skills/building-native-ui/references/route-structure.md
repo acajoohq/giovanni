@@ -41,7 +41,7 @@ Access query parameters with the `useLocalSearchParams` hook:
 import { useLocalSearchParams } from "expo-router";
 
 function Page() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+    const { id } = useLocalSearchParams<{ id: string }>();
 }
 ```
 
@@ -58,7 +58,7 @@ Access the current pathname with the `usePathname` hook:
 import { usePathname } from "expo-router";
 
 function Component() {
-  const pathname = usePathname(); // e.g. "/users/123"
+    const pathname = usePathname(); // e.g. "/users/123"
 }
 ```
 
@@ -126,27 +126,27 @@ import { useMemo } from "react";
 import Stack from "expo-router/stack";
 
 export const unstable_settings = {
-  index: { anchor: "index" },
-  settings: { anchor: "settings" },
+    index: { anchor: "index" },
+    settings: { anchor: "settings" },
 };
 
 export default function Layout({ segment }: { segment: string }) {
-  const screen = segment.match(/\((.*)\)/)?.[1]!;
+    const screen = segment.match(/\((.*)\)/)?.[1]!;
 
-  const options = useMemo(() => {
-    switch (screen) {
-      case "index":
-        return { headerRight: () => <></> };
-      default:
-        return {};
-    }
-  }, [screen]);
+    const options = useMemo(() => {
+        switch (screen) {
+            case "index":
+                return { headerRight: () => <></> };
+            default:
+                return {};
+        }
+    }, [screen]);
 
-  return (
-    <Stack>
-      <Stack.Screen name={screen} options={options} />
-    </Stack>
-  );
+    return (
+        <Stack>
+            <Stack.Screen name={screen} options={options} />
+        </Stack>
+    );
 }
 ```
 
@@ -177,7 +177,7 @@ Every directory can have a `_layout.tsx` file that wraps all routes in that dire
 import { Stack } from "expo-router/stack";
 
 export default function RootLayout() {
-  return <Stack />;
+    return <Stack />;
 }
 ```
 
@@ -186,14 +186,14 @@ export default function RootLayout() {
 import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
-  return (
-    <NativeTabs>
-      <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
-        <Icon sf="house.fill" />
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
+    return (
+        <NativeTabs>
+            <NativeTabs.Trigger name="index">
+                <Label>Home</Label>
+                <Icon sf="house.fill" />
+            </NativeTabs.Trigger>
+        </NativeTabs>
+    );
 }
 ```
 
@@ -203,7 +203,7 @@ Export `unstable_settings` to configure route behavior:
 
 ```tsx
 export const unstable_settings = {
-  anchor: "index",
+    anchor: "index",
 };
 ```
 
@@ -219,11 +219,11 @@ import { Link } from "expo-router";
 import { View, Text } from "react-native";
 
 export default function NotFound() {
-  return (
-    <View>
-      <Text>Page not found</Text>
-      <Link href="/">Go home</Link>
-    </View>
-  );
+    return (
+        <View>
+            <Text>Page not found</Text>
+            <Link href="/">Go home</Link>
+        </View>
+    );
 }
 ```

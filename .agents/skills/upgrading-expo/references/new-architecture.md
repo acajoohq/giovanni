@@ -26,9 +26,9 @@ New Architecture is enabled by default. To explicitly disable (not recommended):
 
 ```json
 {
-  "expo": {
-    "newArchEnabled": false
-  }
+    "expo": {
+        "newArchEnabled": false
+    }
 }
 ```
 

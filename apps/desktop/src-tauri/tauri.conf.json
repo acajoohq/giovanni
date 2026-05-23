@@ -1,0 +1,29 @@
+{
+    "$schema": "https://schema.tauri.app/config/2",
+    "productName": "giovanni",
+    "version": "0.1.0",
+    "identifier": "com.semoule.giovanni",
+    "build": {
+        "beforeDevCommand": "pnpm --filter web dev",
+        "devUrl": "http://localhost:5173",
+        "beforeBuildCommand": "pnpm --filter web build",
+        "frontendDist": "../../web/dist/client"
+    },
+    "app": {
+        "windows": [
+            {
+                "title": "Giovanni",
+                "width": 800,
+                "height": 600
+            }
+        ],
+        "security": {
+            "csp": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: data: blob:; font-src 'self' data:; worker-src 'self' blob:; connect-src 'self' blob: http://localhost:5173 ws://localhost:5173;"
+        }
+    },
+    "bundle": {
+        "active": true,
+        "targets": "all",
+        "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
+    }
+}

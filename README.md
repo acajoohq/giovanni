@@ -1,15 +1,15 @@
-# Pdfly
+# Giovanni
 
 Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF bytes stay on the device.
 
-**Layout:** [`apps/web`](apps/web) (main UI), [`apps/pdfly-desktop`](apps/pdfly-desktop) (Tauri), [`packages/pdfly-wasm`](packages/pdfly-wasm) (`@pdfly/wasm`), [`packages/pdfly-pdf-render`](packages/pdfly-pdf-render) (`@pdfly/pdf-render`, PDF.js page rasterisation), [`packages/pdfly-ui`](packages/pdfly-ui). Upstream PDF engines are pinned in code and fetched inside Docker builds.
+**Layout:** [`apps/web`](apps/web) (main UI), [`apps/desktop`](apps/desktop) (Tauri), [`packages/pdfly-wasm`](packages/pdfly-wasm) (`@pdfly/wasm`), [`packages/pdfly-pdf-render`](packages/pdfly-pdf-render) (`@pdfly/pdf-render`, PDF.js page rasterisation). Upstream PDF engines are pinned in code and fetched inside Docker builds.
 
 ## Requirements
 
 - Node.js 24+
 - pnpm 10.33+
 - Docker 23+ for WASM vendor builds
-- Rust for Tauri desktop build
+- Rust for Tauri desktop build — install via `rustup` ([instructions](apps/desktop/README.md#rust))
 
 On Windows, use Docker Desktop with Linux containers enabled.
 
@@ -47,12 +47,12 @@ pnpm -F @pdfly/wasm build:qpdf:dev    # qpdf WASM debug-ish Docker build
 pnpm -F @pdfly/wasm build:qpdf:prd    # qpdf WASM optimized Docker build
 pnpm -F @pdfly/wasm build:ghostscript:dev   # Ghostscript WASM Docker build
 pnpm -F @pdfly/wasm build:ghostscript:prd   # optimized Ghostscript WASM Docker build
-pnpm -F pdfly-desktop run tauri dev   # desktop
+pnpm build:desktop                    # Tauri desktop app
 pnpm check                            # types, lint, tests, format
 pnpm validate
 ```
 
-`pnpm -F <pkg> <script>` — packages include `web`, `@pdfly/wasm`, `pdfly-desktop`. See [pnpm-workspace.yaml](pnpm-workspace.yaml).
+`pnpm -F <pkg> <script>` — packages include `web`, `@pdfly/wasm`, `desktop`. See [pnpm-workspace.yaml](pnpm-workspace.yaml).
 
 ## Ghostscript WASM Spike
 

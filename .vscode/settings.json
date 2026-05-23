@@ -1,4 +1,7 @@
 {
+    "rust-analyzer.linkedProjects": [
+        "apps/desktop/src-tauri/Cargo.toml"
+    ],
     "editor.defaultFormatter": "oxc.oxc-vscode",
     "[css]": {
         "editor.defaultFormatter": "oxc.oxc-vscode"

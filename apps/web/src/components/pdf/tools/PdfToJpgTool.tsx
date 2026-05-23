@@ -1,7 +1,8 @@
 import { formatBytes } from "@pdfly/wasm";
 import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@pdfly/pdf-render";
 import { RiAddLine } from "@remixicon/react";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { usePendingFile } from "@/providers/PendingFileProvider";
 import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
@@ -107,6 +108,12 @@ export function PdfToJpgTool() {
         setFile(nextFile);
         void processFile(nextFile);
     };
+
+    const { consumePendingFile } = usePendingFile();
+    useEffect(() => {
+        const pending = consumePendingFile();
+        if (pending) handleFiles([pending]);
+    }, [consumePendingFile]);
 
     const downloadPage = (page: PdfPageJpg) => {
         downloadBlob(page.blob, makePageJpgName(settings.outputPattern, pdfBaseName(file), page.pageIndex));

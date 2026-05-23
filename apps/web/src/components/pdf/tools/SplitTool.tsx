@@ -1,6 +1,7 @@
 import { formatBytes, splitPdf } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { usePendingFile } from "@/providers/PendingFileProvider";
 import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
@@ -88,6 +89,12 @@ export function SplitTool() {
         setFile(nextFile);
         void processFile(nextFile);
     };
+
+    const { consumePendingFile } = usePendingFile();
+    useEffect(() => {
+        const pending = consumePendingFile();
+        if (pending) handleFiles([pending]);
+    }, [consumePendingFile]);
 
     const updateSplitSettings = (patch: Partial<SplitSettings>) => {
         setSplitSettings((currentSettings) => ({ ...currentSettings, ...patch }));

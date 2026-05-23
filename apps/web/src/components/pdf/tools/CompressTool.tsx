@@ -2,7 +2,8 @@ import { compressPdf, formatBytes, type CompressionEngine, type CompressOptions,
 import { QPDF_PRESETS, type DecodeLevel, type ObjectStreamMode, type QpdfOptimizePreset, type WriteOptions } from "@pdfly/wasm/qpdf";
 import { type GhostscriptColorConversionStrategy, type GhostscriptCompatibilityLevel, type GhostscriptPdfSettings } from "@pdfly/wasm/ghostscript";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { usePendingFile } from "@/providers/PendingFileProvider";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { ToolLayout } from "@/components/layout/ToolLayout";
@@ -284,6 +285,12 @@ export function CompressTool() {
             setStatus({ tone: "error", message: error instanceof Error ? error.message : t("common.selectPdf") });
         }
     };
+
+    const { consumePendingFile } = usePendingFile();
+    useEffect(() => {
+        const pending = consumePendingFile();
+        if (pending) void handleFiles([pending]);
+    }, [consumePendingFile]);
 
     const updatePreviewPage = (nextPage: number | ((currentPage: number) => number)) => {
         setPreviewPage((currentPage) => {

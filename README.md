@@ -47,7 +47,7 @@ pnpm -F @pdfly/wasm build:qpdf:dev    # qpdf WASM debug-ish Docker build
 pnpm -F @pdfly/wasm build:qpdf:prd    # qpdf WASM optimized Docker build
 pnpm -F @pdfly/wasm build:ghostscript:dev   # Ghostscript WASM Docker build
 pnpm -F @pdfly/wasm build:ghostscript:prd   # optimized Ghostscript WASM Docker build
-pnpm -F desktop run tauri dev   # desktop
+pnpm build:desktop                    # Tauri desktop app
 pnpm check                            # types, lint, tests, format
 pnpm validate
 ```

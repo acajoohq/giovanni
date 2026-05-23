@@ -121,7 +121,7 @@ jobs:
                       turbo-${{ runner.os }}-
 
             - name: Run build
-              run: pnpm turbo build --filter=!desktop
+              run: pnpm run build
 
             - name: Upload @pdfly/wasm dist artifact
               uses: actions/upload-artifact@v4
@@ -136,7 +136,7 @@ jobs:
                   path: packages/pdfly-pdf-render/dist
 
             - name: Run tests
-              run: pnpm turbo test --filter=!desktop
+              run: pnpm run test
 
             - name: Upload compression results artifact
               uses: actions/upload-artifact@v4

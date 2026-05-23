@@ -129,6 +129,12 @@ jobs:
                   name: pdfly-wasm-dist
                   path: packages/pdfly-wasm/dist
 
+            - name: Upload @pdfly/pdf-render dist artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: pdfly-pdf-render-dist
+                  path: packages/pdfly-pdf-render/dist
+
             - name: Run tests
               run: pnpm turbo test --filter=!desktop
 
@@ -280,6 +286,12 @@ jobs:
               with:
                   name: pdfly-wasm-dist
                   path: packages/pdfly-wasm/dist
+
+            - name: Download @pdfly/pdf-render dist
+              uses: actions/download-artifact@v4
+              with:
+                  name: pdfly-pdf-render-dist
+                  path: packages/pdfly-pdf-render/dist
 
             - name: Install Rust stable
               uses: dtolnay/rust-toolchain@stable

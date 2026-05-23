@@ -1,4 +1,4 @@
-# Pdfly
+# Giovanni
 
 Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF bytes stay on the device.
 
@@ -9,7 +9,7 @@ Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF
 - Node.js 24+
 - pnpm 10.33+
 - Docker 23+ for WASM vendor builds
-- Rust for Tauri desktop build
+- Rust for Tauri desktop build — install via `rustup` ([instructions](apps/desktop/README.md#rust))
 
 On Windows, use Docker Desktop with Linux containers enabled.
 

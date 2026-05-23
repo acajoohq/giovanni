@@ -2,7 +2,7 @@
 
 Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF bytes stay on the device.
 
-**Layout:** [`apps/web`](apps/web) (main UI), [`apps/desktop`](apps/desktop) (Tauri), [`packages/pdfly-wasm`](packages/pdfly-wasm) (`@pdfly/wasm`), [`packages/pdfly-pdf-render`](packages/pdfly-pdf-render) (`@pdfly/pdf-render`, PDF.js page rasterisation), [`packages/pdfly-ui`](packages/pdfly-ui). Upstream PDF engines are pinned in code and fetched inside Docker builds.
+**Layout:** [`apps/web`](apps/web) (main UI), [`apps/desktop`](apps/desktop) (Tauri), [`packages/pdfly-wasm`](packages/pdfly-wasm) (`@pdfly/wasm`), [`packages/pdfly-pdf-render`](packages/pdfly-pdf-render) (`@pdfly/pdf-render`, PDF.js page rasterisation). Upstream PDF engines are pinned in code and fetched inside Docker builds.
 
 ## Requirements
 

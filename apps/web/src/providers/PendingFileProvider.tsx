@@ -27,11 +27,7 @@ export function PendingFileProvider({ children }: { children: ReactNode }) {
         return file;
     }, []);
 
-    return (
-        <PendingFileContext value={{ setPendingFile, consumePendingFile }}>
-            {children}
-        </PendingFileContext>
-    );
+    return <PendingFileContext value={{ setPendingFile, consumePendingFile }}>{children}</PendingFileContext>;
 }
 
 export function usePendingFile() {

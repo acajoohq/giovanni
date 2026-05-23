@@ -50,9 +50,7 @@ function RootDocument({ children, lang }: Readonly<{ children: ReactNode; lang: 
             </head>
             <body>
                 <ThemeProvider defaultTheme="system" storageKey="theme">
-                    <PendingFileProvider>
-                        {children}
-                    </PendingFileProvider>
+                    <PendingFileProvider>{children}</PendingFileProvider>
                 </ThemeProvider>
                 <Scripts />
             </body>

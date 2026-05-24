@@ -9,6 +9,13 @@ pub struct PendingOpenAction {
     pub file_path: String,
 }
 
+#[derive(Debug, Serialize)]
+pub struct PendingOpenResult {
+    pub action: String,
+    pub file_path: String,
+    pub file_bytes: Vec<u8>,
+}
+
 struct AppState {
     pending_action: Option<PendingOpenAction>,
 }
@@ -20,17 +27,23 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-/// Consume the pending action set by the OS context menu launch.
-/// Returns `None` when the app was opened normally (not via right-click).
+/// Consume the pending action set by the OS context menu launch and read the
+/// associated file's bytes. Returns `None` when the app was opened normally.
+/// The file path is never accepted as a parameter — only the path already
+/// stored in state is read, preventing arbitrary file access from the webview.
 #[tauri::command]
-fn get_pending_action(state: tauri::State<'_, Mutex<AppState>>) -> Option<PendingOpenAction> {
-    state.lock().unwrap().pending_action.take()
-}
-
-/// Read a local file's raw bytes so the frontend WASM tools can process it.
-#[tauri::command]
-fn read_file_bytes(path: String) -> Result<Vec<u8>, String> {
-    std::fs::read(&path).map_err(|e| e.to_string())
+fn get_pending_action(
+    state: tauri::State<'_, Mutex<AppState>>,
+) -> Result<Option<PendingOpenResult>, String> {
+    let Some(pending) = state.lock().unwrap().pending_action.take() else {
+        return Ok(None);
+    };
+    let file_bytes = std::fs::read(&pending.file_path).map_err(|e| e.to_string())?;
+    Ok(Some(PendingOpenResult {
+        action: pending.action,
+        file_path: pending.file_path,
+        file_bytes,
+    }))
 }
 
 /// Register Giovanni's cascading context menu for .pdf files in the OS.
@@ -635,7 +648,6 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             get_pending_action,
-            read_file_bytes,
             register_context_menu,
             unregister_context_menu,
         ])

@@ -2,9 +2,10 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { usePendingFile } from "@/providers/PendingFileProvider";
 
-interface PendingOpenAction {
+interface PendingOpenResult {
     action: string;
     file_path: string;
+    file_bytes: number[];
 }
 
 // Maps the --action CLI flag to the TanStack Router route pattern
@@ -21,7 +22,7 @@ type ToolAction = keyof typeof ACTION_TO_ROUTE;
 type ToolRoute = (typeof ACTION_TO_ROUTE)[ToolAction];
 
 function isToolAction(action: string): action is ToolAction {
-    return action in ACTION_TO_ROUTE;
+    return ACTION_TO_ROUTE.hasOwnProperty(action);
 }
 
 /**
@@ -63,7 +64,7 @@ export function useTauriStartup(): void {
 
         void (async () => {
             try {
-                const pending = (await invoke("get_pending_action")) as PendingOpenAction | null;
+                const pending = (await invoke("get_pending_action")) as PendingOpenResult | null;
                 if (!pending) return;
 
                 if (!isToolAction(pending.action)) {
@@ -71,9 +72,7 @@ export function useTauriStartup(): void {
                     return;
                 }
 
-                // Read the PDF bytes from the local filesystem via Rust
-                const bytes = (await invoke("read_file_bytes", { path: pending.file_path })) as number[];
-                const uint8Array = new Uint8Array(bytes);
+                const uint8Array = new Uint8Array(pending.file_bytes);
                 const fileName = pending.file_path.replace(/\\/g, "/").split("/").pop() ?? "file.pdf";
                 const file = new File([uint8Array], fileName, { type: "application/pdf" });
 

@@ -1,5 +1,6 @@
 ﻿mod cli;
 mod commands;
+mod menu;
 mod platform;
 mod state;
 
@@ -21,6 +22,7 @@ pub fn run() {
             commands::register_context_menu,
             commands::unregister_context_menu,
         ])
+        .menu(|handle| menu::build_app_menu(handle))
         .setup(|_app| {
             // Auto-register the OS context menu every startup so the path stays
             // current even after the binary is moved or updated.
@@ -45,6 +47,9 @@ pub fn run() {
             }
 
             Ok(())
+        })
+        .on_menu_event(|app, event| {
+            menu::handle_menu_event(app, event.id().as_ref());
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

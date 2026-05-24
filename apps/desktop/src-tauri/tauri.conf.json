@@ -12,9 +12,11 @@
     "app": {
         "windows": [
             {
+                "label": "main",
                 "title": "Giovanni",
                 "width": 800,
-                "height": 600
+                "height": 600,
+                "devtools": true
             }
         ],
         "security": {

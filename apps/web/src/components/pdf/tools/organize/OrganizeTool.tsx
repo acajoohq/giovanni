@@ -11,6 +11,15 @@ import { EmptyOrganize } from "@/components/pdf/emptyState/EmptyOrganize";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
+import {
+    createOrganizePages,
+    isNoOpOrganizeDrop,
+    isOrganizeOrderChanged,
+    moveOrganizePage,
+    moveOrganizePageToDropSlot,
+    removeOrganizePage,
+    type OrganizePage,
+} from "@/lib/features/pdfTools/utils/organizeTool.utils";
 import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, formatThroughput, pdfBaseName } from "@/utils/pdfTool.utils";
 import { OrganizeThumbnailGrid } from "./OrganizeThumbnailGrid";
 
@@ -24,13 +33,19 @@ export function OrganizeTool() {
     const fileInputId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
-    const [pages, setPages] = useState<Uint8Array[]>([]);
-    const [pageOrder, setPageOrder] = useState<number[]>([]);
+    const [pages, setPages] = useState<OrganizePage[]>([]);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
     const [outputName, setOutputName] = useState("organized.pdf");
 
-    const { result: splitResult, status: splitStatus, isWorking: isSplitting, reset: resetSplit, runJob: runSplitJob } = useAsyncToolJob<SplitJobResult>();
+    const {
+        result: splitResult,
+        status: splitStatus,
+        isWorking: isSplitting,
+        setStatus: setSplitStatus,
+        reset: resetSplit,
+        runJob: runSplitJob,
+    } = useAsyncToolJob<SplitJobResult>();
 
     const {
         result: reorganizedData,
@@ -43,8 +58,7 @@ export function OrganizeTool() {
 
     useEffect(() => {
         if (splitResult) {
-            setPages(splitResult.pages);
-            setPageOrder(splitResult.pages.map((_, i) => i));
+            setPages(createOrganizePages(splitResult.pages));
         }
     }, [splitResult]);
 
@@ -65,13 +79,13 @@ export function OrganizeTool() {
     const handleFiles = (files: File[]) => {
         const nextFile = findFirstPdfFile(files);
         if (!nextFile) {
+            setSplitStatus({ tone: "error", message: t("common.selectPdf") });
             return;
         }
         resetSplit();
         resetReorganize();
         setFile(nextFile);
         setPages([]);
-        setPageOrder([]);
         setOutputName(`${pdfBaseName(nextFile)}_organized.pdf`);
         void processFile(nextFile);
     };
@@ -96,11 +110,7 @@ export function OrganizeTool() {
             setDragOverIndex(null);
             return;
         }
-        const newOrder = [...pageOrder];
-        const [item] = newOrder.splice(draggedIndex, 1);
-        const insertAt = draggedIndex < dragOverIndex ? dragOverIndex - 1 : dragOverIndex;
-        newOrder.splice(insertAt, 0, item as number);
-        setPageOrder(newOrder);
+        setPages((currentPages) => moveOrganizePageToDropSlot(currentPages, draggedIndex, dragOverIndex));
         resetReorganize();
         setDraggedIndex(null);
         setDragOverIndex(null);
@@ -112,28 +122,21 @@ export function OrganizeTool() {
     };
 
     const handleMove = (index: number, direction: -1 | 1) => {
-        const target = index + direction;
-        if (target < 0 || target >= pageOrder.length) return;
-        const newOrder = [...pageOrder];
-        const [item] = newOrder.splice(index, 1);
-        newOrder.splice(target, 0, item as number);
-        setPageOrder(newOrder);
+        setPages((currentPages) => moveOrganizePage(currentPages, index, direction));
         resetReorganize();
     };
 
     const handleDelete = (index: number) => {
-        const newOrder = [...pageOrder];
-        newOrder.splice(index, 1);
-        setPageOrder(newOrder);
+        setPages((currentPages) => removeOrganizePage(currentPages, index));
         resetReorganize();
     };
 
     const handleApply = async () => {
-        if (!file || pages.length === 0 || pageOrder.length === 0) return;
+        if (!file || pages.length === 0) return;
         await runReorganizeJob({
             execute: async () => {
                 const buffer = await file.arrayBuffer();
-                const result = await organizePdf(buffer, { pages: pageOrder });
+                const result = await organizePdf(buffer, { pages: pages.map((page) => page.sourceIndex) });
                 return result.data;
             },
             errorMessage: t("organize.status.failedReorganize"),
@@ -142,12 +145,10 @@ export function OrganizeTool() {
     };
 
     const normalizedOutputName = ensurePdfExtension(outputName);
-    const isOrderChanged = pageOrder.length > 0 && (pageOrder.length !== pages.length || !pageOrder.every((v, i) => v === i));
+    const isOrderChanged = isOrganizeOrderChanged(pages, splitResult?.pageCount ?? 0);
     const activeStatus = reorganizeStatus ?? splitStatus;
 
-    // dragOverIndex: insert-before slot in 0..n, null when there is no active drop target
-    // no-op when the slot would not move the dragged item (dragOverIndex is draggedIndex or draggedIndex + 1)
-    const isNoOp = draggedIndex !== null && dragOverIndex !== null && (dragOverIndex === draggedIndex || dragOverIndex === draggedIndex + 1);
+    const isNoOp = isNoOpOrganizeDrop(draggedIndex, dragOverIndex);
     const showDropIndicator = draggedIndex !== null && dragOverIndex !== null && !isNoOp;
 
     const thumbnailGrid =
@@ -155,7 +156,6 @@ export function OrganizeTool() {
             <OrganizeThumbnailGrid
                 draggedIndex={draggedIndex}
                 dragOverIndex={dragOverIndex}
-                pageOrder={pageOrder}
                 pages={pages}
                 showDropIndicator={showDropIndicator}
                 onDragEnd={handleDragEnd}
@@ -168,7 +168,7 @@ export function OrganizeTool() {
         ) : null;
 
     const resultMetrics = [
-        ...(pageOrder.length > 0 ? [{ label: t("common.metrics.pages"), value: pageOrder.length, tone: "accent" as const }] : []),
+        ...(pages.length > 0 ? [{ label: t("common.metrics.pages"), value: pages.length, tone: "accent" as const }] : []),
         ...(reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.time"), value: formatDuration(elapsedMs) }] : []),
         ...(file && reorganizedData && elapsedMs !== null ? [{ label: t("common.metrics.throughput"), value: formatThroughput(file.size, elapsedMs) }] : []),
     ];

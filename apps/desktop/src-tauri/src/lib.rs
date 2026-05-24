@@ -50,8 +50,14 @@ fn get_pending_action(
 /// - Windows: `HKCU\Software\Classes\SystemFileAssociations\.pdf\shell`
 /// - macOS:   Automator Service workflows in `~/Library/Services/`
 /// - Linux:   Nautilus scripts + KDE service menu
+///
+/// The executable path is always derived from `current_exe()` — no path is
+/// accepted from the frontend to prevent arbitrary binary registration.
 #[tauri::command]
-fn register_context_menu(app_exe: String) -> Result<(), String> {
+fn register_context_menu() -> Result<(), String> {
+    let exe_path = std::env::current_exe().map_err(|e| e.to_string())?;
+    let app_exe = exe_path.to_string_lossy().to_string();
+
     #[cfg(target_os = "windows")]
     return register_context_menu_windows(&app_exe);
 

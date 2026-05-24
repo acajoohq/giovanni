@@ -67,20 +67,9 @@ export interface RenderPdfPagesToJpgResult {
     convertedPageCount: number;
 }
 
-type PdfjsModule = typeof import("pdfjs-dist");
+import { loadPdfjsLegacy } from "./pdfjsLegacy";
 
-const pdfjsPromise: Promise<PdfjsModule | null> = import("pdfjs-dist")
-    .then((mod) => {
-        if (!mod.GlobalWorkerOptions.workerSrc) {
-            try {
-                mod.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
-            } catch {
-                // worker URL resolution failed; PDF.js may run on the main thread
-            }
-        }
-        return mod;
-    })
-    .catch(() => null);
+const pdfjsPromise = loadPdfjsLegacy();
 
 const isBrowser = typeof window !== "undefined" || typeof OffscreenCanvas !== "undefined" || typeof document !== "undefined";
 const nodeCanvasPromise: Promise<((w: number, h: number) => NodeCanvas) | null> = isBrowser

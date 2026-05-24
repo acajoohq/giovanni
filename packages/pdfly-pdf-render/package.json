@@ -25,7 +25,10 @@
         "README.md"
     ],
     "type": "module",
-    "sideEffects": false,
+    "sideEffects": [
+        "./dist/pdfjsLegacy.browser.mjs",
+        "./src/pdfjsLegacy.browser.ts"
+    ],
     "main": "./dist/index.cjs",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
@@ -40,6 +43,17 @@
                 "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
             }
+        },
+        "./pdfjs-legacy/browser": {
+            "source": "./src/pdfjsLegacy.browser.ts",
+            "import": {
+                "types": "./dist/pdfjsLegacy.browser.d.mts",
+                "default": "./dist/pdfjsLegacy.browser.mjs"
+            },
+            "require": {
+                "types": "./dist/pdfjsLegacy.browser.d.cts",
+                "default": "./dist/pdfjsLegacy.browser.cjs"
+            }
         }
     },
     "publishConfig": {
@@ -52,6 +66,16 @@
                 "require": {
                     "types": "./dist/index.d.cts",
                     "default": "./dist/index.cjs"
+                }
+            },
+            "./pdfjs-legacy/browser": {
+                "import": {
+                    "types": "./dist/pdfjsLegacy.browser.d.mts",
+                    "default": "./dist/pdfjsLegacy.browser.mjs"
+                },
+                "require": {
+                    "types": "./dist/pdfjsLegacy.browser.d.cts",
+                    "default": "./dist/pdfjsLegacy.browser.cjs"
                 }
             }
         }

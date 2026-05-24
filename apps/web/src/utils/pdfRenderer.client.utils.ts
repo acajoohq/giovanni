@@ -1,12 +1,6 @@
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
-import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
-// oxlint-disable-next-line import/default -- Vite's ?url loader returns the worker URL as the default export.
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import { getDocument } from "@pdfly/pdf-render/pdfjs-legacy/browser";
+import type { PDFDocumentProxy, PDFPageProxy } from "@pdfly/pdf-render/pdfjs-legacy/browser";
 import { copyPdfBytes } from "./pdfBytes.utils";
-
-if (typeof window !== "undefined") {
-    GlobalWorkerOptions.workerSrc = pdfjsWorker;
-}
 
 export type { PDFDocumentProxy };
 

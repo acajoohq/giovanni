@@ -1,25 +1,14 @@
 import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { usePendingFile } from "@/providers/PendingFileProvider";
+import { ACTION_TO_ROUTE } from "@/constants/toolRoute.constants";
+import type { ToolAction, ToolRoute } from "@/types/toolRoute.types";
 
 interface PendingOpenResult {
     action: string;
     file_path: string;
     file_bytes: number[];
 }
-
-// Maps the --action CLI flag to the TanStack Router route pattern
-const ACTION_TO_ROUTE = {
-    compress: "/$locale/compress",
-    split: "/$locale/split",
-    merge: "/$locale/merge",
-    organize: "/$locale/organize",
-    "extract-images": "/$locale/extract-images",
-    "pdf-to-jpg": "/$locale/pdf-to-jpg",
-} as const;
-
-type ToolAction = keyof typeof ACTION_TO_ROUTE;
-type ToolRoute = (typeof ACTION_TO_ROUTE)[ToolAction];
 
 function isToolAction(action: string): action is ToolAction {
     return ACTION_TO_ROUTE.hasOwnProperty(action);

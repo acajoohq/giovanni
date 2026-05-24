@@ -1,6 +1,7 @@
 import { formatBytes, organizePdf, splitPdf } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
 import { type DragEvent, useEffect, useId, useRef, useState } from "react";
+import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";
 import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
@@ -74,6 +75,8 @@ export function OrganizeTool() {
         setOutputName(`${pdfBaseName(nextFile)}_organized.pdf`);
         void processFile(nextFile);
     };
+
+    usePendingFileHandler(handleFiles);
 
     const handleDragStart = (index: number) => {
         setDraggedIndex(index);

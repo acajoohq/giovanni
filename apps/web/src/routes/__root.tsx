@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
 import { AppShell } from "@/components/layout/AppShell";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { PendingFileProvider } from "@/providers/PendingFileProvider";
 import { createSeoMeta } from "@/lib/seo";
 import type { RouterContext } from "@/router";
 import appCss from "@/styles/app.css?url";
@@ -49,7 +50,7 @@ function RootDocument({ children, lang }: Readonly<{ children: ReactNode; lang: 
             </head>
             <body>
                 <ThemeProvider defaultTheme="system" storageKey="theme">
-                    {children}
+                    <PendingFileProvider>{children}</PendingFileProvider>
                 </ThemeProvider>
                 <Scripts />
             </body>

@@ -18,8 +18,7 @@
     "android": {
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.READ_MEDIA_IMAGES",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.READ_MEDIA_IMAGES"
       ],
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"

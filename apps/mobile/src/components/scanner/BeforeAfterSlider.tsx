@@ -16,6 +16,8 @@ const HANDLE_RADIUS = 16;
 const DIVIDER_COLOR = "#E7FF5F";
 const HANDLE_FONT = matchFont({ fontSize: 13, fontWeight: "900" });
 
+/* eslint-disable react-hooks/immutability -- reanimated shared values update on the UI thread */
+
 function clampDivider(x: number, width: number) {
     "worklet";
     if (width <= 0) {

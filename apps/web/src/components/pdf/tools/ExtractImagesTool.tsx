@@ -1,7 +1,7 @@
 ﻿import { extractImages, formatBytes, type ExtractedImage, type ExtractImagesResult } from "@pdfly/wasm";
 import { RiAddLine } from "@remixicon/react";
-import { useEffect, useId, useRef, useState } from "react";
-import { usePendingFile } from "@/providers/PendingFileProvider";
+import { useId, useRef, useState } from "react";
+import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";
 import { useTranslation } from "react-i18next";
 import { ToolLayout } from "@/components/layout/ToolLayout";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
@@ -101,11 +101,7 @@ export function ExtractImagesTool() {
         void processFile(nextFile);
     };
 
-    const { consumePendingFile } = usePendingFile();
-    useEffect(() => {
-        const pending = consumePendingFile();
-        if (pending) handleFiles([pending]);
-    }, [consumePendingFile]);
+    usePendingFileHandler(handleFiles);
 
     const updateExtractImagesSettings = (patch: Partial<ExtractImagesSettings>) => {
         setExtractImagesSettings((currentSettings) => ({ ...currentSettings, ...patch }));

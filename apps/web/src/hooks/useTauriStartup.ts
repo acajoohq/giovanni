@@ -51,7 +51,7 @@ export function useTauriStartup(): void {
 
         handled.current = true;
 
-        void (async () => {
+        async function handlePendingAction(invoke: NonNullable<ReturnType<typeof getTauriInvoke>>) {
             try {
                 const pending = (await invoke("get_pending_action")) as PendingOpenResult | null;
                 if (!pending) return;
@@ -73,6 +73,8 @@ export function useTauriStartup(): void {
             } catch (err) {
                 console.error("[Tauri] Failed to handle OS context menu action:", err);
             }
-        })();
+        }
+
+        void handlePendingAction(invoke);
     }, [locale, navigate, setPendingFile]);
 }

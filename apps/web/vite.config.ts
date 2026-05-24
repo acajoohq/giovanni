@@ -108,7 +108,7 @@ export default defineConfig(({ mode }) => {
             babel({ presets: [reactCompilerPreset()] }),
         ],
         optimizeDeps: {
-            exclude: ["pdfjs-dist"],
+            exclude: ["@pdfly/pdf-render/pdfjs-legacy/browser"],
         },
         resolve: {
             alias: {
@@ -128,7 +128,12 @@ export default defineConfig(({ mode }) => {
             ssr: {
                 build: {
                     rollupOptions: {
-                        external: ["canvas", /\.node$/, "pdfjs-dist"],
+                        external: [
+                            "canvas",
+                            /\.node$/,
+                            "@pdfly/pdf-render/pdfjs-legacy/browser",
+                            "pdfjs-dist",
+                        ],
                     },
                 },
             },

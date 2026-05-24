@@ -35,7 +35,7 @@ See the [root README](../../README.md#requirements) for Node and pnpm requiremen
 ```bash
 pnpm --filter desktop dev
 # or from the repo root:
-pnpm -F desktop run tauri dev
+pnpm -F desktop dev
 ```
 
 ### Developer Tools
@@ -49,6 +49,8 @@ Right-click → Inspect Element also works when the web app does not intercept t
 
 Fallback on macOS: enable **Safari → Settings → Advanced → Show features for web developers**, then **Develop → Giovanni →** pick the webview.
 
+Devtools are dev-only: the menu item and `devtools` Cargo feature are enabled by `pnpm dev` (`tauri dev --features devtools`). Release builds omit both.
+
 ## Build
 
 ```bash
@@ -58,5 +60,7 @@ pnpm build
 ```
 
 The build runs `pnpm --filter web build` first (via `beforeBuildCommand`) to produce the frontend, then compiles the Tauri binary for the current platform.
+
+## PDF preview in WKWebView
 
 PDF preview uses pdf.js's [legacy build](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions#which-browsersenvironments-are-supported) so rendering works in Tauri's WKWebView (same WebKit engine as Safari). See [`packages/pdfly-pdf-render/README.md`](../../packages/pdfly-pdf-render/README.md).

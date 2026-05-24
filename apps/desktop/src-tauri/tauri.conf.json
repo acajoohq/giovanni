@@ -15,8 +15,7 @@
                 "label": "main",
                 "title": "Giovanni",
                 "width": 800,
-                "height": 600,
-                "devtools": true
+                "height": 600
             }
         ],
         "security": {

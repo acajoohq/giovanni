@@ -1,5 +1,6 @@
 ﻿mod cli;
 mod commands;
+#[cfg(feature = "devtools")]
 mod menu;
 mod platform;
 mod state;
@@ -13,7 +14,7 @@ use state::AppState;
 pub fn run() {
     let pending_action = cli::parse_pending_action();
 
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .manage(Mutex::new(AppState { pending_action }))
         .invoke_handler(tauri::generate_handler![
@@ -22,7 +23,6 @@ pub fn run() {
             commands::register_context_menu,
             commands::unregister_context_menu,
         ])
-        .menu(|handle| menu::build_app_menu(handle))
         .setup(|_app| {
             // Auto-register the OS context menu every startup so the path stays
             // current even after the binary is moved or updated.
@@ -47,10 +47,16 @@ pub fn run() {
             }
 
             Ok(())
-        })
+        });
+
+    #[cfg(feature = "devtools")]
+    let builder = builder
+        .menu(|handle| menu::build_app_menu(handle))
         .on_menu_event(|app, event| {
             menu::handle_menu_event(app, event.id().as_ref());
-        })
+        });
+
+    builder
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,6 +1,7 @@
 import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
 import type { Canvas as NodeCanvas } from "canvas";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api.js";
+import { loadPdfjsLegacy } from "./pdfjsLegacy";
 
 // TODO Split the code / reorganize
 
@@ -66,8 +67,6 @@ export interface RenderPdfPagesToJpgResult {
      */
     convertedPageCount: number;
 }
-
-import { loadPdfjsLegacy } from "./pdfjsLegacy";
 
 const pdfjsPromise = loadPdfjsLegacy();
 

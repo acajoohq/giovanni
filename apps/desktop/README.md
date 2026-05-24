@@ -51,6 +51,8 @@ Fallback on macOS: enable **Safari → Settings → Advanced → Show features f
 
 Devtools are dev-only: the menu item and `devtools` Cargo feature are enabled by `pnpm dev` (`tauri dev --features devtools`). Release builds omit both.
 
+File drag-and-drop uses the web app's HTML5 drop handlers (`ToolLayout`, `EmptyState`). Tauri's native file-drop handler is disabled via `"dragDropEnabled": false` in `tauri.conf.json` — with it enabled (the default), the webview intercepts OS file drops before they reach the DOM.
+
 ## Build
 
 ```bash

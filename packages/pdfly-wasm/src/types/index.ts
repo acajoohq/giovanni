@@ -1,4 +1,4 @@
-export type { CompressionEngine, CompressOptions, CompressResult } from "./compression.types.js";
+export type { CompressionEngine, CompressOptions, CompressResult, GhostscriptEngineCompressOptions, QpdfCompressOptions } from "./compression.types.js";
 export type { GhostscriptColorConversionStrategy, GhostscriptCompatibilityLevel, GhostscriptCompressOptions, GhostscriptPdfSettings } from "./ghostscript.types.js";
 export type {
     CheckOptions,

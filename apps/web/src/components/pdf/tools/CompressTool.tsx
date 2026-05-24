@@ -1,6 +1,6 @@
-import { compressPdf, formatBytes, type CompressionEngine, type CompressOptions, type CompressResult } from "@pdfly/wasm";
-import { QPDF_PRESETS, type DecodeLevel, type ObjectStreamMode, type QpdfOptimizePreset, type WriteOptions } from "@pdfly/wasm/qpdf";
-import { type GhostscriptColorConversionStrategy, type GhostscriptCompatibilityLevel, type GhostscriptPdfSettings } from "@pdfly/wasm/ghostscript";
+import { compressPdf, formatBytes, type CompressionEngine, type CompressResult } from "@pdfly/wasm";
+import { QPDF_PRESETS, type DecodeLevel, type ObjectStreamMode, type QpdfOptimizePreset } from "@pdfly/wasm/qpdf";
+import { type GhostscriptColorConversionStrategy, type GhostscriptPdfSettings } from "@pdfly/wasm/ghostscript";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -28,29 +28,19 @@ import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import {
     DEFAULT_GHOSTSCRIPT_SETTINGS,
+    DEFAULT_QPDF_SETTINGS,
     DEFAULT_SIMPLE_COMPRESSION_PRESET,
+    COMPRESSION_UI_MODES,
+    GHOSTSCRIPT_COMPATIBILITY_LEVELS,
     GHOSTSCRIPT_ENGINE_PRESETS,
+    GHOSTSCRIPT_PRESET_NAMES,
+    GHOSTSCRIPT_RESOLUTION_FALLBACK,
+    QPDF_PRESET_NAMES,
     SIMPLE_COMPRESSION_PRESET_NAMES,
 } from "@/lib/features/pdfTools/constants/compressTool.constants";
-import type { GhostscriptSettings, SimpleCompressionPreset } from "@/lib/features/pdfTools/types/compressTool.types";
-import { applyGhostscriptPreset, getSimpleCompressionOptions } from "@/lib/features/pdfTools/utils/compressTool.utils";
+import type { CompressionJobSettings, CompressionUiMode, GhostscriptSettings, QpdfSettings, SimpleCompressionPreset } from "@/lib/features/pdfTools/types/compressTool.types";
+import { applyGhostscriptPreset, buildCompressionOptions, snapshotCompressionJobSettings } from "@/lib/features/pdfTools/utils/compressTool.utils";
 import { downloadPdf, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdfTool.utils";
-
-type QpdfSettings = { preset: QpdfOptimizePreset } & Required<WriteOptions>;
-type CompressionUiMode = "simple" | "advanced";
-type CompressionJobSettings = {
-    uiMode: CompressionUiMode;
-    simplePreset: SimpleCompressionPreset;
-    engine: CompressionEngine;
-    qpdfSettings: QpdfSettings;
-    ghostscriptSettings: GhostscriptSettings;
-};
-
-const COMPRESSION_UI_MODES: CompressionUiMode[] = ["simple", "advanced"];
-const QPDF_PRESET_NAMES: QpdfOptimizePreset[] = ["default", "web", "archive"];
-const GHOSTSCRIPT_PRESET_NAMES: GhostscriptPdfSettings[] = ["default", "screen", "ebook", "printer", "prepress"];
-const GHOSTSCRIPT_COMPATIBILITY_LEVELS: GhostscriptCompatibilityLevel[] = ["1.3", "1.4", "1.5", "1.6", "1.7"];
-const GHOSTSCRIPT_RESOLUTION_FALLBACK = 144;
 
 export function CompressTool() {
     const { t } = useTranslation();
@@ -63,7 +53,7 @@ export function CompressTool() {
     const [compressionUiMode, setCompressionUiMode] = useState<CompressionUiMode>("simple");
     const [simplePreset, setSimplePreset] = useState<SimpleCompressionPreset>(DEFAULT_SIMPLE_COMPRESSION_PRESET);
     const [engine, setEngine] = useState<CompressionEngine>("qpdf");
-    const [qpdfSettings, setQpdfSettings] = useState<QpdfSettings>({ preset: "default", ...QPDF_PRESETS.default });
+    const [qpdfSettings, setQpdfSettings] = useState<QpdfSettings>(DEFAULT_QPDF_SETTINGS);
     const [ghostscriptSettings, setGhostscriptSettings] = useState<GhostscriptSettings>(DEFAULT_GHOSTSCRIPT_SETTINGS);
     const [resultSettings, setResultSettings] = useState<CompressionJobSettings | null>(null);
     const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<CompressResult>();
@@ -165,44 +155,14 @@ export function CompressTool() {
         ghostscriptSettings,
     });
 
-    const snapshotJobSettings = (settings: CompressionJobSettings): CompressionJobSettings => ({
-        ...settings,
-        qpdfSettings: { ...settings.qpdfSettings },
-        ghostscriptSettings: { ...settings.ghostscriptSettings },
-    });
-
-    const buildCompressionOptions = (settings: CompressionJobSettings): CompressOptions => {
-        if (settings.uiMode === "simple") {
-            return getSimpleCompressionOptions(settings.simplePreset);
-        }
-
-        if (settings.engine === "qpdf") {
-            return {
-                engine: "qpdf" as const,
-                ...settings.qpdfSettings,
-            };
-        }
-
-        return {
-            engine: "ghostscript" as const,
-            preset: settings.ghostscriptSettings.preset,
-            compatibilityLevel: settings.ghostscriptSettings.compatibilityLevel,
-            colorConversionStrategy: settings.ghostscriptSettings.colorConversionStrategy,
-            downsampleColorImages: settings.ghostscriptSettings.downsampleColorImages,
-            downsampleGrayImages: settings.ghostscriptSettings.downsampleGrayImages,
-            colorImageResolution: settings.ghostscriptSettings.colorImageResolution,
-            grayImageResolution: settings.ghostscriptSettings.grayImageResolution,
-        };
-    };
-
     const processFile = async (nextSourceData: Uint8Array, settings: CompressionJobSettings = getCurrentJobSettings()) => {
         await runJob({
             execute: async () => {
-                return compressPdf(nextSourceData, buildCompressionOptions(settings)); // pouet
+                return compressPdf(nextSourceData, buildCompressionOptions(settings));
             },
             errorMessage: t("compress.status.failed"),
             onSuccess: () => {
-                setResultSettings(snapshotJobSettings(settings));
+                setResultSettings(snapshotCompressionJobSettings(settings));
             },
             successStatus: (nextResult) =>
                 nextResult.savedBytes >= 0

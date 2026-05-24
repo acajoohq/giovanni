@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import type { ExtractedImage } from "@pdfly/wasm";
 import type { PdfPageJpg } from "@pdfly/pdf-render";
 import {
-    buildBrowserReadyImageEntries,
     buildExtractedImageEntries,
     buildJpgPageEntries,
     buildSplitPageEntries,
@@ -15,6 +14,7 @@ import {
     makeArchiveName,
     makePageJpgName,
     makePagePdfName,
+    summarizeExtractedImages,
 } from "./pdfTool.utils";
 
 function makeFile(name: string, type = "application/octet-stream") {
@@ -80,7 +80,7 @@ describe("pdfTool", () => {
     it("builds ZIP entries only for browser-ready extracted images", async () => {
         const imageBytes = new Uint8Array([1, 2, 3]);
         const rawBytes = new Uint8Array([4, 5, 6]);
-        const entries = await buildBrowserReadyImageEntries(
+        const entries = await buildExtractedImageEntries(
             [
                 { blob: new Blob([imageBytes as BlobPart], { type: "image/png" }), mimeType: "image/png" } as ExtractedImage,
                 { blob: null, bytes: rawBytes, filter: "CCITTFaxDecode" } as ExtractedImage,
@@ -107,5 +107,18 @@ describe("pdfTool", () => {
         expect(Object.keys(entries)).toEqual(["source_image_001.png", "source_image_002.ccitt.bin"]);
         expect(entries["source_image_001.png"]).toEqual(imageBytes);
         expect(entries["source_image_002.ccitt.bin"]).toEqual(rawBytes);
+    });
+
+    it("summarizes decoded and raw extracted images from the canonical image model", () => {
+        expect(
+            summarizeExtractedImages([
+                { blob: new Blob(), mimeType: "image/png" } as ExtractedImage,
+                { blob: null, bytes: new Uint8Array([1]), filter: "CCITTFaxDecode" } as ExtractedImage,
+            ]),
+        ).toEqual({
+            imageCount: 2,
+            decodedCount: 1,
+            rawCount: 1,
+        });
     });
 });

@@ -1,6 +1,6 @@
-import type { CompressionEngine, CompressOptions, CompressResult } from "../types/index.js";
+import type { CompressionEngine, CompressResult } from "../types/index.js";
 
-export interface CompressionEngineAdapter<TOptions extends CompressOptions = CompressOptions> {
+export interface CompressionEngineAdapter<TOptions = unknown> {
     readonly engine: CompressionEngine;
     init(): Promise<void>;
     compress(input: Uint8Array | ArrayBuffer, options?: TOptions): Promise<CompressResult>;

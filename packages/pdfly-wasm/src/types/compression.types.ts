@@ -4,7 +4,9 @@ import type { OptimizeOptions, QpdfOptimizePreset } from "./qpdf.types.js";
 
 export type CompressionEngine = "qpdf" | "ghostscript";
 
-export type CompressOptions = ({ engine?: "qpdf" } & OptimizeOptions) | ({ engine: "ghostscript" } & GhostscriptCompressOptions);
+export type QpdfCompressOptions = { engine?: "qpdf" } & OptimizeOptions;
+export type GhostscriptEngineCompressOptions = { engine: "ghostscript" } & GhostscriptCompressOptions;
+export type CompressOptions = QpdfCompressOptions | GhostscriptEngineCompressOptions;
 
 export interface CompressResult extends PdfData {
     engine: CompressionEngine;

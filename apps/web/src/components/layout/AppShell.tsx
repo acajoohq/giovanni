@@ -5,11 +5,15 @@ import { useTranslation } from "react-i18next";
 import { AboutDialog } from "@/components/dialogs/AboutDialog";
 import { ModeToggle } from "@/components/theme/ModeToggle";
 import { LanguageMenu } from "@/components/layout/LanguageMenu";
+import { useTauriStartup } from "@/hooks/useTauriStartup";
 
 export function AppShell() {
     const { t } = useTranslation();
     const [aboutOpen, setAboutOpen] = useState(false);
     const { locale = "en" } = useParams({ strict: false });
+
+    // Handle OS context menu launches (desktop app only – no-op in browser)
+    useTauriStartup();
 
     const navigationItems = [
         { label: t("nav.compress"), to: "/$locale/compress" as const },

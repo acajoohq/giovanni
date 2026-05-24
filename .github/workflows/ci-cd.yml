@@ -146,26 +146,30 @@ jobs:
                   path: packages/pdfly-wasm/test-report/compression-results.xml
                   if-no-files-found: ignore
 
-            - name: Download master compression baseline
-              if: github.event_name == 'pull_request'
+            - name: Stage compression baseline for cache (master only)
+              if: always() && github.event_name == 'push' && github.ref == 'refs/heads/master'
               continue-on-error: true
-              env:
-                  GH_TOKEN: ${{ github.token }}
               run: |
-                  RUN_ID=$(gh run list \
-                      --repo "$GITHUB_REPOSITORY" \
-                      --branch master \
-                      --workflow ci-cd.yml \
-                      --status success \
-                      --limit 1 \
-                      --json databaseId \
-                      --jq '.[0].databaseId')
-                  if [ -n "$RUN_ID" ]; then
-                      gh run download "$RUN_ID" \
-                          --repo "$GITHUB_REPOSITORY" \
-                          --name compression-results \
-                          --dir /tmp/compression-baseline
-                  fi
+                  mkdir -p /tmp/compression-baseline
+                  cp packages/pdfly-wasm/test-report/compression-results.xml /tmp/compression-baseline/compression-results.xml
+
+            - name: Save compression baseline cache (master only)
+              if: always() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+              continue-on-error: true
+              uses: actions/cache/save@v4
+              with:
+                  path: /tmp/compression-baseline/compression-results.xml
+                  key: compression-baseline-master-${{ env.SOURCE_SHA }}
+
+            - name: Restore compression baseline cache (PR only)
+              if: github.event_name == 'pull_request'
+              id: restore_baseline
+              uses: actions/cache/restore@v4
+              with:
+                  path: /tmp/compression-baseline/compression-results.xml
+                  key: compression-baseline-master-${{ env.SOURCE_SHA }}
+                  restore-keys: |
+                      compression-baseline-master-
 
             - name: Generate compression summary
               if: always()
@@ -308,3 +312,13 @@ jobs:
 
             - name: Build desktop
               run: pnpm --filter desktop build
+
+            - name: Upload desktop installers
+              uses: actions/upload-artifact@v4
+              with:
+                  name: desktop-installers-linux
+                  path: |
+                      apps/desktop/src-tauri/target/release/bundle/deb/*.deb
+                      apps/desktop/src-tauri/target/release/bundle/appimage/*.AppImage
+                      apps/desktop/src-tauri/target/release/bundle/rpm/*.rpm
+                  if-no-files-found: warn

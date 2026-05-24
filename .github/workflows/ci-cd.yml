@@ -312,3 +312,13 @@ jobs:
 
             - name: Build desktop
               run: pnpm --filter desktop build
+
+            - name: Upload desktop installers
+              uses: actions/upload-artifact@v4
+              with:
+                  name: desktop-installers-linux
+                  path: |
+                      apps/desktop/src-tauri/target/release/bundle/deb/*.deb
+                      apps/desktop/src-tauri/target/release/bundle/appimage/*.AppImage
+                      apps/desktop/src-tauri/target/release/bundle/rpm/*.rpm
+                  if-no-files-found: warn

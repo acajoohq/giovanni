@@ -128,7 +128,7 @@ export default defineConfig(({ mode }) => {
             ssr: {
                 build: {
                     rollupOptions: {
-                        external: ["canvas", /\.node$/, "@pdfly/pdf-render/pdfjs-legacy/browser", "pdfjs-dist"],
+                        external: ["canvas", /\.node$/, "@pdfly/pdf-render", "@pdfly/pdf-render/pdfjs-legacy/browser", "pdfjs-dist"],
                     },
                 },
             },

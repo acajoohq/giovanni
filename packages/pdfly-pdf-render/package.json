@@ -87,7 +87,7 @@
         "format": "oxfmt --write src tsdown.config.ts package.json tsconfig.json",
         "format:check": "oxfmt --check src tsdown.config.ts package.json tsconfig.json",
         "lint": "oxlint src tsdown.config.ts",
-        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "typecheck": "tsgo --noEmit",
         "validate": "publint",
         "package:check": "pnpm run build:lib && pnpm run validate && pnpm pack --dry-run"
     },
@@ -96,6 +96,7 @@
     },
     "devDependencies": {
         "@types/node": "^25.6.0",
+        "@typescript/native-preview": "7.0.0-dev.20260505.1",
         "oxfmt": "^0.48.0",
         "oxlint": "^1.63.0",
         "publint": "^0.3.19",

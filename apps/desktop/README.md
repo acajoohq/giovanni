@@ -42,7 +42,7 @@ pnpm -F desktop dev
 
 In dev (`tauri dev`), open Web Inspector via:
 
-- **View → Toggle Developer Tools** (added to Tauri's default menu)
+- **Window → Toggle Developer Tools** (appended to Tauri's default Window menu)
 - **⌘⌥I**
 
 Right-click → Inspect Element also works when the web app does not intercept the context menu.

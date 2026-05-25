@@ -68,7 +68,12 @@ export interface RenderPdfPagesToJpgResult {
     convertedPageCount: number;
 }
 
-const pdfjsPromise = loadPdfjsLegacy();
+let pdfjsPromise: ReturnType<typeof loadPdfjsLegacy> | null = null;
+
+function getPdfjsLegacy() {
+    pdfjsPromise ??= loadPdfjsLegacy();
+    return pdfjsPromise;
+}
 
 const isBrowser = typeof window !== "undefined" || typeof OffscreenCanvas !== "undefined" || typeof document !== "undefined";
 const nodeCanvasPromise: Promise<((w: number, h: number) => NodeCanvas) | null> = isBrowser
@@ -99,7 +104,7 @@ export async function renderPdfPagesToJpg(input: Uint8Array | ArrayBuffer, optio
         throw new PdfRenderError("scale must be greater than 0");
     }
 
-    const pdfjs = await pdfjsPromise;
+    const pdfjs = await getPdfjsLegacy();
     const inputBuffer = normalizeBuffer(input);
     const nodeCreateCanvas = await nodeCanvasPromise;
 

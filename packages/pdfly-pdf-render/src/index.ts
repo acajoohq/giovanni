@@ -100,10 +100,6 @@ export async function renderPdfPagesToJpg(input: Uint8Array | ArrayBuffer, optio
     }
 
     const pdfjs = await pdfjsPromise;
-    if (!pdfjs) {
-        throw new PdfRenderError("pdfjs-dist is required. Install it as a dependency of @pdfly/pdf-render.");
-    }
-
     const inputBuffer = normalizeBuffer(input);
     const nodeCreateCanvas = await nodeCanvasPromise;
 

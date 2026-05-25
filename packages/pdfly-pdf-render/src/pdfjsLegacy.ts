@@ -18,18 +18,12 @@ export function resolvePdfjsLegacyWorkerUrl(): string {
     return new URL("pdfjs-dist/legacy/build/pdf.worker.min.mjs", import.meta.url).href;
 }
 
-export function loadPdfjsLegacy(): Promise<PdfjsModule | null> {
-    return import("pdfjs-dist/legacy/build/pdf.mjs")
-        .then((mod) => {
-            if (!mod.GlobalWorkerOptions.workerSrc) {
-                try {
-                    mod.GlobalWorkerOptions.workerSrc = resolvePdfjsLegacyWorkerUrl();
-                } catch {
-                    // Worker URL resolution failed; pdf.js may run on the main thread.
-                }
-            }
+export async function loadPdfjsLegacy(): Promise<PdfjsModule> {
+    const mod = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
-            return mod;
-        })
-        .catch(() => null);
+    if (!mod.GlobalWorkerOptions.workerSrc) {
+        mod.GlobalWorkerOptions.workerSrc = resolvePdfjsLegacyWorkerUrl();
+    }
+
+    return mod;
 }

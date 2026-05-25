@@ -13,7 +13,7 @@ Always keep the legacy main module and worker on the **same** `pdfjs-dist` versi
 - [pdf.js browser support FAQ](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions#which-browsersenvironments-are-supported)
 - [Tauri WebView versions](https://v2.tauri.app/reference/webview-versions/)
 
-Browser / Vite apps import `@pdfly/pdf-render/pdfjs-legacy/browser` so the worker URL is bundled correctly.
+Browser apps import `@pdfly/pdf-render/pdfjs-legacy/browser` so the worker URL resolves from the matching `pdfjs-dist` package version.
 
 ## Install
 

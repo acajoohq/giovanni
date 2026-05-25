@@ -23,9 +23,9 @@ Contains the **single source of truth** for all data types and abstract
 interfaces used across every build target. No platform or runtime headers
 are included here.
 
-| File | Purpose |
-|------|---------|
-| `interface/include/pdfly/types.h` | `WriteOptions`, `DocumentInfo`, `ExtractedImage` |
+| File                              | Purpose                                            |
+| --------------------------------- | -------------------------------------------------- |
+| `interface/include/pdfly/types.h` | `WriteOptions`, `DocumentInfo`, `ExtractedImage`   |
 | `interface/include/pdfly/api.h`   | `IQpdfEngine`, `IGhostscriptEngine` (pure virtual) |
 
 These types mirror the TypeScript `NativeWriteOptions` / `NativeDocumentInfo` /
@@ -36,9 +36,9 @@ These types mirror the TypeScript `NativeWriteOptions` / `NativeDocumentInfo` /
 Platform-agnostic **concrete implementations** of the abstract interfaces.
 No Emscripten, no JSI, no browser APIs.
 
-| Directory | Class | Implements |
-|-----------|-------|-----------|
-| `impl/qpdf/` | `QpdfEngine` | `IQpdfEngine` via libqpdf |
+| Directory           | Class               | Implements                            |
+| ------------------- | ------------------- | ------------------------------------- |
+| `impl/qpdf/`        | `QpdfEngine`        | `IQpdfEngine` via libqpdf             |
 | `impl/ghostscript/` | `GhostscriptEngine` | `IGhostscriptEngine` via gsapi (TODO) |
 
 ### Layer 3 — `targets/`
@@ -46,11 +46,11 @@ No Emscripten, no JSI, no browser APIs.
 Platform adapters. Each target takes `IQpdfEngine` / `IGhostscriptEngine`
 as a dependency and adapts the input/output types for its runtime.
 
-| Target | Output | Use case |
-|--------|--------|----------|
-| `targets/wasm/` | `.js` + `.wasm` | Web / Node.js (see `qpdf/` + `ghostscript/` dirs) |
-| `targets/jsi/` | `.so` / `.dylib` | React Native (Hermes JSI) |
-| `targets/native/` | `libpdfly_native.a/.so` + `pdfly_c.h` | FFI from Python, Rust, Go, Swift, etc. |
+| Target            | Output                                | Use case                                          |
+| ----------------- | ------------------------------------- | ------------------------------------------------- |
+| `targets/wasm/`   | `.js` + `.wasm`                       | Web / Node.js (see `qpdf/` + `ghostscript/` dirs) |
+| `targets/jsi/`    | `.so` / `.dylib`                      | React Native (Hermes JSI)                         |
+| `targets/native/` | `libpdfly_native.a/.so` + `pdfly_c.h` | FFI from Python, Rust, Go, Swift, etc.            |
 
 ---
 
@@ -138,7 +138,6 @@ Each WASM engine writes to its own output directory:
     - `ghostscript.js`
     - `ghostscript.wasm`
     - `manifest.json`
-
 
 - `build/ghostscript`
     - `ghostscript.js`

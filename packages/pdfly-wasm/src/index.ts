@@ -53,15 +53,16 @@ export type {
 } from "./types/index.js";
 
 // binding registry — swap WASM for JSI, native addons, or test stubs
-export {
-    getQpdfBinding,
-    setQpdfBinding,
-    resetQpdfBinding,
-    getGhostscriptBinding,
-    setGhostscriptBinding,
-    resetGhostscriptBinding,
+export { getQpdfBinding, setQpdfBinding, resetQpdfBinding, getGhostscriptBinding, setGhostscriptBinding, resetGhostscriptBinding } from "./bindings/index.js";
+export type {
+    GhostscriptBinding,
+    NativeColorComponentCount,
+    NativeDocumentInfo,
+    NativeExtractedImage,
+    NativePixelColorModel,
+    NativeWriteOptions,
+    QpdfBinding,
 } from "./bindings/index.js";
-export type { GhostscriptBinding, NativeColorComponentCount, NativeDocumentInfo, NativeExtractedImage, NativePixelColorModel, NativeWriteOptions, QpdfBinding } from "./bindings/index.js";
 
 // utility functions
 export { formatBytes, calculateSavings, formatPercentage } from "./utils/format.js";

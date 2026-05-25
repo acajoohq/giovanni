@@ -109,10 +109,7 @@ async function buildTarget(name: NativeBuildTarget): Promise<void> {
             await cp(resolve(config.sourceDir, "pdfly_c.h"), resolve(config.outputDir, "pdfly_c.h"));
         }
         if (name === "jsi") {
-            await cp(
-                resolve(packageRoot, "native", "targets", "jsi", "qpdf", "qpdf_jsi.h"),
-                resolve(config.outputDir, "qpdf_jsi.h"),
-            );
+            await cp(resolve(packageRoot, "native", "targets", "jsi", "qpdf", "qpdf_jsi.h"), resolve(config.outputDir, "qpdf_jsi.h"));
         }
     } catch {
         // Header copy is best-effort; the main artifact is in the build dir
@@ -135,8 +132,7 @@ async function main(): Promise<void> {
         throw new Error(`Unknown target "${targetArg}". Valid targets: ${valid.join(", ")}`);
     }
 
-    const targets: NativeBuildTarget[] =
-        targetArg === "all" ? (Object.keys(NATIVE_TARGETS) as NativeBuildTarget[]) : [targetArg];
+    const targets: NativeBuildTarget[] = targetArg === "all" ? (Object.keys(NATIVE_TARGETS) as NativeBuildTarget[]) : [targetArg];
 
     for (const target of targets) {
         await buildTarget(target);

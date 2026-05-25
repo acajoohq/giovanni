@@ -120,15 +120,15 @@ int main() {
 
 This library mirrors `QpdfBinding` from `@pdfly/wasm/bindings`:
 
-| TypeScript (`QpdfBinding`)            | C++ (`pdfly::`)                     |
-|---------------------------------------|-------------------------------------|
-| `init(): Promise<void>`               | *(linking is sufficient)*           |
-| `getVersion(): Promise<string>`       | `getVersion(): string`              |
-| `writePdf(data, options, password?)`  | `writePdf(data, options, password)` |
-| `splitPages(data)`                    | `splitPages(data)`                  |
-| `mergePdfs(inputs)`                   | `mergePdfs(inputs)`                 |
-| `getDocumentInfo(data, password?)`    | `getDocumentInfo(data, password)`   |
-| `extractImages(data)`                 | `extractImages(data)`               |
+| TypeScript (`QpdfBinding`)           | C++ (`pdfly::`)                     |
+| ------------------------------------ | ----------------------------------- |
+| `init(): Promise<void>`              | _(linking is sufficient)_           |
+| `getVersion(): Promise<string>`      | `getVersion(): string`              |
+| `writePdf(data, options, password?)` | `writePdf(data, options, password)` |
+| `splitPages(data)`                   | `splitPages(data)`                  |
+| `mergePdfs(inputs)`                  | `mergePdfs(inputs)`                 |
+| `getDocumentInfo(data, password?)`   | `getDocumentInfo(data, password)`   |
+| `extractImages(data)`                | `extractImages(data)`               |
 
 `NativeWriteOptions` → `pdfly::WriteOptions`
 `NativeDocumentInfo` → `pdfly::DocumentInfo`

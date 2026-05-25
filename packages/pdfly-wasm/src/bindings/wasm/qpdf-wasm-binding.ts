@@ -49,9 +49,7 @@ async function writePdf(data: Uint8Array, options: NativeWriteOptions, password?
 async function splitPages(data: Uint8Array): Promise<Uint8Array[]> {
     const module = await initQpdfModule();
     if (typeof module.splitPages !== "function") {
-        throw new QpdfSplitError(
-            "Failed to initialize PDF splitter: qpdf module is missing the splitPages export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.",
-        );
+        throw new QpdfSplitError("Failed to initialize PDF splitter: qpdf module is missing the splitPages export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.");
     }
     const rawPages: Uint8Array[] = module.splitPages(data);
     return rawPages.map((page) => page.slice());
@@ -60,9 +58,7 @@ async function splitPages(data: Uint8Array): Promise<Uint8Array[]> {
 async function mergePdfs(inputs: Uint8Array[]): Promise<Uint8Array> {
     const module = await initQpdfModule();
     if (typeof module.mergePdfs !== "function") {
-        throw new QpdfMergeError(
-            "Failed to initialize PDF merger: qpdf module is missing the mergePdfs export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.",
-        );
+        throw new QpdfMergeError("Failed to initialize PDF merger: qpdf module is missing the mergePdfs export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.");
     }
     return module.mergePdfs(inputs).slice();
 }
@@ -111,9 +107,7 @@ async function getDocumentInfo(data: Uint8Array, password?: string): Promise<Nat
 async function extractImages(data: Uint8Array): Promise<NativeExtractedImage[]> {
     const module = await initQpdfModule();
     if (typeof module.extractImages !== "function") {
-        throw new QpdfImageExtractionError(
-            "Failed to extract images: qpdf module is missing the extractImages export. Ensure qpdf.js and qpdf.wasm are up to date.",
-        );
+        throw new QpdfImageExtractionError("Failed to extract images: qpdf module is missing the extractImages export. Ensure qpdf.js and qpdf.wasm are up to date.");
     }
     return module.extractImages(data);
 }

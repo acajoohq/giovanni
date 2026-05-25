@@ -1,32 +1,144 @@
 # Native build contract
 
-This directory contains native (CMake / Emscripten) and container build definitions for upstream engines used by `@pdfly/wasm`.
+This directory contains the C++ interface, platform-agnostic implementation,
+and platform-specific build targets for the pdfly engines.
+
+## Architecture
+
+```
+native/
+  interface/           <- Canonical C++ types + abstract interface (source of truth)
+  impl/                <- Platform-agnostic C++ implementations
+  targets/             <- Platform-specific adapters
+    wasm/              <- Emscripten -> .wasm + .js  (see qpdf/ and ghostscript/ below)
+    jsi/               <- React Native JSI -> native module
+    native/            <- Standalone C library for FFI (Python, Rust, Go, etc.)
+  qpdf/                <- Emscripten build definition for the qpdf WASM target
+  ghostscript/         <- Emscripten build definition for the Ghostscript WASM target
+```
+
+### Layer 1 — `interface/`
+
+Contains the **single source of truth** for all data types and abstract
+interfaces used across every build target. No platform or runtime headers
+are included here.
+
+| File | Purpose |
+|------|---------|
+| `interface/include/pdfly/types.h` | `WriteOptions`, `DocumentInfo`, `ExtractedImage` |
+| `interface/include/pdfly/api.h`   | `IQpdfEngine`, `IGhostscriptEngine` (pure virtual) |
+
+These types mirror the TypeScript `NativeWriteOptions` / `NativeDocumentInfo` /
+`NativeExtractedImage` interfaces in `src/bindings/`.
+
+### Layer 2 — `impl/`
+
+Platform-agnostic **concrete implementations** of the abstract interfaces.
+No Emscripten, no JSI, no browser APIs.
+
+| Directory | Class | Implements |
+|-----------|-------|-----------|
+| `impl/qpdf/` | `QpdfEngine` | `IQpdfEngine` via libqpdf |
+| `impl/ghostscript/` | `GhostscriptEngine` | `IGhostscriptEngine` via gsapi (TODO) |
+
+### Layer 3 — `targets/`
+
+Platform adapters. Each target takes `IQpdfEngine` / `IGhostscriptEngine`
+as a dependency and adapts the input/output types for its runtime.
+
+| Target | Output | Use case |
+|--------|--------|----------|
+| `targets/wasm/` | `.js` + `.wasm` | Web / Node.js (see `qpdf/` + `ghostscript/` dirs) |
+| `targets/jsi/` | `.so` / `.dylib` | React Native (Hermes JSI) |
+| `targets/native/` | `libpdfly_native.a/.so` + `pdfly_c.h` | FFI from Python, Rust, Go, Swift, etc. |
+
+---
 
 ## Separation of concerns
 
-- `tools/vendor/*`
+- **`tools/vendor/*`**
   Orchestration only: pinned source definitions, target selection, Docker invocation
 
-- `native/qpdf/*`
-  qpdf-specific native build definition only: Docker recipe, CMake, toolchains, Emscripten bindings
+- **`qpdf/`** (Emscripten target — WASM output)
+  qpdf-specific Emscripten build: Docker recipe, CMake, toolchains, Emscripten bindings
 
-- `native/ghostscript/*`
-  Ghostscript-specific native build definition only: Docker-driven upstream build plus the narrow `gsapi_*` Emscripten wrapper
+- **`ghostscript/`** (Emscripten target — WASM output)
+  Ghostscript-specific Docker-driven build + narrow `gsapi_*` Emscripten wrapper
 
-- `build/qpdf` and `build/ghostscript`
-  Generated artifacts only: build outputs consumed by packaging or smoke scripts
+- **`build/qpdf`** and **`build/ghostscript`**
+  Generated artifacts consumed by the TypeScript package
 
-- `src/*`
-  Runtime/library API only: package code that ships to consumers
+- **`src/*`**
+  Runtime/library API: TypeScript package code that ships to consumers
+
+## Build targets
+
+### WASM (web)
+
+```bash
+# Uses the existing qpdf/ Emscripten build
+cd qpdf
+emcmake cmake -B build -DQPDF_SOURCE_DIR=../../../vendor/qpdf
+cmake --build build
+```
+
+### Standalone C library (FFI)
+
+```bash
+cd targets/native
+cmake -B build -DQPDF_SOURCE_DIR=../../../vendor/qpdf
+cmake --build build
+# produces: build/libpdfly_native.a + pdfly_c.h
+```
+
+Python FFI example:
+
+```python
+import ctypes, pathlib
+
+lib = ctypes.CDLL(str(pathlib.Path("build/libpdfly_native.so")))
+lib.pdfly_qpdf_create.restype = ctypes.c_void_p
+
+handle = lib.pdfly_qpdf_create()
+buf = ctypes.create_string_buffer(64)
+lib.pdfly_get_version(handle, buf, 64)
+print(buf.value.decode())  # e.g. "2.5.0"
+lib.pdfly_qpdf_destroy(handle)
+```
+
+### C++ library (direct C++ use)
+
+```bash
+cd qpdf/bindings/cpp
+cmake -B build -DQPDF_SOURCE_DIR=../../../../vendor/qpdf
+cmake --build build
+# produces: build/libpdfly_qpdf.a
+```
+
+### JSI (React Native)
+
+```bash
+cd targets/jsi/qpdf
+cmake -B build \
+  -DQPDF_SOURCE_DIR=../../../../vendor/qpdf \
+  -DJSI_INCLUDE_DIR=/path/to/react-native/ReactCommon
+cmake --build build
+```
 
 ## Output contract
 
-Each engine writes to its own output directory:
+Each WASM engine writes to its own output directory:
 
 - `build/qpdf`
     - `qpdf.js`
     - `qpdf.wasm`
     - `manifest.json`
+
+- `build/ghostscript`
+    - `ghostscript.js`
+    - `ghostscript.wasm`
+    - `manifest.json`
+
 
 - `build/ghostscript`
     - `ghostscript.js`

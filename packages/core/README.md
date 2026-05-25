@@ -111,6 +111,7 @@ PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core bu
 ```
 
 Vendor sync contract:
+
 - Pinned source archives are declared in `tools/vendor/upstreams.ts`
 - Docker fetches those archives during the build
 - No manual host-side vendor cache is required
@@ -159,12 +160,12 @@ pnpm --filter @giovanni/core build:native:all
 
 ### Build environment variables
 
-| Variable | Applies to | Description |
-|---|---|---|
-| `PDFLY_DOCKER_CACHE_ROOT` | WASM builds | Override Docker buildx cache directory |
-| `PDFLY_NATIVE_SHARED=1` | `build:native` | Build shared library instead of static |
-| `PDFLY_JSI_INCLUDE_DIR` | `build:jsi` | Path to `ReactCommon/` (JSI headers) |
-| `PDFLY_NATIVE_JOBS` | native / JSI | Parallel CMake build jobs (default: 4) |
+| Variable                  | Applies to     | Description                            |
+| ------------------------- | -------------- | -------------------------------------- |
+| `PDFLY_DOCKER_CACHE_ROOT` | WASM builds    | Override Docker buildx cache directory |
+| `PDFLY_NATIVE_SHARED=1`   | `build:native` | Build shared library instead of static |
+| `PDFLY_JSI_INCLUDE_DIR`   | `build:jsi`    | Path to `ReactCommon/` (JSI headers)   |
+| `PDFLY_NATIVE_JOBS`       | native / JSI   | Parallel CMake build jobs (default: 4) |
 
 ## Development
 
@@ -194,6 +195,7 @@ build/      WASM and native artifacts (generated)
 ```
 
 Architecture references:
+
 - [`native/README.md`](./native/README.md) — C++ native layer (interface → impl → targets)
 - [`src/ARCHITECTURE.md`](./src/ARCHITECTURE.md) — TypeScript directory contract and engine adapter shape
 

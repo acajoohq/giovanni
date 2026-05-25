@@ -1,0 +1,189 @@
+{
+    "name": "@giovanni/core",
+    "version": "0.1.0",
+    "description": "Modern WebAssembly build of qpdf for PDF compression and manipulation",
+    "keywords": [
+        "compression",
+        "pdf",
+        "pdf-processing",
+        "qpdf",
+        "wasm",
+        "webassembly"
+    ],
+    "homepage": "https://github.com/MatteoGauthier/qpdf-wasm#readme",
+    "bugs": {
+        "url": "https://github.com/MatteoGauthier/qpdf-wasm/issues"
+    },
+    "license": "(Apache-2.0 AND AGPL-3.0-or-later)",
+    "author": "qpdf contributors",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MatteoGauthier/qpdf-wasm.git",
+        "directory": "packages/core"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE",
+        "LICENSE.APACHE"
+    ],
+    "type": "module",
+    "sideEffects": false,
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.mts",
+    "exports": {
+        ".": {
+            "source": "./src/index.ts",
+            "import": {
+                "types": "./dist/index.d.mts",
+                "default": "./dist/index.mjs"
+            },
+            "require": {
+                "types": "./dist/index.d.cts",
+                "default": "./dist/index.cjs"
+            }
+        },
+        "./qpdf": {
+            "source": "./src/qpdf.ts",
+            "import": {
+                "types": "./dist/qpdf.d.mts",
+                "default": "./dist/qpdf.mjs"
+            },
+            "require": {
+                "types": "./dist/qpdf.d.cts",
+                "default": "./dist/qpdf.cjs"
+            }
+        },
+        "./ghostscript": {
+            "source": "./src/ghostscript.ts",
+            "import": {
+                "types": "./dist/ghostscript.d.mts",
+                "default": "./dist/ghostscript.mjs"
+            },
+            "require": {
+                "types": "./dist/ghostscript.d.cts",
+                "default": "./dist/ghostscript.cjs"
+            }
+        },
+        "./bindings": {
+            "source": "./src/bindings/index.ts",
+            "import": {
+                "types": "./dist/bindings/index.d.mts",
+                "default": "./dist/bindings/index.mjs"
+            },
+            "require": {
+                "types": "./dist/bindings/index.d.cts",
+                "default": "./dist/bindings/index.cjs"
+            }
+        },
+        "./bindings/jsi": {
+            "source": "./src/bindings/jsi/index.ts",
+            "import": {
+                "types": "./dist/bindings/jsi/index.d.mts",
+                "default": "./dist/bindings/jsi/index.mjs"
+            },
+            "require": {
+                "types": "./dist/bindings/jsi/index.d.cts",
+                "default": "./dist/bindings/jsi/index.cjs"
+            }
+        }
+    },
+    "publishConfig": {
+        "exports": {
+            ".": {
+                "import": {
+                    "types": "./dist/index.d.mts",
+                    "default": "./dist/index.mjs"
+                },
+                "require": {
+                    "types": "./dist/index.d.cts",
+                    "default": "./dist/index.cjs"
+                }
+            },
+            "./qpdf": {
+                "import": {
+                    "types": "./dist/qpdf.d.mts",
+                    "default": "./dist/qpdf.mjs"
+                },
+                "require": {
+                    "types": "./dist/qpdf.d.cts",
+                    "default": "./dist/qpdf.cjs"
+                }
+            },
+            "./ghostscript": {
+                "import": {
+                    "types": "./dist/ghostscript.d.mts",
+                    "default": "./dist/ghostscript.mjs"
+                },
+                "require": {
+                    "types": "./dist/ghostscript.d.cts",
+                    "default": "./dist/ghostscript.cjs"
+                }
+            },
+            "./bindings": {
+                "import": {
+                    "types": "./dist/bindings/index.d.mts",
+                    "default": "./dist/bindings/index.mjs"
+                },
+                "require": {
+                    "types": "./dist/bindings/index.d.cts",
+                    "default": "./dist/bindings/index.cjs"
+                }
+            },
+            "./bindings/jsi": {
+                "import": {
+                    "types": "./dist/bindings/jsi/index.d.mts",
+                    "default": "./dist/bindings/jsi/index.mjs"
+                },
+                "require": {
+                    "types": "./dist/bindings/jsi/index.d.cts",
+                    "default": "./dist/bindings/jsi/index.cjs"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "build": "pnpm run build:wasm && pnpm run build:lib",
+        "build:vendor": "tsx tools/vendor/build.ts",
+        "build:lib": "tsdown",
+        "build:qpdf:dev": "pnpm run build:vendor -- qpdf dev",
+        "build:qpdf:prd": "pnpm run build:vendor -- qpdf prd",
+        "build:ghostscript:dev": "pnpm run build:vendor -- ghostscript dev",
+        "build:ghostscript:prd": "pnpm run build:vendor -- ghostscript prd",
+        "smoke:ghostscript": "tsx tools/dev/ghostscript-smoke.ts",
+        "build:wasm": "pnpm run build:vendor -- all prd",
+        "build:wasm:dev": "pnpm run build:vendor -- all dev",
+        "build:native": "tsx tools/vendor/build-native.ts native",
+        "build:jsi": "tsx tools/vendor/build-native.ts jsi",
+        "build:native:all": "tsx tools/vendor/build-native.ts all",
+        "clean": "tsx tools/dev/clean.ts",
+        "format": "oxfmt --write src tools tsdown.config.ts vitest.config.ts",
+        "format:check": "oxfmt --check src tools tsdown.config.ts vitest.config.ts",
+        "lint": "oxlint src tools tsdown.config.ts vitest.config.ts",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest",
+        "typecheck": "tsgo --noEmit",
+        "validate": "publint",
+        "verify:release": "tsx tools/dev/verify-release.ts",
+        "package:check": "pnpm run validate && pnpm run verify:release && pnpm pack --dry-run"
+    },
+    "devDependencies": {
+        "@arethetypeswrong/cli": "^0.18.2",
+        "@arethetypeswrong/core": "^0.18.2",
+        "@types/node": "^25.6.0",
+        "@typescript/native-preview": "7.0.0-dev.20260505.1",
+        "@vitest/coverage-v8": "^4.1.5",
+        "oxfmt": "^0.48.0",
+        "oxlint": "^1.63.0",
+        "publint": "^0.3.19",
+        "tsdown": "^0.21.10",
+        "tsx": "^4.20.6",
+        "typescript": "^6.0.3",
+        "vitest": "^4.1.5"
+    },
+    "engines": {
+        "node": ">=24.0.0"
+    }
+}

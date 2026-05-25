@@ -1,4 +1,4 @@
-﻿import { formatBytes, mergePdfs } from "@pdfly/wasm";
+﻿import { formatBytes, mergePdfs } from "@giovanni/core";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";

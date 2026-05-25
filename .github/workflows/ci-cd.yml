@@ -99,7 +99,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: .tmp/docker-buildx-cache/qpdf-prd
-                  key: docker-buildx-qpdf-${{ runner.os }}-${{ hashFiles('packages/pdfly-wasm/native/qpdf/docker.Dockerfile', 'packages/pdfly-wasm/native/qpdf/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
+                  key: docker-buildx-qpdf-${{ runner.os }}-${{ hashFiles('packages/core/native/qpdf/docker.Dockerfile', 'packages/core/native/qpdf/**', 'packages/core/tools/vendor/upstreams.ts') }}
                   restore-keys: |
                       docker-buildx-qpdf-${{ runner.os }}-
 
@@ -107,7 +107,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: .tmp/docker-buildx-cache/ghostscript-prd
-                  key: docker-buildx-ghostscript-${{ runner.os }}-${{ hashFiles('packages/pdfly-wasm/native/ghostscript/docker.Dockerfile', 'packages/pdfly-wasm/native/ghostscript/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
+                  key: docker-buildx-ghostscript-${{ runner.os }}-${{ hashFiles('packages/core/native/ghostscript/docker.Dockerfile', 'packages/core/native/ghostscript/**', 'packages/core/tools/vendor/upstreams.ts') }}
                   restore-keys: |
                       docker-buildx-ghostscript-${{ runner.os }}-
 

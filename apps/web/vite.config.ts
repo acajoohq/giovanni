@@ -55,7 +55,7 @@ function copyPdflyWasmRuntimeAssetsPlugin(): Plugin {
         },
         async generateBundle() {
             for (const assetFileName of PDFLY_WASM_RUNTIME_ASSETS) {
-                const assetPath = resolve(rootDirectory, "packages/pdfly-wasm/dist", assetFileName);
+                const assetPath = resolve(rootDirectory, "packages/core/dist", assetFileName);
                 const source = await readFile(assetPath);
 
                 this.emitFile({

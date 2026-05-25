@@ -1,5 +1,5 @@
-import type { CompressOptions } from "@pdfly/wasm";
-import type { GhostscriptPdfSettings } from "@pdfly/wasm/ghostscript";
+import type { CompressOptions } from "@giovanni/core";
+import type { GhostscriptPdfSettings } from "@giovanni/core/ghostscript";
 import { GHOSTSCRIPT_ENGINE_PRESETS, SIMPLE_COMPRESSION_PRESETS } from "../constants/compressTool.constants";
 import type { CompressionJobSettings, GhostscriptSettings, SimpleCompressionPreset } from "../types/compressTool.types";
 

@@ -1,6 +1,6 @@
-import { compressPdf, formatBytes, type CompressionEngine, type CompressResult } from "@pdfly/wasm";
-import { QPDF_PRESETS, type DecodeLevel, type ObjectStreamMode, type QpdfOptimizePreset } from "@pdfly/wasm/qpdf";
-import { type GhostscriptColorConversionStrategy, type GhostscriptPdfSettings } from "@pdfly/wasm/ghostscript";
+import { compressPdf, formatBytes, type CompressionEngine, type CompressResult } from "@giovanni/core";
+import { QPDF_PRESETS, type DecodeLevel, type ObjectStreamMode, type QpdfOptimizePreset } from "@giovanni/core/qpdf";
+import { type GhostscriptColorConversionStrategy, type GhostscriptPdfSettings } from "@giovanni/core/ghostscript";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";

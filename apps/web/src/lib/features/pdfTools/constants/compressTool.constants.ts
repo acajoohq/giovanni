@@ -1,6 +1,6 @@
-import type { CompressOptions } from "@pdfly/wasm";
-import { GHOSTSCRIPT_PRESETS, type GhostscriptCompatibilityLevel, type GhostscriptPdfSettings } from "@pdfly/wasm/ghostscript";
-import { QPDF_PRESETS, type QpdfOptimizePreset } from "@pdfly/wasm/qpdf";
+import type { CompressOptions } from "@giovanni/core";
+import { GHOSTSCRIPT_PRESETS, type GhostscriptCompatibilityLevel, type GhostscriptPdfSettings } from "@giovanni/core/ghostscript";
+import { QPDF_PRESETS, type QpdfOptimizePreset } from "@giovanni/core/qpdf";
 import type { CompressionUiMode, GhostscriptSettings, QpdfSettings, SimpleCompressionPreset } from "../types/compressTool.types";
 
 export const COMPRESSION_UI_MODES = ["simple", "advanced"] as const satisfies readonly CompressionUiMode[];

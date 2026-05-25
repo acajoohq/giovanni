@@ -1,0 +1,2 @@
+C:/Users/edwar/Documents/Repos/qpdf-wasm/packages/pdfly-wasm/wasm/../build/wasm/qpdf.js
+C:/Users/edwar/Documents/Repos/qpdf-wasm/packages/pdfly-wasm/wasm/../build/wasm/qpdf.wasm

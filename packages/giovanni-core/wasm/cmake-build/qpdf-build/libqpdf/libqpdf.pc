@@ -1,0 +1,11 @@
+prefix=C:/Program Files (x86)/qpdf-wasm
+exec_prefix=${prefix}
+libdir=C:/Program Files (x86)/qpdf-wasm/lib
+includedir=C:/Program Files (x86)/qpdf-wasm/include
+
+Name: libqpdf
+Description: PDF transformation library
+Version: 12.4.0
+Requires.private: zlib, libjpeg
+Libs: -L${libdir} -lqpdf
+Cflags: -I${includedir} -std=c++20

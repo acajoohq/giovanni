@@ -1,4 +1,4 @@
-﻿import { extractImages, formatBytes, type ExtractedImage, type ExtractImagesResult } from "@pdfly/wasm";
+﻿import { extractImages, formatBytes, type ExtractedImage, type ExtractImagesResult } from "@giovanni/core";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";

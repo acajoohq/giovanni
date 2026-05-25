@@ -1,4 +1,4 @@
-import { formatBytes, type ExtractedImage } from "@pdfly/wasm";
+import { formatBytes, type ExtractedImage } from "@giovanni/core";
 import type { PdfPageJpg } from "@pdfly/pdf-render";
 import { zip } from "fflate";
 import { copyPdfBytes, copyPdfEntries } from "./pdfBytes.utils";

@@ -65,6 +65,28 @@
                 "types": "./dist/ghostscript.d.cts",
                 "default": "./dist/ghostscript.cjs"
             }
+        },
+        "./bindings": {
+            "source": "./src/bindings/index.ts",
+            "import": {
+                "types": "./dist/bindings/index.d.mts",
+                "default": "./dist/bindings/index.mjs"
+            },
+            "require": {
+                "types": "./dist/bindings/index.d.cts",
+                "default": "./dist/bindings/index.cjs"
+            }
+        },
+        "./bindings/jsi": {
+            "source": "./src/bindings/jsi/index.ts",
+            "import": {
+                "types": "./dist/bindings/jsi/index.d.mts",
+                "default": "./dist/bindings/jsi/index.mjs"
+            },
+            "require": {
+                "types": "./dist/bindings/jsi/index.d.cts",
+                "default": "./dist/bindings/jsi/index.cjs"
+            }
         }
     },
     "publishConfig": {
@@ -97,6 +119,26 @@
                 "require": {
                     "types": "./dist/ghostscript.d.cts",
                     "default": "./dist/ghostscript.cjs"
+                }
+            },
+            "./bindings": {
+                "import": {
+                    "types": "./dist/bindings/index.d.mts",
+                    "default": "./dist/bindings/index.mjs"
+                },
+                "require": {
+                    "types": "./dist/bindings/index.d.cts",
+                    "default": "./dist/bindings/index.cjs"
+                }
+            },
+            "./bindings/jsi": {
+                "import": {
+                    "types": "./dist/bindings/jsi/index.d.mts",
+                    "default": "./dist/bindings/jsi/index.mjs"
+                },
+                "require": {
+                    "types": "./dist/bindings/jsi/index.d.cts",
+                    "default": "./dist/bindings/jsi/index.cjs"
                 }
             }
         }

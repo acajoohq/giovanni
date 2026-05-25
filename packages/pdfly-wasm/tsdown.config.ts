@@ -1,7 +1,7 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-    entry: ["src/index.ts", "src/qpdf.ts", "src/ghostscript.ts"],
+    entry: ["src/index.ts", "src/qpdf.ts", "src/ghostscript.ts", "src/bindings/index.ts", "src/bindings/jsi/index.ts"],
     format: ["esm", "cjs"],
     dts: true,
     clean: true,

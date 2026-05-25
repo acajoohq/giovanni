@@ -1,15 +1,14 @@
-import { initQpdfModule } from "./engines/qpdf/module-loader.js";
+import { getQpdfBinding } from "./bindings/index.js";
 import { QpdfDocument } from "./engines/qpdf/document.js";
 import { QPDF_PRESETS } from "./engines/qpdf/options.js";
 import { compressPdfWithQpdf, optimizePdf, linearizePdf } from "./engines/qpdf/optimize.js";
 
 export async function initQpdf(): Promise<void> {
-    await initQpdfModule();
+    await getQpdfBinding().init();
 }
 
 export async function getQpdfVersion(): Promise<string> {
-    const module = await initQpdfModule();
-    return module.getVersion();
+    return getQpdfBinding().getVersion();
 }
 
 export { compressPdfWithQpdf, linearizePdf, optimizePdf, QpdfDocument, QPDF_PRESETS };

@@ -1,12 +1,11 @@
-import { initGhostscriptModule } from "./engines/ghostscript/module-loader.js";
+import { getGhostscriptBinding } from "./bindings/index.js";
 
 export async function initGhostscript(): Promise<void> {
-    await initGhostscriptModule();
+    await getGhostscriptBinding().init();
 }
 
 export async function getGhostscriptVersion(): Promise<string> {
-    const module = await initGhostscriptModule();
-    return module.getVersion();
+    return getGhostscriptBinding().getVersion();
 }
 
 export { compressPdfWithGhostscript } from "./engines/ghostscript/compress.js";

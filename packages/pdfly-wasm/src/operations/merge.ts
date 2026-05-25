@@ -1,4 +1,4 @@
-import { initQpdfModule } from "../engines/qpdf/module-loader.js";
+import { getQpdfBinding } from "../bindings/index.js";
 import { QpdfMergeError } from "../errors/index.js";
 import { toUint8Array } from "../utils/buffer.js";
 import type { MergeResult } from "../types/index.js";
@@ -23,13 +23,8 @@ export async function mergePdfs(inputs: Array<Uint8Array | ArrayBuffer>): Promis
     }
 
     try {
-        const module = await initQpdfModule();
-        if (typeof module.mergePdfs !== "function") {
-            throw new QpdfMergeError("Failed to initialize PDF merger: qpdf module is missing the mergePdfs export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.");
-        }
-
         const normalizedInputs = inputs.map(toUint8Array);
-        const data: Uint8Array = module.mergePdfs(normalizedInputs).slice();
+        const data = await getQpdfBinding().mergePdfs(normalizedInputs);
 
         return {
             data,

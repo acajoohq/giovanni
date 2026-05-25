@@ -1,4 +1,4 @@
-import { initQpdfModule } from "../engines/qpdf/module-loader.js";
+import { getQpdfBinding } from "../bindings/index.js";
 import { QpdfSplitError } from "../errors/index.js";
 import { toUint8Array } from "../utils/buffer.js";
 import type { SplitResult } from "../types/index.js";
@@ -20,18 +20,8 @@ import type { SplitResult } from "../types/index.js";
  */
 export async function splitPdf(input: Uint8Array | ArrayBuffer): Promise<SplitResult> {
     try {
-        const module = await initQpdfModule();
-        if (typeof module.splitPages !== "function") {
-            throw new QpdfSplitError(
-                "Failed to initialize PDF splitter: qpdf module is missing the splitPages export. Ensure qpdf.js and qpdf.wasm are up to date and compatible.",
-            );
-        }
         const inputBuffer = toUint8Array(input);
-        const rawPages: Uint8Array[] = module.splitPages(inputBuffer);
-        // Copy each page out of WASM memory immediately. The Uint8Arrays returned by
-        // the WASM module are views into the shared WASM heap. Any subsequent WASM
-        // call (e.g. mergePdfs) may reallocate that heap, invalidating the views.
-        const pages = rawPages.map((page) => page.slice());
+        const pages = await getQpdfBinding().splitPages(inputBuffer);
 
         return {
             pages,

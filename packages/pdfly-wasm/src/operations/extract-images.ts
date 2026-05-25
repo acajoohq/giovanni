@@ -1,9 +1,9 @@
-import { initQpdfModule } from "../engines/qpdf/module-loader.js";
+import { getQpdfBinding } from "../bindings/index.js";
 import { QpdfImageExtractionError } from "../errors/index.js";
 import { encodeRawPixelsAsPng, rawPixelUnsupportedReason } from "./pixel-encoder.js";
 import { toUint8Array } from "../utils/buffer.js";
 import type { ExtractedImage, ExtractImagesResult } from "../types/index.js";
-import type { WasmExtractedImage } from "../types/wasm.types.js";
+import type { NativeExtractedImage } from "../bindings/index.js";
 
 /**
  * Extract every embedded raster image from a PDF.
@@ -21,13 +21,8 @@ import type { WasmExtractedImage } from "../types/wasm.types.js";
  */
 export async function extractImages(input: Uint8Array | ArrayBuffer): Promise<ExtractImagesResult> {
     try {
-        const module = await initQpdfModule();
-        if (typeof module.extractImages !== "function") {
-            throw new QpdfImageExtractionError("Failed to extract images: qpdf module is missing the extractImages export. Ensure qpdf.js and qpdf.wasm are up to date.");
-        }
-
         const inputBuffer = toUint8Array(input);
-        const rawImages: WasmExtractedImage[] = module.extractImages(inputBuffer);
+        const rawImages = await getQpdfBinding().extractImages(inputBuffer);
 
         const images = await Promise.all(rawImages.map((raw) => toExtractedImage(raw)));
 
@@ -43,7 +38,7 @@ export async function extractImages(input: Uint8Array | ArrayBuffer): Promise<Ex
     }
 }
 
-async function toExtractedImage(raw: WasmExtractedImage): Promise<ExtractedImage> {
+async function toExtractedImage(raw: NativeExtractedImage): Promise<ExtractedImage> {
     const base = {
         objectKey: raw.objectKey,
         xobjectKey: raw.xobjectKey,

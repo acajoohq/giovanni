@@ -1,17 +1,16 @@
 import { QpdfCompressionError, QpdfValidationError } from "../../errors/index.js";
+import { getQpdfBinding } from "../../bindings/index.js";
 import { toUint8Array } from "../../utils/buffer.js";
 import { calculateSavings } from "../../utils/format.js";
 import type { CompressResult, OptimizeOptions, OptimizeResult } from "../../types/index.js";
 import type { OptimizeResult as QpdfOptimizeResult } from "../../types/qpdf.types.js";
-import { initQpdfModule } from "./module-loader.js";
 import { getQpdfPreset, validateQpdfOptions } from "./options.js";
 
 export async function compressPdfWithQpdf(input: Uint8Array | ArrayBuffer, options: OptimizeOptions = {}): Promise<OptimizeResult & { engine: "qpdf" }> {
     try {
-        const module = await initQpdfModule();
         const inputBuffer = toUint8Array(input);
         const validatedOptions = validateQpdfOptions(options);
-        const optimizedBuffer = module.compressPdf(inputBuffer, validatedOptions).slice();
+        const optimizedBuffer = await getQpdfBinding().writePdf(inputBuffer, validatedOptions);
 
         const originalSize = inputBuffer.byteLength;
         const compressedSize = optimizedBuffer.byteLength;

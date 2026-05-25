@@ -72,3 +72,21 @@ install(TARGETS pdfly_native
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(FILES pdfly_c.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# ---------------------------------------------------------------------------
+# Tests (CTest)
+# ---------------------------------------------------------------------------
+
+enable_testing()
+
+add_executable(pdfly_native_test test/pdfly_native_test.cc)
+
+target_include_directories(pdfly_native_test
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PDFLY_INTERFACE_INCLUDE}
+    ${PDFLY_IMPL_QPDF})
+
+target_link_libraries(pdfly_native_test PRIVATE pdfly_native)
+
+add_test(NAME pdfly_native_smoke COMMAND pdfly_native_test)

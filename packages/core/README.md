@@ -1,14 +1,14 @@
-# @pdfly/wasm
+﻿# @giovanni/core
 
-[qpdf](https://github.com/qpdf/qpdf) and **Ghostscript** in the browser or Node via WebAssembly: compress, split, merge, extract images, inspect, organize. The root package is task-oriented; engine-specific APIs such as `optimizePdf`, `QpdfDocument`, and `compressPdfWithGhostscript` live under `@pdfly/wasm/qpdf` and `@pdfly/wasm/ghostscript`.
+[qpdf](https://github.com/qpdf/qpdf) and **Ghostscript** compiled to WebAssembly — compress, split, merge, extract images, inspect, and organize PDFs in the browser or Node.js. The root package is task-oriented; engine-specific APIs live under `@giovanni/core/qpdf` and `@giovanni/core/ghostscript`.
 
 **PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@pdfly/pdf-render`**, not in this module.
 
 ## Install
 
 ```bash
-pnpm add @pdfly/wasm
-# npm install @pdfly/wasm
+pnpm add @giovanni/core
+# npm install @giovanni/core
 ```
 
 Needs **Node 24+** for local dev ([`engines`](package.json)). Docker is the build toolchain for the vendored WASM engines. On Windows, use Docker Desktop with Linux containers enabled.
@@ -16,9 +16,9 @@ Needs **Node 24+** for local dev ([`engines`](package.json)). Docker is the buil
 ## Usage
 
 ```ts
-import { compressPdf, inspectPdf, splitPdf } from "@pdfly/wasm";
+import { compressPdf, inspectPdf, splitPdf } from "@giovanni/core";
 
-const input = await fetch("document.pdf").then((response) => response.arrayBuffer());
+const input = await fetch("document.pdf").then((r) => r.arrayBuffer());
 
 const info = await inspectPdf(input);
 
@@ -30,17 +30,14 @@ const compressed = await compressPdf(input, {
 const pages = await splitPdf(compressed.data);
 ```
 
-If you want to work with engine-specific entrypoints, use the subpaths directly:
+Engine-specific entrypoints are available via subpath imports:
 
 ```ts
-import { compressPdf } from "@pdfly/wasm";
-import { optimizePdf, QpdfDocument } from "@pdfly/wasm/qpdf";
-import { compressPdfWithGhostscript } from "@pdfly/wasm/ghostscript";
+import { compressPdf } from "@giovanni/core";
+import { optimizePdf, QpdfDocument } from "@giovanni/core/qpdf";
+import { compressPdfWithGhostscript } from "@giovanni/core/ghostscript";
 
-const qpdfResult = await compressPdf(input, {
-    engine: "qpdf",
-    preset: "web",
-});
+const qpdfResult = await compressPdf(input, { engine: "qpdf", preset: "web" });
 
 const ghostscriptResult = await compressPdf(input, {
     engine: "ghostscript",
@@ -56,146 +53,169 @@ document.dispose();
 const screenResult = await compressPdfWithGhostscript(input, { preset: "screen" });
 ```
 
-In the web app, the compression tool now exposes both engines directly:
+## Engines
 
-- `qpdf` stays the default lossless path
-- `ghostscript` is available as the lossy rewrite path with image-oriented controls
+### QPDF
 
-## QPDF Scope
+QPDF is a lossless PDF structural tool. It handles: object stream rewriting, flate recompression, linearization, inspection, validation, splitting, merging, and page organization. It does not resample or re-encode images, so it is not a lossy image compressor.
 
-QPDF is a lossless PDF structural tool. It is a good fit for rewriting PDFs, object streams, flate recompression, linearization, inspection, validation, splitting, merging, and page organization. It does not resample or re-encode images, so it is not an aggressive lossy image compressor.
+Omitted optimization options fall back to `OptimizeOptions` defaults. Notably **`objectStreams` defaults to `generate`**, which usually improves size by rewriting object streams; set **`preserve`** if you need output structure closer to the input (e.g. for compatibility or structural diffs).
 
-Omitted optimization options use the defaults in `OptimizeOptions` (see TypeScript types). Notably, **`objectStreams` defaults to `generate`**, which usually improves size by rewriting object streams; set **`preserve`** if you need output structure closer to the input (e.g. compatibility or structural diffs).
-
-To render each PDF page to a JPEG via PDF.js, use **`@pdfly/pdf-render`**:
+To render PDF pages to JPEG via PDF.js, use the sibling package:
 
 ```ts
 import { renderPdfPagesToJpg } from "@pdfly/pdf-render";
 ```
 
-## Build from this monorepo
+### Ghostscript
 
-Pinned upstream sources are fetched inside the Docker build. From the repo root:
+Ghostscript is the lossy rewrite path. It re-encodes images and rewrites the entire PDF through the `pdfwrite` device, which can recover much more space than qpdf on scan-heavy documents.
+
+> **Experimental.** Ghostscript is not yet considered stable in this package.
+
+Observed behavior in this repo:
+
+- `qpdf.wasm` ≈ 1 MB — fast, lossless structural rewrites
+- `ghostscript.wasm` ≈ 17 MB — slower; can save significantly more on image-heavy PDFs
+- Processing time for larger scanned PDFs can reach several seconds
+
+**Licensing:** Ghostscript is dual-licensed under AGPLv3 or a commercial license by Artifex. This package's metadata reflects `(Apache-2.0 AND AGPL-3.0-or-later)`. SaaS and closed-source distribution likely require careful AGPL compliance review or a commercial license. Read the official pages before distributing a Ghostscript-enabled build:
+
+- [Artifex licensing](https://artifex.com/licensing)
+- [Ghostscript FAQ](https://ghostscript.com/faq/)
+
+## Building
+
+### WASM (web / Node.js)
+
+Requires **Docker Desktop** (Linux containers). Pinned source archives are fetched inside the container — no manual vendor clone needed.
 
 ```bash
-pnpm --filter @pdfly/wasm build
+# Full build (WASM + bundle)
+pnpm --filter @giovanni/core build
+
+# WASM engines only (parallel)
+pnpm --filter @giovanni/core build:wasm
+
+# Individual engine builds
+pnpm --filter @giovanni/core build:qpdf:dev
+pnpm --filter @giovanni/core build:qpdf:prd
+pnpm --filter @giovanni/core build:ghostscript:dev
+pnpm --filter @giovanni/core build:ghostscript:prd
 ```
 
-The default `build` path runs the optimized qpdf and Ghostscript Docker builds and then bundles the package. More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).
-
-The engine builds now run in parallel when you call:
+If your Docker buildx driver supports local cache export, the build reuses a per-engine cache directory. Override the cache location with:
 
 ```bash
-pnpm --filter @pdfly/wasm build:wasm
+PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
 ```
 
-If your Docker buildx driver supports local cache export, `tools/vendor/build.ts` also reuses a per-engine cache directory. You can override that cache location with:
+Vendor sync contract:
+- Pinned source archives are declared in `tools/vendor/upstreams.ts`
+- Docker fetches those archives during the build
+- No manual host-side vendor cache is required
+
+### C FFI (native)
+
+Produces `libpdfly_native` (static by default) and a C header `pdfly_c.h`. Requires **CMake** and a **C++20 compiler** — no Docker needed.
 
 ```bash
-PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @pdfly/wasm build:wasm
+pnpm --filter @giovanni/core build:native
 ```
 
-Vendor sync is intentionally simple:
+Output lands in `build/native/`.
 
-- pinned source archives live in `tools/vendor/upstreams.ts`
-- Docker fetches those pinned archives during the build
-- no manual clone or host-side vendor cache is required
+```c
+#include "pdfly_c.h"
 
-```bash
-pnpm --filter @pdfly/wasm test
-pnpm --filter @pdfly/wasm validate
-pnpm --filter @pdfly/wasm package:check
+PdflyQpdfHandle h = pdfly_qpdf_create();
+// ... pdfly_write_pdf, pdfly_split_pages, pdfly_merge_pdfs ...
+pdfly_qpdf_destroy(h);
 ```
 
-Useful collaborator commands:
+Usable from Python, Rust, Go, Swift, or any language with a C FFI. Build as a shared library instead of static:
 
 ```bash
-pnpm --filter @pdfly/wasm build:qpdf:dev
-pnpm --filter @pdfly/wasm build:qpdf:prd
-pnpm --filter @pdfly/wasm build:ghostscript:dev
-pnpm --filter @pdfly/wasm build:ghostscript:prd
+PDFLY_NATIVE_SHARED=1 pnpm --filter @giovanni/core build:native
 ```
 
-Build-system contract:
+### React Native (JSI)
 
-- [`native/README.md`](./native/README.md)
-
-`src/` — TS API; `tools/` — local orchestration and smoke helpers; `native/` — CMake, Emscripten bindings, and Docker build definitions; `dist/` — packaged output.
-
-Runtime engine contract:
-
-- both engines use an engine-local module loader under `src/engines/<engine>/module-loader.ts`
-- both engines implement the same adapter shape under `src/engines/<engine>/engine.ts`
-- `src/compression/*` owns the shared adapter contract and engine registry
-- `src/runtime/wasm-module.loader.ts` owns the shared Emscripten loader pattern
-- [`src/ARCHITECTURE.md`](./src/ARCHITECTURE.md) describes the directory contract
-
-## Ghostscript WASM build
-
-The Ghostscript engine is built with the same Docker-first model as qpdf.
-
-From the repo root:
+Produces `libpdfly_jsi` (shared library) that registers a synchronous `pdfly` object on the JSI runtime, exposing `getVersion`, `writePdf`, `splitPages`, `mergePdfs`, and `getDocumentInfo`.
 
 ```bash
-pnpm --filter @pdfly/wasm build:ghostscript:dev
+# Point to your ReactCommon directory (contains jsi/jsi.h)
+PDFLY_JSI_INCLUDE_DIR=/path/to/node_modules/react-native/ReactCommon \
+  pnpm --filter @giovanni/core build:jsi
 ```
 
-That flow:
+Output lands in `build/jsi/`. If `PDFLY_JSI_INCLUDE_DIR` is not set, the build compiles a stub-only fallback without the JSI runtime dependency.
 
-- uses `packages/pdfly-wasm/native/ghostscript/docker.Dockerfile`
-- uses a pinned `ghostpdl` source archive fetched inside Docker
-- keeps the Ghostscript build logic inside the Dockerfile
-- installs autotools inside the container
-- runs `autogen.sh`, `emconfigure ./configure`, and `emmake make`
-- trims the build to the PDF-focused Ghostscript path by disabling `PCL` and `XPS`
-- exports artifacts into `packages/pdfly-wasm/build/ghostscript`
-
-Current target artifacts are:
-
-- `ghostscript.js`
-- `ghostscript.wasm`
-- `config.log`
-- `configaux.log`
-
-This path is separate from the qpdf WASM build; both ship as artifacts under `build/` and are copied into `dist/` during `pnpm --filter @pdfly/wasm build:lib`.
-
-You can then verify the artifact end to end with:
+### Build all native targets
 
 ```bash
-pnpm --filter @pdfly/wasm smoke:ghostscript \
+pnpm --filter @giovanni/core build:native:all
+```
+
+### Build environment variables
+
+| Variable | Applies to | Description |
+|---|---|---|
+| `PDFLY_DOCKER_CACHE_ROOT` | WASM builds | Override Docker buildx cache directory |
+| `PDFLY_NATIVE_SHARED=1` | `build:native` | Build shared library instead of static |
+| `PDFLY_JSI_INCLUDE_DIR` | `build:jsi` | Path to `ReactCommon/` (JSI headers) |
+| `PDFLY_NATIVE_JOBS` | native / JSI | Parallel CMake build jobs (default: 4) |
+
+## Development
+
+```bash
+pnpm --filter @giovanni/core test
+pnpm --filter @giovanni/core validate
+pnpm --filter @giovanni/core package:check
+```
+
+Smoke test the Ghostscript WASM artifact end to end:
+
+```bash
+pnpm --filter @giovanni/core smoke:ghostscript \
   src/test/fixtures/pdfs/upstream/pdfium/rectangles.pdf \
   .tmp/ghostscript-smoke-rectangles.pdf \
   screen
 ```
 
-That smoke path loads `ghostscript.js`, maps `ghostscript.wasm` with `locateFile(...)`, and calls the native `gsapi_*` rewrite wrapper that drives `pdfwrite` inside the WASM runtime.
+Directory layout:
 
-## Release notes
+```
+src/        TypeScript API
+tools/      Build orchestration and smoke helpers
+native/     CMake sources, Emscripten bindings, Dockerfiles
+dist/       Packaged output (generated)
+build/      WASM and native artifacts (generated)
+```
 
-Ghostscript is still an experimental engine in this package.
+Architecture references:
+- [`native/README.md`](./native/README.md) — C++ native layer (interface → impl → targets)
+- [`src/ARCHITECTURE.md`](./src/ARCHITECTURE.md) — TypeScript directory contract and engine adapter shape
 
-- `qpdf` is the smaller, lossless structural path
-- `ghostscript` is the heavier, lossy rewrite path
-- browser runtime and output quality are content-dependent
+Native source layout:
 
-Observed behavior in this repo:
+```
+native/
+  interface/   Abstract C++ interfaces (IQpdfEngine, IGhostscriptEngine)
+  impl/        Platform-agnostic implementations (QpdfEngine via libqpdf)
+  targets/
+    native/    C FFI wrapper (pdfly_c.h + libpdfly_native)
+    jsi/       React Native JSI adapter (libpdfly_jsi)
+```
 
-- `qpdf.wasm` is roughly `1 MB`
-- `ghostscript.wasm` is materially larger at roughly `17 MB` in the packaged artifact
-- Ghostscript can take several seconds on larger image-heavy PDFs, but usually saves much more space than qpdf on scans
+More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).
 
-## Licensing note
+## Licensing
 
-Ghostscript licensing is handled by Artifex and is not covered by the Apache-only terms that apply to the package-authored TypeScript code.
+The package-authored TypeScript code is **Apache-2.0**. The bundled Ghostscript artifacts are **AGPL-3.0-or-later** (Artifex dual-license). The combined package metadata is therefore:
 
-This published package includes bundled Ghostscript artifacts, so its package metadata is declared as:
+```
+(Apache-2.0 AND AGPL-3.0-or-later)
+```
 
-- `(Apache-2.0 AND AGPL-3.0-or-later)`
-
-- Artifex describes Ghostscript/GhostPDL as dual-licensed under `AGPLv3` or a commercial license
-- their guidance also says SaaS / closed-source distribution cases generally require careful AGPL compliance review or a commercial license
-
-Read the official pages before distributing a Ghostscript-enabled build:
-
-- [Artifex licensing](https://artifex.com/licensing)
-- [Ghostscript FAQ](https://ghostscript.com/faq/)
+The qpdf C++ library is separately licensed — see [`vendor/qpdf/LICENSE.txt`](../../vendor/qpdf/LICENSE.txt).

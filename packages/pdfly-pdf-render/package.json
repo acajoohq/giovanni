@@ -27,7 +27,7 @@
     "type": "module",
     "sideEffects": [
         "./dist/pdfjsLegacy.browser.mjs",
-        "./src/pdfjsLegacy.browser.ts"
+        "./src/pdfjs/legacy.browser.ts"
     ],
     "main": "./dist/index.cjs",
     "module": "./dist/index.mjs",
@@ -45,7 +45,7 @@
             }
         },
         "./pdfjs-legacy/browser": {
-            "source": "./src/pdfjsLegacy.browser.ts",
+            "source": "./src/pdfjs/legacy.browser.ts",
             "import": {
                 "types": "./dist/pdfjsLegacy.browser.d.mts",
                 "default": "./dist/pdfjsLegacy.browser.mjs"

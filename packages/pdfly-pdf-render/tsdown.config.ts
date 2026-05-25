@@ -1,7 +1,10 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-    entry: ["src/index.ts", "src/pdfjsLegacy.browser.ts"],
+    entry: {
+        index: "src/index.ts",
+        "pdfjsLegacy.browser": "src/pdfjs/legacy.browser.ts",
+    },
     format: ["esm", "cjs"],
     dts: true,
     clean: true,

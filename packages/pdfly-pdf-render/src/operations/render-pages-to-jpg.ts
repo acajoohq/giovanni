@@ -1,9 +1,9 @@
 import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
 import type { Canvas as NodeCanvas } from "canvas";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api.js";
-import { PdfRenderError } from "../errors/pdf-render.error";
-import { loadPdfjsLegacy } from "../pdfjs/legacy";
-import type { PdfPageJpg, RenderPdfPagesToJpgOptions, RenderPdfPagesToJpgResult } from "../types/pdf-render.types";
+import { PdfRenderError } from "../errors/pdf-render.error.js";
+import { loadPdfjsLegacy } from "../pdfjs/legacy.js";
+import type { PdfPageJpg, RenderPdfPagesToJpgOptions, RenderPdfPagesToJpgResult } from "../types/pdf-render.types.js";
 
 let pdfjsPromise: ReturnType<typeof loadPdfjsLegacy> | null = null;
 

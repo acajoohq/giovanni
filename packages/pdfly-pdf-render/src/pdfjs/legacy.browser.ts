@@ -4,7 +4,7 @@
  */
 
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.mjs";
-import { configurePdfjsLegacyWorker } from "./legacy";
+import { configurePdfjsLegacyWorker } from "./legacy.js";
 export type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api.js";
 
 if (typeof window !== "undefined") {

@@ -33,7 +33,6 @@ export function configurePdfjsLegacyWorker(globalWorkerOptions: GlobalWorkerOpti
 
 export async function loadPdfjsLegacy(): Promise<PdfjsModule> {
     const mod = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    mod.GlobalWorkerOptions.workerSrc =
-        typeof window === "undefined" ? resolvePdfjsLegacyWorkerUrlForNode() : resolvePdfjsLegacyWorkerUrl();
+    mod.GlobalWorkerOptions.workerSrc = typeof window === "undefined" ? resolvePdfjsLegacyWorkerUrlForNode() : resolvePdfjsLegacyWorkerUrl();
     return mod;
 }

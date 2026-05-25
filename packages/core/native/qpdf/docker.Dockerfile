@@ -22,7 +22,7 @@ RUN apt-get update && \
 
 WORKDIR /src
 
-COPY packages/pdfly-wasm/native/qpdf /src/packages/pdfly-wasm/native/qpdf
+COPY packages/core/native/qpdf /src/packages/core/native/qpdf
 
 RUN set -eux; \
     mkdir -p /src/vendor/qpdf; \
@@ -45,7 +45,7 @@ RUN set -eux; \
             exit 1; \
             ;; \
     esac; \
-    export SOURCE_DIR=/src/packages/pdfly-wasm/native/qpdf; \
+    export SOURCE_DIR=/src/packages/core/native/qpdf; \
     export BUILD_DIR=/tmp/qpdf-build; \
     export OUT_DIR=/out; \
     export BUILD_JOBS="${QPDF_JOBS:-$(nproc)}"; \

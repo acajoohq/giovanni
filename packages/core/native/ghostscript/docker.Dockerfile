@@ -27,7 +27,7 @@ RUN apt-get update && \
 
 WORKDIR /src
 
-COPY packages/pdfly-wasm/native/ghostscript /src/packages/pdfly-wasm/native/ghostscript
+COPY packages/core/native/ghostscript /src/packages/core/native/ghostscript
 
 RUN set -eux; \
     mkdir -p /src/vendor/ghostpdl; \
@@ -53,7 +53,7 @@ RUN set -eux; \
             ;; \
     esac; \
     export SOURCE_DIR=/src/vendor/ghostpdl; \
-    export BINDINGS_DIR=/src/packages/pdfly-wasm/native/ghostscript/bindings/emscripten; \
+    export BINDINGS_DIR=/src/packages/core/native/ghostscript/bindings/emscripten; \
     export OUT_DIR=/out; \
     export HOST_TRIPLE=wasm32-unknown-emscripten; \
     export BUILD_JOBS="${JOBS:-1}"; \

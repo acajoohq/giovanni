@@ -26,7 +26,9 @@
     ],
     "type": "module",
     "sideEffects": [
+        "./dist/pdfjs.browser.mjs",
         "./dist/pdfjsLegacy.browser.mjs",
+        "./src/pdfjs/browser.ts",
         "./src/pdfjs/legacy.browser.ts"
     ],
     "main": "./dist/index.cjs",
@@ -42,6 +44,17 @@
             "require": {
                 "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
+            }
+        },
+        "./pdfjs/browser": {
+            "source": "./src/pdfjs/browser.ts",
+            "import": {
+                "types": "./dist/pdfjs.browser.d.mts",
+                "default": "./dist/pdfjs.browser.mjs"
+            },
+            "require": {
+                "types": "./dist/pdfjs.browser.d.cts",
+                "default": "./dist/pdfjs.browser.cjs"
             }
         },
         "./pdfjs-legacy/browser": {
@@ -66,6 +79,16 @@
                 "require": {
                     "types": "./dist/index.d.cts",
                     "default": "./dist/index.cjs"
+                }
+            },
+            "./pdfjs/browser": {
+                "import": {
+                    "types": "./dist/pdfjs.browser.d.mts",
+                    "default": "./dist/pdfjs.browser.mjs"
+                },
+                "require": {
+                    "types": "./dist/pdfjs.browser.d.cts",
+                    "default": "./dist/pdfjs.browser.cjs"
                 }
             },
             "./pdfjs-legacy/browser": {

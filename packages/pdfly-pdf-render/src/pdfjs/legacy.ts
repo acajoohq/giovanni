@@ -10,13 +10,13 @@
  * @see https://v2.tauri.app/reference/webview-versions/
  */
 
+import type { PdfjsModule } from "./pdfjs-module.types.js";
+
 export type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api.js";
 
 const LEGACY_WORKER_SPECIFIER = "pdfjs-dist/legacy/build/pdf.worker.min.mjs";
 
-type PdfjsModule = typeof import("pdfjs-dist/legacy/build/pdf.mjs");
-
-type GlobalWorkerOptionsLike = Pick<typeof import("pdfjs-dist/legacy/build/pdf.mjs").GlobalWorkerOptions, "workerSrc">;
+type GlobalWorkerOptionsLike = Pick<PdfjsModule["GlobalWorkerOptions"], "workerSrc">;
 
 export function resolvePdfjsLegacyWorkerUrl(): string {
     // String literal is required so Vite can emit the worker as a hashed /assets file in client builds.
@@ -32,7 +32,7 @@ export function configurePdfjsLegacyWorker(globalWorkerOptions: GlobalWorkerOpti
 }
 
 export async function loadPdfjsLegacy(): Promise<PdfjsModule> {
-    const mod = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const mod = (await import("pdfjs-dist/legacy/build/pdf.mjs")) as PdfjsModule;
     mod.GlobalWorkerOptions.workerSrc = typeof window === "undefined" ? resolvePdfjsLegacyWorkerUrlForNode() : resolvePdfjsLegacyWorkerUrl();
     return mod;
 }

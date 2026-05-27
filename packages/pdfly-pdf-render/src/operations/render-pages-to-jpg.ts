@@ -2,15 +2,8 @@ import type { RenderParameters } from "pdfjs-dist/types/src/display/api.js";
 import type { Canvas as NodeCanvas } from "canvas";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api.js";
 import { PdfRenderError } from "../errors/pdf-render.error.js";
-import { loadPdfjsLegacy } from "../pdfjs/legacy.js";
+import { getPdfjs } from "../pdfjs/load.js";
 import type { PdfPageJpg, RenderPdfPagesToJpgOptions, RenderPdfPagesToJpgResult } from "../types/pdf-render.types.js";
-
-let pdfjsPromise: ReturnType<typeof loadPdfjsLegacy> | null = null;
-
-function getPdfjsLegacy() {
-    pdfjsPromise ??= loadPdfjsLegacy();
-    return pdfjsPromise;
-}
 
 const isBrowser = typeof window !== "undefined" || typeof OffscreenCanvas !== "undefined" || typeof document !== "undefined";
 const nodeCanvasPromise: Promise<((w: number, h: number) => NodeCanvas) | null> = isBrowser
@@ -41,7 +34,7 @@ export async function renderPdfPagesToJpg(input: Uint8Array | ArrayBuffer, optio
         throw new PdfRenderError("scale must be greater than 0");
     }
 
-    const pdfjs = await getPdfjsLegacy();
+    const pdfjs = await getPdfjs();
     const inputBuffer = normalizeBuffer(input);
     const nodeCreateCanvas = await nodeCanvasPromise;
 

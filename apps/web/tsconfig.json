@@ -15,5 +15,5 @@
             "@/utils/*": ["./src/utils/*"]
         }
     },
-    "include": ["src", "@pdfly", "vite.config.ts"]
+    "include": ["src", "@pdfly", "vite.config.ts", "../../packages/pdfly-pdf-render/src/pdfjs/pdfjs-dist.d.ts"]
 }

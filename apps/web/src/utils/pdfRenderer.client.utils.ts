@@ -1,5 +1,5 @@
-import { getDocument } from "@pdfly/pdf-render/pdfjs-legacy/browser";
-import type { PDFDocumentProxy, PDFPageProxy } from "@pdfly/pdf-render/pdfjs-legacy/browser";
+import { getDocument } from "@pdfly/pdf-render/pdfjs/browser";
+import type { PDFDocumentProxy, PDFPageProxy } from "@pdfly/pdf-render/pdfjs/browser";
 import { copyPdfBytes } from "./pdfBytes.utils";
 
 export type { PDFDocumentProxy };
@@ -81,5 +81,5 @@ export async function renderPdfPageToCanvas({ pdfPage, canvas, scale, shouldComm
 export async function loadPdfDocument(source: Uint8Array | ArrayBuffer): Promise<PDFDocumentProxy> {
     // pdf.js transfers typed-array data to its worker. Give it an owned copy so
     // preview rendering cannot detach bytes later used for download or ZIP.
-    return getDocument({ data: copyPdfBytes(source) }).promise;
+    return (await getDocument({ data: copyPdfBytes(source) })).promise;
 }

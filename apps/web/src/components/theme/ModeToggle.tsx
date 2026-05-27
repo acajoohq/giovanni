@@ -1,4 +1,5 @@
 import { RiComputerLine, RiMoonLine, RiSunLine } from "@remixicon/react";
+import { ToolbarIconButton } from "@/components/layout/ToolbarIconButton";
 import type { Theme } from "@/types/theme.types";
 import { useTheme } from "@/providers/ThemeProvider";
 
@@ -28,13 +29,8 @@ export function ModeToggle() {
     };
 
     return (
-        <button
-            aria-label={LABELS[current]}
-            className="relative flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-app-border-subtle hover:text-foreground"
-            onClick={cycle}
-            type="button"
-        >
+        <ToolbarIconButton aria-label={LABELS[current]} onClick={cycle}>
             <Icon className="size-4" />
-        </button>
+        </ToolbarIconButton>
     );
 }

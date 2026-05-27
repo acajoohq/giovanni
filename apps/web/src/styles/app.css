@@ -36,6 +36,9 @@
     --app-shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.1);
     --app-shadow-pdf-page: 0 4px 16px rgba(0, 0, 0, 0.08);
 
+    --app-toolbar-height: 3.125rem;
+    --app-macos-traffic-inset: 4.75rem;
+
     --background: oklch(1 0 0);
     --foreground: oklch(0.141 0.005 285.823);
     --card: oklch(1 0 0);
@@ -216,10 +219,21 @@
         background: var(--app-bg);
     }
 
+    html.tauri {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    html.tauri input,
+    html.tauri textarea,
+    html.tauri [contenteditable="true"] {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+
     .desktop-titlebar {
         -webkit-app-region: drag;
         app-region: drag;
-        user-select: none;
     }
 
     .desktop-titlebar [data-tauri-drag-region="false"],
@@ -227,5 +241,13 @@
     .desktop-titlebar button {
         -webkit-app-region: no-drag;
         app-region: no-drag;
+    }
+
+    .app-toolbar-nav {
+        border-radius: 0.5625rem;
+        border: 1px solid color-mix(in srgb, var(--app-border) 65%, transparent);
+        background: color-mix(in srgb, var(--app-panel) 82%, transparent);
+        padding: 0.125rem;
+        box-shadow: var(--app-shadow-skeuo-sm);
     }
 }

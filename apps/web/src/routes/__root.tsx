@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
 import { AppShell } from "@/components/layout/AppShell";
+import { TauriDocumentClass } from "@/components/layout/TauriDocumentClass";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { PendingFileProvider } from "@/providers/PendingFileProvider";
 import { createSeoMeta } from "@/lib/seo";
@@ -49,6 +50,7 @@ function RootDocument({ children, lang }: Readonly<{ children: ReactNode; lang: 
                 <HeadContent />
             </head>
             <body>
+                <TauriDocumentClass />
                 <ThemeProvider defaultTheme="system" storageKey="theme">
                     <PendingFileProvider>{children}</PendingFileProvider>
                 </ThemeProvider>

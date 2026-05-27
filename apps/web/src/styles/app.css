@@ -215,4 +215,17 @@
         @apply font-sans;
         background: var(--app-bg);
     }
+
+    .desktop-titlebar {
+        -webkit-app-region: drag;
+        app-region: drag;
+        user-select: none;
+    }
+
+    .desktop-titlebar [data-tauri-drag-region="false"],
+    .desktop-titlebar a,
+    .desktop-titlebar button {
+        -webkit-app-region: no-drag;
+        app-region: no-drag;
+    }
 }

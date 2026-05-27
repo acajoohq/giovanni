@@ -16,6 +16,9 @@
                 "title": "Giovanni",
                 "width": 1280,
                 "height": 800,
+                "titleBarStyle": "Overlay",
+                "hiddenTitle": true,
+                "acceptFirstMouse": true,
                 "dragDropEnabled": false
             }
         ],

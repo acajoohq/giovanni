@@ -1,7 +1,7 @@
 ﻿mod cli;
 mod commands;
 #[cfg(feature = "devtools")]
-mod menu;
+mod app_menu;
 mod platform;
 mod state;
 
@@ -51,9 +51,9 @@ pub fn run() {
 
     #[cfg(feature = "devtools")]
     let builder = builder
-        .menu(|handle| menu::build_app_menu(handle))
+        .menu(|handle| app_menu::build_app_menu(handle))
         .on_menu_event(|app, event| {
-            menu::handle_menu_event(app, event.id().as_ref());
+            app_menu::handle_menu_event(app, event.id().as_ref());
         });
 
     builder

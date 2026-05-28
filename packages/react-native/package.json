@@ -2,23 +2,28 @@
     "name": "@giovanni/react-native",
     "version": "0.1.0",
     "description": "React Native TurboModule that wires @giovanni/core to the native JSI giovanni engine",
+    "keywords": [
+        "jsi",
+        "pdf",
+        "qpdf",
+        "react-native"
+    ],
     "license": "(Apache-2.0 AND AGPL-3.0-or-later)",
-    "type": "module",
-    "main": "./src/index.ts",
-    "exports": {
-        ".": "./src/index.ts"
-    },
     "files": [
         "src",
         "android",
         "ios",
         "giovanni-react-native.podspec"
     ],
-    "keywords": ["react-native", "pdf", "qpdf", "jsi"],
-    "peerDependencies": {
-        "react-native": ">=0.73.0"
+    "type": "module",
+    "main": "./src/index.ts",
+    "exports": {
+        ".": "./src/index.ts"
     },
     "dependencies": {
         "@giovanni/core": "workspace:*"
+    },
+    "peerDependencies": {
+        "react-native": ">=0.73.0"
     }
 }

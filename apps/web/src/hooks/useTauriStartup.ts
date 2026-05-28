@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { usePendingFile } from "@/providers/PendingFileProvider";
 import { ACTION_TO_ROUTE } from "@/constants/toolRoute.constants";
+import { getDesktopInvoke } from "@/lib/desktop/utils/desktop.util";
 import type { ToolAction, ToolRoute } from "@/types/toolRoute.types";
 
 interface PendingOpenResult {
@@ -12,21 +13,6 @@ interface PendingOpenResult {
 
 function isToolAction(action: string): action is ToolAction {
     return ACTION_TO_ROUTE.hasOwnProperty(action);
-}
-
-/**
- * Returns the Tauri `invoke` function when running inside the desktop app,
- * or `null` when running in a regular browser.
- *
- * Tauri v2 injects `window.__TAURI_INTERNALS__` into the webview so we can
- * call commands without bundling `@tauri-apps/api` into the web build.
- */
-function getTauriInvoke(): ((cmd: string, args?: Record<string, unknown>) => Promise<unknown>) | null {
-    if (typeof window === "undefined") return null;
-    const internals = (window as unknown as Record<string, unknown>)["__TAURI_INTERNALS__"] as
-        | { invoke?: (cmd: string, args?: Record<string, unknown>) => Promise<unknown> }
-        | undefined;
-    return internals?.invoke ?? null;
 }
 
 /**
@@ -46,18 +32,18 @@ export function useTauriStartup(): void {
 
     useEffect(() => {
         if (handled.current) return;
-        const invoke = getTauriInvoke();
+        const invoke = getDesktopInvoke();
         if (!invoke) return;
 
         handled.current = true;
 
-        async function handlePendingAction(invoke: NonNullable<ReturnType<typeof getTauriInvoke>>) {
+        async function handlePendingAction(desktopInvoke: NonNullable<ReturnType<typeof getDesktopInvoke>>) {
             try {
-                const pending = (await invoke("get_pending_action")) as PendingOpenResult | null;
+                const pending = (await desktopInvoke("get_pending_action")) as PendingOpenResult | null;
                 if (!pending) return;
 
                 if (!isToolAction(pending.action)) {
-                    console.warn(`[Tauri] Unknown action: ${pending.action}`);
+                    console.warn(`[Desktop] Unknown action: ${pending.action}`);
                     return;
                 }
 
@@ -71,7 +57,7 @@ export function useTauriStartup(): void {
                 const route: ToolRoute = ACTION_TO_ROUTE[pending.action];
                 void navigate({ to: route, params: { locale } });
             } catch (err) {
-                console.error("[Tauri] Failed to handle OS context menu action:", err);
+                console.error("[Desktop] Failed to handle OS context menu action:", err);
             }
         }
 

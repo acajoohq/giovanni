@@ -36,8 +36,9 @@
     --app-shadow-result-tray: 0 18px 70px rgba(0, 0, 0, 0.1);
     --app-shadow-pdf-page: 0 4px 16px rgba(0, 0, 0, 0.08);
 
-    --app-toolbar-height: 3.125rem;
-    --app-macos-traffic-inset: 4.75rem;
+    --app-toolbar-height: 51px;
+    --app-macos-traffic-inset: 96px;
+    --app-toolbar-padding-x: 1rem;
 
     --background: oklch(1 0 0);
     --foreground: oklch(0.141 0.005 285.823);
@@ -219,21 +220,46 @@
         background: var(--app-bg);
     }
 
-    html.tauri {
+    html.desktopClient {
         -webkit-user-select: none;
         user-select: none;
+        cursor: default;
     }
 
-    html.tauri input,
-    html.tauri textarea,
-    html.tauri [contenteditable="true"] {
+    html.desktopClient * {
+        cursor: inherit;
+    }
+
+    html.desktopClient input,
+    html.desktopClient textarea,
+    html.desktopClient [contenteditable="true"],
+    html.desktopClient [data-selectable-area],
+    html.desktopClient [data-selectable-text],
+    html.desktopClient [data-selectable-text] * {
         -webkit-user-select: text;
         user-select: text;
+        cursor: text;
     }
 
-    .desktop-titlebar {
-        -webkit-app-region: drag;
-        app-region: drag;
+    html.desktopClient [data-selectable-text] a,
+    html.desktopClient [data-selectable-text] a * {
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: pointer;
+    }
+
+    html.desktopClient button,
+    html.desktopClient a,
+    html.desktopClient input,
+    html.desktopClient textarea,
+    html.desktopClient select {
+        -webkit-app-region: no-drag;
+        app-region: no-drag;
+    }
+
+    html.desktopClient input,
+    html.desktopClient textarea {
+        cursor: text;
     }
 
     .desktop-titlebar [data-tauri-drag-region="false"],
@@ -243,11 +269,47 @@
         app-region: no-drag;
     }
 
+    .desktop-titlebar [data-tauri-drag-region]:not([data-tauri-drag-region="false"]) {
+        -webkit-app-region: drag;
+        app-region: drag;
+    }
+
     .app-toolbar-nav {
         border-radius: 0.5625rem;
         border: 1px solid color-mix(in srgb, var(--app-border) 65%, transparent);
         background: color-mix(in srgb, var(--app-panel) 82%, transparent);
-        padding: 0.125rem;
+        padding: 0.1875rem;
         box-shadow: var(--app-shadow-skeuo-sm);
+    }
+
+    html.desktopMacOS .app-toolbar {
+        box-sizing: border-box;
+        height: var(--app-toolbar-height);
+        min-height: var(--app-toolbar-height);
+        max-height: var(--app-toolbar-height);
+        border-bottom: none;
+        box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--app-border) 70%, transparent);
+    }
+
+    html.desktopMacOS .app-toolbar-nav {
+        flex-wrap: nowrap;
+        border-color: color-mix(in srgb, var(--app-border) 50%, transparent);
+        background: color-mix(in srgb, var(--app-panel) 60%, transparent);
+        box-shadow: none;
+        padding: 0.125rem;
+    }
+
+    html.desktopMacOS .app-toolbar-nav a {
+        display: inline-flex;
+        height: 1.5rem;
+        align-items: center;
+        padding-inline: 0.625rem;
+        white-space: nowrap;
+        border-radius: 0.3125rem;
+    }
+
+    html.desktopMacOS .app-toolbar-nav a.active {
+        background: color-mix(in srgb, var(--app-control) 82%, transparent);
+        color: var(--app-text);
     }
 }

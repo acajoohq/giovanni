@@ -16,9 +16,15 @@
                 "title": "Giovanni",
                 "width": 1280,
                 "height": 800,
+                "minWidth": 760,
+                "minHeight": 430,
                 "titleBarStyle": "Overlay",
                 "hiddenTitle": true,
                 "acceptFirstMouse": true,
+                "trafficLightPosition": {
+                    "x": 19,
+                    "y": 24
+                },
                 "dragDropEnabled": false
             }
         ],

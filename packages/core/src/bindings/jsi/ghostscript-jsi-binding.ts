@@ -5,8 +5,8 @@ function getGlobal(): NonNullable<typeof globalThis.pdfly_gs> {
     if (!globalThis.pdfly_gs) {
         throw new GhostscriptInitError(
             "pdfly Ghostscript JSI module is not installed. " +
-            "Call pdfly::jsi::installGs(rt) from your TurboModule before using any Ghostscript operation. " +
-            "Note: the targets/jsi/ghostscript native build is not yet implemented."
+                "Call pdfly::jsi::installGs(rt) from your TurboModule before using any Ghostscript operation. " +
+                "Note: the targets/jsi/ghostscript native build is not yet implemented.",
         );
     }
     return globalThis.pdfly_gs;

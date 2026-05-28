@@ -4,7 +4,7 @@
  * Call `setupPdfly()` once at app startup (e.g. in index.js before the app
  * renders) to swap the default WASM bindings for the native JSI bindings.
  *
- * The native module must already be linked — the pdfly TurboModule calls
+ * The native module must already be linked -- the pdfly TurboModule calls
  * pdfly::jsi::install(rt) during its initialization, which populates
  * globalThis.pdfly before any JS runs.
  *

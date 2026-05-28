@@ -3,10 +3,7 @@ import { QpdfInitError } from "../../errors/index.js";
 
 function getGlobal(): NonNullable<typeof globalThis.pdfly> {
     if (!globalThis.pdfly) {
-        throw new QpdfInitError(
-            "pdfly JSI module is not installed. " +
-            "Call pdfly::jsi::install(rt) from your TurboModule before using any PDF operation."
-        );
+        throw new QpdfInitError("pdfly JSI module is not installed. " + "Call pdfly::jsi::install(rt) from your TurboModule before using any PDF operation.");
     }
     return globalThis.pdfly;
 }

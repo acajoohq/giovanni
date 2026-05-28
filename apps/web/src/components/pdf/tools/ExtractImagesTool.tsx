@@ -14,7 +14,16 @@ import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { useObjectUrls } from "@/hooks/useObjectUrls";
-import { buildExtractedImageEntries, downloadBlob, downloadZip, findFirstPdfFile, imageDownloadName, makeArchiveName, pdfBaseName } from "@/utils/pdfTool.utils";
+import {
+    buildExtractedImageEntries,
+    downloadBlob,
+    downloadZip,
+    findFirstPdfFile,
+    imageDownloadName,
+    makeArchiveName,
+    pdfBaseName,
+    summarizeExtractedImages,
+} from "@/utils/pdfTool.utils";
 
 const EMPTY_IMAGES: ExtractedImage[] = [];
 
@@ -40,17 +49,7 @@ export function ExtractImagesTool() {
     const images = result?.images ?? EMPTY_IMAGES;
     const previewUrls = useObjectUrls(images, getImageBlob);
 
-    const { decodedCount, rawCount } = (() => {
-        let decodedImages = 0;
-
-        for (const image of images) {
-            if (image.blob) {
-                decodedImages++;
-            }
-        }
-
-        return { decodedCount: decodedImages, rawCount: images.length - decodedImages };
-    })();
+    const { decodedCount, rawCount } = summarizeExtractedImages(images);
 
     const processFile = async (nextFile: File) => {
         await runJob({
@@ -61,15 +60,9 @@ export function ExtractImagesTool() {
             },
             errorMessage: t("extractImages.status.failed"),
             successStatus: (nextResult) => {
-                let nextDecodedCount = 0;
-                for (const image of nextResult.images) {
-                    if (image.blob) {
-                        nextDecodedCount++;
-                    }
-                }
-                const nextRawCount = nextResult.imageCount - nextDecodedCount;
+                const { imageCount: nextImageCount, decodedCount: nextDecodedCount, rawCount: nextRawCount } = summarizeExtractedImages(nextResult.images);
 
-                if (nextResult.imageCount === 0) {
+                if (nextImageCount === 0) {
                     return { tone: "info", message: t("extractImages.status.noImages") };
                 }
 

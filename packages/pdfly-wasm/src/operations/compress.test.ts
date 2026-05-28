@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QpdfCompressionError } from "../errors/index.js";
+import { QpdfCompressionError, QpdfValidationError } from "../errors/index.js";
 import { compressPdf, getAvailableCompressionEngines, initCompressionEngine } from "./compress.js";
 import { linearizePdf, optimizePdf } from "../qpdf.js";
 import { initQpdfModule } from "../engines/qpdf/module-loader.js";
@@ -111,8 +111,15 @@ describe("compressPdf", () => {
 
         const result = await compressPdf(new Uint8Array(1000), { engine: "ghostscript", preset });
 
-        expect(mockCompressPdfWithGhostscript).toHaveBeenCalledWith(expect.any(Uint8Array), expect.objectContaining({ engine: "ghostscript", preset }));
+        expect(mockCompressPdfWithGhostscript).toHaveBeenCalledWith(expect.any(Uint8Array), expect.objectContaining({ preset }));
         expect(result.engine).toBe("ghostscript");
+    });
+
+    it("rejects invalid runtime compression engines instead of falling back to qpdf", async () => {
+        await expect(compressPdf(new Uint8Array(1000), { engine: "bad" } as never)).rejects.toBeInstanceOf(QpdfValidationError);
+
+        expect(mockInitQpdfModule).not.toHaveBeenCalled();
+        expect(mockCompressPdfWithGhostscript).not.toHaveBeenCalled();
     });
 });
 

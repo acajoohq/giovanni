@@ -117,6 +117,28 @@ interface BuildExtractedImageEntriesOptions {
     includeRawStreams?: boolean;
 }
 
+export interface ExtractedImagesSummary {
+    imageCount: number;
+    decodedCount: number;
+    rawCount: number;
+}
+
+export function summarizeExtractedImages(images: ExtractedImage[]): ExtractedImagesSummary {
+    let decodedCount = 0;
+
+    for (const image of images) {
+        if (image.blob) {
+            decodedCount++;
+        }
+    }
+
+    return {
+        imageCount: images.length,
+        decodedCount,
+        rawCount: images.length - decodedCount,
+    };
+}
+
 export async function buildExtractedImageEntries(images: ExtractedImage[], baseName: string, options: BuildExtractedImageEntriesOptions = {}): Promise<Record<string, Uint8Array>> {
     const tuples = await Promise.all(
         [...images.entries()].map(async ([index, image]): Promise<[string, Uint8Array] | null> => {
@@ -130,10 +152,6 @@ export async function buildExtractedImageEntries(images: ExtractedImage[], baseN
         }),
     );
     return Object.fromEntries(tuples.filter((t): t is [string, Uint8Array] => t !== null));
-}
-
-export async function buildBrowserReadyImageEntries(images: ExtractedImage[], baseName: string): Promise<Record<string, Uint8Array>> {
-    return buildExtractedImageEntries(images, baseName);
 }
 
 export function imageDownloadName(baseName: string, index: number, image: ExtractedImage): string {

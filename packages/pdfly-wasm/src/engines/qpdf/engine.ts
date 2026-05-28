@@ -3,7 +3,7 @@ import type { OptimizeOptions } from "../../types/index.js";
 import { initQpdfModule } from "./module-loader.js";
 import { compressPdfWithQpdf } from "./optimize.js";
 
-export const qpdfCompressionEngine: CompressionEngineAdapter<({ engine?: "qpdf" } & OptimizeOptions) | OptimizeOptions> = {
+export const qpdfCompressionEngine: CompressionEngineAdapter<OptimizeOptions> = {
     engine: "qpdf",
     async init(): Promise<void> {
         await initQpdfModule();

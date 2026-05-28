@@ -1,10 +1,10 @@
 import { Fragment, type DragEvent } from "react";
+import type { OrganizePage } from "@/lib/features/pdfTools/utils/organizeTool.utils";
 import { OrganizeDropIndicator } from "./OrganizeDropIndicator";
 import { OrganizePageCard } from "./OrganizePageCard";
 
 interface OrganizeThumbnailGridProps {
-    pages: Uint8Array[];
-    pageOrder: number[];
+    pages: OrganizePage[];
     draggedIndex: number | null;
     dragOverIndex: number | null;
     showDropIndicator: boolean;
@@ -18,7 +18,6 @@ interface OrganizeThumbnailGridProps {
 
 export function OrganizeThumbnailGrid({
     pages,
-    pageOrder,
     draggedIndex,
     dragOverIndex,
     showDropIndicator,
@@ -32,14 +31,14 @@ export function OrganizeThumbnailGrid({
     return (
         <div className="h-full w-full overflow-y-auto p-3 pb-24">
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-                {pageOrder.map((originalIndex, currentIndex) => (
-                    <Fragment key={originalIndex}>
+                {pages.map((page, currentIndex) => (
+                    <Fragment key={page.sourceIndex}>
                         {showDropIndicator && dragOverIndex === currentIndex ? <OrganizeDropIndicator onDrop={onDrop} /> : null}
                         <OrganizePageCard
                             currentIndex={currentIndex}
-                            originalIndex={originalIndex}
-                            pageCount={pageOrder.length}
-                            pageData={pages[originalIndex] as Uint8Array}
+                            originalIndex={page.sourceIndex}
+                            pageCount={pages.length}
+                            pageData={page.data}
                             isDragSource={draggedIndex === currentIndex}
                             onDragEnd={onDragEnd}
                             onDragOver={(e) => onDragOver(e, currentIndex)}
@@ -50,7 +49,7 @@ export function OrganizeThumbnailGrid({
                         />
                     </Fragment>
                 ))}
-                {showDropIndicator && dragOverIndex === pageOrder.length ? <OrganizeDropIndicator onDrop={onDrop} /> : null}
+                {showDropIndicator && dragOverIndex === pages.length ? <OrganizeDropIndicator onDrop={onDrop} /> : null}
             </div>
         </div>
     );

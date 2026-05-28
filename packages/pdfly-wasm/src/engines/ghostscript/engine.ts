@@ -3,7 +3,7 @@ import type { GhostscriptCompressOptions } from "../../types/index.js";
 import { initGhostscriptModule } from "./module-loader.js";
 import { compressPdfWithGhostscript } from "./compress.js";
 
-export const ghostscriptCompressionEngine: CompressionEngineAdapter<{ engine: "ghostscript" } & GhostscriptCompressOptions> = {
+export const ghostscriptCompressionEngine: CompressionEngineAdapter<GhostscriptCompressOptions> = {
     engine: "ghostscript",
     async init(): Promise<void> {
         await initGhostscriptModule();

@@ -1,59 +1,72 @@
 import type { NativeDocumentInfo, NativeExtractedImage, NativeWriteOptions, QpdfBinding } from "../qpdf-binding.interface.js";
+import { QpdfInitError } from "../../errors/index.js";
+
+function getGlobal(): NonNullable<typeof globalThis.pdfly> {
+    if (!globalThis.pdfly) {
+        throw new QpdfInitError(
+            "pdfly JSI module is not installed. " +
+            "Call pdfly::jsi::install(rt) from your TurboModule before using any PDF operation."
+        );
+    }
+    return globalThis.pdfly;
+}
+
+function toArrayBuffer(data: Uint8Array): ArrayBuffer {
+    return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
+}
+
+function toUint8Array(ab: ArrayBuffer): Uint8Array {
+    return new Uint8Array(ab);
+}
 
 /**
- * Placeholder qpdf JSI binding for React Native.
+ * qpdf JSI binding for React Native (Hermes).
  *
- * Replace the method bodies with calls to your native JSI module once it is
- * set up. Register this binding via {@link setQpdfBinding}:
+ * Requires the native pdfly JSI module to be installed before use:
+ * call `pdfly::jsi::install(rt)` from your TurboModule, then register:
  *
  * @example
  * ```typescript
- * import { setQpdfBinding } from "@pdfly/wasm/bindings";
- * import { qpdfJsiBinding } from "@pdfly/wasm/bindings/jsi";
+ * import { setQpdfBinding } from "@giovanni/core/bindings";
+ * import { qpdfJsiBinding } from "@giovanni/core/bindings/jsi";
  *
  * setQpdfBinding(qpdfJsiBinding);
  * ```
  */
 export const qpdfJsiBinding: QpdfBinding = {
     async init(): Promise<void> {
-        // TODO: initialize the native qpdf JSI module
-        // e.g. global.__qpdfJsi?.init()
-        throw new Error("qpdfJsiBinding: init() is not implemented. Wire up your native JSI module here.");
+        // Eagerly verify the native module is present.
+        getGlobal();
     },
 
     async getVersion(): Promise<string> {
-        // TODO: return the native qpdf version string
-        // e.g. return global.__qpdfJsi.getVersion()
-        throw new Error("qpdfJsiBinding: getVersion() is not implemented.");
+        return getGlobal().getVersion();
     },
 
     async writePdf(data: Uint8Array, options: NativeWriteOptions, password?: string): Promise<Uint8Array> {
-        // TODO: call the native writePdf implementation
-        // e.g. return global.__qpdfJsi.writePdf(data, options, password)
-        throw new Error("qpdfJsiBinding: writePdf() is not implemented.");
+        const result = getGlobal().writePdf(toArrayBuffer(data), options, password);
+        return toUint8Array(result);
     },
 
     async splitPages(data: Uint8Array): Promise<Uint8Array[]> {
-        // TODO: call the native splitPages implementation
-        // e.g. return global.__qpdfJsi.splitPages(data)
-        throw new Error("qpdfJsiBinding: splitPages() is not implemented.");
+        const pages = getGlobal().splitPages(toArrayBuffer(data));
+        return pages.map(toUint8Array);
     },
 
     async mergePdfs(inputs: Uint8Array[]): Promise<Uint8Array> {
-        // TODO: call the native mergePdfs implementation
-        // e.g. return global.__qpdfJsi.mergePdfs(inputs)
-        throw new Error("qpdfJsiBinding: mergePdfs() is not implemented.");
+        const result = getGlobal().mergePdfs(inputs.map(toArrayBuffer));
+        return toUint8Array(result);
     },
 
     async getDocumentInfo(data: Uint8Array, password?: string): Promise<NativeDocumentInfo> {
-        // TODO: call the native getDocumentInfo implementation
-        // e.g. return global.__qpdfJsi.getDocumentInfo(data, password)
-        throw new Error("qpdfJsiBinding: getDocumentInfo() is not implemented.");
+        return getGlobal().getDocumentInfo(toArrayBuffer(data), password);
     },
 
     async extractImages(data: Uint8Array): Promise<NativeExtractedImage[]> {
-        // TODO: call the native extractImages implementation
-        // e.g. return global.__qpdfJsi.extractImages(data)
-        throw new Error("qpdfJsiBinding: extractImages() is not implemented.");
+        const raw = getGlobal().extractImages(toArrayBuffer(data));
+        return raw.map((img) => ({
+            ...img,
+            bytes: toUint8Array(img.bytes),
+        }));
     },
 };

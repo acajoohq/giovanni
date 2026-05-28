@@ -194,6 +194,39 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
                 return result;
             }));
 
+
+    // --- extractImages(u8a) -> object[] ---
+    pdfly.setProperty(rt, "extractImages",
+        Function::createFromHostFunction(rt,
+            PropNameID::forAscii(rt, "extractImages"), 1,
+            [engine](Runtime& rt, const Value&, const Value* args, size_t count) -> Value {
+                if (count < 1) throw JSError(rt, "pdfly.extractImages: expected (data)");
+                auto input = jsValueToBytes(rt, args[0]);
+                auto images = engine->extractImages(input);
+
+                Array arr(rt, images.size());
+                for (size_t i = 0; i < images.size(); ++i) {
+                    const auto& img = images[i];
+                    Object obj(rt);
+                    obj.setProperty(rt, "objectKey",        String::createFromUtf8(rt, img.objectKey));
+                    obj.setProperty(rt, "xobjectKey",       String::createFromUtf8(rt, img.xobjectKey));
+                    obj.setProperty(rt, "pageIndex",        Value(static_cast<double>(img.pageIndex)));
+                    obj.setProperty(rt, "filter",           String::createFromUtf8(rt, img.filter));
+                    obj.setProperty(rt, "width",            Value(static_cast<double>(img.width)));
+                    obj.setProperty(rt, "height",           Value(static_cast<double>(img.height)));
+                    obj.setProperty(rt, "bitsPerComponent", Value(static_cast<double>(img.bitsPerComponent)));
+                    obj.setProperty(rt, "colorSpace",       String::createFromUtf8(rt, img.colorSpace));
+                    obj.setProperty(rt, "components",       Value(static_cast<double>(img.components)));
+                    obj.setProperty(rt, "pixelColorModel",  String::createFromUtf8(rt, img.pixelColorModel));
+                    obj.setProperty(rt, "hasMask",          Value(img.hasMask));
+                    obj.setProperty(rt, "hasSMask",         Value(img.hasSMask));
+                    obj.setProperty(rt, "isImageMask",      Value(img.isImageMask));
+                    obj.setProperty(rt, "strategy",         String::createFromUtf8(rt, img.strategy));
+                    obj.setProperty(rt, "bytes",            bytesToJsValue(rt, img.bytes));
+                    arr.setValueAtIndex(rt, i, std::move(obj));
+                }
+                return arr;
+            }));
     rt.global().setProperty(rt, "pdfly", std::move(pdfly));
 }
 

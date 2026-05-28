@@ -1,35 +1,47 @@
 import type { GhostscriptBinding } from "../ghostscript-binding.interface.js";
+import { GhostscriptInitError } from "../../errors/index.js";
+
+function getGlobal(): NonNullable<typeof globalThis.pdfly_gs> {
+    if (!globalThis.pdfly_gs) {
+        throw new GhostscriptInitError(
+            "pdfly Ghostscript JSI module is not installed. " +
+            "Call pdfly::jsi::installGs(rt) from your TurboModule before using any Ghostscript operation. " +
+            "Note: the targets/jsi/ghostscript native build is not yet implemented."
+        );
+    }
+    return globalThis.pdfly_gs;
+}
+
+function toArrayBuffer(data: Uint8Array): ArrayBuffer {
+    return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
+}
 
 /**
- * Placeholder Ghostscript JSI binding for React Native.
+ * Ghostscript JSI binding for React Native (Hermes).
  *
- * Replace the method bodies with calls to your native JSI module once it is
- * set up. Register this binding via {@link setGhostscriptBinding}:
+ * Requires the native pdfly Ghostscript JSI module to be installed before use.
+ * Call `pdfly::jsi::installGs(rt)` from your TurboModule (see targets/jsi/ghostscript),
+ * then register this binding:
  *
  * @example
  * ```typescript
- * import { setGhostscriptBinding } from "@pdfly/wasm/bindings";
- * import { ghostscriptJsiBinding } from "@pdfly/wasm/bindings/jsi";
+ * import { setGhostscriptBinding } from "@giovanni/core/bindings";
+ * import { ghostscriptJsiBinding } from "@giovanni/core/bindings/jsi";
  *
  * setGhostscriptBinding(ghostscriptJsiBinding);
  * ```
  */
 export const ghostscriptJsiBinding: GhostscriptBinding = {
     async init(): Promise<void> {
-        // TODO: initialize the native Ghostscript JSI module
-        // e.g. global.__ghostscriptJsi?.init()
-        throw new Error("ghostscriptJsiBinding: init() is not implemented. Wire up your native JSI module here.");
+        getGlobal();
     },
 
     async getVersion(): Promise<string> {
-        // TODO: return the native Ghostscript version string
-        // e.g. return global.__ghostscriptJsi.getVersion()
-        throw new Error("ghostscriptJsiBinding: getVersion() is not implemented.");
+        return getGlobal().getVersion();
     },
 
     async rewritePdf(input: Uint8Array, args: string[]): Promise<Uint8Array> {
-        // TODO: call the native rewritePdf implementation
-        // e.g. return global.__ghostscriptJsi.rewritePdf(input, args)
-        throw new Error("ghostscriptJsiBinding: rewritePdf() is not implemented.");
+        const result = getGlobal().rewritePdf(toArrayBuffer(input), args);
+        return new Uint8Array(result);
     },
 };

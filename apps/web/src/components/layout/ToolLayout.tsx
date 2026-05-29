@@ -59,13 +59,13 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
     if (isDesktop) {
         return (
             <ResizablePanelGroup className="h-full w-full bg-app-bg text-app-text" direction="horizontal">
-                <ResizablePanel defaultSize={82} minSize={40}>
+                <ResizablePanel defaultSize={82} minSize="500px">
                     {workspace}
                 </ResizablePanel>
 
                 <ResizableHandle />
 
-                <ResizablePanel defaultSize={18} maxSize={35} minSize={14}>
+                <ResizablePanel defaultSize={18} maxSize="480px" minSize="220px">
                     <ToolSidebar sidebar={sidebar} title={title} />
                 </ResizablePanel>
             </ResizablePanelGroup>

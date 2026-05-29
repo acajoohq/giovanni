@@ -25,7 +25,12 @@
         "README.md"
     ],
     "type": "module",
-    "sideEffects": false,
+    "sideEffects": [
+        "./dist/pdfjs.browser.mjs",
+        "./dist/pdfjsLegacy.browser.mjs",
+        "./src/pdfjs/browser.ts",
+        "./src/pdfjs/legacy.browser.ts"
+    ],
     "main": "./dist/index.cjs",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
@@ -40,6 +45,28 @@
                 "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
             }
+        },
+        "./pdfjs/browser": {
+            "source": "./src/pdfjs/browser.ts",
+            "import": {
+                "types": "./dist/pdfjs.browser.d.mts",
+                "default": "./dist/pdfjs.browser.mjs"
+            },
+            "require": {
+                "types": "./dist/pdfjs.browser.d.cts",
+                "default": "./dist/pdfjs.browser.cjs"
+            }
+        },
+        "./pdfjs-legacy/browser": {
+            "source": "./src/pdfjs/legacy.browser.ts",
+            "import": {
+                "types": "./dist/pdfjsLegacy.browser.d.mts",
+                "default": "./dist/pdfjsLegacy.browser.mjs"
+            },
+            "require": {
+                "types": "./dist/pdfjsLegacy.browser.d.cts",
+                "default": "./dist/pdfjsLegacy.browser.cjs"
+            }
         }
     },
     "publishConfig": {
@@ -53,6 +80,26 @@
                     "types": "./dist/index.d.cts",
                     "default": "./dist/index.cjs"
                 }
+            },
+            "./pdfjs/browser": {
+                "import": {
+                    "types": "./dist/pdfjs.browser.d.mts",
+                    "default": "./dist/pdfjs.browser.mjs"
+                },
+                "require": {
+                    "types": "./dist/pdfjs.browser.d.cts",
+                    "default": "./dist/pdfjs.browser.cjs"
+                }
+            },
+            "./pdfjs-legacy/browser": {
+                "import": {
+                    "types": "./dist/pdfjsLegacy.browser.d.mts",
+                    "default": "./dist/pdfjsLegacy.browser.mjs"
+                },
+                "require": {
+                    "types": "./dist/pdfjsLegacy.browser.d.cts",
+                    "default": "./dist/pdfjsLegacy.browser.cjs"
+                }
             }
         }
     },
@@ -63,7 +110,7 @@
         "format": "oxfmt --write src tsdown.config.ts package.json tsconfig.json",
         "format:check": "oxfmt --check src tsdown.config.ts package.json tsconfig.json",
         "lint": "oxlint src tsdown.config.ts",
-        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "typecheck": "tsgo --noEmit",
         "validate": "publint",
         "package:check": "pnpm run build:lib && pnpm run validate && pnpm pack --dry-run"
     },
@@ -72,6 +119,7 @@
     },
     "devDependencies": {
         "@types/node": "^25.6.0",
+        "@typescript/native-preview": "7.0.0-dev.20260505.1",
         "oxfmt": "^0.48.0",
         "oxlint": "^1.63.0",
         "publint": "^0.3.19",

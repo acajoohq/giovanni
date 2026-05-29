@@ -4,6 +4,7 @@ import { useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { toolbarIconButtonClass } from "@/components/layout/ToolbarIconButton";
 
 const LANGUAGES = [
     { code: "en", label: "English" },
@@ -35,10 +36,7 @@ export function LanguageMenu() {
 
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
-            <Dialog.Trigger
-                aria-label={t("nav.languageAriaLabel")}
-                className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-app-border-subtle hover:text-foreground"
-            >
+            <Dialog.Trigger aria-label={t("nav.languageAriaLabel")} className={toolbarIconButtonClass}>
                 <RiTranslate2 className="size-4" />
             </Dialog.Trigger>
 

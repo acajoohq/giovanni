@@ -75,7 +75,7 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                     </div>
                 </div>
 
-                <div className="px-6 py-3.5">
+                <div className="px-6 py-3.5" data-selectable-area>
                     <p className="text-balance text-center text-[11px] leading-relaxed text-app-text-subtle">
                         <Trans
                             i18nKey="about.poweredBy"

@@ -4,8 +4,8 @@
         split: "Split",
         merge: "Merge",
         organize: "Organize",
-        extractImages: "Extract Images",
-        pdfToJpg: "PDF to JPG",
+        extractImages: "Extract",
+        pdfToJpg: "JPG",
         aboutAriaLabel: "About Giovanni",
         languageAriaLabel: "Change language",
         languageLabel: "Language",
@@ -65,15 +65,15 @@
         },
         simplePreset: {
             recommended: {
-                label: "Recommended",
+                label: "Balanced",
                 description: "Balanced compression for sharing while keeping pages readable.",
             },
             smallest: {
-                label: "Smallest file",
+                label: "Smallest",
                 description: "Aggressive compression for uploads and file-size limits.",
             },
             bestQuality: {
-                label: "Best quality",
+                label: "Quality",
                 description: "Lossless cleanup that avoids changing image quality.",
             },
         },

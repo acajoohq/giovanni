@@ -20,6 +20,7 @@ env:
     PDFLY_DOCKER_CACHE_ROOT: .tmp/docker-buildx-cache
     PDFLY_QPDF_JOBS: "2"
     PDFLY_GHOSTSCRIPT_JOBS: "2"
+    # maybe this should be only be used for some PR preview, because we might want to run CI tests on the preview state of the branch
     # pull request workflows default to refs/pull/n/merge; use head so builds/previews match the branch
     SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 

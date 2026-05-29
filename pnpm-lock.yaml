@@ -90,9 +90,6 @@ importers:
       i18next:
         specifier: ^26.0.10
         version: 26.0.10(typescript@6.0.3)
-      pdfjs-dist:
-        specifier: ^5.7.284
-        version: 5.7.284
       react:
         specifier: ^19.2.5
         version: 19.2.5
@@ -173,6 +170,9 @@ importers:
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20260505.1
+        version: 7.0.0-dev.20260505.1
       oxfmt:
         specifier: ^0.48.0
         version: 0.48.0

@@ -6,8 +6,8 @@ export const fr: Translations = {
         split: "Diviser",
         merge: "Fusionner",
         organize: "Organiser",
-        extractImages: "Extraire images",
-        pdfToJpg: "PDF en JPG",
+        extractImages: "Extraire",
+        pdfToJpg: "JPG",
         aboutAriaLabel: "À propos de Giovanni",
         languageAriaLabel: "Changer la langue",
         languageLabel: "Langue",
@@ -67,15 +67,15 @@ export const fr: Translations = {
         },
         simplePreset: {
             recommended: {
-                label: "Recommandé",
+                label: "Équilibré",
                 description: "Compression équilibrée pour partager le PDF tout en gardant les pages lisibles.",
             },
             smallest: {
-                label: "Fichier minimal",
+                label: "Minimal",
                 description: "Compression agressive pour les envois et les limites de taille.",
             },
             bestQuality: {
-                label: "Meilleure qualité",
+                label: "Qualité",
                 description: "Nettoyage sans perte qui évite de modifier la qualité des images.",
             },
         },

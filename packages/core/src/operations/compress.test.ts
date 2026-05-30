@@ -43,8 +43,12 @@ function makeFakeModule(compressResult = new Uint8Array(600)) {
         mergePdfs: () => new Uint8Array(),
         extractImages: () => [],
         getVersion: () => "11.0.0",
-        QPDFWrapper: vi.fn(function () { return wrapperInstance; }),
-        QPDFWriter: vi.fn(function () { return writerInstance; }),
+        QPDFWrapper: vi.fn(function () {
+            return wrapperInstance;
+        }),
+        QPDFWriter: vi.fn(function () {
+            return writerInstance;
+        }),
         _writerInstance: writerInstance,
     };
 }

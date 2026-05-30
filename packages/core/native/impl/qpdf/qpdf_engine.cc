@@ -138,7 +138,8 @@ std::vector<uint8_t> QpdfEngine::writePdf(
             password.empty() ? nullptr : password.c_str());
 
         if (options.compressPages) {
-            for (auto& page : pdf.getAllPages()) {
+            auto allPages = pdf.getAllPages();
+            for (auto& page : allPages) {
                 page.coalesceContentStreams();
             }
         }
@@ -338,16 +339,16 @@ std::vector<ExtractedImage> QpdfEngine::extractImages(const std::vector<uint8_t>
                         Pl_Buffer collector("image-bytes");
                         imageHandle.pipeStreamData(
                             &collector,
-                            isJpeg ? qpdf_ef_compress : qpdf_ef_none,
+                            isJpeg ? qpdf_ef_compress : 0,
                             qpdf_dl_none);
                         collector.finish();
-                        img.bytes    = bufferToVec(collector.getBuffer());
+                        img.bytes    = bufferToVec(collector.getBufferSharedPointer());
                         img.strategy = isJpeg ? "encoded" : "raw-pixels";
                     } else if (img.components > 0) {
                         Pl_Buffer collector("image-pixels");
-                        imageHandle.pipeStreamData(&collector, qpdf_ef_none, qpdf_dl_all);
+                        imageHandle.pipeStreamData(&collector, 0, qpdf_dl_all);
                         collector.finish();
-                        img.bytes    = bufferToVec(collector.getBuffer());
+                        img.bytes    = bufferToVec(collector.getBufferSharedPointer());
                         img.strategy = "raw-pixels";
                     } else {
                         img.strategy = "unsupported";

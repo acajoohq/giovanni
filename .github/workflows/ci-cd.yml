@@ -127,7 +127,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: pdfly-wasm-dist
-                  path: packages/pdfly-wasm/dist
+                  path: packages/core/dist
 
             - name: Upload @pdfly/pdf-render dist artifact
               uses: actions/upload-artifact@v4
@@ -143,7 +143,7 @@ jobs:
               if: always()
               with:
                   name: compression-results
-                  path: packages/pdfly-wasm/test-report/compression-results.xml
+                  path: packages/core/test-report/compression-results.xml
                   if-no-files-found: ignore
 
             - name: Stage compression baseline for cache (master only)
@@ -151,7 +151,7 @@ jobs:
               continue-on-error: true
               run: |
                   mkdir -p /tmp/compression-baseline
-                  cp packages/pdfly-wasm/test-report/compression-results.xml /tmp/compression-baseline/compression-results.xml
+                  cp packages/core/test-report/compression-results.xml /tmp/compression-baseline/compression-results.xml
 
             - name: Save compression baseline cache (master only)
               if: always() && github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -178,14 +178,14 @@ jobs:
                   if [ -f "/tmp/compression-baseline/compression-results.xml" ]; then
                       BASELINE_FLAG="--baseline /tmp/compression-baseline/compression-results.xml"
                   fi
-                  python3 packages/pdfly-wasm/tools/dev/generate-compression-summary.py $BASELINE_FLAG
+                  python3 packages/core/tools/dev/generate-compression-summary.py $BASELINE_FLAG
 
             - name: Upload compression summary artifact
               uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: compression-summary
-                  path: packages/pdfly-wasm/test-report/compression-summary.md
+                  path: packages/core/test-report/compression-summary.md
                   if-no-files-found: ignore
 
             - name: Post compression summary as PR comment
@@ -289,7 +289,7 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                   name: pdfly-wasm-dist
-                  path: packages/pdfly-wasm/dist
+                  path: packages/core/dist
 
             - name: Download @pdfly/pdf-render dist
               uses: actions/download-artifact@v4

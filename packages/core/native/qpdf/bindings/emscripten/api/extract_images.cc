@@ -355,7 +355,11 @@ emscripten::val extractImages(const emscripten::val& inputArray) {
 
         // promote inline images to XObjects so forEachImage picks them up
         for (auto& page : pages) {
-            page.externalizeInlineImages();
+            try {
+                page.externalizeInlineImages();
+            } catch (...) {
+                // ignore pages whose inline images cannot be externalized
+            }
         }
 
         for (size_t pageIndex = 0; pageIndex < pages.size(); pageIndex++) {
@@ -364,6 +368,7 @@ emscripten::val extractImages(const emscripten::val& inputArray) {
             pages[pageIndex].forEachImage(
                 /* recursive */ true,
                 [&](QPDFObjectHandle& image, QPDFObjectHandle& /*xobjDict*/, const std::string& key) {
+                    try {
                     QPDFObjGen og = image.getObjGen();
                     std::string ogKey = std::to_string(og.getObj()) + "/" + std::to_string(og.getGen());
                     if (seenObjGens.contains(ogKey)) {
@@ -444,6 +449,9 @@ emscripten::val extractImages(const emscripten::val& inputArray) {
                     info.set("bytes", bytes);
 
                     result.call<void>("push", info);
+                    } catch (...) {
+                        // skip images that cause qpdf exceptions
+                    }
                 });
         }
 

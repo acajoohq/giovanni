@@ -16,14 +16,36 @@ const mockInitGhostscriptModule = vi.mocked(initGhostscriptModule);
 const mockCompressPdfWithGhostscript = vi.mocked(compressPdfWithGhostscript);
 
 function makeFakeModule(compressResult = new Uint8Array(600)) {
+    const writerInstance = {
+        setCompressStreams: vi.fn(),
+        setCompressionLevel: vi.fn(),
+        setDecodeLevel: vi.fn(),
+        setRecompressFlate: vi.fn(),
+        setObjectStreamMode: vi.fn(),
+        setLinearization: vi.fn(),
+        write: vi.fn(),
+        getBuffer: vi.fn(() => compressResult),
+        delete: vi.fn(),
+    };
+    const wrapperInstance = {
+        processMemoryFile: vi.fn(),
+        coalesceContentStreams: vi.fn(),
+        removeUnreferencedResources: vi.fn(),
+        getNumPages: vi.fn(() => 1),
+        getPDFVersion: vi.fn(() => "1.4"),
+        isEncrypted: vi.fn(() => false),
+        isLinearized: vi.fn(() => false),
+        delete: vi.fn(),
+    };
     return {
         compressPdf: vi.fn<() => Uint8Array>(() => compressResult),
         splitPages: () => [] as Uint8Array[],
         mergePdfs: () => new Uint8Array(),
         extractImages: () => [],
         getVersion: () => "11.0.0",
-        QPDFWrapper: function () {},
-        QPDFWriter: function () {},
+        QPDFWrapper: vi.fn(function () { return wrapperInstance; }),
+        QPDFWriter: vi.fn(function () { return writerInstance; }),
+        _writerInstance: writerInstance,
     };
 }
 
@@ -75,7 +97,7 @@ describe("optimizePdf", () => {
         mockInitQpdfModule.mockRejectedValue(new Error("WASM crash"));
 
         await expect(optimizePdf(new Uint8Array())).rejects.toBeInstanceOf(QpdfCompressionError);
-        await expect(optimizePdf(new Uint8Array())).rejects.toThrow("Failed to optimize PDF");
+        await expect(optimizePdf(new Uint8Array())).rejects.toThrow("Failed to write PDF");
     });
 
     it("accepts ArrayBuffer input", async () => {
@@ -124,13 +146,13 @@ describe("compressPdf", () => {
 });
 
 describe("linearizePdf", () => {
-    it("forwards linearize: true to the WASM compressPdf call", async () => {
+    it("forwards linearize: true to the QPDFWriter", async () => {
         const fakeModule = makeFakeModule();
         mockInitQpdfModule.mockResolvedValue(fakeModule as never);
 
         await linearizePdf(new Uint8Array());
 
-        expect(fakeModule.compressPdf).toHaveBeenCalledWith(expect.any(Uint8Array), expect.objectContaining({ linearize: true }));
+        expect(fakeModule._writerInstance.setLinearization).toHaveBeenCalledWith(true);
     });
 
     it("includes preset in the result", async () => {

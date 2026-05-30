@@ -1,11 +1,14 @@
-import { getQpdfBinding } from "../bindings/index.js";
+import { QpdfDocument } from "../engines/qpdf/document.js";
 import { QpdfError, QpdfInitError, QpdfValidationError } from "../errors/index.js";
-import { toUint8Array } from "../utils/buffer.js";
 import type { CheckOptions, InspectOptions, QpdfCheckResult, QpdfDocumentInfo } from "../types/index.js";
 
 export async function inspectPdf(input: Uint8Array | ArrayBuffer, options?: InspectOptions): Promise<QpdfDocumentInfo> {
-    const inputBuffer = toUint8Array(input);
-    return getQpdfBinding().getDocumentInfo(inputBuffer, options?.password) as Promise<QpdfDocumentInfo>;
+    const doc = await QpdfDocument.open(input, options);
+    try {
+        return doc.info();
+    } finally {
+        doc.dispose();
+    }
 }
 
 export async function checkPdf(input: Uint8Array | ArrayBuffer, options?: CheckOptions): Promise<QpdfCheckResult> {

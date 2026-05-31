@@ -213,8 +213,7 @@ async function main(): Promise<void> {
     }
 
     const mode = modeArg as BuildMode;
-    const targets: NativeBuildTarget[] =
-        targetArg === "all" ? (Object.keys(NATIVE_TARGETS) as NativeBuildTarget[]) : [targetArg as NativeBuildTarget];
+    const targets: NativeBuildTarget[] = targetArg === "all" ? (Object.keys(NATIVE_TARGETS) as NativeBuildTarget[]) : [targetArg as NativeBuildTarget];
 
     const canExportBuildCache = await supportsLocalBuildCacheExport();
     for (const target of targets) {

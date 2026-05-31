@@ -157,7 +157,7 @@
         "build:native": "tsx tools/vendor/build-native.ts native",
         "build:jsi": "tsx tools/vendor/build-native.ts jsi",
         "build:native:all": "tsx tools/vendor/build-native.ts all",
-        "test:native": "ctest --output-on-failure --test-dir native/targets/native/build",
+        "test:native": "tsx tools/vendor/build-native.ts native",
         "test:jsi": "tsx tools/dev/check-jsi-build.ts",
         "test:lib": "vitest run src/test/lib-build.test.ts",
         "clean": "tsx tools/dev/clean.ts",

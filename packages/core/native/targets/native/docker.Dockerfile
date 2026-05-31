@@ -1,4 +1,4 @@
-﻿# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.7
 
 FROM ubuntu:24.04 AS native-builder
 
@@ -52,6 +52,7 @@ RUN set -eux; \
         -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
         -DQPDF_SOURCE_DIR=/src/vendor/qpdf; \
     cmake --build "$BUILD_DIR" --parallel "$BUILD_JOBS"; \
+    ctest --output-on-failure --test-dir "$BUILD_DIR" -R pdfly_; \
     cp "$BUILD_DIR/libpdfly_native.a" "$OUT_DIR/"; \
     cp /src/packages/core/native/targets/native/pdfly_c.h "$OUT_DIR/"
 

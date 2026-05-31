@@ -17,8 +17,8 @@ const packageRoot = resolve(__dirname, "..", "..");
 const jsiBuildDir = resolve(packageRoot, "build", "jsi");
 
 const expectedFiles = [
-    // Shared library (exact name varies by platform)
-    ...(process.platform === "win32" ? ["pdfly_jsi.dll"] : process.platform === "darwin" ? ["libpdfly_jsi.dylib"] : ["libpdfly_jsi.so"]),
+    // Shared library — Docker build always targets Linux, so the artifact is always .so
+    "libpdfly_jsi.so",
     // Public header copied by build-native.ts
     "qpdf_jsi.h",
 ];

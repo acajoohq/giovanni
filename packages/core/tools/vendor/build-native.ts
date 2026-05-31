@@ -1,4 +1,4 @@
-﻿import { spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { access, mkdir, rename, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -147,7 +147,7 @@ async function supportsLocalBuildCacheExport(): Promise<boolean> {
 
 async function buildTarget(name: NativeBuildTarget, mode: BuildMode, canExportBuildCache: boolean): Promise<void> {
     const config = NATIVE_TARGETS[name];
-    const outputDirectory = resolve(repoRoot, config.outputDirectory);
+    const outputDirectory = resolve(packageRoot, config.outputDirectory);
     const cacheRoot = resolve(process.env.PDFLY_DOCKER_CACHE_ROOT ?? defaultCacheRoot, `${name}-${mode}`);
     const nextCacheRoot = `${cacheRoot}-next`;
 

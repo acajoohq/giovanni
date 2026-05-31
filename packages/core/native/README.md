@@ -45,10 +45,10 @@ No Emscripten, no JSI, no browser APIs.
 Platform adapters. Each target takes `IQpdfEngine` / `IGhostscriptEngine`
 as a dependency and adapts the input/output types for its runtime.
 
-| Target            | Output                                | Use case                                          |
-| ----------------- | ------------------------------------- | ------------------------------------------------- |
-| `targets/jsi/`    | `.so` / `.dylib`                      | React Native (Hermes JSI)                         |
-| `targets/native/` | `libpdfly_native.a/.so` + `pdfly_c.h` | FFI from Python, Rust, Go, Swift, etc.            |
+| Target            | Output                                | Use case                               |
+| ----------------- | ------------------------------------- | -------------------------------------- |
+| `targets/jsi/`    | `.so` / `.dylib`                      | React Native (Hermes JSI)              |
+| `targets/native/` | `libpdfly_native.a/.so` + `pdfly_c.h` | FFI from Python, Rust, Go, Swift, etc. |
 
 ---
 

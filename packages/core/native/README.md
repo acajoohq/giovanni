@@ -10,7 +10,6 @@ native/
   interface/           <- Canonical C++ types + abstract interface (source of truth)
   impl/                <- Platform-agnostic C++ implementations
   targets/             <- Platform-specific adapters
-    wasm/              <- Emscripten -> .wasm + .js  (see qpdf/ and ghostscript/ below)
     jsi/               <- React Native JSI -> native module
     native/            <- Standalone C library for FFI (Python, Rust, Go, etc.)
   qpdf/                <- Emscripten build definition for the qpdf WASM target
@@ -48,7 +47,6 @@ as a dependency and adapts the input/output types for its runtime.
 
 | Target            | Output                                | Use case                                          |
 | ----------------- | ------------------------------------- | ------------------------------------------------- |
-| `targets/wasm/`   | `.js` + `.wasm`                       | Web / Node.js (see `qpdf/` + `ghostscript/` dirs) |
 | `targets/jsi/`    | `.so` / `.dylib`                      | React Native (Hermes JSI)                         |
 | `targets/native/` | `libpdfly_native.a/.so` + `pdfly_c.h` | FFI from Python, Rust, Go, Swift, etc.            |
 
@@ -78,7 +76,7 @@ as a dependency and adapts the input/output types for its runtime.
 ```bash
 # Uses the existing qpdf/ Emscripten build
 cd qpdf
-emcmake cmake -B build -DQPDF_SOURCE_DIR=../../../vendor/qpdf
+emcmake cmake -B build -DQPDF_SOURCE_DIR=../../../../vendor/qpdf
 cmake --build build
 ```
 
@@ -86,7 +84,7 @@ cmake --build build
 
 ```bash
 cd targets/native
-cmake -B build -DQPDF_SOURCE_DIR=../../../vendor/qpdf
+cmake -B build -DQPDF_SOURCE_DIR=../../../../../vendor/qpdf
 cmake --build build
 # produces: build/libpdfly_native.a + pdfly_c.h
 ```
@@ -110,7 +108,7 @@ lib.pdfly_qpdf_destroy(handle)
 
 ```bash
 cd qpdf/bindings/cpp
-cmake -B build -DQPDF_SOURCE_DIR=../../../../vendor/qpdf
+cmake -B build -DQPDF_SOURCE_DIR=../../../../../../vendor/qpdf
 cmake --build build
 # produces: build/libpdfly_qpdf.a
 ```
@@ -120,7 +118,7 @@ cmake --build build
 ```bash
 cd targets/jsi/qpdf
 cmake -B build \
-  -DQPDF_SOURCE_DIR=../../../../vendor/qpdf \
+  -DQPDF_SOURCE_DIR=../../../../../../vendor/qpdf \
   -DJSI_INCLUDE_DIR=/path/to/react-native/ReactCommon
 cmake --build build
 ```
@@ -132,11 +130,6 @@ Each WASM engine writes to its own output directory:
 - `build/qpdf`
     - `qpdf.js`
     - `qpdf.wasm`
-    - `manifest.json`
-
-- `build/ghostscript`
-    - `ghostscript.js`
-    - `ghostscript.wasm`
     - `manifest.json`
 
 - `build/ghostscript`
@@ -190,9 +183,9 @@ Keep tweaks explicit and narrow.
 Example:
 
 ```bash
-PDFLY_QPDF_JOBS=2 pnpm --filter @pdfly/wasm build:qpdf:prd
-PDFLY_GHOSTSCRIPT_JOBS=4 pnpm --filter @pdfly/wasm build:ghostscript:prd
-PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @pdfly/wasm build:wasm
+PDFLY_QPDF_JOBS=2 pnpm --filter @giovanni/core build:qpdf:prd
+PDFLY_GHOSTSCRIPT_JOBS=4 pnpm --filter @giovanni/core build:ghostscript:prd
+PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
 ```
 
 ## Build behavior

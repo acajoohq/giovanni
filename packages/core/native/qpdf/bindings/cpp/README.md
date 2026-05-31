@@ -53,10 +53,10 @@ All functions throw `std::runtime_error` on failure.
 The workspace ships the full qpdf source in `vendor/qpdf/`.
 
 ```bash
-cd packages/pdfly-wasm/native/qpdf/bindings/cpp
+cd packages/core/native/qpdf/bindings/cpp
 
 cmake -B build \
-  -DQPDF_SOURCE_DIR=../../../../../vendor/qpdf
+  -DQPDF_SOURCE_DIR=../../../../../../vendor/qpdf
 
 cmake --build build --parallel
 ```
@@ -74,7 +74,7 @@ cmake --build build --parallel
 
 ```bash
 cmake -B build \
-  -DQPDF_SOURCE_DIR=../../../../../vendor/qpdf \
+  -DQPDF_SOURCE_DIR=../../../../../../vendor/qpdf \
   -DPDFLY_BUILD_EXAMPLE=ON
 cmake --build build --parallel
 ./build/pdfly_example input.pdf output.pdf
@@ -118,7 +118,7 @@ int main() {
 
 ## Relationship to the TypeScript API
 
-This library mirrors `QpdfBinding` from `@pdfly/wasm/bindings`:
+This library mirrors `QpdfBinding` from `@giovanni/core/bindings`:
 
 | TypeScript (`QpdfBinding`)           | C++ (`pdfly::`)                     |
 | ------------------------------------ | ----------------------------------- |

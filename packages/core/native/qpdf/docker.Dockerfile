@@ -23,6 +23,8 @@ RUN apt-get update && \
 WORKDIR /src
 
 COPY packages/core/native/qpdf /src/packages/core/native/qpdf
+COPY packages/core/native/impl /src/packages/core/native/impl
+COPY packages/core/native/interface /src/packages/core/native/interface
 
 RUN set -eux; \
     mkdir -p /src/vendor/qpdf; \

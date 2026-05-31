@@ -1,46 +1,24 @@
+﻿// Thin wrapper — marshals JS types and delegates to QpdfEngine::writePdf.
+
 #include "../qpdf_wasm.hh"
-#include <qpdf/Pl_Flate.hh>
-#include <qpdf/QPDFPageDocumentHelper.hh>
+#include "qpdf_engine.h"
 #include <stdexcept>
 
-emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& options) {
+emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& opts) {
     try {
-        std::vector<uint8_t> inputData = emscripten::vecFromJSArray<uint8_t>(inputArray);
+        std::vector<uint8_t> input = emscripten::vecFromJSArray<uint8_t>(inputArray);
 
-        if (options.compressionLevel >= 1 && options.compressionLevel <= 9) {
-            Pl_Flate::setCompressionLevel(options.compressionLevel);
-        }
+        pdfly::WriteOptions options;
+        options.compressionLevel          = opts.compressionLevel;
+        options.recompressFlate           = opts.recompressFlate;
+        options.decodeLevel               = opts.decodeLevel;
+        options.objectStreams              = opts.objectStreams;
+        options.compressPages             = opts.compressPages;
+        options.removeUnreferencedResources = opts.removeUnreferencedResources;
+        options.linearize                 = opts.linearize;
 
-        QPDF pdf;
-        pdf.processMemoryFile("input.pdf",
-                             reinterpret_cast<const char*>(inputData.data()),
-                             inputData.size());
-
-        if (options.compressPages) {
-            auto pages = pdf.getAllPages();
-            for (auto& page : pages) {
-                page.coalesceContentStreams();
-            }
-        }
-        if (options.removeUnreferencedResources) {
-            QPDFPageDocumentHelper(pdf).removeUnreferencedResources();
-        }
-
-        QPDFWriter writer(pdf);
-        writer.setOutputMemory();
-        writer.setCompressStreams(true);
-        writer.setRecompressFlate(options.recompressFlate);
-        writer.setDecodeLevel(getDecodeLevel(options.decodeLevel));
-        writer.setObjectStreamMode(getObjectStreamMode(options.objectStreams));
-        if (options.linearize) {
-            writer.setLinearization(true);
-        }
-        writer.write();
-
-        std::shared_ptr<Buffer> buffer = writer.getBufferSharedPointer();
-
-        return bufferToUint8Array(buffer);
-
+        auto result = getEngine().writePdf(input, options, "");
+        return vecToUint8Array(result);
     } catch (const std::exception& e) {
         throw std::runtime_error(std::string("PDF compression failed: ") + e.what());
     }

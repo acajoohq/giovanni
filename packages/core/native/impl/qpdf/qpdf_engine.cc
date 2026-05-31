@@ -10,11 +10,14 @@
 #include <qpdf/QPDFPageObjectHelper.hh>
 #include <qpdf/QPDFWriter.hh>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+#include <qpdf/QPDFObjGen.hh>
 
 namespace pdfly {
 
@@ -278,6 +281,110 @@ DocumentInfo QpdfEngine::getDocumentInfo(
 }
 
 // ---------------------------------------------------------------------------
+// QpdfEngine::extractImages -- helpers
+// ---------------------------------------------------------------------------
+
+static bool isSafeImageWrapper(const std::string& filter) {
+    return isAsciiWrapper(filter)
+        || filter == "FlateDecode"
+        || filter == "LZWDecode"
+        || filter == "RunLengthDecode";
+}
+
+static std::string getColorSpaceString(QPDFObjectHandle& dict) {
+    QPDFObjectHandle cs = dict.getKey("/ColorSpace");
+    if (cs.isNull()) return "";
+    if (cs.isName()) return cs.getName();
+    return cs.unparse();
+}
+
+static bool pipeImageData(QPDFObjectHandle& image,
+                           qpdf_stream_decode_level_e level,
+                           std::vector<uint8_t>& outBytes) {
+    Pl_Buffer pipeline("image-buffer");
+    bool filteringAttempted = false;
+    bool ok = image.pipeStreamData(&pipeline, &filteringAttempted, 0, level, true, false);
+    if (!ok) return false;
+    auto buf = pipeline.getBufferSharedPointer();
+    if (!buf) return false;
+    outBytes = bufferToVec(buf);
+    return true;
+}
+
+class ScopedStreamFilterOverride {
+public:
+    ScopedStreamFilterOverride(QPDFObjectHandle& d,
+                               QPDFObjectHandle origFilter,
+                               QPDFObjectHandle origDecodeParms,
+                               bool hadDecodeParms)
+        : dict(d), originalFilter(origFilter),
+          originalDecodeParms(origDecodeParms), hadDP(hadDecodeParms) {}
+    ~ScopedStreamFilterOverride() { restore(); }
+    ScopedStreamFilterOverride(const ScopedStreamFilterOverride&) = delete;
+    ScopedStreamFilterOverride& operator=(const ScopedStreamFilterOverride&) = delete;
+private:
+    void restore() {
+        if (restored) return;
+        dict.replaceKey("/Filter", originalFilter);
+        if (hadDP) dict.replaceKey("/DecodeParms", originalDecodeParms);
+        else dict.removeKey("/DecodeParms");
+        restored = true;
+    }
+    QPDFObjectHandle& dict;
+    QPDFObjectHandle originalFilter, originalDecodeParms;
+    bool hadDP;
+    bool restored = false;
+};
+
+static QPDFObjectHandle makeFilterObj(const std::vector<std::string>& filters) {
+    if (filters.size() == 1) return QPDFObjectHandle::newName("/" + filters[0]);
+    QPDFObjectHandle arr = QPDFObjectHandle::newArray();
+    for (const auto& f : filters) arr.appendItem(QPDFObjectHandle::newName("/" + f));
+    return arr;
+}
+
+static QPDFObjectHandle getPrefixDecodeParms(QPDFObjectHandle& dp, size_t n) {
+    if (dp.isNull()) return QPDFObjectHandle::newNull();
+    if (!dp.isArray()) return dp;
+    QPDFObjectHandle result = QPDFObjectHandle::newArray();
+    size_t count = std::min(n, static_cast<size_t>(dp.getArrayNItems()));
+    for (size_t i = 0; i < count; ++i) result.appendItem(dp.getArrayItem(static_cast<int>(i)));
+    return result;
+}
+
+// Strips safe prefix filters (ASCII/Flate/LZW wrappers) before piping so
+// that DCT/JPX bytes are preserved intact without re-decoding them.
+static bool pipeEncodedImageData(QPDFObjectHandle& image,
+                                  QPDFObjectHandle& dict,
+                                  std::vector<uint8_t>& outBytes) {
+    auto filters = getFilters(dict);
+    if (filters.empty()) return pipeImageData(image, qpdf_dl_none, outBytes);
+
+    int leafIdx = -1;
+    for (int i = static_cast<int>(filters.size()) - 1; i >= 0; --i) {
+        if (!isAsciiWrapper(filters[static_cast<size_t>(i)])) { leafIdx = i; break; }
+    }
+    if (leafIdx <= 0) return pipeImageData(image, qpdf_dl_none, outBytes);
+
+    size_t prefixCount = static_cast<size_t>(leafIdx);
+    std::vector<std::string> prefixFilters(filters.begin(), filters.begin() + leafIdx);
+    if (!std::all_of(prefixFilters.begin(), prefixFilters.end(), isSafeImageWrapper))
+        return false;
+
+    QPDFObjectHandle origFilter = dict.getKey("/Filter");
+    bool hadDP = dict.hasKey("/DecodeParms");
+    QPDFObjectHandle origDP    = dict.getKey("/DecodeParms");
+    ScopedStreamFilterOverride restore(dict, origFilter, origDP, hadDP);
+
+    QPDFObjectHandle prefixDP = getPrefixDecodeParms(origDP, prefixCount);
+    dict.replaceKey("/Filter", makeFilterObj(prefixFilters));
+    if (prefixDP.isNull()) dict.removeKey("/DecodeParms");
+    else dict.replaceKey("/DecodeParms", prefixDP);
+
+    return pipeImageData(image, qpdf_dl_specialized, outBytes);
+}
+
+// ---------------------------------------------------------------------------
 // QpdfEngine::extractImages
 // ---------------------------------------------------------------------------
 
@@ -290,75 +397,74 @@ std::vector<ExtractedImage> QpdfEngine::extractImages(const std::vector<uint8_t>
             input.size());
 
         std::vector<ExtractedImage> results;
-        std::set<QPDFObjGen> seen;
+        std::set<std::string> seen;
 
-        auto pages = pdf.getAllPages();
+        // Wrap in document helper to access page helpers
+        auto pages = QPDFPageDocumentHelper(pdf).getAllPages();
+
+        // Externalize inline images so they appear as regular XObjects
+        for (auto& page : pages) {
+            try { page.externalizeInlineImages(); } catch (...) {}
+        }
+
         for (int pageIdx = 0; pageIdx < static_cast<int>(pages.size()); ++pageIdx) {
-            QPDFPageObjectHelper pageHelper(pages[static_cast<size_t>(pageIdx)]);
+            pages[static_cast<size_t>(pageIdx)].forEachImage(
+                /*recursive=*/true,
+                [&](QPDFObjectHandle& image,
+                    QPDFObjectHandle& /*xobjDict*/,
+                    const std::string& key) {
+                    try {
+                        QPDFObjGen og = image.getObjGen();
+                        std::string ogKey =
+                            std::to_string(og.getObj()) + "/" + std::to_string(og.getGen());
+                        if (!seen.insert(ogKey).second) return;
 
-            for (auto& [xobjKey, imageHandle] : pageHelper.getImages()) {
-                QPDFObjGen og = imageHandle.getObjGen();
-                if (!seen.insert(og).second) continue;
+                        QPDFObjectHandle dict = image.getDict();
 
-                ExtractedImage img;
-                img.objectKey  = std::to_string(og.getObj()) + "/" + std::to_string(og.getGen());
-                img.xobjectKey = xobjKey;
-                img.pageIndex  = pageIdx;
+                        auto intKey = [&](const std::string& k) -> int {
+                            QPDFObjectHandle v = dict.getKey(k);
+                            return v.isInteger() ? static_cast<int>(v.getIntValue()) : 0;
+                        };
 
-                QPDFObjectHandle dict = imageHandle.getDict();
+                        ExtractedImage img;
+                        img.objectKey    = ogKey;
+                        img.xobjectKey   = key;
+                        img.pageIndex    = pageIdx;
+                        img.filter       = leafFilter(dict);
+                        img.width        = intKey("/Width");
+                        img.height       = intKey("/Height");
+                        img.bitsPerComponent = intKey("/BitsPerComponent");
+                        img.colorSpace       = getColorSpaceString(dict);
+                        img.components       = resolveComponents(dict);
+                        img.pixelColorModel  = resolvePixelColorModel(img.components);
+                        img.hasMask    = !dict.getKey("/Mask").isNull();
+                        img.hasSMask   = !dict.getKey("/SMask").isNull();
+                        QPDFObjectHandle imObj = dict.getKey("/ImageMask");
+                        img.isImageMask = imObj.isBool() && imObj.getBoolValue();
 
-                auto intKey = [&](const std::string& k) -> int {
-                    QPDFObjectHandle v = dict.getKey(k);
-                    return v.isInteger() ? static_cast<int>(v.getIntValue()) : 0;
-                };
+                        bool isJpeg = (img.filter == "DCTDecode" || img.filter == "JPXDecode");
+                        bool isFlate = (img.filter == "FlateDecode"
+                                        || img.filter == "LZWDecode"
+                                        || img.filter == "RunLengthDecode"
+                                        || img.filter == "none");
 
-                img.width            = intKey("/Width");
-                img.height           = intKey("/Height");
-                img.bitsPerComponent = intKey("/BitsPerComponent");
+                        if (isJpeg) {
+                            if (pipeEncodedImageData(image, dict, img.bytes))
+                                img.strategy = "encoded";
+                        } else if (isFlate) {
+                            if (pipeImageData(image, qpdf_dl_specialized, img.bytes))
+                                img.strategy = "raw-pixels";
+                        } else {
+                            // CCITTFax, JBIG2, etc. -- surface raw bytes for caller fallback
+                            if (pipeImageData(image, qpdf_dl_none, img.bytes))
+                                img.strategy = "unsupported";
+                        }
 
-                QPDFObjectHandle csObj = dict.getKey("/ColorSpace");
-                img.colorSpace = csObj.isNull() ? ""
-                               : csObj.isName() ? stripSlash(csObj.getName())
-                               : csObj.unparse();
-
-                img.components      = resolveComponents(dict);
-                img.pixelColorModel = resolvePixelColorModel(img.components);
-
-                img.hasMask     = !dict.getKey("/Mask").isNull();
-                img.hasSMask    = !dict.getKey("/SMask").isNull();
-                QPDFObjectHandle imObj = dict.getKey("/ImageMask");
-                img.isImageMask = imObj.isBool() && imObj.getBoolValue();
-
-                img.filter = leafFilter(dict);
-
-                bool isJpeg = (img.filter == "DCTDecode" || img.filter == "JPXDecode");
-                bool isRaw  = (img.filter == "none" || img.filter.empty());
-
-                try {
-                    if (isJpeg || isRaw) {
-                        Pl_Buffer collector("image-bytes");
-                        imageHandle.pipeStreamData(
-                            &collector,
-                            isJpeg ? qpdf_ef_compress : 0,
-                            qpdf_dl_none);
-                        collector.finish();
-                        img.bytes    = bufferToVec(collector.getBufferSharedPointer());
-                        img.strategy = isJpeg ? "encoded" : "raw-pixels";
-                    } else if (img.components > 0) {
-                        Pl_Buffer collector("image-pixels");
-                        imageHandle.pipeStreamData(&collector, 0, qpdf_dl_all);
-                        collector.finish();
-                        img.bytes    = bufferToVec(collector.getBufferSharedPointer());
-                        img.strategy = "raw-pixels";
-                    } else {
-                        img.strategy = "unsupported";
+                        results.push_back(std::move(img));
+                    } catch (...) {
+                        // skip images that cause qpdf exceptions
                     }
-                } catch (...) {
-                    img.strategy = "error";
-                }
-
-                results.push_back(std::move(img));
-            }
+                });
         }
 
         return results;

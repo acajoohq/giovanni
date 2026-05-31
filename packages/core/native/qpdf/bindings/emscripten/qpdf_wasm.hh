@@ -29,6 +29,11 @@ qpdf_stream_decode_level_e getDecodeLevel(const std::string& level);
 qpdf_object_stream_e getObjectStreamMode(const std::string& mode);
 std::string getQpdfVersion();
 emscripten::val bufferToUint8Array(const std::shared_ptr<Buffer>& buffer);
+emscripten::val vecToUint8Array(const std::vector<uint8_t>& vec);
+
+// Engine singleton (defined in qpdf_commons.cc)
+namespace pdfly { class QpdfEngine; }
+pdfly::QpdfEngine& getEngine();
 
 // compress.cc
 emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& options);

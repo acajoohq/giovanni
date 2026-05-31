@@ -1,34 +1,19 @@
+﻿// Thin wrapper — marshals JS types and delegates to QpdfEngine::splitPages.
+
 #include "../qpdf_wasm.hh"
+#include "qpdf_engine.h"
 #include <stdexcept>
 
 emscripten::val splitPages(const emscripten::val& inputArray) {
     try {
-        std::vector<uint8_t> inputData = emscripten::vecFromJSArray<uint8_t>(inputArray);
+        std::vector<uint8_t> input = emscripten::vecFromJSArray<uint8_t>(inputArray);
+        auto pages = getEngine().splitPages(input);
 
-        QPDF pdf;
-        pdf.processMemoryFile("input.pdf",
-                             reinterpret_cast<const char*>(inputData.data()),
-                             inputData.size());
-
-        auto pages = pdf.getAllPages();
         emscripten::val result = emscripten::val::array();
-
-        for (auto& page : pages) {
-            QPDF outPdf;
-            outPdf.emptyPDF();
-            outPdf.addPage(page, false);
-
-            QPDFWriter writer(outPdf);
-            writer.setOutputMemory();
-            writer.setObjectStreamMode(qpdf_o_generate);
-            writer.write();
-
-            std::shared_ptr<Buffer> buffer = writer.getBufferSharedPointer();
-            result.call<void>("push", bufferToUint8Array(buffer));
+        for (const auto& page : pages) {
+            result.call<void>("push", vecToUint8Array(page));
         }
-
         return result;
-
     } catch (const std::exception& e) {
         throw std::runtime_error(std::string("PDF split failed: ") + e.what());
     }

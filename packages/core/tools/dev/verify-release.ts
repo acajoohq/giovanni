@@ -21,7 +21,7 @@ type PdflyWasmModule = {
     compressPdf: (
         input: Uint8Array,
         options:
-            | { engine: "qpdf"; preset: "web" }
+            | { engine: "qpdf"; preset: "default" }
             | {
                   engine: "ghostscript";
                   preset: "default";
@@ -86,7 +86,7 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
     const fixturePath = resolve(packageRoot, "src/test/fixtures/pdfs/compression/single-page-image.pdf");
     const input = new Uint8Array(await readFile(fixturePath));
 
-    const qpdfResult = await pdflyWasm.compressPdf(input, { engine: "qpdf", preset: "web" });
+    const qpdfResult = await pdflyWasm.compressPdf(input, { engine: "qpdf", preset: "default" });
     const ghostscriptResult = await pdflyWasm.compressPdf(input, {
         engine: "ghostscript",
         preset: "default",
@@ -98,7 +98,7 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
         grayImageResolution: 144,
         jpegQuality: 75,
     });
-    const qpdfSubpathResult = await pdflyQpdf.optimizePdf(input, { preset: "web" });
+    const qpdfSubpathResult = await pdflyQpdf.optimizePdf(input, { preset: "default" });
     const ghostscriptSubpathResult = await pdflyGhostscript.compressPdfWithGhostscript(input, {
         preset: "default",
         compatibilityLevel: "1.7",

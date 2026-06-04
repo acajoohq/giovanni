@@ -1,4 +1,4 @@
-// QPDFWrapper / QPDFWriterWrapper — advanced JS API for fine-grained control
+﻿// QPDFWrapper / QPDFWriterWrapper — advanced JS API for fine-grained control
 
 #include "../qpdf_wasm.hh"
 #include <qpdf/Pl_Flate.hh>
@@ -8,14 +8,18 @@
 QPDFWrapper::QPDFWrapper() : initialized(false) {}
 
 void QPDFWrapper::processMemoryFile(const emscripten::val& inputArray, const std::string& password) {
-    std::vector<uint8_t> inputData = emscripten::vecFromJSArray<uint8_t>(inputArray);
+    try {
+        std::vector<uint8_t> inputData = emscripten::vecFromJSArray<uint8_t>(inputArray);
 
-    const char* pwd = password.empty() ? nullptr : password.c_str();
-    pdf.processMemoryFile("input.pdf",
-                         reinterpret_cast<const char*>(inputData.data()),
-                         inputData.size(),
-                         pwd);
-    initialized = true;
+        const char* pwd = password.empty() ? nullptr : password.c_str();
+        pdf.processMemoryFile("input.pdf",
+                             reinterpret_cast<const char*>(inputData.data()),
+                             inputData.size(),
+                             pwd);
+        initialized = true;
+    } catch (const std::exception& e) {
+        throw std::runtime_error(std::string("processMemoryFile failed: ") + e.what());
+    }
 }
 
 int QPDFWrapper::getNumPages() {
@@ -109,8 +113,12 @@ void QPDFWriterWrapper::setLinearization(bool linearize) {
 }
 
 void QPDFWriterWrapper::write() {
-    Pl_Flate::setCompressionLevel(compressionLevel);
-    writer->write();
+    try {
+        Pl_Flate::setCompressionLevel(compressionLevel);
+        writer->write();
+    } catch (const std::exception& e) {
+        throw std::runtime_error(std::string("write failed: ") + e.what());
+    }
 }
 
 emscripten::val QPDFWriterWrapper::getBuffer() {

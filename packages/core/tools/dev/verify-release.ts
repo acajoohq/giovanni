@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Release-package verification for `package:check`.
  *
  * Expects `dist/` to already contain the bundled JS entrypoints and copied WASM
@@ -21,7 +21,7 @@ type PdflyWasmModule = {
     compressPdf: (
         input: Uint8Array,
         options:
-            | { engine: "qpdf"; preset: "default" }
+            | { engine: "qpdf"; preset: "web" }
             | {
                   engine: "ghostscript";
                   preset: "default";
@@ -86,7 +86,7 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
     const fixturePath = resolve(packageRoot, "src/test/fixtures/pdfs/upstream/pypdf/imagemagick-images.pdf");
     const input = new Uint8Array(await readFile(fixturePath));
 
-    const qpdfResult = await pdflyWasm.compressPdf(input, { engine: "qpdf", preset: "default" });
+    const qpdfResult = await pdflyWasm.compressPdf(input, { engine: "qpdf", preset: "web" });
     const ghostscriptResult = await pdflyWasm.compressPdf(input, {
         engine: "ghostscript",
         preset: "default",
@@ -98,7 +98,7 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
         grayImageResolution: 144,
         jpegQuality: 75,
     });
-    const qpdfSubpathResult = await pdflyQpdf.optimizePdf(input, { preset: "default" });
+    const qpdfSubpathResult = await pdflyQpdf.optimizePdf(input, { preset: "web" });
     const ghostscriptSubpathResult = await pdflyGhostscript.compressPdfWithGhostscript(input, {
         preset: "default",
         compatibilityLevel: "1.7",

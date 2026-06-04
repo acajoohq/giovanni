@@ -21,7 +21,7 @@ export function getQpdfBinding(): QpdfBinding {
  *
  * @example
  * ```typescript
- * import { setQpdfBinding } from "@pdfly/wasm/bindings";
+ * import { setQpdfBinding } from "@giovanni/core/bindings";
  * setQpdfBinding(myJsiQpdfBinding);
  * ```
  */
@@ -48,7 +48,7 @@ export function getGhostscriptBinding(): GhostscriptBinding {
  *
  * @example
  * ```typescript
- * import { setGhostscriptBinding } from "@pdfly/wasm/bindings";
+ * import { setGhostscriptBinding } from "@giovanni/core/bindings";
  * setGhostscriptBinding(myJsiGhostscriptBinding);
  * ```
  */

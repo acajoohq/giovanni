@@ -2,7 +2,7 @@
 
 Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF bytes stay on the device.
 
-**Layout:** [`apps/web`](apps/web) (main UI), [`apps/desktop`](apps/desktop) (Tauri), [`packages/pdfly-wasm`](packages/pdfly-wasm) (`@pdfly/wasm`), [`packages/pdfly-pdf-render`](packages/pdfly-pdf-render) (`@pdfly/pdf-render`, PDF.js page rasterisation). Upstream PDF engines are pinned in code and fetched inside Docker builds.
+**Layout:** [`apps/web`](apps/web) (main UI), [`apps/desktop`](apps/desktop) (Tauri), [`packages/core`](packages/core) (`@giovanni/core`), [`packages/pdfly-pdf-render`](packages/pdfly-pdf-render) (`@pdfly/pdf-render`, PDF.js page rasterisation). Upstream PDF engines are pinned in code and fetched inside Docker builds.
 
 ## Requirements
 
@@ -24,35 +24,35 @@ mise install
 
 ```bash
 pnpm install
-pnpm -F @pdfly/wasm build   # or: pnpm build
+pnpm -F @giovanni/core build   # or: pnpm build
 pnpm dev
 ```
 
 The vendor contract is intentionally small:
 
-- upstream source pins live in `packages/pdfly-wasm/tools/vendor/upstreams.ts`
+- upstream source pins live in `packages/core/tools/vendor/upstreams.ts`
 - Docker fetches those pinned archives during the build
 - no manual clone or host-side vendor cache is required
 
-Consumers installing **`@pdfly/wasm` from npm:** [packages/pdfly-wasm/README.md](packages/pdfly-wasm/README.md).
+Consumers installing **`@giovanni/core` from npm:** [packages/core/README.md](packages/core/README.md).
 
 ## Commands
 
 ```bash
 pnpm dev                              # web
 pnpm build                            # turbo
-pnpm -F @pdfly/wasm build             # WASM + lib only
-pnpm -F @pdfly/wasm build:wasm        # qpdf + Ghostscript WASM in parallel
-pnpm -F @pdfly/wasm build:qpdf:dev    # qpdf WASM debug-ish Docker build
-pnpm -F @pdfly/wasm build:qpdf:prd    # qpdf WASM optimized Docker build
-pnpm -F @pdfly/wasm build:ghostscript:dev   # Ghostscript WASM Docker build
-pnpm -F @pdfly/wasm build:ghostscript:prd   # optimized Ghostscript WASM Docker build
+pnpm -F @giovanni/core build             # WASM + lib only
+pnpm -F @giovanni/core build:wasm        # qpdf + Ghostscript WASM in parallel
+pnpm -F @giovanni/core build:qpdf:dev    # qpdf WASM debug-ish Docker build
+pnpm -F @giovanni/core build:qpdf:prd    # qpdf WASM optimized Docker build
+pnpm -F @giovanni/core build:ghostscript:dev   # Ghostscript WASM Docker build
+pnpm -F @giovanni/core build:ghostscript:prd   # optimized Ghostscript WASM Docker build
 pnpm build:desktop                    # Tauri desktop app
 pnpm check                            # types, lint, tests, format
 pnpm validate
 ```
 
-`pnpm -F <pkg> <script>` — packages include `web`, `@pdfly/wasm`, `desktop`. See [pnpm-workspace.yaml](pnpm-workspace.yaml).
+`pnpm -F <pkg> <script>` — packages include `web`, `@giovanni/core`, `desktop`. See [pnpm-workspace.yaml](pnpm-workspace.yaml).
 
 ## Ghostscript WASM Spike
 
@@ -60,13 +60,13 @@ The Ghostscript build is Docker-first, similar to the build orchestration used b
 
 - source: pinned archive fetched inside the Docker build
 - toolchain: `emscripten/emsdk` inside Docker
-- output: `packages/pdfly-wasm/build/ghostscript`
+- output: `packages/core/build/ghostscript`
 - native wrapper: `gsapi_*` exposed through a narrow Emscripten binding (`rewritePdf`, version)
 
-The lower-level Ghostscript runtime remains internal, but the package now exposes an engine-aware `compressPdf(...)` facade above qpdf and Ghostscript. The flow is Dockerfile-centric, the default `pnpm -F @pdfly/wasm build` path builds both engines, and both upstream engines now follow the same pinned-source plus Docker-build model with engine-named outputs:
+The lower-level Ghostscript runtime remains internal, but the package now exposes an engine-aware `compressPdf(...)` facade above qpdf and Ghostscript. The flow is Dockerfile-centric, the default `pnpm -F @giovanni/core build` path builds both engines, and both upstream engines now follow the same pinned-source plus Docker-build model with engine-named outputs:
 
-- `packages/pdfly-wasm/build/qpdf`
-- `packages/pdfly-wasm/build/ghostscript`
+- `packages/core/build/qpdf`
+- `packages/core/build/ghostscript`
 
 Build notes:
 
@@ -76,7 +76,7 @@ Build notes:
 
 ## License
 
-[@pdfly/wasm](packages/pdfly-wasm) is **Apache-2.0** ([LICENSE](packages/pdfly-wasm/LICENSE)). **Repo:** [github.com/MatteoGauthier/qpdf-wasm](https://github.com/MatteoGauthier/qpdf-wasm)
+[@giovanni/core](packages/core) is **Apache-2.0** ([LICENSE](packages/core/LICENSE)). **Repo:** [github.com/MatteoGauthier/qpdf-wasm](https://github.com/MatteoGauthier/qpdf-wasm)
 
 ## Todo
 

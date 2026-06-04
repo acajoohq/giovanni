@@ -11,7 +11,7 @@ import { validateQpdfWriteOptions } from "./options.js";
  * parsed document in memory so you don't pay the parse cost twice.
  *
  * The active binding (WASM, JSI, …) is resolved at runtime via the binding
- * registry. Switch bindings via {@link setQpdfBinding} from `@pdfly/wasm/bindings`.
+ * registry. Switch bindings via {@link setQpdfBinding} from `@giovanni/core/bindings`.
  *
  * @example
  * ```typescript

@@ -3,11 +3,11 @@
  *
  * Implement this interface to provide a Ghostscript binding for a specific
  * runtime (WASM, JSI, native Node addon, …). Register via
- * {@link setGhostscriptBinding} from `@pdfly/wasm/bindings`.
+ * {@link setGhostscriptBinding} from `@giovanni/core/bindings`.
  *
  * @example
  * ```typescript
- * import { setGhostscriptBinding } from "@pdfly/wasm/bindings";
+ * import { setGhostscriptBinding } from "@giovanni/core/bindings";
  * import { myJsiGhostscriptBinding } from "./my-jsi-binding";
  *
  * setGhostscriptBinding(myJsiGhostscriptBinding);

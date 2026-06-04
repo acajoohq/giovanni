@@ -2,7 +2,7 @@
 
 Render PDF pages to JPEG using [PDF.js](https://github.com/mozilla/pdf.js). Browser-first; optional Node [`canvas`](https://www.npmjs.com/package/canvas) for server-side rasterisation.
 
-This package is separate from [`@pdfly/wasm`](../pdfly-wasm/) (qpdf + Ghostscript WASM).
+This package is separate from [`@giovanni/core`](../core/) (qpdf + Ghostscript WASM).
 
 ## Install
 

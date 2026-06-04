@@ -1,5 +1,5 @@
 /**
- * @pdfly/wasm - qpdf WebAssembly API for local-first PDF workflows.
+ * @giovanni/core - qpdf WebAssembly API for local-first PDF workflows.
  */
 
 // compression api

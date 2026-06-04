@@ -123,10 +123,10 @@ jobs:
             - name: Run build
               run: pnpm run build
 
-            - name: Upload @pdfly/wasm dist artifact
+            - name: Upload @giovanni/core dist artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: pdfly-wasm-dist
+                  name: core-dist
                   path: packages/core/dist
 
             - name: Upload @pdfly/pdf-render dist artifact
@@ -201,7 +201,7 @@ jobs:
                       await run(github, context, core);
 
             - name: Check package contract
-              run: pnpm --filter @pdfly/wasm package:check
+              run: pnpm --filter @giovanni/core package:check
 
             - name: Deploy Cloudflare Worker (production)
               if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -285,10 +285,10 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Download @pdfly/wasm dist
+            - name: Download @giovanni/core dist
               uses: actions/download-artifact@v4
               with:
-                  name: pdfly-wasm-dist
+                  name: core-dist
                   path: packages/core/dist
 
             - name: Download @pdfly/pdf-render dist

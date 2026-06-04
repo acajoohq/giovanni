@@ -27,7 +27,7 @@ describe("createSingletonWasmLoader", () => {
 
 describe("createSingletonEmscriptenModuleLoader", () => {
     it("passes the resolved module URL into createModuleOptions", async () => {
-        const directory = await mkdtemp(join(tmpdir(), "pdfly-wasm-loader-"));
+        const directory = await mkdtemp(join(tmpdir(), "core-loader-"));
         const modulePath = join(directory, "emscripten-module.mjs");
         const moduleUrl = pathToFileURL(modulePath).href;
 

@@ -83,7 +83,7 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
 
     assert.deepEqual(pdflyWasm.getAvailableCompressionEngines().sort(), ["ghostscript", "qpdf"]);
 
-    const fixturePath = resolve(packageRoot, "src/test/fixtures/pdfs/compression/single-page-image.pdf");
+    const fixturePath = resolve(packageRoot, "src/test/fixtures/pdfs/upstream/qpdf/filter-on-write.pdf");
     const input = new Uint8Array(await readFile(fixturePath));
 
     const qpdfResult = await pdflyWasm.compressPdf(input, { engine: "qpdf", preset: "default" });

@@ -150,13 +150,13 @@ describe("compressPdf", () => {
 });
 
 describe("linearizePdf", () => {
-    it("forwards linearize: true to the QPDFWriter", async () => {
+    it("forwards linearize: true to compressPdf options", async () => {
         const fakeModule = makeFakeModule();
         mockInitQpdfModule.mockResolvedValue(fakeModule as never);
 
         await linearizePdf(new Uint8Array());
 
-        expect(fakeModule._writerInstance.setLinearization).toHaveBeenCalledWith(true);
+        expect(fakeModule.compressPdf).toHaveBeenCalledWith(expect.any(Uint8Array), expect.objectContaining({ linearize: true }));
     });
 
     it("includes preset in the result", async () => {

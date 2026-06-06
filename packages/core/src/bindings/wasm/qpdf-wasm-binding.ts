@@ -5,36 +5,8 @@ import type { NativeDocumentInfo, NativeExtractedImage, NativeWriteOptions, Qpdf
 async function writePdf(data: Uint8Array, options: NativeWriteOptions, password?: string): Promise<Uint8Array> {
     try {
         const module = await initQpdfModule();
-        const instance = new module.QPDFWrapper();
-        try {
-            instance.processMemoryFile(data, password ?? "");
-
-            if (options.compressPages) instance.coalesceContentStreams();
-            if (options.removeUnreferencedResources) instance.removeUnreferencedResources();
-
-            const writer = new module.QPDFWriter(instance);
-            try {
-                writer.setCompressStreams(true);
-                writer.setCompressionLevel(options.compressionLevel);
-                writer.setDecodeLevel(options.decodeLevel);
-                writer.setRecompressFlate(options.recompressFlate);
-                writer.setObjectStreamMode(options.objectStreams);
-
-                if (options.linearize) {
-                    if (typeof writer.setLinearization !== "function") {
-                        throw new QpdfValidationError("linearize is not available in this WASM build");
-                    }
-                    writer.setLinearization(true);
-                }
-
-                writer.write();
-                return writer.getBuffer().slice();
-            } finally {
-                writer.delete();
-            }
-        } finally {
-            instance.delete();
-        }
+        const optimizedBuffer = module.compressPdf(data, options).slice();
+        return optimizedBuffer;
     } catch (error) {
         if (error instanceof QpdfValidationError || error instanceof QpdfCompressionError || error instanceof QpdfInitError) {
             throw error;

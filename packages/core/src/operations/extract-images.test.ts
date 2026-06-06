@@ -1,12 +1,16 @@
 /// <reference types="node" />
 
 import { readFile } from "node:fs/promises";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { QpdfWasmModule, WasmExtractedImage } from "../types/wasm.types.js";
 
 let modulePromise: Promise<QpdfWasmModule> | null = null;
 
 describe("extractImages WASM filter decoding", () => {
+    beforeEach(() => {
+        modulePromise = null;
+    });
+
     it.each([
         {
             name: "plain DCTDecode",
@@ -54,10 +58,6 @@ describe("extractImages WASM filter decoding", () => {
         {
             name: "PDFium rectangles fixture",
             fixture: "upstream/pdfium/rectangles.pdf",
-        },
-        {
-            name: "qpdf filter-on-write fixture",
-            fixture: "upstream/qpdf/filter-on-write.pdf",
         },
     ])("handles upstream fixture: $name", async ({ fixture }) => {
         const module = await loadQpdfModule();

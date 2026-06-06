@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Release-package verification for `package:check`.
  *
  * Expects `dist/` to already contain the bundled JS entrypoints and copied WASM

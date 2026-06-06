@@ -41,7 +41,9 @@ set(REQUIRE_CRYPTO_NATIVE ON CACHE BOOL "Require native crypto" FORCE)
 set(USE_IMPLICIT_CRYPTO OFF CACHE BOOL "Disable implicit crypto" FORCE)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sUSE_ZLIB=1 -sUSE_LIBJPEG=1")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_ZLIB=1 -sUSE_LIBJPEG=1")
+# -fexceptions: enable C++ exception support so qpdf exceptions propagate to JS
+# rather than triggering Emscripten's default abort() handler.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_ZLIB=1 -sUSE_LIBJPEG=1 -fexceptions")
 
 add_subdirectory(${qpdf_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/qpdf-build EXCLUDE_FROM_ALL)
 
@@ -84,6 +86,7 @@ set(EMSCRIPTEN_LINK_FLAGS
   -sUSE_LIBJPEG=1
   -lembind
   --no-entry
+  -fexceptions
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")

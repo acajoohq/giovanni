@@ -1,4 +1,4 @@
-# Ghostscript Native Build Room
+﻿# Ghostscript Native Build Room
 
 This directory is reserved for Ghostscript-specific native build definitions that are not Docker recipes.
 
@@ -9,10 +9,13 @@ Current status:
 - the current wrapper is a narrow `gsapi_*` adapter for rewrite/version operations
 - the TypeScript runtime no longer drives Ghostscript through `callMain(...)`
 
-Current native responsibility split:
+**TODO**: Add `bindings/cpp/` to support native build targets (desktop, React Native, server),
+mirroring the QPDF two-layer structure.
+
+## Current native responsibility split
 
 - `bindings/emscripten/`
-  Emscripten-facing Ghostscript wrapper code
+  Emscripten-facing Ghostscript wrapper code (currently the only build target)
 
 - `toolchains/`
   Ghostscript-specific toolchain files, only if they diverge from the current Docker/configure path

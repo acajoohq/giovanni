@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AboutDialog } from "@/components/dialogs/AboutDialog";
 import { LanguageMenu } from "@/components/layout/LanguageMenu";
+import { MobileNav } from "@/components/layout/MobileNav";
 import { ToolbarIconButton } from "@/components/layout/ToolbarIconButton";
 import { ModeToggle } from "@/components/theme/ModeToggle";
 import { useTauriStartup } from "@/hooks/useTauriStartup";
@@ -31,7 +32,7 @@ export function AppShell() {
     ];
 
     const nav = (
-        <nav className="app-toolbar-nav flex w-full min-w-0 items-center gap-0.5 overflow-x-auto sm:max-w-[min(100vw-12rem,42rem)] sm:w-auto">
+        <nav className="app-toolbar-nav hidden items-center gap-0.5 sm:flex sm:max-w-[min(100vw-12rem,42rem)]">
             {navigationItems.map((item) => (
                 <Link key={item.to} className={NAV_LINK_CLASS} params={{ locale }} to={item.to}>
                     {item.label}
@@ -66,7 +67,7 @@ export function AppShell() {
                     "app-toolbar z-20 shrink-0 bg-app-surface-raised/90 backdrop-blur-2xl supports-[backdrop-filter]:bg-app-surface-raised/75",
                     isMacDesktop
                         ? "desktop-titlebar relative flex h-[var(--app-toolbar-height)] items-center pl-[var(--app-macos-traffic-inset)] pr-[var(--app-toolbar-padding-x)]"
-                        : "flex h-auto flex-col gap-2 border-b border-app-border/70 px-3 py-2 sm:h-[var(--app-toolbar-height)] sm:flex-row sm:items-center sm:justify-between sm:px-4",
+                        : "flex h-[var(--app-toolbar-height)] items-center justify-between border-b border-app-border/70 px-3 sm:px-4",
                 )}
             >
                 {isMacDesktop ? (
@@ -86,19 +87,20 @@ export function AppShell() {
                     </>
                 ) : (
                     <>
-                        <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-6">
+                        <div className="flex min-w-0 flex-1 items-center gap-6">
                             {brand}
                             {nav}
                         </div>
-                        <div className="absolute right-3 top-2 sm:static">{actions}</div>
+                        {actions}
                     </>
                 )}
             </header>
 
-            <main className="relative min-h-0 flex-1 overflow-hidden">
+            <main className="relative min-h-0 flex-1 overflow-hidden pb-16 sm:pb-0">
                 <Outlet />
             </main>
 
+            <MobileNav />
             <AboutDialog onClose={() => setAboutOpen(false)} open={aboutOpen} />
         </div>
     );

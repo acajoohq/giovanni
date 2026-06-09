@@ -1,4 +1,4 @@
-import { formatBytes } from "@pdfly/wasm";
+import { formatBytes } from "@giovanni/core";
 import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@pdfly/pdf-render";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";

@@ -48,8 +48,8 @@ lerna-debug.log*
 .agents/skills/
 /vendor/
 vendor/qpdf/
-packages/pdfly-wasm/wasm/cmake-build/
-packages/pdfly-wasm/test-report/
+packages/core/wasm/cmake-build/
+packages/core/test-report/
 .claude/settings.local.json
 dogfood-output/
 .tmp/

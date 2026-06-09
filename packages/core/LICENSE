@@ -1,0 +1,37 @@
+@giovanni/core licensing notice
+
+This package distribution contains materials under multiple licenses.
+
+1. Package source code and qpdf-specific TypeScript/runtime code
+
+   Unless stated otherwise in individual files, the package-authored
+   TypeScript, JavaScript, and qpdf integration code in this workspace is
+   licensed under the Apache License, Version 2.0.
+
+   The full Apache-2.0 text is provided in `LICENSE.APACHE`.
+
+2. Bundled Ghostscript / GhostPDL WebAssembly artifacts
+
+   This package also ships Ghostscript / GhostPDL-derived build artifacts,
+   including `ghostscript.js` and `ghostscript.wasm`, under `dist/`.
+
+   Artifex distributes Ghostscript / GhostPDL under the GNU Affero General
+   Public License, version 3 or later, or under a separate commercial
+   license. If you distribute or use a Ghostscript-enabled build of this
+   package, you must comply with the Ghostscript licensing terms that apply
+   to your use case.
+
+   Official licensing references:
+
+   - https://artifex.com/licensing
+   - https://ghostscript.com/faq/
+
+Effective package expression
+
+Because this published package includes both Apache-2.0 package code and
+AGPL-governed Ghostscript artifacts, the package manifest declares:
+
+    (Apache-2.0 AND AGPL-3.0-or-later)
+
+If you need Apache-only distribution terms, do not distribute a build that
+includes the bundled Ghostscript artifacts.

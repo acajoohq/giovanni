@@ -1,6 +1,6 @@
 # Web
 
-Web is the static-first React frontend for the PDF tools app. It uses TanStack Start, TanStack Router, Vite, Tailwind CSS, and the local `@pdfly/wasm` package.
+Web is the static-first React frontend for the PDF tools app. It uses TanStack Start, TanStack Router, Vite, Tailwind CSS, and the local `@giovanni/core` package.
 
 ## Routes
 

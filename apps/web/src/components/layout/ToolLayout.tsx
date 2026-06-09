@@ -39,7 +39,7 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
         e.preventDefault();
         dragCounter.current = 0;
         setIsDragOver(false);
-        if (!onFiles) return;
+        if (!onFiles || !hasDragFiles(e)) return;
         onFiles(Array.from(e.dataTransfer.files));
     };
 

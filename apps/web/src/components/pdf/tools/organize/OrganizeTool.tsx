@@ -1,4 +1,4 @@
-import { formatBytes, organizePdf, splitPdf } from "@pdfly/wasm";
+import { formatBytes, organizePdf, splitPdf } from "@giovanni/core";
 import { RiAddLine } from "@remixicon/react";
 import { type DragEvent, useEffect, useId, useRef, useState } from "react";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";

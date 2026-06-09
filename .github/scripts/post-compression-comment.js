@@ -7,7 +7,7 @@ const { join } = await import("node:path");
 
 const COMMENT_MARKER = "<!-- pdfly-compression-summary -->";
 const BOT_LOGIN = "github-actions[bot]";
-const SUMMARY_PATH = join(process.env.GITHUB_WORKSPACE, "packages/pdfly-wasm/test-report/compression-summary.md");
+const SUMMARY_PATH = join(process.env.GITHUB_WORKSPACE, "packages/core/test-report/compression-summary.md");
 
 function buildCommentBody() {
     if (!existsSync(SUMMARY_PATH)) {

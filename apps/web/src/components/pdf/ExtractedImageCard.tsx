@@ -1,4 +1,4 @@
-import { formatBytes, type ExtractedImage } from "@pdfly/wasm";
+import { formatBytes, type ExtractedImage } from "@giovanni/core";
 import { RiImageLine } from "@remixicon/react";
 
 export function ExtractedImageCard({ image, url, index }: { image: ExtractedImage; url: string | null; index: number }) {

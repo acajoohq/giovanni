@@ -55,7 +55,7 @@ function copyPdflyWasmRuntimeAssetsPlugin(): Plugin {
         },
         async generateBundle() {
             for (const assetFileName of PDFLY_WASM_RUNTIME_ASSETS) {
-                const assetPath = resolve(rootDirectory, "packages/pdfly-wasm/dist", assetFileName);
+                const assetPath = resolve(rootDirectory, "packages/core/dist", assetFileName);
                 const source = await readFile(assetPath);
 
                 this.emitFile({
@@ -123,7 +123,7 @@ export default defineConfig(({ mode }) => {
             "import.meta.env.VITE_GIT_COMMIT": JSON.stringify(gitCommit),
         },
         environments: {
-            // `canvas` and `.node` binaries are pulled in by `@pdfly/wasm` (noExternal by TanStack Start) but can't be bundled by Rolldown.
+            // `canvas` and `.node` binaries are pulled in by `@giovanni/core` (noExternal by TanStack Start) but can't be bundled by Rolldown.
             // `pdfjs-dist` uses DOM/Canvas APIs unavailable in Node.js — loading it during prerender crashes the SSR process.
             ssr: {
                 build: {

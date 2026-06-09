@@ -100,7 +100,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: .tmp/docker-buildx-cache/qpdf-prd
-                  key: docker-buildx-qpdf-${{ runner.os }}-${{ hashFiles('packages/pdfly-wasm/native/qpdf/docker.Dockerfile', 'packages/pdfly-wasm/native/qpdf/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
+                  key: docker-buildx-qpdf-${{ runner.os }}-${{ hashFiles('packages/core/native/qpdf/docker.Dockerfile', 'packages/core/native/qpdf/**', 'packages/core/tools/vendor/upstreams.ts') }}
                   restore-keys: |
                       docker-buildx-qpdf-${{ runner.os }}-
 
@@ -108,7 +108,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: .tmp/docker-buildx-cache/ghostscript-prd
-                  key: docker-buildx-ghostscript-${{ runner.os }}-${{ hashFiles('packages/pdfly-wasm/native/ghostscript/docker.Dockerfile', 'packages/pdfly-wasm/native/ghostscript/**', 'packages/pdfly-wasm/tools/vendor/upstreams.ts') }}
+                  key: docker-buildx-ghostscript-${{ runner.os }}-${{ hashFiles('packages/core/native/ghostscript/docker.Dockerfile', 'packages/core/native/ghostscript/**', 'packages/core/tools/vendor/upstreams.ts') }}
                   restore-keys: |
                       docker-buildx-ghostscript-${{ runner.os }}-
 
@@ -124,11 +124,11 @@ jobs:
             - name: Run build
               run: pnpm run build
 
-            - name: Upload @pdfly/wasm dist artifact
+            - name: Upload @giovanni/core dist artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: pdfly-wasm-dist
-                  path: packages/pdfly-wasm/dist
+                  name: core-dist
+                  path: packages/core/dist
 
             - name: Upload @pdfly/pdf-render dist artifact
               uses: actions/upload-artifact@v4
@@ -144,7 +144,7 @@ jobs:
               if: always()
               with:
                   name: compression-results
-                  path: packages/pdfly-wasm/test-report/compression-results.xml
+                  path: packages/core/test-report/compression-results.xml
                   if-no-files-found: ignore
 
             - name: Stage compression baseline for cache (master only)
@@ -152,7 +152,7 @@ jobs:
               continue-on-error: true
               run: |
                   mkdir -p /tmp/compression-baseline
-                  cp packages/pdfly-wasm/test-report/compression-results.xml /tmp/compression-baseline/compression-results.xml
+                  cp packages/core/test-report/compression-results.xml /tmp/compression-baseline/compression-results.xml
 
             - name: Save compression baseline cache (master only)
               if: always() && github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -179,14 +179,14 @@ jobs:
                   if [ -f "/tmp/compression-baseline/compression-results.xml" ]; then
                       BASELINE_FLAG="--baseline /tmp/compression-baseline/compression-results.xml"
                   fi
-                  python3 packages/pdfly-wasm/tools/dev/generate-compression-summary.py $BASELINE_FLAG
+                  python3 packages/core/tools/dev/generate-compression-summary.py $BASELINE_FLAG
 
             - name: Upload compression summary artifact
               uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: compression-summary
-                  path: packages/pdfly-wasm/test-report/compression-summary.md
+                  path: packages/core/test-report/compression-summary.md
                   if-no-files-found: ignore
 
             - name: Post compression summary as PR comment
@@ -202,7 +202,7 @@ jobs:
                       await run(github, context, core);
 
             - name: Check package contract
-              run: pnpm --filter @pdfly/wasm package:check
+              run: pnpm --filter @giovanni/core package:check
 
             - name: Deploy Cloudflare Worker (production)
               if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -286,11 +286,11 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Download @pdfly/wasm dist
+            - name: Download @giovanni/core dist
               uses: actions/download-artifact@v4
               with:
-                  name: pdfly-wasm-dist
-                  path: packages/pdfly-wasm/dist
+                  name: core-dist
+                  path: packages/core/dist
 
             - name: Download @pdfly/pdf-render dist
               uses: actions/download-artifact@v4

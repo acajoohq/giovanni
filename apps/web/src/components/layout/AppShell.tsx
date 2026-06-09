@@ -1,4 +1,4 @@
-﻿import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
+import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
 import { Link, Outlet, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,7 @@ import { useIsDesktopMacOS } from "@/lib/desktop/hooks/useIsDesktopMacOS";
 import { cn } from "@/lib/utils";
 
 const NAV_LINK_CLASS =
-    "shrink-0 rounded-[5px] text-[12px] font-medium leading-none tracking-[-0.01em] text-app-text-subtle transition-colors hover:text-app-text [&.active]:bg-app-control/70 [&.active]:text-app-text";
+    "shrink-0 rounded-[5px] px-3 py-1 text-[12px] font-medium tracking-[-0.01em] text-app-text-subtle transition-[color,background-color,box-shadow] hover:text-app-text [&.active]:bg-app-control [&.active]:text-app-text";
 
 export function AppShell() {
     const { t } = useTranslation();
@@ -31,7 +31,7 @@ export function AppShell() {
     ];
 
     const nav = (
-        <nav className="app-toolbar-nav flex max-w-[min(100vw-12rem,42rem)] min-w-0 items-center gap-0.5 overflow-x-auto">
+        <nav className="app-toolbar-nav flex w-full min-w-0 items-center gap-0.5 overflow-x-auto sm:max-w-[min(100vw-12rem,42rem)] sm:w-auto">
             {navigationItems.map((item) => (
                 <Link key={item.to} className={NAV_LINK_CLASS} params={{ locale }} to={item.to}>
                     {item.label}

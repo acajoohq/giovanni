@@ -1,14 +1,5 @@
 import { Dialog } from "@base-ui/react/dialog";
-import {
-    RiCloseLine,
-    RiFileZipLine,
-    RiImage2Line,
-    RiImageLine,
-    RiMoreFill,
-    RiScissorsCutLine,
-    RiSortAsc,
-    RiStackLine,
-} from "@remixicon/react";
+import { RiCloseLine, RiFileZipLine, RiImage2Line, RiImageLine, RiMoreFill, RiScissorsCutLine, RiSortAsc, RiStackLine } from "@remixicon/react";
 import { Link, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

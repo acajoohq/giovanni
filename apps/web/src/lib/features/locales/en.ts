@@ -47,7 +47,7 @@ export const en = {
             output: "Output",
             outputPlaceholder: "Output will appear here",
             noPreview: "No preview",
-            processing: "Processing…",
+            processing: "Processingâ€¦",
         },
     },
     compress: {

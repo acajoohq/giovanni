@@ -11,6 +11,7 @@ export const en = {
         languageLabel: "Language",
         more: "More",
         moreTools: "More tools",
+        close: "Close",
     },
     notFound: {
         title: "Not found",

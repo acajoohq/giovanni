@@ -13,6 +13,7 @@ export const fr: Translations = {
         languageLabel: "Langue",
         more: "Plus",
         moreTools: "Plus d'outils",
+        close: "Fermer",
     },
     notFound: {
         title: "Page introuvable",

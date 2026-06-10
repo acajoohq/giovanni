@@ -49,7 +49,7 @@ export function MobileNav() {
 
             <Dialog.Root open={open} onOpenChange={setOpen}>
                 <Dialog.Portal>
-                    <Dialog.Backdrop className="fixed inset-0 z-40 bg-black/40 duration-150 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+                    <Dialog.Backdrop className="fixed inset-0 z-40 bg-black/40 duration-150 data-open:animate-in data-open:fade-in-0" />
                     <Dialog.Popup className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl border-t border-app-border bg-app-surface-raised p-2 shadow-xl outline-none duration-200 data-open:animate-in data-open:slide-in-from-bottom-4 data-closed:animate-out data-closed:slide-out-to-bottom-4">
                         <div className="mb-2 flex items-center justify-between px-2 py-1.5">
                             <p className="text-[10px] font-semibold uppercase tracking-widest text-app-text-subtle">{t("nav.moreTools")}</p>

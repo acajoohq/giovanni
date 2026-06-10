@@ -1,4 +1,4 @@
-﻿export const en = {
+export const en = {
     nav: {
         compress: "Compress",
         split: "Split",
@@ -9,6 +9,9 @@
         aboutAriaLabel: "About Giovanni",
         languageAriaLabel: "Change language",
         languageLabel: "Language",
+        more: "More",
+        moreTools: "More tools",
+        close: "Close",
     },
     notFound: {
         title: "Not found",

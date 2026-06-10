@@ -11,6 +11,9 @@ export const fr: Translations = {
         aboutAriaLabel: "À propos de Giovanni",
         languageAriaLabel: "Changer la langue",
         languageLabel: "Langue",
+        more: "Plus",
+        moreTools: "Plus d'outils",
+        close: "Fermer",
     },
     notFound: {
         title: "Page introuvable",

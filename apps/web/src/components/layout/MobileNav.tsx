@@ -53,7 +53,10 @@ export function MobileNav() {
                     <Dialog.Popup className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl border-t border-app-border bg-app-surface-raised p-2 shadow-xl outline-none duration-200 data-open:animate-in data-open:slide-in-from-bottom-4 data-closed:animate-out data-closed:slide-out-to-bottom-4">
                         <div className="mb-2 flex items-center justify-between px-2 py-1.5">
                             <p className="text-[10px] font-semibold uppercase tracking-widest text-app-text-subtle">{t("nav.moreTools")}</p>
-                            <Dialog.Close aria-label={t("nav.close")} className="flex size-6 items-center justify-center rounded text-app-text-subtle outline-none transition-colors hover:text-app-text">
+                            <Dialog.Close
+                                aria-label={t("nav.close")}
+                                className="flex size-6 items-center justify-center rounded text-app-text-subtle outline-none transition-colors hover:text-app-text"
+                            >
                                 <RiCloseLine className="size-4" />
                             </Dialog.Close>
                         </div>

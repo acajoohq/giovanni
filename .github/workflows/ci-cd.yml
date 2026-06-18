@@ -133,8 +133,8 @@ jobs:
             - name: Upload @giovanni/pdf-render dist artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: pdfly-pdf-render-dist
-                  path: packages/pdfly-pdf-render/dist
+                  name: pdf-render-dist
+                  path: packages/pdf-render/dist
 
             - name: Run tests
               run: pnpm run test
@@ -295,8 +295,8 @@ jobs:
             - name: Download @giovanni/pdf-render dist
               uses: actions/download-artifact@v4
               with:
-                  name: pdfly-pdf-render-dist
-                  path: packages/pdfly-pdf-render/dist
+                  name: pdf-render-dist
+                  path: packages/pdf-render/dist
 
             - name: Install Rust stable
               uses: dtolnay/rust-toolchain@stable

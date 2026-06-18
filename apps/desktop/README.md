@@ -65,4 +65,4 @@ The build runs `pnpm --filter web build` first (via `beforeBuildCommand`) to pro
 
 ## PDF preview in WKWebView
 
-PDF preview uses pdf.js's [legacy build](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions#which-browsersenvironments-are-supported) so rendering works in Tauri's WKWebView (same WebKit engine as Safari). See [`packages/pdfly-pdf-render/README.md`](../../packages/pdfly-pdf-render/README.md).
+PDF preview uses pdf.js's [legacy build](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions#which-browsersenvironments-are-supported) so rendering works in Tauri's WKWebView (same WebKit engine as Safari). See [`packages/pdf-render/README.md`](../../packages/pdf-render/README.md).

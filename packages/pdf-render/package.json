@@ -18,7 +18,7 @@
     "repository": {
         "type": "git",
         "url": "git+https://github.com/MatteoGauthier/qpdf-wasm.git",
-        "directory": "packages/pdfly-pdf-render"
+        "directory": "packages/pdf-render"
     },
     "files": [
         "dist",

@@ -1,5 +1,5 @@
 /**
- * @pdfly/pdf-render - PDF.js-based page rasterisation to JPEG.
+ * @giovanni/pdf-render - PDF.js-based page rasterisation to JPEG.
  */
 
 // pdf operations

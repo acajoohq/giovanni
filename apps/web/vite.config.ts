@@ -33,7 +33,7 @@ function getGitCommit(): string {
     }
 }
 
-const PDFLY_WASM_RUNTIME_ASSETS = ["qpdf.js", "qpdf.wasm", "ghostscript.js", "ghostscript.wasm"] as const;
+const CORE_RUNTIME_ASSETS = ["qpdf.js", "qpdf.wasm", "ghostscript.js", "ghostscript.wasm"] as const;
 
 /**
  * Emits the Emscripten runtime files into the client build's assets directory.
@@ -46,15 +46,15 @@ const PDFLY_WASM_RUNTIME_ASSETS = ["qpdf.js", "qpdf.wasm", "ghostscript.js", "gh
  * `applyToEnvironment` limits the hook to the "client" environment so the
  * runtime files are not duplicated into the server bundle.
  */
-function copyPdflyWasmRuntimeAssetsPlugin(): Plugin {
+function copyCoreRuntimeAssetsPlugin(): Plugin {
     return {
-        name: "copy-wasm-assets",
+        name: "copy-core-runtime",
         apply: "build",
         applyToEnvironment(environment) {
             return environment.name === "client";
         },
         async generateBundle() {
-            for (const assetFileName of PDFLY_WASM_RUNTIME_ASSETS) {
+            for (const assetFileName of CORE_RUNTIME_ASSETS) {
                 const assetPath = resolve(rootDirectory, "packages/core/dist", assetFileName);
                 const source = await readFile(assetPath);
 
@@ -74,7 +74,7 @@ export default defineConfig(({ mode }) => {
     return {
         plugins: [
             tailwindcss(),
-            copyPdflyWasmRuntimeAssetsPlugin(),
+            copyCoreRuntimeAssetsPlugin(),
             !isTest &&
                 codeInspectorPlugin({
                     bundler: "vite",
@@ -108,7 +108,7 @@ export default defineConfig(({ mode }) => {
             babel({ presets: [reactCompilerPreset()] }),
         ],
         optimizeDeps: {
-            exclude: ["@pdfly/pdf-render/pdfjs/browser", "@pdfly/pdf-render/pdfjs-legacy/browser"],
+            exclude: ["@giovanni/pdf-render/pdfjs/browser", "@giovanni/pdf-render/pdfjs-legacy/browser"],
         },
         resolve: {
             alias: {
@@ -128,7 +128,7 @@ export default defineConfig(({ mode }) => {
             ssr: {
                 build: {
                     rollupOptions: {
-                        external: ["canvas", /\.node$/, "@pdfly/pdf-render", "@pdfly/pdf-render/pdfjs/browser", "@pdfly/pdf-render/pdfjs-legacy/browser", "pdfjs-dist"],
+                        external: ["canvas", /\.node$/, "@giovanni/pdf-render", "@giovanni/pdf-render/pdfjs/browser", "@giovanni/pdf-render/pdfjs-legacy/browser", "pdfjs-dist"],
                     },
                 },
             },

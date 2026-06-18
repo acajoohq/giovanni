@@ -2,7 +2,7 @@
 
 [qpdf](https://github.com/qpdf/qpdf) and **Ghostscript** compiled to WebAssembly — compress, split, merge, extract images, inspect, and organize PDFs in the browser or Node.js. The root package is task-oriented; engine-specific APIs live under `@giovanni/core/qpdf` and `@giovanni/core/ghostscript`.
 
-**PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@pdfly/pdf-render`**, not in this module.
+**PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@giovanni/pdf-render`**, not in this module.
 
 ## Install
 
@@ -64,7 +64,7 @@ Omitted optimization options fall back to `OptimizeOptions` defaults. Notably **
 To render PDF pages to JPEG via PDF.js, use the sibling package:
 
 ```ts
-import { renderPdfPagesToJpg } from "@pdfly/pdf-render";
+import { renderPdfPagesToJpg } from "@giovanni/pdf-render";
 ```
 
 ### Ghostscript

@@ -130,7 +130,7 @@ jobs:
                   name: core-dist
                   path: packages/core/dist
 
-            - name: Upload @pdfly/pdf-render dist artifact
+            - name: Upload @giovanni/pdf-render dist artifact
               uses: actions/upload-artifact@v4
               with:
                   name: pdfly-pdf-render-dist
@@ -292,7 +292,7 @@ jobs:
                   name: core-dist
                   path: packages/core/dist
 
-            - name: Download @pdfly/pdf-render dist
+            - name: Download @giovanni/pdf-render dist
               uses: actions/download-artifact@v4
               with:
                   name: pdfly-pdf-render-dist

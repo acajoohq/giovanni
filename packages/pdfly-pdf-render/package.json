@@ -1,5 +1,5 @@
 {
-    "name": "@pdfly/pdf-render",
+    "name": "@giovanni/pdf-render",
     "version": "0.1.0",
     "description": "PDF.js-based page rasterisation to JPEG (browser and Node with optional canvas)",
     "keywords": [

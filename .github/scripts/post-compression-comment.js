@@ -5,7 +5,7 @@
 const { existsSync, readFileSync } = await import("node:fs");
 const { join } = await import("node:path");
 
-const COMMENT_MARKER = "<!-- pdfly-compression-summary -->";
+const COMMENT_MARKER = "<!-- compression-summary -->";
 const BOT_LOGIN = "github-actions[bot]";
 const SUMMARY_PATH = join(process.env.GITHUB_WORKSPACE, "packages/core/test-report/compression-summary.md");
 

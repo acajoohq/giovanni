@@ -2,8 +2,8 @@
 // Post/update a Cloudflare Worker preview comment + PR description line.
 // Uses github-script@v7 globals: github, context, core, process.
 
-const COMMENT_MARKER = "<!-- pdfly-cf-worker-preview -->";
-const PR_MARKER = "<!-- pdfly-cf-preview -->";
+const COMMENT_MARKER = "<!-- cf-worker-preview -->";
+const PR_MARKER = "<!-- cf-preview -->";
 const BOT_LOGIN = "github-actions[bot]";
 
 /**

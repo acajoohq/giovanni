@@ -14,7 +14,7 @@
         "url": "https://github.com/MatteoGauthier/qpdf-wasm/issues"
     },
     "license": "Apache-2.0",
-    "author": "pdfly contributors",
+    "author": "",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/MatteoGauthier/qpdf-wasm.git",

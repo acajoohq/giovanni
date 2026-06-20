@@ -160,8 +160,8 @@ pnpm --filter @giovanni/core build:native:all
 
 ### Build environment variables
 
-| Variable                  | Applies to     | Description                            |
-| ------------------------- | -------------- | -------------------------------------- |
+| Variable                     | Applies to     | Description                            |
+| ---------------------------- | -------------- | -------------------------------------- |
 | `GIOVANNI_DOCKER_CACHE_ROOT` | WASM builds    | Override Docker buildx cache directory |
 | `GIOVANNI_NATIVE_SHARED=1`   | `build:native` | Build shared library instead of static |
 | `GIOVANNI_JSI_INCLUDE_DIR`   | `build:jsi`    | Path to `ReactCommon/` (JSI headers)   |

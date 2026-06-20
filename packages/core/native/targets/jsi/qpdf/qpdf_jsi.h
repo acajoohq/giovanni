@@ -3,7 +3,7 @@
 // This adapter bridges the pdfly C++ interface (IQpdfEngine) to the
 // React Native / Hermes JavaScript Interface (JSI).
 //
-// Compile with PDFLY_JSI_ENABLED=1 after providing:
+// Compile with GIOVANNI_JSI_ENABLED=1 after providing:
 //   1. jsi/jsi.h  (from react-native or hermes-engine)
 //   2. The pdfly impl/ sources
 //
@@ -12,7 +12,7 @@
 
 #pragma once
 
-#ifdef PDFLY_JSI_ENABLED
+#ifdef GIOVANNI_JSI_ENABLED
 
 #include <jsi/jsi.h>
 
@@ -232,4 +232,4 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
 
 } // namespace pdfly::jsi
 
-#endif // PDFLY_JSI_ENABLED
+#endif // GIOVANNI_JSI_ENABLED

@@ -1,8 +1,8 @@
 // example/main.cc — minimal usage example for pdfly_qpdf
 //
-// Build with PDFLY_BUILD_EXAMPLE=ON:
+// Build with GIOVANNI_BUILD_EXAMPLE=ON:
 //
-//   cmake -B build -DQPDF_SOURCE_DIR=../../../../../vendor/qpdf -DPDFLY_BUILD_EXAMPLE=ON
+//   cmake -B build -DQPDF_SOURCE_DIR=../../../../../vendor/qpdf -DGIOVANNI_BUILD_EXAMPLE=ON
 //   cmake --build build
 //   ./build/pdfly_example input.pdf output.pdf
 

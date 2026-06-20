@@ -66,7 +66,7 @@ This produces `build/libpdfly_qpdf.a` (or `.so` / `.dll` if `BUILD_SHARED_LIBS=O
 ### With a system-installed qpdf
 
 ```bash
-cmake -B build -DPDFLY_USE_SYSTEM_QPDF=ON
+cmake -B build -DGIOVANNI_USE_SYSTEM_QPDF=ON
 cmake --build build --parallel
 ```
 
@@ -75,7 +75,7 @@ cmake --build build --parallel
 ```bash
 cmake -B build \
   -DQPDF_SOURCE_DIR=../../../../../../vendor/qpdf \
-  -DPDFLY_BUILD_EXAMPLE=ON
+  -DGIOVANNI_BUILD_EXAMPLE=ON
 cmake --build build --parallel
 ./build/pdfly_example input.pdf output.pdf
 ```

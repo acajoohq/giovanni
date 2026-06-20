@@ -107,7 +107,7 @@ pnpm --filter @giovanni/core build:ghostscript:prd
 If your Docker buildx driver supports local cache export, the build reuses a per-engine cache directory. Override the cache location with:
 
 ```bash
-PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
+GIOVANNI_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
 ```
 
 Vendor sync contract:
@@ -137,7 +137,7 @@ pdfly_qpdf_destroy(h);
 Usable from Python, Rust, Go, Swift, or any language with a C FFI. Build as a shared library instead of static:
 
 ```bash
-PDFLY_NATIVE_SHARED=1 pnpm --filter @giovanni/core build:native
+GIOVANNI_NATIVE_SHARED=1 pnpm --filter @giovanni/core build:native
 ```
 
 ### React Native (JSI)
@@ -146,11 +146,11 @@ Produces `libpdfly_jsi` (shared library) that registers a synchronous `pdfly` ob
 
 ```bash
 # Point to your ReactCommon directory (contains jsi/jsi.h)
-PDFLY_JSI_INCLUDE_DIR=/path/to/node_modules/react-native/ReactCommon \
+GIOVANNI_JSI_INCLUDE_DIR=/path/to/node_modules/react-native/ReactCommon \
   pnpm --filter @giovanni/core build:jsi
 ```
 
-Output lands in `build/jsi/`. If `PDFLY_JSI_INCLUDE_DIR` is not set, the build compiles a stub-only fallback without the JSI runtime dependency.
+Output lands in `build/jsi/`. If `GIOVANNI_JSI_INCLUDE_DIR` is not set, the build compiles a stub-only fallback without the JSI runtime dependency.
 
 ### Build all native targets
 
@@ -162,10 +162,10 @@ pnpm --filter @giovanni/core build:native:all
 
 | Variable                  | Applies to     | Description                            |
 | ------------------------- | -------------- | -------------------------------------- |
-| `PDFLY_DOCKER_CACHE_ROOT` | WASM builds    | Override Docker buildx cache directory |
-| `PDFLY_NATIVE_SHARED=1`   | `build:native` | Build shared library instead of static |
-| `PDFLY_JSI_INCLUDE_DIR`   | `build:jsi`    | Path to `ReactCommon/` (JSI headers)   |
-| `PDFLY_NATIVE_JOBS`       | native / JSI   | Parallel CMake build jobs (default: 4) |
+| `GIOVANNI_DOCKER_CACHE_ROOT` | WASM builds    | Override Docker buildx cache directory |
+| `GIOVANNI_NATIVE_SHARED=1`   | `build:native` | Build shared library instead of static |
+| `GIOVANNI_JSI_INCLUDE_DIR`   | `build:jsi`    | Path to `ReactCommon/` (JSI headers)   |
+| `GIOVANNI_NATIVE_JOBS`       | native / JSI   | Parallel CMake build jobs (default: 4) |
 
 ## Development
 

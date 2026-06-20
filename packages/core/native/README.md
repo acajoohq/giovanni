@@ -174,18 +174,18 @@ Keep tweaks explicit and narrow.
     - `qpdf`: `dev | prd`
     - `ghostscript`: `dev | prd`
 - qpdf parallelism:
-    - `PDFLY_QPDF_JOBS=<n>`
+    - `GIOVANNI_QPDF_JOBS=<n>`
 - Ghostscript parallelism:
-    - `PDFLY_GHOSTSCRIPT_JOBS=<n>`
+    - `GIOVANNI_GHOSTSCRIPT_JOBS=<n>`
 - Docker BuildKit cache root:
-    - `PDFLY_DOCKER_CACHE_ROOT=<path>`
+    - `GIOVANNI_DOCKER_CACHE_ROOT=<path>`
 
 Example:
 
 ```bash
-PDFLY_QPDF_JOBS=2 pnpm --filter @giovanni/core build:qpdf:prd
-PDFLY_GHOSTSCRIPT_JOBS=4 pnpm --filter @giovanni/core build:ghostscript:prd
-PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
+GIOVANNI_QPDF_JOBS=2 pnpm --filter @giovanni/core build:qpdf:prd
+GIOVANNI_GHOSTSCRIPT_JOBS=4 pnpm --filter @giovanni/core build:ghostscript:prd
+GIOVANNI_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
 ```
 
 ## Build behavior

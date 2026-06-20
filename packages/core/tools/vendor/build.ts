@@ -29,7 +29,7 @@ const BUILD_TARGETS: Record<BuildTarget, BuildTargetConfig> = {
                 QPDF_VERSION: VENDOR_PINS.qpdf.version,
                 QPDF_ARCHIVE_URL: VENDOR_PINS.qpdf.archiveUrl,
                 QPDF_SHA256: VENDOR_PINS.qpdf.sha256 ?? "",
-                QPDF_JOBS: process.env.PDFLY_QPDF_JOBS ?? "",
+                QPDF_JOBS: process.env.GIOVANNI_QPDF_JOBS ?? "",
             };
         },
     },
@@ -42,7 +42,7 @@ const BUILD_TARGETS: Record<BuildTarget, BuildTargetConfig> = {
                 GHOSTPDL_VERSION: VENDOR_PINS.ghostscript.version,
                 GHOSTPDL_ARCHIVE_URL: VENDOR_PINS.ghostscript.archiveUrl,
                 GHOSTPDL_SHA256: VENDOR_PINS.ghostscript.sha256 ?? "",
-                JOBS: process.env.PDFLY_GHOSTSCRIPT_JOBS ?? "",
+                JOBS: process.env.GIOVANNI_GHOSTSCRIPT_JOBS ?? "",
             };
         },
     },
@@ -70,7 +70,7 @@ async function main(): Promise<void> {
 async function buildTarget(target: BuildTarget, mode: BuildMode, canExportBuildCache: boolean): Promise<void> {
     const config = BUILD_TARGETS[target];
     const outputDirectory = resolve(packageRoot, config.outputDirectory);
-    const cacheRoot = resolve(process.env.PDFLY_DOCKER_CACHE_ROOT ?? defaultCacheRoot, `${target}-${mode}`);
+    const cacheRoot = resolve(process.env.GIOVANNI_DOCKER_CACHE_ROOT ?? defaultCacheRoot, `${target}-${mode}`);
     const nextCacheRoot = `${cacheRoot}-next`;
 
     await rm(outputDirectory, { recursive: true, force: true });

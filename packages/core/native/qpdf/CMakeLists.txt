@@ -47,7 +47,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_ZLIB=1 -sUSE_LIBJPEG=1 -fexception
 
 add_subdirectory(${qpdf_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/qpdf-build EXCLUDE_FROM_ALL)
 
-set(PDFLY_NATIVE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
+set(GIOVANNI_NATIVE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 set(QPDF_WASM_SOURCES
   bindings/emscripten/bindings.cc
@@ -57,7 +57,7 @@ set(QPDF_WASM_SOURCES
   bindings/emscripten/api/merge.cc
   bindings/emscripten/api/extract_images.cc
   bindings/emscripten/api/qpdf_wrapper.cc
-  ${PDFLY_NATIVE_ROOT}/impl/qpdf/qpdf_engine.cc
+  ${GIOVANNI_NATIVE_ROOT}/impl/qpdf/qpdf_engine.cc
 )
 
 add_executable(qpdf-wasm ${QPDF_WASM_SOURCES})
@@ -67,8 +67,8 @@ target_link_libraries(qpdf-wasm PRIVATE libqpdf)
 target_include_directories(qpdf-wasm PRIVATE
   ${qpdf_INCLUDE}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${PDFLY_NATIVE_ROOT}/interface/include
-  ${PDFLY_NATIVE_ROOT}/impl/qpdf
+  ${GIOVANNI_NATIVE_ROOT}/interface/include
+  ${GIOVANNI_NATIVE_ROOT}/impl/qpdf
 )
 
 set(EMSCRIPTEN_LINK_FLAGS

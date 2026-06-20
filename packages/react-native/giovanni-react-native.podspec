@@ -24,6 +24,6 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "$(PODS_ROOT)/../../packages/core/native/interface/include $(PODS_ROOT)/../../packages/core/native/impl/qpdf",
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
-    "OTHER_CPLUSPLUSFLAGS" => "-DPDFLY_JSI_ENABLED=1"
+    "OTHER_CPLUSPLUSFLAGS" => "-DGIOVANNI_JSI_ENABLED=1"
   }
 end

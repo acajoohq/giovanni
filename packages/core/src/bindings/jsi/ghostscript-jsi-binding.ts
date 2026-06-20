@@ -1,15 +1,15 @@
 import type { GhostscriptBinding } from "../ghostscript-binding.interface.js";
 import { GhostscriptInitError } from "../../errors/index.js";
 
-function getGlobal(): NonNullable<typeof globalThis.pdfly_gs> {
-    if (!globalThis.pdfly_gs) {
+function getGlobal(): NonNullable<typeof globalThis.giovanni_gs> {
+    if (!globalThis.giovanni_gs) {
         throw new GhostscriptInitError(
-            "pdfly Ghostscript JSI module is not installed. " +
-                "Call pdfly::jsi::installGs(rt) from your TurboModule before using any Ghostscript operation. " +
+            "giovanni Ghostscript JSI module is not installed. " +
+                "Call giovanni::jsi::installGs(rt) from your TurboModule before using any Ghostscript operation. " +
                 "Note: the targets/jsi/ghostscript native build is not yet implemented.",
         );
     }
-    return globalThis.pdfly_gs;
+    return globalThis.giovanni_gs;
 }
 
 function toArrayBuffer(data: Uint8Array): ArrayBuffer {
@@ -19,8 +19,8 @@ function toArrayBuffer(data: Uint8Array): ArrayBuffer {
 /**
  * Ghostscript JSI binding for React Native (Hermes).
  *
- * Requires the native pdfly Ghostscript JSI module to be installed before use.
- * Call `pdfly::jsi::installGs(rt)` from your TurboModule (see targets/jsi/ghostscript),
+ * Requires the native giovanni Ghostscript JSI module to be installed before use.
+ * Call `giovanni::jsi::installGs(rt)` from your TurboModule (see targets/jsi/ghostscript),
  * then register this binding:
  *
  * @example

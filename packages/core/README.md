@@ -118,7 +118,7 @@ Vendor sync contract:
 
 ### C FFI (native)
 
-Produces `libpdfly_native` (static by default) and a C header `pdfly_c.h`. Requires **CMake** and a **C++20 compiler** — no Docker needed.
+Produces `libgiovanni_native` (static by default) and a C header `giovanni_c.h`. Requires **CMake** and a **C++20 compiler** — no Docker needed.
 
 ```bash
 pnpm --filter @giovanni/core build:native
@@ -127,11 +127,11 @@ pnpm --filter @giovanni/core build:native
 Output lands in `build/native/`.
 
 ```c
-#include "pdfly_c.h"
+#include "giovanni_c.h"
 
-PdflyQpdfHandle h = pdfly_qpdf_create();
-// ... pdfly_write_pdf, pdfly_split_pages, pdfly_merge_pdfs ...
-pdfly_qpdf_destroy(h);
+PdflyQpdfHandle h = giovanni_qpdf_create();
+// ... giovanni_write_pdf, giovanni_split_pages, giovanni_merge_pdfs ...
+giovanni_qpdf_destroy(h);
 ```
 
 Usable from Python, Rust, Go, Swift, or any language with a C FFI. Build as a shared library instead of static:
@@ -142,7 +142,7 @@ GIOVANNI_NATIVE_SHARED=1 pnpm --filter @giovanni/core build:native
 
 ### React Native (JSI)
 
-Produces `libpdfly_jsi` (shared library) that registers a synchronous `pdfly` object on the JSI runtime, exposing `getVersion`, `writePdf`, `splitPages`, `mergePdfs`, and `getDocumentInfo`.
+Produces `libgiovanni_jsi` (shared library) that registers a synchronous `giovanni` object on the JSI runtime, exposing `getVersion`, `writePdf`, `splitPages`, `mergePdfs`, and `getDocumentInfo`.
 
 ```bash
 # Point to your ReactCommon directory (contains jsi/jsi.h)
@@ -206,8 +206,8 @@ native/
   interface/   Abstract C++ interfaces (IQpdfEngine, IGhostscriptEngine)
   impl/        Platform-agnostic implementations (QpdfEngine via libqpdf)
   targets/
-    native/    C FFI wrapper (pdfly_c.h + libpdfly_native)
-    jsi/       React Native JSI adapter (libpdfly_jsi)
+    native/    C FFI wrapper (giovanni_c.h + libgiovanni_native)
+    jsi/       React Native JSI adapter (libgiovanni_jsi)
 ```
 
 More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).

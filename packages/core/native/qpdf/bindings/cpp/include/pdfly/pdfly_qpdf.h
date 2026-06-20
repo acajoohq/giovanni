@@ -1,24 +1,24 @@
-// pdfly_qpdf.h — C++ convenience API for pdfly (qpdf backend)
+// giovanni_qpdf.h — C++ convenience API for giovanni (qpdf backend)
 //
 // This header re-exports the canonical types and interface from
 // native/interface/ and exposes free functions backed by QpdfEngine.
 //
-// For direct interface usage, prefer including <pdfly/api.h> and constructing
-// a pdfly::QpdfEngine directly (see native/impl/qpdf/qpdf_engine.h).
+// For direct interface usage, prefer including <giovanni/api.h> and constructing
+// a giovanni::QpdfEngine directly (see native/impl/qpdf/qpdf_engine.h).
 
 #pragma once
 
 // Pull in the canonical shared types + abstract interface
-#include <pdfly/types.h>
-#include <pdfly/api.h>
+#include <giovanni/types.h>
+#include <giovanni/api.h>
 
-namespace pdfly {
+namespace giovanni {
 
 // ---------------------------------------------------------------------------
 // Free-function convenience API
 //
 // These delegate to a default QpdfEngine instance.
-// Prefer constructing pdfly::QpdfEngine directly for multi-instance or
+// Prefer constructing giovanni::QpdfEngine directly for multi-instance or
 // engine-swapping scenarios.
 // ---------------------------------------------------------------------------
 
@@ -42,4 +42,4 @@ DocumentInfo getDocumentInfo(
 std::vector<ExtractedImage> extractImages(
     const std::vector<uint8_t>& input);
 
-} // namespace pdfly
+} // namespace giovanni

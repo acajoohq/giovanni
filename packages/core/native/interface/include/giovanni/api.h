@@ -1,4 +1,4 @@
-// api.h — Abstract C++ interface for the pdfly API
+// api.h — Abstract C++ interface for the giovanni API
 //
 // This is the single contract that all build targets implement:
 //   - targets/wasm/   → Emscripten adapter over IQpdfEngine + IGhostscriptEngine
@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace pdfly {
+namespace giovanni {
 
 // ---------------------------------------------------------------------------
 // IQpdfEngine — mirrors the TypeScript QpdfBinding interface
@@ -71,4 +71,4 @@ public:
         const std::vector<std::string>& args) = 0;
 };
 
-} // namespace pdfly
+} // namespace giovanni

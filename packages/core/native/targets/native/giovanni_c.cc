@@ -1,4 +1,4 @@
-#include "pdfly_c.h"
+#include "giovanni_c.h"
 
 #include "../../impl/qpdf/qpdf_engine.h"
 
@@ -19,7 +19,7 @@ static int setError(const char* msg) {
     return -1;
 }
 
-const char* pdfly_last_error(void) {
+const char* giovanni_last_error(void) {
     return tl_lastError.c_str();
 }
 
@@ -27,27 +27,27 @@ const char* pdfly_last_error(void) {
 // Lifecycle
 // ---------------------------------------------------------------------------
 
-PdflyQpdfHandle pdfly_qpdf_create(void) {
+PdflyQpdfHandle giovanni_qpdf_create(void) {
     try {
-        return reinterpret_cast<PdflyQpdfHandle>(new pdfly::QpdfEngine());
+        return reinterpret_cast<PdflyQpdfHandle>(new giovanni::QpdfEngine());
     } catch (const std::exception& e) {
         setError(e.what());
         return nullptr;
     }
 }
 
-void pdfly_qpdf_destroy(PdflyQpdfHandle handle) {
-    delete reinterpret_cast<pdfly::QpdfEngine*>(handle);
+void giovanni_qpdf_destroy(PdflyQpdfHandle handle) {
+    delete reinterpret_cast<giovanni::QpdfEngine*>(handle);
 }
 
 // ---------------------------------------------------------------------------
 // Version
 // ---------------------------------------------------------------------------
 
-int pdfly_get_version(PdflyQpdfHandle handle, char* out, size_t out_len) {
+int giovanni_get_version(PdflyQpdfHandle handle, char* out, size_t out_len) {
     if (!handle || !out || out_len == 0) return setError("invalid arguments");
     try {
-        auto* eng = reinterpret_cast<pdfly::QpdfEngine*>(handle);
+        auto* eng = reinterpret_cast<giovanni::QpdfEngine*>(handle);
         std::string v = eng->getVersion();
         std::strncpy(out, v.c_str(), out_len - 1);
         out[out_len - 1] = '\0';
@@ -61,7 +61,7 @@ int pdfly_get_version(PdflyQpdfHandle handle, char* out, size_t out_len) {
 // Write options defaults
 // ---------------------------------------------------------------------------
 
-void pdfly_write_options_default(PdflyWriteOptions* opts) {
+void giovanni_write_options_default(PdflyWriteOptions* opts) {
     if (!opts) return;
     opts->compressionLevel           = 6;
     opts->recompressFlate            = 1;
@@ -72,8 +72,8 @@ void pdfly_write_options_default(PdflyWriteOptions* opts) {
     opts->linearize                  = 0;
 }
 
-static pdfly::WriteOptions toWriteOptions(const PdflyWriteOptions* c) {
-    pdfly::WriteOptions opts;
+static giovanni::WriteOptions toWriteOptions(const PdflyWriteOptions* c) {
+    giovanni::WriteOptions opts;
     if (!c) return opts;
     opts.compressionLevel           = c->compressionLevel;
     opts.recompressFlate            = c->recompressFlate != 0;
@@ -86,10 +86,10 @@ static pdfly::WriteOptions toWriteOptions(const PdflyWriteOptions* c) {
 }
 
 // ---------------------------------------------------------------------------
-// pdfly_write_pdf
+// giovanni_write_pdf
 // ---------------------------------------------------------------------------
 
-int pdfly_write_pdf(
+int giovanni_write_pdf(
     PdflyQpdfHandle handle,
     const uint8_t* input, size_t input_size,
     const PdflyWriteOptions* options,
@@ -98,7 +98,7 @@ int pdfly_write_pdf(
 {
     if (!handle || !input || !out_data || !out_size) return setError("invalid arguments");
     try {
-        auto* eng = reinterpret_cast<pdfly::QpdfEngine*>(handle);
+        auto* eng = reinterpret_cast<giovanni::QpdfEngine*>(handle);
         std::vector<uint8_t> in(input, input + input_size);
         std::string pwd = password ? password : "";
         auto result = eng->writePdf(in, toWriteOptions(options), pwd);
@@ -114,10 +114,10 @@ int pdfly_write_pdf(
 }
 
 // ---------------------------------------------------------------------------
-// pdfly_split_pages
+// giovanni_split_pages
 // ---------------------------------------------------------------------------
 
-int pdfly_split_pages(
+int giovanni_split_pages(
     PdflyQpdfHandle handle,
     const uint8_t* input, size_t input_size,
     uint8_t*** out_pages, size_t** out_sizes, size_t* out_count)
@@ -125,7 +125,7 @@ int pdfly_split_pages(
     if (!handle || !input || !out_pages || !out_sizes || !out_count)
         return setError("invalid arguments");
     try {
-        auto* eng = reinterpret_cast<pdfly::QpdfEngine*>(handle);
+        auto* eng = reinterpret_cast<giovanni::QpdfEngine*>(handle);
         std::vector<uint8_t> in(input, input + input_size);
         auto pages = eng->splitPages(in);
 
@@ -157,10 +157,10 @@ int pdfly_split_pages(
 }
 
 // ---------------------------------------------------------------------------
-// pdfly_merge_pdfs
+// giovanni_merge_pdfs
 // ---------------------------------------------------------------------------
 
-int pdfly_merge_pdfs(
+int giovanni_merge_pdfs(
     PdflyQpdfHandle handle,
     const uint8_t* const* inputs, const size_t* input_sizes, size_t input_count,
     uint8_t** out_data, size_t* out_size)
@@ -168,7 +168,7 @@ int pdfly_merge_pdfs(
     if (!handle || !inputs || !input_sizes || !out_data || !out_size)
         return setError("invalid arguments");
     try {
-        auto* eng = reinterpret_cast<pdfly::QpdfEngine*>(handle);
+        auto* eng = reinterpret_cast<giovanni::QpdfEngine*>(handle);
         std::vector<std::vector<uint8_t>> vecs;
         vecs.reserve(input_count);
         for (size_t i = 0; i < input_count; ++i) {
@@ -187,7 +187,7 @@ int pdfly_merge_pdfs(
 }
 
 // ---------------------------------------------------------------------------
-// pdfly_get_document_info
+// giovanni_get_document_info
 // ---------------------------------------------------------------------------
 
 static char* dupstr(const std::string& s) {
@@ -196,7 +196,7 @@ static char* dupstr(const std::string& s) {
     return p;
 }
 
-int pdfly_get_document_info(
+int giovanni_get_document_info(
     PdflyQpdfHandle handle,
     const uint8_t* input, size_t input_size,
     const char* password,
@@ -204,7 +204,7 @@ int pdfly_get_document_info(
 {
     if (!handle || !input || !out) return setError("invalid arguments");
     try {
-        auto* eng = reinterpret_cast<pdfly::QpdfEngine*>(handle);
+        auto* eng = reinterpret_cast<giovanni::QpdfEngine*>(handle);
         std::vector<uint8_t> in(input, input + input_size);
         std::string pwd = password ? password : "";
         auto info = eng->getDocumentInfo(in, pwd);
@@ -230,11 +230,11 @@ int pdfly_get_document_info(
 // Memory management
 // ---------------------------------------------------------------------------
 
-void pdfly_buffer_free(uint8_t* data) {
+void giovanni_buffer_free(uint8_t* data) {
     std::free(data);
 }
 
-void pdfly_pages_free(uint8_t** pages, size_t* sizes, size_t count) {
+void giovanni_pages_free(uint8_t** pages, size_t* sizes, size_t count) {
     if (pages) {
         for (size_t i = 0; i < count; ++i) std::free(pages[i]);
         std::free(pages);
@@ -242,7 +242,7 @@ void pdfly_pages_free(uint8_t** pages, size_t* sizes, size_t count) {
     std::free(sizes);
 }
 
-void pdfly_document_info_free(PdflyDocumentInfo* info) {
+void giovanni_document_info_free(PdflyDocumentInfo* info) {
     if (!info) return;
     std::free(info->title);
     std::free(info->author);

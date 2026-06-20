@@ -1,4 +1,4 @@
-// types.h — Canonical shared types for the pdfly C++ API
+// types.h — Canonical shared types for the giovanni C++ API
 //
 // This is the single source of truth for all data types used across build
 // targets (WASM, JSI, native binary). Every target includes this header.
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace pdfly {
+namespace giovanni {
 
 // ---------------------------------------------------------------------------
 // WriteOptions — mirrors NativeWriteOptions
@@ -84,4 +84,4 @@ struct ExtractedImage {
     std::vector<uint8_t> bytes;
 };
 
-} // namespace pdfly
+} // namespace giovanni

@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   # Path to the pre-built giovanni_jsi static library (produced by targets/jsi/qpdf CMakeLists.txt)
   s.vendored_libraries = "ios/libs/libgiovanni_jsi.a"
 
-  # qpdf and pdfly interface headers
+  # qpdf and giovanni interface headers
   s.pod_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "$(PODS_ROOT)/../../packages/core/native/interface/include $(PODS_ROOT)/../../packages/core/native/impl/qpdf",
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",

@@ -18,7 +18,7 @@ const jsiBuildDir = resolve(packageRoot, "build", "jsi");
 
 const expectedFiles = [
     // Shared library — Docker build always targets Linux, so the artifact is always .so
-    "libpdfly_jsi.so",
+    "libgiovanni_jsi.so",
     // Public header copied by build-native.ts
     "qpdf_jsi.h",
 ];

@@ -1,13 +1,13 @@
-# pdfly C++ binding for qpdf
+# giovanni C++ binding for qpdf
 
 A pure C++ API that exposes the same operations as the TypeScript `QpdfBinding` interface — no WASM, no JavaScript runtime required.
 
 ## API
 
 ```cpp
-#include <pdfly/pdfly_qpdf.h>
+#include <giovanni/giovanni_qpdf.h>
 
-namespace pdfly {
+namespace giovanni {
 
 // Returns the linked qpdf library version.
 std::string getVersion();
@@ -61,7 +61,7 @@ cmake -B build \
 cmake --build build --parallel
 ```
 
-This produces `build/libpdfly_qpdf.a` (or `.so` / `.dll` if `BUILD_SHARED_LIBS=ON`).
+This produces `build/libgiovanni_qpdf.a` (or `.so` / `.dll` if `BUILD_SHARED_LIBS=ON`).
 
 ### With a system-installed qpdf
 
@@ -77,13 +77,13 @@ cmake -B build \
   -DQPDF_SOURCE_DIR=../../../../../../vendor/qpdf \
   -DGIOVANNI_BUILD_EXAMPLE=ON
 cmake --build build --parallel
-./build/pdfly_example input.pdf output.pdf
+./build/giovanni_example input.pdf output.pdf
 ```
 
 ## Usage
 
 ```cpp
-#include <pdfly/pdfly_qpdf.h>
+#include <giovanni/giovanni_qpdf.h>
 #include <fstream>
 #include <iterator>
 
@@ -93,23 +93,23 @@ int main() {
     std::vector<uint8_t> data(std::istreambuf_iterator<char>(f), {});
 
     // Inspect
-    auto info = pdfly::getDocumentInfo(data);
+    auto info = giovanni::getDocumentInfo(data);
     // info.numPages, info.pdfVersion, info.isEncrypted, info.isLinearized, ...
 
     // Compress and linearize
-    pdfly::WriteOptions opts;
+    giovanni::WriteOptions opts;
     opts.compressionLevel = 9;
     opts.linearize = true;
-    auto result = pdfly::writePdf(data, opts);
+    auto result = giovanni::writePdf(data, opts);
 
     // Split into pages
-    auto pages = pdfly::splitPages(data);
+    auto pages = giovanni::splitPages(data);
 
     // Merge pages back
-    auto merged = pdfly::mergePdfs(pages);
+    auto merged = giovanni::mergePdfs(pages);
 
     // Extract images
-    auto images = pdfly::extractImages(data);
+    auto images = giovanni::extractImages(data);
     for (auto& img : images) {
         // img.width, img.height, img.filter, img.strategy, img.bytes ...
     }
@@ -120,7 +120,7 @@ int main() {
 
 This library mirrors `QpdfBinding` from `@giovanni/core/bindings`:
 
-| TypeScript (`QpdfBinding`)           | C++ (`pdfly::`)                     |
+| TypeScript (`QpdfBinding`)           | C++ (`giovanni::`)                     |
 | ------------------------------------ | ----------------------------------- |
 | `init(): Promise<void>`              | _(linking is sufficient)_           |
 | `getVersion(): Promise<string>`      | `getVersion(): string`              |
@@ -130,8 +130,8 @@ This library mirrors `QpdfBinding` from `@giovanni/core/bindings`:
 | `getDocumentInfo(data, password?)`   | `getDocumentInfo(data, password)`   |
 | `extractImages(data)`                | `extractImages(data)`               |
 
-`NativeWriteOptions` → `pdfly::WriteOptions`
-`NativeDocumentInfo` → `pdfly::DocumentInfo`
-`NativeExtractedImage` → `pdfly::ExtractedImage`
+`NativeWriteOptions` → `giovanni::WriteOptions`
+`NativeDocumentInfo` → `giovanni::DocumentInfo`
+`NativeExtractedImage` → `giovanni::ExtractedImage`
 
 Input/output buffers are `std::vector<uint8_t>` instead of `Uint8Array`.

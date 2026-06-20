@@ -6,7 +6,7 @@
 #import <ReactCommon/RCTTurboModule.h>
 #import <jsi/jsi.h>
 
-// pdfly JSI install function (from targets/jsi/qpdf)
+// giovanni JSI install function (from targets/jsi/qpdf)
 #ifdef GIOVANNI_JSI_ENABLED
 #include "qpdf_jsi.h"
 #endif
@@ -22,7 +22,7 @@ RCT_EXPORT_MODULE(GiovanniModule)
     if (!cxxBridge.runtime) return;
 
     auto &rt = *(facebook::jsi::Runtime *)cxxBridge.runtime;
-    pdfly::jsi::install(rt);
+    giovanni::jsi::install(rt);
 #endif
 }
 

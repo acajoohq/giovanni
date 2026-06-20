@@ -77,17 +77,17 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
     const moduleUrl = pathToFileURL(resolve(distRoot, "index.mjs")).href;
     const qpdfModuleUrl = pathToFileURL(resolve(distRoot, "qpdf.mjs")).href;
     const ghostscriptModuleUrl = pathToFileURL(resolve(distRoot, "ghostscript.mjs")).href;
-    const pdflyWasm = (await import(moduleUrl)) as PdflyWasmModule;
-    const pdflyQpdf = (await import(qpdfModuleUrl)) as PdflyQpdfModule;
-    const pdflyGhostscript = (await import(ghostscriptModuleUrl)) as PdflyGhostscriptModule;
+    const giovanniWasm = (await import(moduleUrl)) as PdflyWasmModule;
+    const giovanniQpdf = (await import(qpdfModuleUrl)) as PdflyQpdfModule;
+    const giovanniGhostscript = (await import(ghostscriptModuleUrl)) as PdflyGhostscriptModule;
 
-    assert.deepEqual(pdflyWasm.getAvailableCompressionEngines().sort(), ["ghostscript", "qpdf"]);
+    assert.deepEqual(giovanniWasm.getAvailableCompressionEngines().sort(), ["ghostscript", "qpdf"]);
 
     const fixturePath = resolve(packageRoot, "src/test/fixtures/pdfs/upstream/pypdf/imagemagick-images.pdf");
     const input = new Uint8Array(await readFile(fixturePath));
 
-    const qpdfResult = await pdflyWasm.compressPdf(input, { engine: "qpdf", preset: "web" });
-    const ghostscriptResult = await pdflyWasm.compressPdf(input, {
+    const qpdfResult = await giovanniWasm.compressPdf(input, { engine: "qpdf", preset: "web" });
+    const ghostscriptResult = await giovanniWasm.compressPdf(input, {
         engine: "ghostscript",
         preset: "default",
         compatibilityLevel: "1.7",
@@ -98,8 +98,8 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
         grayImageResolution: 144,
         jpegQuality: 75,
     });
-    const qpdfSubpathResult = await pdflyQpdf.optimizePdf(input, { preset: "web" });
-    const ghostscriptSubpathResult = await pdflyGhostscript.compressPdfWithGhostscript(input, {
+    const qpdfSubpathResult = await giovanniQpdf.optimizePdf(input, { preset: "web" });
+    const ghostscriptSubpathResult = await giovanniGhostscript.compressPdfWithGhostscript(input, {
         preset: "default",
         compatibilityLevel: "1.7",
         colorConversionStrategy: "LeaveColorUnchanged",
@@ -118,8 +118,8 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
     assert(ghostscriptResult.compressedSize > 0, "ghostscript compressed result is empty");
     assert(qpdfSubpathResult.compressedSize > 0, "qpdf subpath compressed result is empty");
     assert(ghostscriptSubpathResult.compressedSize > 0, "ghostscript subpath compressed result is empty");
-    assert.equal(typeof (await pdflyQpdf.getQpdfVersion()), "string");
-    assert.equal(typeof (await pdflyGhostscript.getGhostscriptVersion()), "string");
+    assert.equal(typeof (await giovanniQpdf.getQpdfVersion()), "string");
+    assert.equal(typeof (await giovanniGhostscript.getGhostscriptVersion()), "string");
 
     console.log(
         JSON.stringify(

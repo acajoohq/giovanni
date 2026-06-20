@@ -32,8 +32,8 @@ emscripten::val bufferToUint8Array(const std::shared_ptr<Buffer>& buffer);
 emscripten::val vecToUint8Array(const std::vector<uint8_t>& vec);
 
 // Engine singleton (defined in qpdf_commons.cc)
-namespace pdfly { class QpdfEngine; }
-pdfly::QpdfEngine& getEngine();
+namespace giovanni { class QpdfEngine; }
+giovanni::QpdfEngine& getEngine();
 
 // compress.cc
 emscripten::val compressPdf(const emscripten::val& inputArray, const CompressionOptions& options);

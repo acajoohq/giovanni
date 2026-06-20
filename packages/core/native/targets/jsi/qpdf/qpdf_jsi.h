@@ -1,13 +1,13 @@
 // qpdf_jsi.cpp — React Native JSI adapter for QpdfEngine
 //
-// This adapter bridges the pdfly C++ interface (IQpdfEngine) to the
+// This adapter bridges the giovanni C++ interface (IQpdfEngine) to the
 // React Native / Hermes JavaScript Interface (JSI).
 //
 // Compile with GIOVANNI_JSI_ENABLED=1 after providing:
 //   1. jsi/jsi.h  (from react-native or hermes-engine)
-//   2. The pdfly impl/ sources
+//   2. The giovanni impl/ sources
 //
-// Registration: call pdfly::jsi::install(runtime) from your TurboModule's
+// Registration: call giovanni::jsi::install(runtime) from your TurboModule's
 // install() function, typically in the AppDelegate (iOS) or onCreate (Android).
 
 #pragma once
@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-namespace pdfly::jsi {
+namespace giovanni::jsi {
 
 using namespace facebook::jsi;
 
@@ -43,7 +43,7 @@ static std::vector<uint8_t> jsValueToBytes(Runtime& rt, const Value& val) {
             return std::vector<uint8_t>(data, data + ab.size(rt));
         }
     }
-    throw JSError(rt, "pdfly: expected Uint8Array or ArrayBuffer");
+    throw JSError(rt, "giovanni: expected Uint8Array or ArrayBuffer");
 }
 
 // Wrap a byte vector in a JSI ArrayBuffer (zero-copy via shared_ptr)
@@ -58,16 +58,16 @@ static Value bytesToJsValue(Runtime& rt, std::vector<uint8_t> bytes) {
 }
 
 // ---------------------------------------------------------------------------
-// install — registers all pdfly operations on the given JSI Runtime
+// install — registers all giovanni operations on the given JSI Runtime
 // ---------------------------------------------------------------------------
 //
 // After calling this, the following globals are available in JS:
 //
-//   pdfly.getVersion()   → string
-//   pdfly.writePdf(u8a, opts, password?) → Uint8Array
-//   pdfly.splitPages(u8a)               → Uint8Array[]
-//   pdfly.mergePdfs(u8a[])              → Uint8Array
-//   pdfly.getDocumentInfo(u8a, pass?)   → object
+//   giovanni.getVersion()   → string
+//   giovanni.writePdf(u8a, opts, password?) → Uint8Array
+//   giovanni.splitPages(u8a)               → Uint8Array[]
+//   giovanni.mergePdfs(u8a[])              → Uint8Array
+//   giovanni.getDocumentInfo(u8a, pass?)   → object
 //
 // All functions are synchronous (JSI does not require Promises at this layer;
 // wrap in a Promise in the JS TurboModule spec if async behaviour is needed).
@@ -77,10 +77,10 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
         engine = std::make_shared<QpdfEngine>();
     }
 
-    auto pdfly = Object(rt);
+    auto giovanni = Object(rt);
 
     // --- getVersion ---
-    pdfly.setProperty(rt, "getVersion",
+    giovanni.setProperty(rt, "getVersion",
         Function::createFromHostFunction(rt,
             PropNameID::forAscii(rt, "getVersion"), 0,
             [engine](Runtime& rt, const Value&, const Value*, size_t) -> Value {
@@ -88,15 +88,15 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
             }));
 
     // --- writePdf(u8a, opts, password?) ---
-    pdfly.setProperty(rt, "writePdf",
+    giovanni.setProperty(rt, "writePdf",
         Function::createFromHostFunction(rt,
             PropNameID::forAscii(rt, "writePdf"), 3,
             [engine](Runtime& rt, const Value&, const Value* args, size_t count) -> Value {
-                if (count < 1) throw JSError(rt, "pdfly.writePdf: expected (data, opts?, password?)");
+                if (count < 1) throw JSError(rt, "giovanni.writePdf: expected (data, opts?, password?)");
 
                 auto input = jsValueToBytes(rt, args[0]);
 
-                pdfly::WriteOptions opts;
+                giovanni::WriteOptions opts;
                 if (count >= 2 && args[1].isObject()) {
                     auto o = args[1].asObject(rt);
                     auto getInt = [&](const char* k, int def) -> int {
@@ -130,11 +130,11 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
             }));
 
     // --- splitPages(u8a) → ArrayBuffer[] ---
-    pdfly.setProperty(rt, "splitPages",
+    giovanni.setProperty(rt, "splitPages",
         Function::createFromHostFunction(rt,
             PropNameID::forAscii(rt, "splitPages"), 1,
             [engine](Runtime& rt, const Value&, const Value* args, size_t count) -> Value {
-                if (count < 1) throw JSError(rt, "pdfly.splitPages: expected (data)");
+                if (count < 1) throw JSError(rt, "giovanni.splitPages: expected (data)");
                 auto input = jsValueToBytes(rt, args[0]);
                 auto pages = engine->splitPages(input);
 
@@ -146,11 +146,11 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
             }));
 
     // --- mergePdfs(u8a[]) → ArrayBuffer ---
-    pdfly.setProperty(rt, "mergePdfs",
+    giovanni.setProperty(rt, "mergePdfs",
         Function::createFromHostFunction(rt,
             PropNameID::forAscii(rt, "mergePdfs"), 1,
             [engine](Runtime& rt, const Value&, const Value* args, size_t count) -> Value {
-                if (count < 1) throw JSError(rt, "pdfly.mergePdfs: expected (inputs[])");
+                if (count < 1) throw JSError(rt, "giovanni.mergePdfs: expected (inputs[])");
                 auto arr = args[0].asObject(rt).asArray(rt);
                 size_t n = arr.size(rt);
 
@@ -165,11 +165,11 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
             }));
 
     // --- getDocumentInfo(u8a, password?) → object ---
-    pdfly.setProperty(rt, "getDocumentInfo",
+    giovanni.setProperty(rt, "getDocumentInfo",
         Function::createFromHostFunction(rt,
             PropNameID::forAscii(rt, "getDocumentInfo"), 2,
             [engine](Runtime& rt, const Value&, const Value* args, size_t count) -> Value {
-                if (count < 1) throw JSError(rt, "pdfly.getDocumentInfo: expected (data, password?)");
+                if (count < 1) throw JSError(rt, "giovanni.getDocumentInfo: expected (data, password?)");
                 auto input = jsValueToBytes(rt, args[0]);
                 std::string password;
                 if (count >= 2 && args[1].isString()) password = args[1].asString(rt).utf8(rt);
@@ -196,11 +196,11 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
 
 
     // --- extractImages(u8a) -> object[] ---
-    pdfly.setProperty(rt, "extractImages",
+    giovanni.setProperty(rt, "extractImages",
         Function::createFromHostFunction(rt,
             PropNameID::forAscii(rt, "extractImages"), 1,
             [engine](Runtime& rt, const Value&, const Value* args, size_t count) -> Value {
-                if (count < 1) throw JSError(rt, "pdfly.extractImages: expected (data)");
+                if (count < 1) throw JSError(rt, "giovanni.extractImages: expected (data)");
                 auto input = jsValueToBytes(rt, args[0]);
                 auto images = engine->extractImages(input);
 
@@ -227,9 +227,9 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
                 }
                 return arr;
             }));
-    rt.global().setProperty(rt, "pdfly", std::move(pdfly));
+    rt.global().setProperty(rt, "giovanni", std::move(giovanni));
 }
 
-} // namespace pdfly::jsi
+} // namespace giovanni::jsi
 
 #endif // GIOVANNI_JSI_ENABLED

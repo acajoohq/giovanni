@@ -1,13 +1,13 @@
 // qpdf_engine.h — Concrete libqpdf implementation of IQpdfEngine
 //
 // No platform dependencies (no Emscripten, no JSI).
-// Include <pdfly/api.h> via the interface/ include path.
+// Include <giovanni/api.h> via the interface/ include path.
 
 #pragma once
 
-#include <pdfly/api.h>
+#include <giovanni/api.h>
 
-namespace pdfly {
+namespace giovanni {
 
 class QpdfEngine final : public IQpdfEngine {
 public:
@@ -32,4 +32,4 @@ public:
         const std::vector<uint8_t>& input) override;
 };
 
-} // namespace pdfly
+} // namespace giovanni

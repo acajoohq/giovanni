@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include <pdfly/api.h>
+#include <giovanni/api.h>
 
-namespace pdfly {
+namespace giovanni {
 
 class GhostscriptEngine final : public IGhostscriptEngine {
 public:
@@ -18,4 +18,4 @@ public:
         const std::vector<std::string>& args) override;
 };
 
-} // namespace pdfly
+} // namespace giovanni

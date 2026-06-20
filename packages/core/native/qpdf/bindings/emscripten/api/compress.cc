@@ -8,7 +8,7 @@ emscripten::val compressPdf(const emscripten::val& inputArray, const Compression
     try {
         std::vector<uint8_t> input = emscripten::vecFromJSArray<uint8_t>(inputArray);
 
-        pdfly::WriteOptions options;
+        giovanni::WriteOptions options;
         options.compressionLevel          = opts.compressionLevel;
         options.recompressFlate           = opts.recompressFlate;
         options.decodeLevel               = opts.decodeLevel;

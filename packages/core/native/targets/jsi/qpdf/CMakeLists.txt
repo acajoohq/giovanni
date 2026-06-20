@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(pdfly-jsi
+project(giovanni-jsi
   VERSION 0.1.0
   LANGUAGES CXX)
 
@@ -57,20 +57,20 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------
-# pdfly_jsi — shared library loaded by the React Native bridge
+# giovanni_jsi — shared library loaded by the React Native bridge
 # ---------------------------------------------------------------------------
 
-add_library(pdfly_jsi SHARED
+add_library(giovanni_jsi SHARED
   ${GIOVANNI_IMPL_QPDF}/qpdf_engine.cc)
 
-target_include_directories(pdfly_jsi
+target_include_directories(giovanni_jsi
   PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}
   PRIVATE ${GIOVANNI_INTERFACE_INCLUDE}
           ${GIOVANNI_IMPL_QPDF})
 
 if(GIOVANNI_JSI_ENABLED)
-  target_include_directories(pdfly_jsi PRIVATE ${JSI_INCLUDE_DIR})
-  target_compile_definitions(pdfly_jsi PRIVATE GIOVANNI_JSI_ENABLED=1)
+  target_include_directories(giovanni_jsi PRIVATE ${JSI_INCLUDE_DIR})
+  target_compile_definitions(giovanni_jsi PRIVATE GIOVANNI_JSI_ENABLED=1)
 endif()
 
-target_link_libraries(pdfly_jsi PRIVATE ${GIOVANNI_QPDF_TARGET})
+target_link_libraries(giovanni_jsi PRIVATE ${GIOVANNI_QPDF_TARGET})

@@ -22,8 +22,8 @@ Contains the **single source of truth** for all data types and abstract
 interfaces used across every build target. No platform or runtime headers
 are included here.
 
-| File                              | Purpose                                            |
-| --------------------------------- | -------------------------------------------------- |
+| File                                 | Purpose                                            |
+| ------------------------------------ | -------------------------------------------------- |
 | `interface/include/giovanni/types.h` | `WriteOptions`, `DocumentInfo`, `ExtractedImage`   |
 | `interface/include/giovanni/api.h`   | `IQpdfEngine`, `IGhostscriptEngine` (pure virtual) |
 
@@ -45,9 +45,9 @@ No Emscripten, no JSI, no browser APIs.
 Platform adapters. Each target takes `IQpdfEngine` / `IGhostscriptEngine`
 as a dependency and adapts the input/output types for its runtime.
 
-| Target            | Output                                | Use case                               |
-| ----------------- | ------------------------------------- | -------------------------------------- |
-| `targets/jsi/`    | `.so` / `.dylib`                      | React Native (Hermes JSI)              |
+| Target            | Output                                      | Use case                               |
+| ----------------- | ------------------------------------------- | -------------------------------------- |
+| `targets/jsi/`    | `.so` / `.dylib`                            | React Native (Hermes JSI)              |
 | `targets/native/` | `libgiovanni_native.a/.so` + `giovanni_c.h` | FFI from Python, Rust, Go, Swift, etc. |
 
 ---

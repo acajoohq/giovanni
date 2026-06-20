@@ -120,7 +120,7 @@ int main() {
 
 This library mirrors `QpdfBinding` from `@giovanni/core/bindings`:
 
-| TypeScript (`QpdfBinding`)           | C++ (`giovanni::`)                     |
+| TypeScript (`QpdfBinding`)           | C++ (`giovanni::`)                  |
 | ------------------------------------ | ----------------------------------- |
 | `init(): Promise<void>`              | _(linking is sufficient)_           |
 | `getVersion(): Promise<string>`      | `getVersion(): string`              |

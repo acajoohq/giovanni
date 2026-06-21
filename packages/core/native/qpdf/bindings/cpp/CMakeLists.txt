@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(pdfly-qpdf-cpp
+project(giovanni-qpdf-cpp
   VERSION 0.1.0
   LANGUAGES CXX)
 
@@ -12,9 +12,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Paths relative to this file
 # ---------------------------------------------------------------------------
 
-set(PDFLY_NATIVE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
-set(PDFLY_INTERFACE_INCLUDE "${PDFLY_NATIVE_ROOT}/interface/include")
-set(PDFLY_IMPL_QPDF "${PDFLY_NATIVE_ROOT}/impl/qpdf")
+set(GIOVANNI_NATIVE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
+set(GIOVANNI_INTERFACE_INCLUDE "${GIOVANNI_NATIVE_ROOT}/interface/include")
+set(GIOVANNI_IMPL_QPDF "${GIOVANNI_NATIVE_ROOT}/impl/qpdf")
 
 # ---------------------------------------------------------------------------
 # qpdf dependency
@@ -24,21 +24,21 @@ set(PDFLY_IMPL_QPDF "${PDFLY_NATIVE_ROOT}/impl/qpdf")
 #   cmake .. -DQPDF_SOURCE_DIR=<workspace-root>/vendor/qpdf
 #
 # Option B: use an installed qpdf
-#   cmake .. -DPDFLY_USE_SYSTEM_QPDF=ON
+#   cmake .. -DGIOVANNI_USE_SYSTEM_QPDF=ON
 
-option(PDFLY_USE_SYSTEM_QPDF "Find qpdf via find_package instead of building from source" OFF)
-option(BUILD_SHARED_LIBS "Build pdfly_qpdf as a shared library" OFF)
+option(GIOVANNI_USE_SYSTEM_QPDF "Find qpdf via find_package instead of building from source" OFF)
+option(BUILD_SHARED_LIBS "Build giovanni_qpdf as a shared library" OFF)
 
-if(PDFLY_USE_SYSTEM_QPDF)
+if(GIOVANNI_USE_SYSTEM_QPDF)
   find_package(qpdf REQUIRED)
-  set(PDFLY_QPDF_TARGET qpdf::libqpdf)
+  set(GIOVANNI_QPDF_TARGET qpdf::libqpdf)
 else()
   set(QPDF_SOURCE_DIR "" CACHE PATH "Path to the qpdf source tree (vendor/qpdf)")
   if(NOT QPDF_SOURCE_DIR OR NOT EXISTS "${QPDF_SOURCE_DIR}/CMakeLists.txt")
     message(FATAL_ERROR
       "Set QPDF_SOURCE_DIR to the qpdf source directory, e.g.:\n"
-      "  cmake .. -DQPDF_SOURCE_DIR=${PDFLY_NATIVE_ROOT}/../vendor/qpdf\n"
-      "Or use an installed qpdf with -DPDFLY_USE_SYSTEM_QPDF=ON")
+      "  cmake .. -DQPDF_SOURCE_DIR=${GIOVANNI_NATIVE_ROOT}/../vendor/qpdf\n"
+      "Or use an installed qpdf with -DGIOVANNI_USE_SYSTEM_QPDF=ON")
   endif()
   set(BUILD_DOC        OFF CACHE BOOL "" FORCE)
   set(INSTALL_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -48,36 +48,36 @@ else()
     "${QPDF_SOURCE_DIR}"
     "${CMAKE_CURRENT_BINARY_DIR}/qpdf-build"
     EXCLUDE_FROM_ALL)
-  set(PDFLY_QPDF_TARGET libqpdf)
+  set(GIOVANNI_QPDF_TARGET libqpdf)
 endif()
 
 # ---------------------------------------------------------------------------
-# pdfly_qpdf -- C++ free-function library
+# giovanni_qpdf -- C++ free-function library
 # ---------------------------------------------------------------------------
 
-add_library(pdfly_qpdf
-  pdfly_qpdf.cc
-  ${PDFLY_IMPL_QPDF}/qpdf_engine.cc)
+add_library(giovanni_qpdf
+  giovanni_qpdf.cc
+  ${GIOVANNI_IMPL_QPDF}/qpdf_engine.cc)
 
-target_include_directories(pdfly_qpdf
+target_include_directories(giovanni_qpdf
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
   PRIVATE
-    ${PDFLY_INTERFACE_INCLUDE}
-    ${PDFLY_IMPL_QPDF})
+    ${GIOVANNI_INTERFACE_INCLUDE}
+    ${GIOVANNI_IMPL_QPDF})
 
-target_link_libraries(pdfly_qpdf PUBLIC ${PDFLY_QPDF_TARGET})
+target_link_libraries(giovanni_qpdf PUBLIC ${GIOVANNI_QPDF_TARGET})
 
 # ---------------------------------------------------------------------------
 # Optional example executable
 # ---------------------------------------------------------------------------
 
-option(PDFLY_BUILD_EXAMPLE "Build the usage example" OFF)
+option(GIOVANNI_BUILD_EXAMPLE "Build the usage example" OFF)
 
-if(PDFLY_BUILD_EXAMPLE)
-  add_executable(pdfly_example example/main.cc)
-  target_link_libraries(pdfly_example PRIVATE pdfly_qpdf)
+if(GIOVANNI_BUILD_EXAMPLE)
+  add_executable(giovanni_example example/main.cc)
+  target_link_libraries(giovanni_example PRIVATE giovanni_qpdf)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -86,7 +86,7 @@ endif()
 
 include(GNUInstallDirs)
 
-install(TARGETS pdfly_qpdf
+install(TARGETS giovanni_qpdf
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

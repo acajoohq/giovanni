@@ -1,7 +1,7 @@
 # Native build contract
 
 This directory contains the C++ interface, platform-agnostic implementation,
-and platform-specific build targets for the pdfly engines.
+and platform-specific build targets for the giovanni engines.
 
 ## Architecture
 
@@ -22,10 +22,10 @@ Contains the **single source of truth** for all data types and abstract
 interfaces used across every build target. No platform or runtime headers
 are included here.
 
-| File                              | Purpose                                            |
-| --------------------------------- | -------------------------------------------------- |
-| `interface/include/pdfly/types.h` | `WriteOptions`, `DocumentInfo`, `ExtractedImage`   |
-| `interface/include/pdfly/api.h`   | `IQpdfEngine`, `IGhostscriptEngine` (pure virtual) |
+| File                                 | Purpose                                            |
+| ------------------------------------ | -------------------------------------------------- |
+| `interface/include/giovanni/types.h` | `WriteOptions`, `DocumentInfo`, `ExtractedImage`   |
+| `interface/include/giovanni/api.h`   | `IQpdfEngine`, `IGhostscriptEngine` (pure virtual) |
 
 These types mirror the TypeScript `NativeWriteOptions` / `NativeDocumentInfo` /
 `NativeExtractedImage` interfaces in `src/bindings/`.
@@ -45,10 +45,10 @@ No Emscripten, no JSI, no browser APIs.
 Platform adapters. Each target takes `IQpdfEngine` / `IGhostscriptEngine`
 as a dependency and adapts the input/output types for its runtime.
 
-| Target            | Output                                | Use case                               |
-| ----------------- | ------------------------------------- | -------------------------------------- |
-| `targets/jsi/`    | `.so` / `.dylib`                      | React Native (Hermes JSI)              |
-| `targets/native/` | `libpdfly_native.a/.so` + `pdfly_c.h` | FFI from Python, Rust, Go, Swift, etc. |
+| Target            | Output                                      | Use case                               |
+| ----------------- | ------------------------------------------- | -------------------------------------- |
+| `targets/jsi/`    | `.so` / `.dylib`                            | React Native (Hermes JSI)              |
+| `targets/native/` | `libgiovanni_native.a/.so` + `giovanni_c.h` | FFI from Python, Rust, Go, Swift, etc. |
 
 ---
 
@@ -86,7 +86,7 @@ cmake --build build
 cd targets/native
 cmake -B build -DQPDF_SOURCE_DIR=../../../../../vendor/qpdf
 cmake --build build
-# produces: build/libpdfly_native.a + pdfly_c.h
+# produces: build/libgiovanni_native.a + giovanni_c.h
 ```
 
 Python FFI example:
@@ -94,14 +94,14 @@ Python FFI example:
 ```python
 import ctypes, pathlib
 
-lib = ctypes.CDLL(str(pathlib.Path("build/libpdfly_native.so")))
-lib.pdfly_qpdf_create.restype = ctypes.c_void_p
+lib = ctypes.CDLL(str(pathlib.Path("build/libgiovanni_native.so")))
+lib.giovanni_qpdf_create.restype = ctypes.c_void_p
 
-handle = lib.pdfly_qpdf_create()
+handle = lib.giovanni_qpdf_create()
 buf = ctypes.create_string_buffer(64)
-lib.pdfly_get_version(handle, buf, 64)
+lib.giovanni_get_version(handle, buf, 64)
 print(buf.value.decode())  # e.g. "2.5.0"
-lib.pdfly_qpdf_destroy(handle)
+lib.giovanni_qpdf_destroy(handle)
 ```
 
 ### C++ library (direct C++ use)
@@ -110,7 +110,7 @@ lib.pdfly_qpdf_destroy(handle)
 cd qpdf/bindings/cpp
 cmake -B build -DQPDF_SOURCE_DIR=../../../../../../vendor/qpdf
 cmake --build build
-# produces: build/libpdfly_qpdf.a
+# produces: build/libgiovanni_qpdf.a
 ```
 
 ### JSI (React Native)
@@ -174,18 +174,18 @@ Keep tweaks explicit and narrow.
     - `qpdf`: `dev | prd`
     - `ghostscript`: `dev | prd`
 - qpdf parallelism:
-    - `PDFLY_QPDF_JOBS=<n>`
+    - `GIOVANNI_QPDF_JOBS=<n>`
 - Ghostscript parallelism:
-    - `PDFLY_GHOSTSCRIPT_JOBS=<n>`
+    - `GIOVANNI_GHOSTSCRIPT_JOBS=<n>`
 - Docker BuildKit cache root:
-    - `PDFLY_DOCKER_CACHE_ROOT=<path>`
+    - `GIOVANNI_DOCKER_CACHE_ROOT=<path>`
 
 Example:
 
 ```bash
-PDFLY_QPDF_JOBS=2 pnpm --filter @giovanni/core build:qpdf:prd
-PDFLY_GHOSTSCRIPT_JOBS=4 pnpm --filter @giovanni/core build:ghostscript:prd
-PDFLY_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
+GIOVANNI_QPDF_JOBS=2 pnpm --filter @giovanni/core build:qpdf:prd
+GIOVANNI_GHOSTSCRIPT_JOBS=4 pnpm --filter @giovanni/core build:ghostscript:prd
+GIOVANNI_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
 ```
 
 ## Build behavior

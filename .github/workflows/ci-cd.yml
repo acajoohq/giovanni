@@ -17,9 +17,9 @@ permissions:
 
 env:
     TURBO_TELEMETRY_DISABLED: "1"
-    PDFLY_DOCKER_CACHE_ROOT: .tmp/docker-buildx-cache
-    PDFLY_QPDF_JOBS: "2"
-    PDFLY_GHOSTSCRIPT_JOBS: "2"
+    GIOVANNI_DOCKER_CACHE_ROOT: .tmp/docker-buildx-cache
+    GIOVANNI_QPDF_JOBS: "2"
+    GIOVANNI_GHOSTSCRIPT_JOBS: "2"
     # maybe this should be only be used for some PR preview, because we might want to run CI tests on the preview state of the branch
     # pull request workflows default to refs/pull/n/merge; use head so builds/previews match the branch
     SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -130,11 +130,11 @@ jobs:
                   name: core-dist
                   path: packages/core/dist
 
-            - name: Upload @pdfly/pdf-render dist artifact
+            - name: Upload @giovanni/pdf-render dist artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: pdfly-pdf-render-dist
-                  path: packages/pdfly-pdf-render/dist
+                  name: pdf-render-dist
+                  path: packages/pdf-render/dist
 
             - name: Run tests
               run: pnpm run test
@@ -292,11 +292,11 @@ jobs:
                   name: core-dist
                   path: packages/core/dist
 
-            - name: Download @pdfly/pdf-render dist
+            - name: Download @giovanni/pdf-render dist
               uses: actions/download-artifact@v4
               with:
-                  name: pdfly-pdf-render-dist
-                  path: packages/pdfly-pdf-render/dist
+                  name: pdf-render-dist
+                  path: packages/pdf-render/dist
 
             - name: Install Rust stable
               uses: dtolnay/rust-toolchain@stable

@@ -2,7 +2,7 @@
 
 Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF bytes stay on the device.
 
-**Layout:** [`apps/web`](apps/web) (main UI), [`apps/desktop`](apps/desktop) (Tauri), [`packages/core`](packages/core) (`@giovanni/core`), [`packages/pdfly-pdf-render`](packages/pdfly-pdf-render) (`@pdfly/pdf-render`, PDF.js page rasterisation). Upstream PDF engines are pinned in code and fetched inside Docker builds.
+**Layout:** [`apps/web`](apps/web) (main UI), [`apps/desktop`](apps/desktop) (Tauri), [`packages/core`](packages/core) (`@giovanni/core`), [`packages/pdf-render`](packages/pdf-render) (`@giovanni/pdf-render`, PDF.js page rasterisation). Upstream PDF engines are pinned in code and fetched inside Docker builds.
 
 ## Requirements
 
@@ -100,7 +100,7 @@ Build notes:
 - [ ] Make sure we cache heavily big assets.
 - [ ] Fix the inconsistencies in qpdf wasm package and options of each methods, also the writerpattern is not consisten accross tool. We should make it better by having a clear optimized pipeline.
 - [ ] Performance
-    - [ ] Add module-level side-effect import of the PDF-to-JPG client module in PDF tool routes (start `@pdfly/pdf-render` / `pdfjs-dist` download at chunk parse time, not on component mount)
+    - [ ] Add module-level side-effect import of the PDF-to-JPG client module in PDF tool routes (start `@giovanni/pdf-render` / `pdfjs-dist` download at chunk parse time, not on component mount)
     - [ ] Preload `qpdf.wasm` via `<link rel="preload" as="fetch">` in PDF tool route heads (fixed path, no hash)
     - [ ] Merge sub-1KB shared chunks into consumers
 - [ ] Compression improvements

@@ -8,8 +8,8 @@
 // Engine singleton
 // ---------------------------------------------------------------------------
 
-pdfly::QpdfEngine& getEngine() {
-    static pdfly::QpdfEngine instance;
+giovanni::QpdfEngine& getEngine() {
+    static giovanni::QpdfEngine instance;
     return instance;
 }
 

@@ -1,5 +1,5 @@
 {
-    "name": "@pdfly/pdf-render",
+    "name": "@giovanni/pdf-render",
     "version": "0.1.0",
     "description": "PDF.js-based page rasterisation to JPEG (browser and Node with optional canvas)",
     "keywords": [
@@ -14,11 +14,11 @@
         "url": "https://github.com/MatteoGauthier/qpdf-wasm/issues"
     },
     "license": "Apache-2.0",
-    "author": "pdfly contributors",
+    "author": "",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/MatteoGauthier/qpdf-wasm.git",
-        "directory": "packages/pdfly-pdf-render"
+        "directory": "packages/pdf-render"
     },
     "files": [
         "dist",

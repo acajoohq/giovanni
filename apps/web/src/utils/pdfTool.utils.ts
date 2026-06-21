@@ -1,5 +1,5 @@
 import { formatBytes, type ExtractedImage } from "@giovanni/core";
-import type { PdfPageJpg } from "@pdfly/pdf-render";
+import type { PdfPageJpg } from "@giovanni/pdf-render";
 import { zip } from "fflate";
 import { copyPdfBytes, copyPdfEntries } from "./pdfBytes.utils";
 

@@ -1,11 +1,11 @@
 import type { NativeDocumentInfo, NativeExtractedImage, NativeWriteOptions, QpdfBinding } from "../qpdf-binding.interface.js";
 import { QpdfInitError } from "../../errors/index.js";
 
-function getGlobal(): NonNullable<typeof globalThis.pdfly> {
-    if (!globalThis.pdfly) {
-        throw new QpdfInitError("pdfly JSI module is not installed. " + "Call pdfly::jsi::install(rt) from your TurboModule before using any PDF operation.");
+function getGlobal(): NonNullable<typeof globalThis.giovanni> {
+    if (!globalThis.giovanni) {
+        throw new QpdfInitError("giovanni JSI module is not installed. " + "Call giovanni::jsi::install(rt) from your TurboModule before using any PDF operation.");
     }
-    return globalThis.pdfly;
+    return globalThis.giovanni;
 }
 
 function toArrayBuffer(data: Uint8Array): ArrayBuffer {
@@ -19,8 +19,8 @@ function toUint8Array(ab: ArrayBuffer): Uint8Array {
 /**
  * qpdf JSI binding for React Native (Hermes).
  *
- * Requires the native pdfly JSI module to be installed before use:
- * call `pdfly::jsi::install(rt)` from your TurboModule, then register:
+ * Requires the native giovanni JSI module to be installed before use:
+ * call `giovanni::jsi::install(rt)` from your TurboModule, then register:
  *
  * @example
  * ```typescript

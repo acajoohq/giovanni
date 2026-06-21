@@ -19,7 +19,7 @@
 
 #include <qpdf/QPDFObjGen.hh>
 
-namespace pdfly {
+namespace giovanni {
 
 // ---------------------------------------------------------------------------
 // File-local helpers
@@ -473,4 +473,4 @@ std::vector<ExtractedImage> QpdfEngine::extractImages(const std::vector<uint8_t>
     }
 }
 
-} // namespace pdfly
+} // namespace giovanni

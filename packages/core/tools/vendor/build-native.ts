@@ -33,7 +33,7 @@ type NativeTargetConfig = {
 
 const NATIVE_TARGETS: Record<NativeBuildTarget, NativeTargetConfig> = {
     /**
-     * Standalone C library (pdfly_c.h + libpdfly_native.a)
+     * Standalone C library (giovanni_c.h + libgiovanni_native.a)
      * Usable from Python, Rust, Go, Swift, etc. via FFI.
      */
     native: {
@@ -45,15 +45,15 @@ const NATIVE_TARGETS: Record<NativeBuildTarget, NativeTargetConfig> = {
                 QPDF_VERSION: VENDOR_PINS.qpdf.version,
                 QPDF_ARCHIVE_URL: VENDOR_PINS.qpdf.archiveUrl,
                 QPDF_SHA256: VENDOR_PINS.qpdf.sha256 ?? "",
-                QPDF_JOBS: process.env.PDFLY_NATIVE_JOBS ?? "",
+                QPDF_JOBS: process.env.GIOVANNI_NATIVE_JOBS ?? "",
             };
         },
     },
 
     /**
-     * React Native JSI shared library (libpdfly_jsi.so + qpdf_jsi.h).
+     * React Native JSI shared library (libgiovanni_jsi.so + qpdf_jsi.h).
      * JSI headers are fetched from the react-native npm tarball inside Docker.
-     * Override the React Native version with PDFLY_REACT_NATIVE_VERSION (default 0.76.0).
+     * Override the React Native version with GIOVANNI_REACT_NATIVE_VERSION (default 0.76.0).
      */
     jsi: {
         dockerfile: "packages/core/native/targets/jsi/qpdf/docker.Dockerfile",
@@ -64,8 +64,8 @@ const NATIVE_TARGETS: Record<NativeBuildTarget, NativeTargetConfig> = {
                 QPDF_VERSION: VENDOR_PINS.qpdf.version,
                 QPDF_ARCHIVE_URL: VENDOR_PINS.qpdf.archiveUrl,
                 QPDF_SHA256: VENDOR_PINS.qpdf.sha256 ?? "",
-                QPDF_JOBS: process.env.PDFLY_NATIVE_JOBS ?? "",
-                REACT_NATIVE_VERSION: process.env.PDFLY_REACT_NATIVE_VERSION ?? "0.76.0",
+                QPDF_JOBS: process.env.GIOVANNI_NATIVE_JOBS ?? "",
+                REACT_NATIVE_VERSION: process.env.GIOVANNI_REACT_NATIVE_VERSION ?? "0.76.0",
             };
         },
     },
@@ -148,10 +148,10 @@ async function supportsLocalBuildCacheExport(): Promise<boolean> {
 async function buildTarget(name: NativeBuildTarget, mode: BuildMode, canExportBuildCache: boolean): Promise<void> {
     const config = NATIVE_TARGETS[name];
     const outputDirectory = resolve(packageRoot, config.outputDirectory);
-    const cacheRoot = resolve(process.env.PDFLY_DOCKER_CACHE_ROOT ?? defaultCacheRoot, `${name}-${mode}`);
+    const cacheRoot = resolve(process.env.GIOVANNI_DOCKER_CACHE_ROOT ?? defaultCacheRoot, `${name}-${mode}`);
     const nextCacheRoot = `${cacheRoot}-next`;
 
-    console.log(`\n[pdfly] Building native target: ${name} (${mode})`);
+    console.log(`\n[giovanni] Building native target: ${name} (${mode})`);
     console.log(`  Dockerfile : ${config.dockerfile}`);
     console.log(`  Output     : ${outputDirectory}`);
 
@@ -192,7 +192,7 @@ async function buildTarget(name: NativeBuildTarget, mode: BuildMode, canExportBu
         await rename(nextCacheRoot, cacheRoot);
     }
 
-    console.log(`[pdfly] Done: ${name}`);
+    console.log(`[giovanni] Done: ${name}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -222,6 +222,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-    console.error("[pdfly] Native build failed:", err.message);
+    console.error("[giovanni] Native build failed:", err.message);
     process.exit(1);
 });

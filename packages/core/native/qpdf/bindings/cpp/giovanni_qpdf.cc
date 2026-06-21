@@ -1,14 +1,14 @@
-﻿// pdfly_qpdf.cc - free-function API backed by QpdfEngine
+﻿// giovanni_qpdf.cc - free-function API backed by QpdfEngine
 //
-// This file implements the free functions declared in pdfly_qpdf.h by
+// This file implements the free functions declared in giovanni_qpdf.h by
 // delegating to a QpdfEngine instance from native/impl/qpdf/.
 //
 // The actual PDF logic lives in impl/qpdf/qpdf_engine.cc.
 
-#include "include/pdfly/pdfly_qpdf.h"
+#include "include/giovanni/giovanni_qpdf.h"
 #include "../../../../impl/qpdf/qpdf_engine.h"
 
-namespace pdfly {
+namespace giovanni {
 
 static QpdfEngine& defaultEngine() {
     static QpdfEngine engine;
@@ -43,4 +43,4 @@ std::vector<ExtractedImage> extractImages(const std::vector<uint8_t>& input) {
     return defaultEngine().extractImages(input);
 }
 
-} // namespace pdfly
+} // namespace giovanni

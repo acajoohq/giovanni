@@ -66,7 +66,7 @@ RUN set -eux; \
         -DQPDF_SOURCE_DIR=/src/vendor/qpdf \
         -DJSI_INCLUDE_DIR=/tmp/rn-pkg/ReactCommon; \
     cmake --build "$BUILD_DIR" --parallel "$BUILD_JOBS"; \
-    cp "$BUILD_DIR/libpdfly_jsi.so" "$OUT_DIR/"; \
+    cp "$BUILD_DIR/libgiovanni_jsi.so" "$OUT_DIR/"; \
     cp /src/packages/core/native/targets/jsi/qpdf/qpdf_jsi.h "$OUT_DIR/"
 
 FROM scratch AS export

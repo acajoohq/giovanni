@@ -1,6 +1,6 @@
-// Ambient type declarations for the pdfly JSI globals injected by the native modules.
-// - pdfly:    registered by pdfly::jsi::install(rt)   (targets/jsi/qpdf)
-// - pdfly_gs: registered by pdfly::jsi::installGs(rt) (targets/jsi/ghostscript -- TODO)
+// Ambient type declarations for the giovanni JSI globals injected by the native modules.
+// - giovanni:    registered by giovanni::jsi::install(rt)   (targets/jsi/qpdf)
+// - giovanni_gs: registered by giovanni::jsi::installGs(rt) (targets/jsi/ghostscript -- TODO)
 
 import type { NativeColorComponentCount, NativePixelColorModel } from "../qpdf-binding.interface.js";
 
@@ -48,10 +48,10 @@ interface PdflyGsJsiGlobal {
 }
 
 declare global {
-    // Injected by pdfly::jsi::install(rt) -- see targets/jsi/qpdf/qpdf_jsi.h
-    var pdfly: PdflyJsiGlobal | undefined;
-    // Injected by pdfly::jsi::installGs(rt) -- see targets/jsi/ghostscript (TODO: not yet built)
-    var pdfly_gs: PdflyGsJsiGlobal | undefined;
+    // Injected by giovanni::jsi::install(rt) -- see targets/jsi/qpdf/qpdf_jsi.h
+    var giovanni: PdflyJsiGlobal | undefined;
+    // Injected by giovanni::jsi::installGs(rt) -- see targets/jsi/ghostscript (TODO: not yet built)
+    var giovanni_gs: PdflyGsJsiGlobal | undefined;
 }
 
 export {};

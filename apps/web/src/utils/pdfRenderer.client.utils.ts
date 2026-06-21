@@ -1,5 +1,5 @@
-import { getDocument } from "@pdfly/pdf-render/pdfjs/browser";
-import type { PDFDocumentProxy, PDFPageProxy } from "@pdfly/pdf-render/pdfjs/browser";
+import { getDocument } from "@giovanni/pdf-render/pdfjs/browser";
+import type { PDFDocumentProxy, PDFPageProxy } from "@giovanni/pdf-render/pdfjs/browser";
 import { copyPdfBytes } from "./pdfBytes.utils";
 
 export type { PDFDocumentProxy };

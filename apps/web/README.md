@@ -55,7 +55,7 @@ Keep the interface dense and tool-like:
 
 `PdfPreview` is SSR-safe. Browser-only pdf.js setup, worker configuration, canvas rendering, `window`, `document`, and `ResizeObserver` live behind client-only imports so prerender does not evaluate pdf.js.
 
-Preview uses `@pdfly/pdf-render/pdfjs/browser`, which selects the standard or polyfill pdf.js build at runtime. See [`packages/pdfly-pdf-render/README.md`](../../packages/pdfly-pdf-render/README.md).
+Preview uses `@giovanni/pdf-render/pdfjs/browser`, which selects the standard or polyfill pdf.js build at runtime. See [`packages/pdf-render/README.md`](../../packages/pdf-render/README.md).
 
 ## Validation
 

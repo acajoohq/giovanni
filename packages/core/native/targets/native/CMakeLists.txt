@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(pdfly-native
+project(giovanni-native
   VERSION 0.1.0
   LANGUAGES CXX)
 
@@ -12,53 +12,53 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Paths relative to this file
 # ---------------------------------------------------------------------------
 
-set(PDFLY_NATIVE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../..")
-set(PDFLY_INTERFACE_INCLUDE "${PDFLY_NATIVE_ROOT}/interface/include")
-set(PDFLY_IMPL_QPDF "${PDFLY_NATIVE_ROOT}/impl/qpdf")
+set(GIOVANNI_NATIVE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+set(GIOVANNI_INTERFACE_INCLUDE "${GIOVANNI_NATIVE_ROOT}/interface/include")
+set(GIOVANNI_IMPL_QPDF "${GIOVANNI_NATIVE_ROOT}/impl/qpdf")
 
 # ---------------------------------------------------------------------------
 # qpdf dependency
 # ---------------------------------------------------------------------------
 
-option(PDFLY_USE_SYSTEM_QPDF "Use an installed qpdf (find_package) instead of building from source" OFF)
-option(BUILD_SHARED_LIBS "Build pdfly_native as a shared library" OFF)
+option(GIOVANNI_USE_SYSTEM_QPDF "Use an installed qpdf (find_package) instead of building from source" OFF)
+option(BUILD_SHARED_LIBS "Build giovanni_native as a shared library" OFF)
 
-if(PDFLY_USE_SYSTEM_QPDF)
+if(GIOVANNI_USE_SYSTEM_QPDF)
   find_package(qpdf REQUIRED)
-  set(PDFLY_QPDF_TARGET qpdf::libqpdf)
+  set(GIOVANNI_QPDF_TARGET qpdf::libqpdf)
 else()
   set(QPDF_SOURCE_DIR "" CACHE PATH "Path to the qpdf source tree (e.g. <repo-root>/vendor/qpdf)")
   if(NOT QPDF_SOURCE_DIR OR NOT EXISTS "${QPDF_SOURCE_DIR}/CMakeLists.txt")
     message(FATAL_ERROR
       "Set QPDF_SOURCE_DIR, e.g.:\n"
-      "  cmake .. -DQPDF_SOURCE_DIR=${PDFLY_NATIVE_ROOT}/../../../vendor/qpdf\n"
-      "Or use a system qpdf with -DPDFLY_USE_SYSTEM_QPDF=ON")
+      "  cmake .. -DQPDF_SOURCE_DIR=${GIOVANNI_NATIVE_ROOT}/../../../vendor/qpdf\n"
+      "Or use a system qpdf with -DGIOVANNI_USE_SYSTEM_QPDF=ON")
   endif()
   set(BUILD_DOC        OFF CACHE BOOL "" FORCE)
   set(INSTALL_EXAMPLES OFF CACHE BOOL "" FORCE)
   set(INSTALL_MANUAL   OFF CACHE BOOL "" FORCE)
   set(BUILD_STATIC_LIBS ON  CACHE BOOL "" FORCE)
   add_subdirectory("${QPDF_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/qpdf-build" EXCLUDE_FROM_ALL)
-  set(PDFLY_QPDF_TARGET libqpdf)
+  set(GIOVANNI_QPDF_TARGET libqpdf)
 endif()
 
 # ---------------------------------------------------------------------------
-# pdfly_native — shared/static C library for FFI consumers
+# giovanni_native — shared/static C library for FFI consumers
 # ---------------------------------------------------------------------------
 
-add_library(pdfly_native
-  pdfly_c.cc
-  ${PDFLY_IMPL_QPDF}/qpdf_engine.cc)
+add_library(giovanni_native
+  giovanni_c.cc
+  ${GIOVANNI_IMPL_QPDF}/qpdf_engine.cc)
 
-target_include_directories(pdfly_native
+target_include_directories(giovanni_native
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:include>
   PRIVATE
-    ${PDFLY_INTERFACE_INCLUDE}
-    ${PDFLY_IMPL_QPDF})
+    ${GIOVANNI_INTERFACE_INCLUDE}
+    ${GIOVANNI_IMPL_QPDF})
 
-target_link_libraries(pdfly_native PUBLIC ${PDFLY_QPDF_TARGET})
+target_link_libraries(giovanni_native PUBLIC ${GIOVANNI_QPDF_TARGET})
 
 # ---------------------------------------------------------------------------
 # Install
@@ -66,12 +66,12 @@ target_link_libraries(pdfly_native PUBLIC ${PDFLY_QPDF_TARGET})
 
 include(GNUInstallDirs)
 
-install(TARGETS pdfly_native
+install(TARGETS giovanni_native
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-install(FILES pdfly_c.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES giovanni_c.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # ---------------------------------------------------------------------------
 # Tests (CTest)
@@ -79,14 +79,14 @@ install(FILES pdfly_c.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 enable_testing()
 
-add_executable(pdfly_native_test test/pdfly_native_test.cc)
+add_executable(giovanni_native_test test/giovanni_native_test.cc)
 
-target_include_directories(pdfly_native_test
+target_include_directories(giovanni_native_test
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${PDFLY_INTERFACE_INCLUDE}
-    ${PDFLY_IMPL_QPDF})
+    ${GIOVANNI_INTERFACE_INCLUDE}
+    ${GIOVANNI_IMPL_QPDF})
 
-target_link_libraries(pdfly_native_test PRIVATE pdfly_native)
+target_link_libraries(giovanni_native_test PRIVATE giovanni_native)
 
-add_test(NAME pdfly_native_smoke COMMAND pdfly_native_test)
+add_test(NAME giovanni_native_smoke COMMAND giovanni_native_test)

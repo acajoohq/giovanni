@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <cstring>
 
-static int fail(const char* msg, PdflyQpdfHandle h) {
+static int fail(const char* msg, GiovanniQpdfHandle h) {
     fprintf(stderr, "FAILED: %s\n", msg);
     if (h) giovanni_qpdf_destroy(h);
     return 1;
@@ -18,7 +18,7 @@ static int fail(const char* msg, PdflyQpdfHandle h) {
 
 int main() {
     // 1. Create engine handle
-    PdflyQpdfHandle h = giovanni_qpdf_create();
+    GiovanniQpdfHandle h = giovanni_qpdf_create();
     if (!h) return fail("giovanni_qpdf_create returned null", nullptr);
 
     // 2. Retrieve qpdf version string

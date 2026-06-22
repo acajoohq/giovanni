@@ -27,16 +27,16 @@ const char* giovanni_last_error(void) {
 // Lifecycle
 // ---------------------------------------------------------------------------
 
-PdflyQpdfHandle giovanni_qpdf_create(void) {
+GiovanniQpdfHandle giovanni_qpdf_create(void) {
     try {
-        return reinterpret_cast<PdflyQpdfHandle>(new giovanni::QpdfEngine());
+        return reinterpret_cast<GiovanniQpdfHandle>(new giovanni::QpdfEngine());
     } catch (const std::exception& e) {
         setError(e.what());
         return nullptr;
     }
 }
 
-void giovanni_qpdf_destroy(PdflyQpdfHandle handle) {
+void giovanni_qpdf_destroy(GiovanniQpdfHandle handle) {
     delete reinterpret_cast<giovanni::QpdfEngine*>(handle);
 }
 
@@ -44,7 +44,7 @@ void giovanni_qpdf_destroy(PdflyQpdfHandle handle) {
 // Version
 // ---------------------------------------------------------------------------
 
-int giovanni_get_version(PdflyQpdfHandle handle, char* out, size_t out_len) {
+int giovanni_get_version(GiovanniQpdfHandle handle, char* out, size_t out_len) {
     if (!handle || !out || out_len == 0) return setError("invalid arguments");
     try {
         auto* eng = reinterpret_cast<giovanni::QpdfEngine*>(handle);
@@ -61,7 +61,7 @@ int giovanni_get_version(PdflyQpdfHandle handle, char* out, size_t out_len) {
 // Write options defaults
 // ---------------------------------------------------------------------------
 
-void giovanni_write_options_default(PdflyWriteOptions* opts) {
+void giovanni_write_options_default(GiovanniWriteOptions* opts) {
     if (!opts) return;
     opts->compressionLevel           = 6;
     opts->recompressFlate            = 1;
@@ -72,7 +72,7 @@ void giovanni_write_options_default(PdflyWriteOptions* opts) {
     opts->linearize                  = 0;
 }
 
-static giovanni::WriteOptions toWriteOptions(const PdflyWriteOptions* c) {
+static giovanni::WriteOptions toWriteOptions(const GiovanniWriteOptions* c) {
     giovanni::WriteOptions opts;
     if (!c) return opts;
     opts.compressionLevel           = c->compressionLevel;
@@ -90,9 +90,9 @@ static giovanni::WriteOptions toWriteOptions(const PdflyWriteOptions* c) {
 // ---------------------------------------------------------------------------
 
 int giovanni_write_pdf(
-    PdflyQpdfHandle handle,
+    GiovanniQpdfHandle handle,
     const uint8_t* input, size_t input_size,
-    const PdflyWriteOptions* options,
+    const GiovanniWriteOptions* options,
     const char* password,
     uint8_t** out_data, size_t* out_size)
 {
@@ -118,7 +118,7 @@ int giovanni_write_pdf(
 // ---------------------------------------------------------------------------
 
 int giovanni_split_pages(
-    PdflyQpdfHandle handle,
+    GiovanniQpdfHandle handle,
     const uint8_t* input, size_t input_size,
     uint8_t*** out_pages, size_t** out_sizes, size_t* out_count)
 {
@@ -161,7 +161,7 @@ int giovanni_split_pages(
 // ---------------------------------------------------------------------------
 
 int giovanni_merge_pdfs(
-    PdflyQpdfHandle handle,
+    GiovanniQpdfHandle handle,
     const uint8_t* const* inputs, const size_t* input_sizes, size_t input_count,
     uint8_t** out_data, size_t* out_size)
 {
@@ -197,10 +197,10 @@ static char* dupstr(const std::string& s) {
 }
 
 int giovanni_get_document_info(
-    PdflyQpdfHandle handle,
+    GiovanniQpdfHandle handle,
     const uint8_t* input, size_t input_size,
     const char* password,
-    PdflyDocumentInfo* out)
+    GiovanniDocumentInfo* out)
 {
     if (!handle || !input || !out) return setError("invalid arguments");
     try {
@@ -242,7 +242,7 @@ void giovanni_pages_free(uint8_t** pages, size_t* sizes, size_t count) {
     std::free(sizes);
 }
 
-void giovanni_document_info_free(PdflyDocumentInfo* info) {
+void giovanni_document_info_free(GiovanniDocumentInfo* info) {
     if (!info) return;
     std::free(info->title);
     std::free(info->author);

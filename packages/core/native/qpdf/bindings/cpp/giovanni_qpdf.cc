@@ -5,7 +5,7 @@
 //
 // The actual PDF logic lives in impl/qpdf/qpdf_engine.cc.
 
-#include "include/giovanni/giovanni_qpdf.h"
+#include "giovanni/giovanni_qpdf.h"
 #include "../../../../impl/qpdf/qpdf_engine.h"
 
 namespace giovanni {

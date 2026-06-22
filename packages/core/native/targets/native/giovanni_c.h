@@ -21,7 +21,7 @@ extern "C" {
 // Opaque handle
 // ---------------------------------------------------------------------------
 
-typedef struct PdflyQpdf_s* PdflyQpdfHandle;
+typedef struct GiovanniQpdf_s* GiovanniQpdfHandle;
 
 // ---------------------------------------------------------------------------
 // Write options (mirrors giovanni::WriteOptions)
@@ -35,7 +35,7 @@ typedef struct {
     int compressPages;              // bool (0/1), default 0
     int removeUnreferencedResources; // bool (0/1), default 0
     int linearize;                  // bool (0/1), default 0
-} PdflyWriteOptions;
+} GiovanniWriteOptions;
 
 // ---------------------------------------------------------------------------
 // Document info result (mirrors giovanni::DocumentInfo)
@@ -51,31 +51,31 @@ typedef struct {
     char* author;
     char* subject;
     char* creator;
-} PdflyDocumentInfo;
+} GiovanniDocumentInfo;
 
 // ---------------------------------------------------------------------------
 // Lifecycle
 // ---------------------------------------------------------------------------
 
 // Create a new QpdfEngine instance. Returns NULL on failure.
-PdflyQpdfHandle giovanni_qpdf_create(void);
+GiovanniQpdfHandle giovanni_qpdf_create(void);
 
 // Destroy a QpdfEngine instance.
-void giovanni_qpdf_destroy(PdflyQpdfHandle handle);
+void giovanni_qpdf_destroy(GiovanniQpdfHandle handle);
 
 // ---------------------------------------------------------------------------
 // Version
 // ---------------------------------------------------------------------------
 
 // Write the qpdf library version string into out (null-terminated).
-int giovanni_get_version(PdflyQpdfHandle handle, char* out, size_t out_len);
+int giovanni_get_version(GiovanniQpdfHandle handle, char* out, size_t out_len);
 
 // ---------------------------------------------------------------------------
 // Write options
 // ---------------------------------------------------------------------------
 
 // Populate opts with the default values matching giovanni::WriteOptions{}.
-void giovanni_write_options_default(PdflyWriteOptions* opts);
+void giovanni_write_options_default(GiovanniWriteOptions* opts);
 
 // ---------------------------------------------------------------------------
 // Operations
@@ -84,9 +84,9 @@ void giovanni_write_options_default(PdflyWriteOptions* opts);
 // Compress / rewrite a PDF.
 // On success: *out_data is heap-allocated; free with giovanni_buffer_free().
 int giovanni_write_pdf(
-    PdflyQpdfHandle handle,
+    GiovanniQpdfHandle handle,
     const uint8_t* input, size_t input_size,
-    const PdflyWriteOptions* options,   // NULL = use defaults
+    const GiovanniWriteOptions* options,   // NULL = use defaults
     const char* password,               // NULL = no password
     uint8_t** out_data, size_t* out_size);
 
@@ -94,24 +94,24 @@ int giovanni_write_pdf(
 // On success: *out_pages[i] / *out_sizes[i] hold each page (heap-allocated).
 // Free with giovanni_pages_free(*out_pages, *out_sizes, *out_count).
 int giovanni_split_pages(
-    PdflyQpdfHandle handle,
+    GiovanniQpdfHandle handle,
     const uint8_t* input, size_t input_size,
     uint8_t*** out_pages, size_t** out_sizes, size_t* out_count);
 
 // Merge multiple PDFs into one.
 // On success: *out_data is heap-allocated; free with giovanni_buffer_free().
 int giovanni_merge_pdfs(
-    PdflyQpdfHandle handle,
+    GiovanniQpdfHandle handle,
     const uint8_t* const* inputs, const size_t* input_sizes, size_t input_count,
     uint8_t** out_data, size_t* out_size);
 
 // Get document metadata.
 // On success: out is filled; call giovanni_document_info_free(out) when done.
 int giovanni_get_document_info(
-    PdflyQpdfHandle handle,
+    GiovanniQpdfHandle handle,
     const uint8_t* input, size_t input_size,
     const char* password,               // NULL = no password
-    PdflyDocumentInfo* out);
+    GiovanniDocumentInfo* out);
 
 // ---------------------------------------------------------------------------
 // Memory management
@@ -123,8 +123,8 @@ void giovanni_buffer_free(uint8_t* data);
 // Free page arrays returned by giovanni_split_pages.
 void giovanni_pages_free(uint8_t** pages, size_t* sizes, size_t count);
 
-// Free heap strings inside PdflyDocumentInfo (does NOT free the struct itself).
-void giovanni_document_info_free(PdflyDocumentInfo* info);
+// Free heap strings inside GiovanniDocumentInfo (does NOT free the struct itself).
+void giovanni_document_info_free(GiovanniDocumentInfo* info);
 
 // ---------------------------------------------------------------------------
 // Error reporting

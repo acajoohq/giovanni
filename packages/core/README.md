@@ -129,7 +129,7 @@ Output lands in `build/native/`.
 ```c
 #include "giovanni_c.h"
 
-PdflyQpdfHandle h = giovanni_qpdf_create();
+GiovanniQpdfHandle h = giovanni_qpdf_create();
 // ... giovanni_write_pdf, giovanni_split_pages, giovanni_merge_pdfs ...
 giovanni_qpdf_destroy(h);
 ```

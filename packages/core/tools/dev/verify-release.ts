@@ -17,7 +17,7 @@ const distRoot = resolve(packageRoot, "dist");
 
 const artifactFiles = ["qpdf.js", "qpdf.wasm", "ghostscript.js", "ghostscript.wasm"] as const;
 
-type PdflyWasmModule = {
+type GiovanniWasmModule = {
     compressPdf: (
         input: Uint8Array,
         options:
@@ -37,12 +37,12 @@ type PdflyWasmModule = {
     getAvailableCompressionEngines: () => string[];
 };
 
-type PdflyQpdfModule = {
+type GiovanniQpdfModule = {
     getQpdfVersion: () => Promise<string>;
     optimizePdf: (input: Uint8Array, options?: { preset?: "default" | "web" | "archive" }) => Promise<{ compressedSize: number; data: Uint8Array }>;
 };
 
-type PdflyGhostscriptModule = {
+type GiovanniGhostscriptModule = {
     getGhostscriptVersion: () => Promise<string>;
     compressPdfWithGhostscript: (
         input: Uint8Array,
@@ -77,9 +77,9 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
     const moduleUrl = pathToFileURL(resolve(distRoot, "index.mjs")).href;
     const qpdfModuleUrl = pathToFileURL(resolve(distRoot, "qpdf.mjs")).href;
     const ghostscriptModuleUrl = pathToFileURL(resolve(distRoot, "ghostscript.mjs")).href;
-    const giovanniWasm = (await import(moduleUrl)) as PdflyWasmModule;
-    const giovanniQpdf = (await import(qpdfModuleUrl)) as PdflyQpdfModule;
-    const giovanniGhostscript = (await import(ghostscriptModuleUrl)) as PdflyGhostscriptModule;
+    const giovanniWasm = (await import(moduleUrl)) as GiovanniWasmModule;
+    const giovanniQpdf = (await import(qpdfModuleUrl)) as GiovanniQpdfModule;
+    const giovanniGhostscript = (await import(ghostscriptModuleUrl)) as GiovanniGhostscriptModule;
 
     assert.deepEqual(giovanniWasm.getAvailableCompressionEngines().sort(), ["ghostscript", "qpdf"]);
 

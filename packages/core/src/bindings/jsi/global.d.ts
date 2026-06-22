@@ -4,7 +4,7 @@
 
 import type { NativeColorComponentCount, NativePixelColorModel } from "../qpdf-binding.interface.js";
 
-interface PdflyJsiDocumentInfo {
+interface GiovanniJsiDocumentInfo {
     numPages: number;
     pdfVersion: string;
     isEncrypted: boolean;
@@ -15,7 +15,7 @@ interface PdflyJsiDocumentInfo {
     creator: string | undefined;
 }
 
-interface PdflyJsiExtractedImage {
+interface GiovanniJsiExtractedImage {
     objectKey: string;
     xobjectKey: string;
     pageIndex: number;
@@ -33,25 +33,25 @@ interface PdflyJsiExtractedImage {
     bytes: ArrayBuffer;
 }
 
-interface PdflyJsiGlobal {
+interface GiovanniJsiGlobal {
     getVersion(): string;
     writePdf(data: ArrayBuffer, opts: object, password?: string): ArrayBuffer;
     splitPages(data: ArrayBuffer): ArrayBuffer[];
     mergePdfs(inputs: ArrayBuffer[]): ArrayBuffer;
-    getDocumentInfo(data: ArrayBuffer, password?: string): PdflyJsiDocumentInfo;
-    extractImages(data: ArrayBuffer): PdflyJsiExtractedImage[];
+    getDocumentInfo(data: ArrayBuffer, password?: string): GiovanniJsiDocumentInfo;
+    extractImages(data: ArrayBuffer): GiovanniJsiExtractedImage[];
 }
 
-interface PdflyGsJsiGlobal {
+interface GiovanniGsJsiGlobal {
     getVersion(): string;
     rewritePdf(input: ArrayBuffer, args: string[]): ArrayBuffer;
 }
 
 declare global {
     // Injected by giovanni::jsi::install(rt) -- see targets/jsi/qpdf/qpdf_jsi.h
-    var giovanni: PdflyJsiGlobal | undefined;
+    var giovanni: GiovanniJsiGlobal | undefined;
     // Injected by giovanni::jsi::installGs(rt) -- see targets/jsi/ghostscript (TODO: not yet built)
-    var giovanni_gs: PdflyGsJsiGlobal | undefined;
+    var giovanni_gs: GiovanniGsJsiGlobal | undefined;
 }
 
 export {};

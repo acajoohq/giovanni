@@ -1,6 +1,6 @@
 # Giovanni
 
-Local-first PDF tools on [qpdf](https://github.com/qpdf/qpdf) + WebAssembly. PDF bytes stay on the device.
+Local-first PDF processing built on [qpdf](https://github.com/qpdf/qpdf) and Ghostscript, targeting WebAssembly (browser + Node.js), native C FFI, and React Native JSI. PDF bytes stay on the device.
 
 **Layout:** [`apps/web`](apps/web) (main UI), [`apps/desktop`](apps/desktop) (Tauri), [`packages/core`](packages/core) (`@giovanni/core`), [`packages/pdf-render`](packages/pdf-render) (`@giovanni/pdf-render`, PDF.js page rasterisation). Upstream PDF engines are pinned in code and fetched inside Docker builds.
 
@@ -53,26 +53,6 @@ pnpm validate
 ```
 
 `pnpm -F <pkg> <script>` — packages include `web`, `@giovanni/core`, `desktop`. See [pnpm-workspace.yaml](pnpm-workspace.yaml).
-
-## Ghostscript WASM Spike
-
-The Ghostscript build is Docker-first, similar to the build orchestration used by `ffmpeg.wasm`.
-
-- source: pinned archive fetched inside the Docker build
-- toolchain: `emscripten/emsdk` inside Docker
-- output: `packages/core/build/ghostscript`
-- native wrapper: `gsapi_*` exposed through a narrow Emscripten binding (`rewritePdf`, version)
-
-The lower-level Ghostscript runtime remains internal, but the package now exposes an engine-aware `compressPdf(...)` facade above qpdf and Ghostscript. The flow is Dockerfile-centric, the default `pnpm -F @giovanni/core build` path builds both engines, and both upstream engines now follow the same pinned-source plus Docker-build model with engine-named outputs:
-
-- `packages/core/build/qpdf`
-- `packages/core/build/ghostscript`
-
-Build notes:
-
-- `build:wasm` now runs qpdf and Ghostscript in parallel
-- local BuildKit cache reuse is automatic when the active `docker buildx` driver supports local cache export
-- GitHub Actions now uses the same Docker-native vendor build path instead of bootstrapping `emsdk` and vendoring sources on the host
 
 ## License
 

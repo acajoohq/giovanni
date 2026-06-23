@@ -1,9 +1,10 @@
 import { useParams } from "@tanstack/react-router";
 import { animate, useScroll, useReducedMotion, useTransform } from "motion/react";
-import { useCallback, useRef, useSyncExternalStore } from "react";
-import { CompressTool } from "@/components/pdf/tools/CompressTool";
+import { useCallback, useRef } from "react";
 import { AppRevealCard } from "@/components/landing/AppRevealCard";
 import { HeroButtons } from "@/components/landing/heroes/HeroButtons";
+import { CompressTool } from "@/components/pdf/tools/CompressTool";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 /**
  * Home page: a marketing hero layered behind the live Compress tool. Scrolling
@@ -14,7 +15,7 @@ import { HeroButtons } from "@/components/landing/heroes/HeroButtons";
 export function LandingHome() {
     const { locale = "en" } = useParams({ strict: false });
     const reduceMotion = useReducedMotion();
-    const isSmallScreen = useIsSmallScreen();
+    const isSmallScreen = useMediaQuery("(max-width: 639px)");
     const simpleLayout = reduceMotion || isSmallScreen;
 
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -78,20 +79,5 @@ export function LandingHome() {
                 </div>
             </div>
         </div>
-    );
-}
-
-/** True below the `sm` breakpoint (640px). SSR-safe: renders the motion layout on the server. */
-function useIsSmallScreen() {
-    const subscribe = useCallback((onChange: () => void) => {
-        const mql = window.matchMedia("(max-width: 639px)");
-        mql.addEventListener("change", onChange);
-        return () => mql.removeEventListener("change", onChange);
-    }, []);
-
-    return useSyncExternalStore(
-        subscribe,
-        () => window.matchMedia("(max-width: 639px)").matches,
-        () => false,
     );
 }

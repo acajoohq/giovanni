@@ -1,6 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { GiovanniMark, HeroGlow, heroRootClass, HeroToolButtons, type HeroLayoutProps } from "./heroParts";
+import { GiovanniMark } from "./GiovanniMark";
+import { HeroGlow } from "./HeroGlow";
+import { HeroToolButtons } from "./HeroToolButtons";
+import type { HeroLayoutProps } from "./heroLayout.types";
+import { heroRootClass } from "./heroLayout.utils";
 
 /** Centered hero: Giovanni mark, headline, subhead, and a row of tool buttons. */
 export function HeroButtons({ locale, onStart, variant = "overlay" }: HeroLayoutProps) {

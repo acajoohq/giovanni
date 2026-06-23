@@ -1,6 +1,7 @@
-import { useCallback, useRef, useState, useSyncExternalStore, type DragEvent, type HTMLAttributes, type ReactNode } from "react";
+import { useRef, useState, type DragEvent, type HTMLAttributes, type ReactNode } from "react";
 import { RiUploadCloud2Line } from "@remixicon/react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/shadcn/Resizable";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface ToolLayoutProps {
     title: string;
@@ -80,22 +81,6 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
             </div>
         </div>
     );
-}
-
-function useMediaQuery(query: string): boolean {
-    const subscribe = useCallback(
-        (onStoreChange: () => void) => {
-            const mediaQueryList = window.matchMedia(query);
-            mediaQueryList.addEventListener("change", onStoreChange);
-
-            return () => mediaQueryList.removeEventListener("change", onStoreChange);
-        },
-        [query],
-    );
-
-    const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query]);
-
-    return useSyncExternalStore(subscribe, getSnapshot, () => false);
 }
 
 interface ToolWorkspaceProps extends HTMLAttributes<HTMLDivElement> {

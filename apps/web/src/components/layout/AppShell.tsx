@@ -52,12 +52,17 @@ export function AppShell() {
     );
 
     const brand = (
-        <div className="app-toolbar-brand flex shrink-0 items-center gap-2">
+        <Link
+            className="app-toolbar-brand pointer-events-auto flex shrink-0 items-center gap-2 rounded-[5px] transition-opacity hover:opacity-80"
+            data-tauri-drag-region={false}
+            params={{ locale }}
+            to="/$locale"
+        >
             <div className="flex size-[1.375rem] shrink-0 items-center justify-center rounded-[5px] bg-brand/12 ring-1 ring-brand/20">
                 <RiFilePdfLine className="size-3 text-brand" />
             </div>
             <span className="text-[13px] font-semibold leading-none tracking-[-0.02em] text-app-text">Giovanni</span>
-        </div>
+        </Link>
     );
 
     return (

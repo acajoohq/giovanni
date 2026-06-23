@@ -209,7 +209,7 @@ native/
     jsi/       React Native JSI adapter (libgiovanni_jsi)
 ```
 
-More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/master/README.md).
+More context: [root README](https://github.com/acajoohq/giovanni/blob/master/README.md).
 
 ## Licensing
 

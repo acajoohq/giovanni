@@ -9,15 +9,15 @@
         "pdf.js",
         "rasterize"
     ],
-    "homepage": "https://github.com/MatteoGauthier/qpdf-wasm#readme",
+    "homepage": "https://github.com/acajoohq/giovanni#readme",
     "bugs": {
-        "url": "https://github.com/MatteoGauthier/qpdf-wasm/issues"
+        "url": "https://github.com/acajoohq/giovanni/issues"
     },
     "license": "Apache-2.0",
     "author": "",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/MatteoGauthier/qpdf-wasm.git",
+        "url": "git+https://github.com/acajoohq/giovanni.git",
         "directory": "packages/pdf-render"
     },
     "files": [

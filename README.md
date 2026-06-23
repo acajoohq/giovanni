@@ -56,7 +56,7 @@ pnpm validate
 
 ## License
 
-[@giovanni/core](packages/core) is **Apache-2.0** ([LICENSE](packages/core/LICENSE)). **Repo:** [github.com/MatteoGauthier/qpdf-wasm](https://github.com/MatteoGauthier/qpdf-wasm)
+[@giovanni/core](packages/core) is **Apache-2.0** ([LICENSE](packages/core/LICENSE)). **Repo:** [github.com/acajoohq/giovanni](https://github.com/acajoohq/giovanni)
 
 ## Todo
 

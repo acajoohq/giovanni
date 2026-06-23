@@ -69,6 +69,19 @@ as a dependency and adapts the input/output types for its runtime.
 - **`src/*`**
   Runtime/library API: TypeScript package code that ships to consumers
 
+## Ghostscript Emscripten binding
+
+`native/ghostscript/bindings/emscripten/` owns the custom C++ wrapper over `gsapi_*`. The exported JS surface is intentionally narrow:
+
+- `rewritePdf(data, args)`
+- `getGhostscriptVersion()`
+
+It exists to keep Ghostscript lifecycle, stdio capture, temp file handling, and `gsapi_*` calls out of TypeScript, and to keep the engine layout parallel with `native/qpdf/bindings/emscripten/`.
+
+Design rule: keep the native surface small and operation-oriented — do not mirror the full Ghostscript embedding API into JS unless the product actually needs it.
+
+**TODO:** Add `bindings/cpp/` to support native build targets (desktop, React Native, server), mirroring the QPDF two-layer structure.
+
 ## Build targets
 
 ### WASM (web)

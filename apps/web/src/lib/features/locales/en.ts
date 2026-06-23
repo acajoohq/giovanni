@@ -275,4 +275,11 @@ export const en = {
             failedReorganize: "Failed to reorganize PDF.",
         },
     },
+    home: {
+        eyebrow: "Local PDF toolkit",
+        headline: "Do more with your files, privately.",
+        subhead: "Compress, convert, and organize PDFs right in your browser. Nothing is ever uploaded.",
+        toolsLabel: "Or jump to a tool",
+        cta: "Start now",
+    },
 } as const;

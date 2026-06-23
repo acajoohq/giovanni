@@ -65,10 +65,10 @@ pnpm validate
 - [ ] Find a strategy for updates of the qpdf library
 - [x] CI
 - [x] CD (Wrangler)
-- [ ] Open source it
+- [x] Open source it
 - [ ] Documentation
     - [ ] How to use it with Vite chunking
-    - [ ] Extract image from PDF
+    - [x] Extract image from PDF
 - [ ] Review the code
     - [ ] WASM build
     - [ ] Library design
@@ -76,7 +76,7 @@ pnpm validate
 - [x] Tauri (desktop app)
 - [x] Merge/fuse PDFs
 - [ ] Lots of fixture tests
-- [ ] Rename to Giovanni
+- [x] Rename to Giovanni
 - [ ] Make sure we cache heavily big assets.
 - [ ] Fix the inconsistencies in qpdf wasm package and options of each methods, also the writerpattern is not consisten accross tool. We should make it better by having a clear optimized pipeline.
 - [ ] Performance

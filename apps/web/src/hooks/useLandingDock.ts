@@ -107,7 +107,21 @@ export function useLandingDock(scrollRef: RefObject<HTMLElement | null>, options
         [scrollRef, sectionRef, syncDocked, usesScrollSnap],
     );
 
+    const jumpToDock = useCallback(() => {
+        const container = scrollRef.current;
+
+        if (!container) {
+            return;
+        }
+
+        cancelScrollRef.current?.();
+        isAnimatingRef.current = false;
+        container.scrollTop = getDockScrollTop(container, sectionRef?.current);
+        syncScrollSnap(container, usesScrollSnap, true);
+        setIsDocked(true);
+    }, [scrollRef, sectionRef, usesScrollSnap]);
+
     useEffect(() => () => cancelScrollRef.current?.(), []);
 
-    return { isDocked, scrollToDock };
+    return { isDocked, scrollToDock, jumpToDock };
 }

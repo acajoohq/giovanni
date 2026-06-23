@@ -1,29 +1,50 @@
+import { useParams, useRouter } from "@tanstack/react-router";
 import { AnimatePresence, motion, useScroll, useReducedMotion, useTransform } from "motion/react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppRevealCard } from "@/components/landing/AppRevealCard";
 import { HeroButtons } from "@/components/landing/heroes/HeroButtons";
 import { DEFAULT_LANDING_TOOL } from "@/constants/landingTool.constants";
 import { useLandingDock } from "@/hooks/useLandingDock";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { LandingToolKey } from "@/types/landingTool.types";
+import { navigateFromLanding } from "@/utils/landingNavigation.utils";
 import { getLandingTool } from "@/utils/landingTool.utils";
 
 const LANDING_SCROLL_CLASS =
     "h-full overflow-x-hidden overflow-y-scroll bg-app-bg [scrollbar-gutter:stable] [overflow-anchor:none]";
 
-export function LandingHome() {
+interface LandingHomeProps {
+    initialTool?: LandingToolKey;
+    startDocked?: boolean;
+}
+
+export function LandingHome({ initialTool, startDocked = false }: LandingHomeProps) {
+    const router = useRouter();
+    const { locale = "en" } = useParams({ strict: false });
     const reduceMotion = useReducedMotion();
     const isSmallScreen = useMediaQuery("(max-width: 639px)");
     const simpleLayout = reduceMotion || isSmallScreen;
 
-    const [activeTool, setActiveTool] = useState<LandingToolKey>(DEFAULT_LANDING_TOOL);
+    const [activeTool, setActiveTool] = useState(initialTool ?? DEFAULT_LANDING_TOOL);
     const scrollRef = useRef<HTMLDivElement>(null);
     const toolSectionRef = useRef<HTMLElement>(null);
 
-    const { isDocked, scrollToDock } = useLandingDock(scrollRef, {
+    const { isDocked, scrollToDock, jumpToDock } = useLandingDock(scrollRef, {
         sectionRef: simpleLayout ? toolSectionRef : undefined,
         usesScrollSnap: !simpleLayout,
     });
+
+    useLayoutEffect(() => {
+        if (startDocked) {
+            jumpToDock();
+        }
+    }, [jumpToDock, startDocked]);
+
+    useEffect(() => {
+        if (initialTool) {
+            setActiveTool(initialTool);
+        }
+    }, [initialTool]);
 
     const { scrollYProgress } = useScroll({ container: scrollRef });
 
@@ -40,13 +61,17 @@ export function LandingHome() {
                 setActiveTool(tool);
             }
 
+            const navigate = () => navigateFromLanding(router, { locale, tool, replace: isDocked || startDocked });
+
             if (isDocked) {
+                navigate();
+
                 return;
             }
 
-            scrollToDock();
+            scrollToDock(navigate);
         },
-        [activeTool, isDocked, scrollToDock],
+        [activeTool, isDocked, locale, router, scrollToDock, startDocked],
     );
 
     const toolWorkspace = (

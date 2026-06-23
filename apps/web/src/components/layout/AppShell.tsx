@@ -1,5 +1,5 @@
 import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
-import { Link, Outlet, useParams } from "@tanstack/react-router";
+import { Link, Outlet, useParams, useRouter, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AboutDialog } from "@/components/dialogs/AboutDialog";
@@ -7,10 +7,12 @@ import { LanguageMenu } from "@/components/layout/LanguageMenu";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { ToolbarIconButton } from "@/components/layout/ToolbarIconButton";
 import { ModeToggle } from "@/components/theme/ModeToggle";
+import { LandingHome } from "@/components/landing/LandingHome";
+import { LANDING_TOOLS } from "@/components/landing/landingTool.registry";
 import { useTauriStartup } from "@/hooks/useTauriStartup";
 import { useIsDesktopMacOS } from "@/lib/desktop/hooks/useIsDesktopMacOS";
-import { LANDING_TOOLS } from "@/components/landing/landingTool.registry";
 import { cn } from "@/lib/utils";
+import { getLandingToolKeyFromPathname, isFromLandingLocation } from "@/utils/landingNavigation.utils";
 
 const NAV_LINK_CLASS =
     "shrink-0 rounded-[5px] px-3 py-1 text-[12px] font-medium tracking-[-0.01em] text-app-text-subtle transition-[color,background-color,box-shadow] hover:text-app-text [&.active]:bg-app-control [&.active]:text-app-text";
@@ -18,8 +20,17 @@ const NAV_LINK_CLASS =
 export function AppShell() {
     const { t } = useTranslation();
     const [aboutOpen, setAboutOpen] = useState(false);
+    const router = useRouter();
     const { locale = "en" } = useParams({ strict: false });
+    const { fromLanding, pathname } = useRouterState({
+        select: (state) => ({
+            fromLanding: isFromLandingLocation(state.location.state),
+            pathname: state.location.pathname,
+        }),
+    });
+    const landingToolKey = getLandingToolKeyFromPathname(router, pathname, locale);
     const isMacDesktop = useIsDesktopMacOS();
+    const showLandingSession = fromLanding && landingToolKey !== null;
 
     useTauriStartup();
 
@@ -30,11 +41,20 @@ export function AppShell() {
 
     const nav = (
         <nav className="app-toolbar-nav hidden items-center gap-0.5 sm:flex sm:max-w-[min(100vw-12rem,42rem)]">
-            {navigationItems.map((item) => (
-                <Link key={item.to} className={NAV_LINK_CLASS} params={{ locale }} to={item.to}>
-                    {item.label}
-                </Link>
-            ))}
+            {navigationItems.map((item) => {
+                const toolPath = router.buildLocation({ to: item.to, params: { locale } }).pathname;
+
+                return (
+                    <Link
+                        key={item.to}
+                        className={cn(NAV_LINK_CLASS, pathname === toolPath && "active")}
+                        params={{ locale }}
+                        to={item.to}
+                    >
+                        {item.label}
+                    </Link>
+                );
+            })}
         </nav>
     );
 
@@ -99,7 +119,11 @@ export function AppShell() {
             </header>
 
             <main className="relative min-h-0 flex-1 overflow-hidden pb-16 sm:pb-0">
-                <Outlet />
+                {showLandingSession ? (
+                    <LandingHome initialTool={landingToolKey} startDocked />
+                ) : (
+                    <Outlet />
+                )}
             </main>
 
             <MobileNav />

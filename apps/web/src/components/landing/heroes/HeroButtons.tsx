@@ -6,8 +6,7 @@ import { HeroToolButtons } from "./HeroToolButtons";
 import type { HeroLayoutProps } from "./heroLayout.types";
 import { heroRootClass } from "./heroLayout.utils";
 
-/** Centered hero: Giovanni mark, headline, subhead, and a row of tool buttons. */
-export function HeroButtons({ locale, onStart, variant = "overlay" }: HeroLayoutProps) {
+export function HeroButtons({ activeTool, onSelectTool, variant = "overlay" }: HeroLayoutProps) {
     const { t } = useTranslation();
     const isOverlay = variant === "overlay";
 
@@ -24,7 +23,7 @@ export function HeroButtons({ locale, onStart, variant = "overlay" }: HeroLayout
 
                 <p className="mt-5 max-w-[42ch] text-pretty text-[15px] leading-relaxed text-app-text-subtle">{t("home.subhead")}</p>
 
-                <HeroToolButtons className="mt-9" locale={locale} onStart={onStart} />
+                <HeroToolButtons activeTool={activeTool} className="mt-9" onSelectTool={onSelectTool} />
             </div>
         </div>
     );

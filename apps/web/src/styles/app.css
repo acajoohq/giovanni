@@ -313,3 +313,23 @@
         color: var(--app-text);
     }
 }
+
+.landing-tool-view {
+    view-transition-name: tool-workspace;
+}
+
+/* TanStack typed view transitions — pairs with navigate viewTransition: { types: ['tool-workspace'] } */
+html:active-view-transition-type(tool-workspace) {
+    &::view-transition-old(tool-workspace),
+    &::view-transition-new(tool-workspace) {
+        animation-duration: 0s;
+    }
+}
+
+/* Browsers without view-transition types (and manual startViewTransition fallback) */
+@supports not (selector(:active-view-transition-type(a))) {
+    ::view-transition-old(tool-workspace),
+    ::view-transition-new(tool-workspace) {
+        animation-duration: 0s;
+    }
+}

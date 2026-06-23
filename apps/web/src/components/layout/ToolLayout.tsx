@@ -59,7 +59,7 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
 
     if (isDesktop) {
         return (
-            <ResizablePanelGroup className="h-full w-full bg-app-bg text-app-text" direction="horizontal">
+            <ResizablePanelGroup className="landing-tool-view h-full w-full bg-app-bg text-app-text" direction="horizontal">
                 <ResizablePanel defaultSize={82} minSize="500px">
                     {workspace}
                 </ResizablePanel>
@@ -74,7 +74,7 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
     }
 
     return (
-        <div className="flex h-full w-full flex-col bg-app-bg text-app-text lg:hidden">
+        <div className="landing-tool-view flex h-full w-full flex-col bg-app-bg text-app-text lg:hidden">
             <div className="min-h-0 flex-1">{workspace}</div>
             <div className="max-h-[42vh] min-h-52 shrink-0 overflow-hidden border-t border-app-border">
                 <ToolSidebar sidebar={sidebar} title={title} />

@@ -9,6 +9,7 @@ import { ToolbarIconButton } from "@/components/layout/ToolbarIconButton";
 import { ModeToggle } from "@/components/theme/ModeToggle";
 import { useTauriStartup } from "@/hooks/useTauriStartup";
 import { useIsDesktopMacOS } from "@/lib/desktop/hooks/useIsDesktopMacOS";
+import { LANDING_TOOLS } from "@/components/landing/landingTool.registry";
 import { cn } from "@/lib/utils";
 
 const NAV_LINK_CLASS =
@@ -22,14 +23,10 @@ export function AppShell() {
 
     useTauriStartup();
 
-    const navigationItems = [
-        { label: t("nav.compress"), to: "/$locale/compress" as const },
-        { label: t("nav.split"), to: "/$locale/split" as const },
-        { label: t("nav.merge"), to: "/$locale/merge" as const },
-        { label: t("nav.organize"), to: "/$locale/organize" as const },
-        { label: t("nav.extractImages"), to: "/$locale/extract-images" as const },
-        { label: t("nav.pdfToJpg"), to: "/$locale/pdf-to-jpg" as const },
-    ];
+    const navigationItems = LANDING_TOOLS.map((tool) => ({
+        label: t(`nav.${tool.key}` as const),
+        to: tool.to,
+    }));
 
     const nav = (
         <nav className="app-toolbar-nav hidden items-center gap-0.5 sm:flex sm:max-w-[min(100vw-12rem,42rem)]">

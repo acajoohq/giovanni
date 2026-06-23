@@ -1,7 +1,7 @@
-/** Shared props the hero layout accepts. */
+import type { LandingToolKey } from "@/types/landingTool.types";
+
 export interface HeroLayoutProps {
-    locale: string;
-    onStart: () => void;
-    /** "overlay" pins the hero behind the app card; "static" flows it as a stacked section. */
+    activeTool: LandingToolKey;
+    onSelectTool: (tool: LandingToolKey) => void;
     variant?: "overlay" | "static";
 }

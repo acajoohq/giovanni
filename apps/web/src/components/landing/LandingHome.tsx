@@ -1,12 +1,9 @@
 import { useParams } from "@tanstack/react-router";
 import { animate, useScroll, useReducedMotion, useTransform } from "motion/react";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 import { CompressTool } from "@/components/pdf/tools/CompressTool";
 import { AppRevealCard } from "@/components/landing/AppRevealCard";
-import { HeroVariantSwitcher } from "@/components/landing/HeroVariantSwitcher";
-import { DEFAULT_HERO_VARIANT, HERO_VARIANTS, type HeroVariantId } from "@/components/landing/heroes";
-
-const HERO_VARIANT_STORAGE_KEY = "giovanni:heroVariant";
+import { HeroButtons } from "@/components/landing/heroes/HeroButtons";
 
 /**
  * Home page: a marketing hero layered behind the live Compress tool. Scrolling
@@ -19,17 +16,6 @@ export function LandingHome() {
     const reduceMotion = useReducedMotion();
     const isSmallScreen = useIsSmallScreen();
     const simpleLayout = reduceMotion || isSmallScreen;
-
-    const [heroVariant, setHeroVariant] = useState<HeroVariantId>(DEFAULT_HERO_VARIANT);
-    useEffect(() => {
-        const saved = localStorage.getItem(HERO_VARIANT_STORAGE_KEY);
-        if (saved && HERO_VARIANTS.some((v) => v.id === saved)) setHeroVariant(saved as HeroVariantId);
-    }, []);
-    const handleVariantChange = useCallback((id: HeroVariantId) => {
-        setHeroVariant(id);
-        localStorage.setItem(HERO_VARIANT_STORAGE_KEY, id);
-    }, []);
-    const Hero = (HERO_VARIANTS.find((v) => v.id === heroVariant) ?? HERO_VARIANTS[0]).Component;
 
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -62,44 +48,36 @@ export function LandingHome() {
         });
     }, []);
 
-    const switcher = <HeroVariantSwitcher onChange={handleVariantChange} value={heroVariant} />;
-
     if (simpleLayout) {
         return (
-            <>
-                <div className="h-full overflow-y-auto overflow-x-hidden bg-app-bg">
-                    <section className="relative flex min-h-full">
-                        <Hero locale={locale} onStart={handleStart} variant="static" />
-                    </section>
-                    <section className="h-[100dvh] min-h-[32rem] border-t border-app-border">
-                        <CompressTool />
-                    </section>
-                </div>
-                {switcher}
-            </>
+            <div className="h-full overflow-y-auto overflow-x-hidden bg-app-bg" ref={scrollRef}>
+                <section className="relative flex min-h-full">
+                    <HeroButtons locale={locale} onStart={handleStart} variant="static" />
+                </section>
+                <section className="h-[100dvh] min-h-[32rem] border-t border-app-border">
+                    <CompressTool />
+                </section>
+            </div>
         );
     }
 
     return (
-        <>
-            <div
-                className="relative h-full overflow-y-auto overflow-x-hidden bg-app-bg [scroll-snap-type:y_mandatory]"
-                ref={scrollRef}
-            >
-                <div className="relative h-[200%]">
-                    {/* snap anchors: hero (top) and docked app (one screen down) */}
-                    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px [scroll-snap-align:start]" />
-                    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-px [scroll-snap-align:start]" />
+        <div
+            className="relative h-full overflow-y-auto overflow-x-hidden bg-app-bg [scroll-snap-type:y_mandatory]"
+            ref={scrollRef}
+        >
+            <div className="relative h-[200%]">
+                {/* snap anchors: hero (top) and docked app (one screen down) */}
+                <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px [scroll-snap-align:start]" />
+                <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-px [scroll-snap-align:start]" />
 
-                    {/* pinned stage — one screen tall, holds both layers */}
-                    <div className="sticky top-0 h-1/2 overflow-hidden">
-                        <Hero locale={locale} onStart={handleStart} />
-                        <AppRevealCard borderRadius={cardRadius} scale={cardScale} y={cardY} />
-                    </div>
+                {/* pinned stage — one screen tall, holds both layers */}
+                <div className="sticky top-0 h-1/2 overflow-hidden">
+                    <HeroButtons locale={locale} onStart={handleStart} />
+                    <AppRevealCard borderRadius={cardRadius} scale={cardScale} y={cardY} />
                 </div>
             </div>
-            {switcher}
-        </>
+        </div>
     );
 }
 

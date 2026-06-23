@@ -278,10 +278,7 @@ export const fr: Translations = {
         },
     },
     home: {
-        eyebrow: "Boîte à outils PDF locale",
         headline: "Faites plus avec vos fichiers, en privé.",
         subhead: "Compressez, convertissez et organisez vos PDF dans votre navigateur. Rien n'est jamais envoyé.",
-        toolsLabel: "Ou accédez à un outil",
-        cta: "Commencer",
     },
 } as const;

@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { GiovanniMark, HeroGlow, heroRootClass, HeroToolButtons, type HeroLayoutProps } from "./heroParts";
 
-/** Centered, with a row of tool buttons linking to each tool. */
-export function HeroButtons({ locale, variant = "overlay" }: HeroLayoutProps) {
+/** Centered hero: Giovanni mark, headline, subhead, and a row of tool buttons. */
+export function HeroButtons({ locale, onStart, variant = "overlay" }: HeroLayoutProps) {
     const { t } = useTranslation();
     const isOverlay = variant === "overlay";
 
@@ -20,7 +20,7 @@ export function HeroButtons({ locale, variant = "overlay" }: HeroLayoutProps) {
 
                 <p className="mt-5 max-w-[42ch] text-pretty text-[15px] leading-relaxed text-app-text-subtle">{t("home.subhead")}</p>
 
-                <HeroToolButtons className="mt-9" locale={locale} />
+                <HeroToolButtons className="mt-9" locale={locale} onStart={onStart} />
             </div>
         </div>
     );

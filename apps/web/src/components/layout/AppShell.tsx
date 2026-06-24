@@ -30,7 +30,9 @@ export function AppShell() {
     });
     const landingToolKey = getLandingToolKeyFromPathname(router, pathname, locale);
     const isMacDesktop = useIsDesktopMacOS();
+    const isLandingIndex = pathname === router.buildLocation({ to: "/$locale", params: { locale } }).pathname;
     const showLandingSession = fromLanding && landingToolKey !== null;
+    const showLandingHome = isLandingIndex || showLandingSession;
 
     useTauriStartup();
 
@@ -119,8 +121,8 @@ export function AppShell() {
             </header>
 
             <main className="relative min-h-0 flex-1 overflow-hidden pb-16 sm:pb-0">
-                {showLandingSession ? (
-                    <LandingHome initialTool={landingToolKey} startDocked />
+                {showLandingHome ? (
+                    <LandingHome initialTool={landingToolKey ?? undefined} startDocked={showLandingSession} />
                 ) : (
                     <Outlet />
                 )}

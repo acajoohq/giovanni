@@ -29,16 +29,16 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
     const scrollRef = useRef<HTMLDivElement>(null);
     const toolSectionRef = useRef<HTMLElement>(null);
 
-    const { isDocked, scrollToDock, jumpToDock } = useLandingDock(scrollRef, {
+    const { getIsDocked, scrollToDock, jumpToDock } = useLandingDock(scrollRef, {
         sectionRef: simpleLayout ? toolSectionRef : undefined,
         usesScrollSnap: !simpleLayout,
     });
 
     useLayoutEffect(() => {
-        if (startDocked) {
+        if (startDocked && !getIsDocked()) {
             jumpToDock();
         }
-    }, [jumpToDock, startDocked]);
+    }, [getIsDocked, jumpToDock, startDocked]);
 
     useEffect(() => {
         if (initialTool) {
@@ -61,9 +61,9 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
                 setActiveTool(tool);
             }
 
-            const navigate = () => navigateFromLanding(router, { locale, tool, replace: isDocked || startDocked });
+            const navigate = () => navigateFromLanding(router, { locale, tool, replace: getIsDocked() || startDocked });
 
-            if (isDocked) {
+            if (getIsDocked()) {
                 navigate();
 
                 return;
@@ -71,7 +71,7 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
 
             scrollToDock(navigate);
         },
-        [activeTool, isDocked, locale, router, scrollToDock, startDocked],
+        [activeTool, getIsDocked, locale, router, scrollToDock, startDocked],
     );
 
     const toolWorkspace = (
@@ -112,7 +112,7 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
 
                 <div className="sticky top-0 h-1/2 overflow-hidden">
                     <HeroButtons activeTool={activeTool} onSelectTool={openTool} />
-                    <AppRevealCard borderRadius={cardRadius} isDocked={isDocked} scale={cardScale} y={cardY}>
+                    <AppRevealCard borderRadius={cardRadius} scale={cardScale} y={cardY}>
                         {toolWorkspace}
                     </AppRevealCard>
                 </div>

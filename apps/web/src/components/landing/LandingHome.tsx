@@ -38,13 +38,7 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
             </div>
 
             <div className="hidden h-full min-h-0 sm:block">
-                <DesktopLandingHome
-                    initialTool={initialTool}
-                    locale={locale}
-                    router={router}
-                    simpleLayout={Boolean(reduceMotion)}
-                    startDocked={startDocked}
-                />
+                <DesktopLandingHome initialTool={initialTool} locale={locale} router={router} simpleLayout={Boolean(reduceMotion)} startDocked={startDocked} />
             </div>
         </>
     );

@@ -1,6 +1,6 @@
 import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
 import { Link, Outlet, useParams, useRouter, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AboutDialog } from "@/components/dialogs/AboutDialog";
 import { LanguageMenu } from "@/components/layout/LanguageMenu";
@@ -14,6 +14,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useIsDesktopMacOS } from "@/lib/desktop/hooks/useIsDesktopMacOS";
 import { cn } from "@/lib/utils";
 import { getLandingToolKeyFromPathname, isFromLandingLocation } from "@/utils/landingNavigation.utils";
+import { clearLandingSessionPath, readLandingSessionPath, storeLandingSessionPath } from "@/utils/landingSession.utils";
 
 const NAV_LINK_CLASS =
     "shrink-0 rounded-[5px] px-3 py-1 text-[12px] font-medium tracking-[-0.01em] text-app-text-subtle transition-[color,background-color,box-shadow] hover:text-app-text [&.active]:bg-app-control [&.active]:text-app-text";
@@ -33,10 +34,36 @@ export function AppShell() {
     const isMacDesktop = useIsDesktopMacOS();
     const isMobile = useMediaQuery("(max-width: 639px)");
     const isLandingIndex = pathname === router.buildLocation({ to: "/$locale", params: { locale } }).pathname;
-    const showLandingSession = !isMobile && fromLanding && landingToolKey !== null;
+    const [storedLandingSessionPath, setStoredLandingSessionPath] = useState<string | null>(null);
+    const showLandingSession = !isMobile && landingToolKey !== null && (fromLanding || storedLandingSessionPath === pathname);
     const showLandingHome = isLandingIndex || showLandingSession;
 
     useTauriStartup();
+
+    useEffect(() => {
+        setStoredLandingSessionPath(readLandingSessionPath());
+    }, [pathname]);
+
+    useEffect(() => {
+        if (isLandingIndex || landingToolKey === null || isMobile) {
+            if (storedLandingSessionPath !== null) {
+                clearLandingSessionPath();
+                setStoredLandingSessionPath(null);
+            }
+
+            return;
+        }
+
+        if (fromLanding) {
+            storeLandingSessionPath(pathname);
+            setStoredLandingSessionPath(pathname);
+        }
+    }, [fromLanding, isLandingIndex, isMobile, landingToolKey, pathname, storedLandingSessionPath]);
+
+    const clearLandingSession = () => {
+        clearLandingSessionPath();
+        setStoredLandingSessionPath(null);
+    };
 
     const navigationItems = LANDING_TOOLS.map((tool) => ({
         label: t(`nav.${tool.key}` as const),
@@ -49,7 +76,7 @@ export function AppShell() {
                 const toolPath = router.buildLocation({ to: item.to, params: { locale } }).pathname;
 
                 return (
-                    <Link key={item.to} className={cn(NAV_LINK_CLASS, pathname === toolPath && "active")} params={{ locale }} to={item.to}>
+                    <Link key={item.to} className={cn(NAV_LINK_CLASS, pathname === toolPath && "active")} params={{ locale }} to={item.to} onClick={clearLandingSession}>
                         {item.label}
                     </Link>
                 );
@@ -73,6 +100,7 @@ export function AppShell() {
             data-tauri-drag-region={false}
             params={{ locale }}
             to="/$locale"
+            onClick={clearLandingSession}
         >
             <div className="flex size-[1.375rem] shrink-0 items-center justify-center rounded-[5px] bg-brand/12 ring-1 ring-brand/20">
                 <RiFilePdfLine className="size-3 text-brand" />

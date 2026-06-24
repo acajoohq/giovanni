@@ -1,5 +1,5 @@
 ﻿import { createRootRouteWithContext, HeadContent, Link, Scripts, useParams } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
 import { AppShell } from "@/components/layout/AppShell";
 import { DesktopDocumentClass } from "@/components/layout/DesktopDocumentClass";
@@ -34,6 +34,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootComponent() {
     const { i18n } = Route.useRouteContext();
     const { locale = "en" } = useParams({ strict: false });
+
+    useEffect(() => {
+        if (i18n.language !== locale) {
+            void i18n.changeLanguage(locale);
+        }
+    }, [i18n, locale]);
+
     return (
         <I18nextProvider i18n={i18n}>
             <RootDocument lang={locale}>

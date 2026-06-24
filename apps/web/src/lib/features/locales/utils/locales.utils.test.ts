@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_LOCALE } from "../constants/locales.constants";
-import { isSupportedLocale, resolveInitialClientLocale, resolveSupportedLocale } from "./locales.utils";
+import { isSupportedLocale, localizePathname, resolveInitialClientLocale, resolveSupportedLocale } from "./locales.utils";
 
 function mockClientEnvironment({ lang, pathname }: { lang?: string; pathname?: string }) {
     vi.stubGlobal("document", {
@@ -72,5 +72,20 @@ describe("resolveInitialClientLocale", () => {
         mockClientEnvironment({ lang: "de", pathname: "/tools" });
 
         expect(resolveInitialClientLocale()).toBe(DEFAULT_LOCALE);
+    });
+});
+
+describe("localizePathname", () => {
+    it("replaces an existing locale segment", () => {
+        expect(localizePathname("/en/compress", "fr")).toBe("/fr/compress");
+        expect(localizePathname("/fr/", "en")).toBe("/en/");
+    });
+
+    it("localizes the landing root", () => {
+        expect(localizePathname("/", "fr")).toBe("/fr");
+    });
+
+    it("prefixes unlocalized paths", () => {
+        expect(localizePathname("/compress", "fr")).toBe("/fr/compress");
     });
 });

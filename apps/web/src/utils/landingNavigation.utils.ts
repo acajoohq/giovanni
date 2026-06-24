@@ -2,6 +2,7 @@ import type { RegisteredRouter } from "@tanstack/react-router";
 import { LANDING_TOOLS } from "@/components/landing/landingTool.registry";
 import type { LandingToolKey } from "@/types/landingTool.types";
 import { getLandingTool } from "@/utils/landingTool.utils";
+import { storeLandingSessionPath } from "@/utils/landingSession.utils";
 import "@/types/landingNavigation.types";
 
 interface NavigateFromLandingOptions {
@@ -27,8 +28,13 @@ export function getLandingToolKeyFromPathname(router: RegisteredRouter, pathname
 }
 
 export function navigateFromLanding(router: RegisteredRouter, { locale, tool, replace = false }: NavigateFromLandingOptions) {
+    const landingTool = getLandingTool(tool);
+    const destination = router.buildLocation({ to: landingTool.to, params: { locale } });
+
+    storeLandingSessionPath(destination.pathname);
+
     void router.navigate({
-        to: getLandingTool(tool).to,
+        to: landingTool.to,
         params: { locale },
         replace,
         state: { fromLanding: true },

@@ -5,7 +5,6 @@ import { AppRevealCard } from "@/components/landing/AppRevealCard";
 import { HeroButtons } from "@/components/landing/heroes/HeroButtons";
 import { DEFAULT_LANDING_TOOL } from "@/constants/landingTool.constants";
 import { useLandingDock } from "@/hooks/useLandingDock";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { LandingToolKey } from "@/types/landingTool.types";
 import { navigateFromLanding } from "@/utils/landingNavigation.utils";
 import { getLandingTool } from "@/utils/landingTool.utils";
@@ -21,25 +20,34 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
     const router = useRouter();
     const { locale = "en" } = useParams({ strict: false });
     const reduceMotion = useReducedMotion();
-    const isMobile = useMediaQuery("(max-width: 639px)");
-    const simpleLayout = Boolean(reduceMotion) && !isMobile;
 
-    if (isMobile) {
-        const openTool = (tool: LandingToolKey) => {
+    const openMobileTool = useCallback(
+        (tool: LandingToolKey) => {
             void router.navigate({
                 to: getLandingTool(tool).to,
                 params: { locale },
             });
-        };
+        },
+        [locale, router],
+    );
 
-        return (
-            <div className="h-full bg-app-bg">
-                <HeroButtons onSelectTool={openTool} variant="static" />
+    return (
+        <>
+            <div className="h-full min-h-0 bg-app-bg sm:hidden">
+                <HeroButtons onSelectTool={openMobileTool} variant="static" />
             </div>
-        );
-    }
 
-    return <DesktopLandingHome initialTool={initialTool} simpleLayout={simpleLayout} startDocked={startDocked} locale={locale} router={router} />;
+            <div className="hidden h-full min-h-0 sm:block">
+                <DesktopLandingHome
+                    initialTool={initialTool}
+                    locale={locale}
+                    router={router}
+                    simpleLayout={Boolean(reduceMotion)}
+                    startDocked={startDocked}
+                />
+            </div>
+        </>
+    );
 }
 
 interface DesktopLandingHomeProps {

@@ -4,7 +4,7 @@ import type { LandingToolKey } from "@/types/landingTool.types";
 import { cn } from "@/lib/utils";
 
 interface HeroToolButtonsProps {
-    activeTool: LandingToolKey;
+    activeTool?: LandingToolKey;
     onSelectTool: (tool: LandingToolKey) => void;
     className?: string;
 }
@@ -26,7 +26,7 @@ export function HeroToolButtons({ activeTool, onSelectTool, className }: HeroToo
             {LANDING_TOOLS.map((tool) => (
                 <button
                     aria-selected={activeTool === tool.key}
-                    className={heroTabClass(activeTool === tool.key)}
+                    className={heroTabClass(activeTool !== undefined && activeTool === tool.key)}
                     key={tool.key}
                     onClick={() => onSelectTool(tool.key)}
                     role="tab"

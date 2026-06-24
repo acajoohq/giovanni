@@ -34,7 +34,7 @@ export function HeroButtons({ activeTool, onSelectTool, showToolButtons = true, 
 
                 <p className="mt-5 max-w-[42ch] text-pretty text-[15px] leading-relaxed text-app-text-subtle">{t("home.subhead")}</p>
 
-                {showToolButtons && activeTool !== undefined && onSelectTool !== undefined ? (
+                {showToolButtons && onSelectTool !== undefined ? (
                     <HeroToolButtons activeTool={activeTool} className="mt-9" onSelectTool={onSelectTool} />
                 ) : null}
             </div>

@@ -26,9 +26,16 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
     const simpleLayout = Boolean(reduceMotion) && !isMobile;
 
     if (isMobile) {
+        const openTool = (tool: LandingToolKey) => {
+            void router.navigate({
+                to: getLandingTool(tool).to,
+                params: { locale },
+            });
+        };
+
         return (
             <div className="h-full bg-app-bg">
-                <HeroButtons showToolButtons={false} variant="static" />
+                <HeroButtons onSelectTool={openTool} variant="static" />
             </div>
         );
     }

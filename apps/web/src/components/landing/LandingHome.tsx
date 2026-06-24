@@ -39,9 +39,7 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
         );
     }
 
-    return (
-        <DesktopLandingHome initialTool={initialTool} simpleLayout={simpleLayout} startDocked={startDocked} locale={locale} router={router} />
-    );
+    return <DesktopLandingHome initialTool={initialTool} simpleLayout={simpleLayout} startDocked={startDocked} locale={locale} router={router} />;
 }
 
 interface DesktopLandingHomeProps {

@@ -22,9 +22,31 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
     const router = useRouter();
     const { locale = "en" } = useParams({ strict: false });
     const reduceMotion = useReducedMotion();
-    const isSmallScreen = useMediaQuery("(max-width: 639px)");
-    const simpleLayout = reduceMotion || isSmallScreen;
+    const isMobile = useMediaQuery("(max-width: 639px)");
+    const simpleLayout = Boolean(reduceMotion) && !isMobile;
 
+    if (isMobile) {
+        return (
+            <div className="h-full bg-app-bg">
+                <HeroButtons showToolButtons={false} variant="static" />
+            </div>
+        );
+    }
+
+    return (
+        <DesktopLandingHome initialTool={initialTool} simpleLayout={simpleLayout} startDocked={startDocked} locale={locale} router={router} />
+    );
+}
+
+interface DesktopLandingHomeProps {
+    initialTool?: LandingToolKey;
+    startDocked: boolean;
+    simpleLayout: boolean;
+    locale: string;
+    router: ReturnType<typeof useRouter>;
+}
+
+function DesktopLandingHome({ initialTool, startDocked, simpleLayout, locale, router }: DesktopLandingHomeProps) {
     const [activeTool, setActiveTool] = useState(initialTool ?? DEFAULT_LANDING_TOOL);
     const scrollRef = useRef<HTMLDivElement>(null);
     const toolSectionRef = useRef<HTMLElement>(null);

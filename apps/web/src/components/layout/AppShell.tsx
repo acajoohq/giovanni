@@ -10,6 +10,7 @@ import { ModeToggle } from "@/components/theme/ModeToggle";
 import { LandingHome } from "@/components/landing/LandingHome";
 import { LANDING_TOOLS } from "@/components/landing/landingTool.registry";
 import { useTauriStartup } from "@/hooks/useTauriStartup";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useIsDesktopMacOS } from "@/lib/desktop/hooks/useIsDesktopMacOS";
 import { cn } from "@/lib/utils";
 import { getLandingToolKeyFromPathname, isFromLandingLocation } from "@/utils/landingNavigation.utils";
@@ -30,8 +31,9 @@ export function AppShell() {
     });
     const landingToolKey = getLandingToolKeyFromPathname(router, pathname, locale);
     const isMacDesktop = useIsDesktopMacOS();
+    const isMobile = useMediaQuery("(max-width: 639px)");
     const isLandingIndex = pathname === router.buildLocation({ to: "/$locale", params: { locale } }).pathname;
-    const showLandingSession = fromLanding && landingToolKey !== null;
+    const showLandingSession = !isMobile && fromLanding && landingToolKey !== null;
     const showLandingHome = isLandingIndex || showLandingSession;
 
     useTauriStartup();

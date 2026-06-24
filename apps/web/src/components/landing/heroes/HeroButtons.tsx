@@ -6,12 +6,13 @@ import { HeroGlow } from "./HeroGlow";
 import { HeroToolButtons } from "./HeroToolButtons";
 
 interface HeroButtonsProps {
-    activeTool: LandingToolKey;
-    onSelectTool: (tool: LandingToolKey) => void;
+    activeTool?: LandingToolKey;
+    onSelectTool?: (tool: LandingToolKey) => void;
+    showToolButtons?: boolean;
     variant?: "overlay" | "static";
 }
 
-export function HeroButtons({ activeTool, onSelectTool, variant = "overlay" }: HeroButtonsProps) {
+export function HeroButtons({ activeTool, onSelectTool, showToolButtons = true, variant = "overlay" }: HeroButtonsProps) {
     const { t } = useTranslation();
     const isOverlay = variant === "overlay";
 
@@ -33,7 +34,9 @@ export function HeroButtons({ activeTool, onSelectTool, variant = "overlay" }: H
 
                 <p className="mt-5 max-w-[42ch] text-pretty text-[15px] leading-relaxed text-app-text-subtle">{t("home.subhead")}</p>
 
-                <HeroToolButtons activeTool={activeTool} className="mt-9" onSelectTool={onSelectTool} />
+                {showToolButtons && activeTool !== undefined && onSelectTool !== undefined ? (
+                    <HeroToolButtons activeTool={activeTool} className="mt-9" onSelectTool={onSelectTool} />
+                ) : null}
             </div>
         </div>
     );

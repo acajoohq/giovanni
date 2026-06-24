@@ -5,11 +5,11 @@ Pod::Spec.new do |s|
   s.name         = "giovanni-react-native"
   s.version      = package["version"]
   s.summary      = package["description"]
-  s.homepage     = "https://github.com/MatteoGauthier/qpdf-wasm"
+  s.homepage     = "https://github.com/acajoohq/giovanni"
   s.license      = { :type => "Apache-2.0" }
   s.authors      = { "qpdf contributors" => "" }
   s.platforms    = { :ios => "13.4" }
-  s.source       = { :git => "https://github.com/MatteoGauthier/qpdf-wasm.git", :tag => "v#{s.version}" }
+  s.source       = { :git => "https://github.com/acajoohq/giovanni.git", :tag => "v#{s.version}" }
 
   s.source_files = "ios/**/*.{h,mm,cpp}", "../../packages/core/native/targets/jsi/qpdf/*.{h,cpp}"
 

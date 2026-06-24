@@ -1,6 +1,6 @@
 ﻿# @giovanni/core
 
-[qpdf](https://github.com/qpdf/qpdf) and **Ghostscript** compiled to WebAssembly — compress, split, merge, extract images, inspect, and organize PDFs in the browser or Node.js. The root package is task-oriented; engine-specific APIs live under `@giovanni/core/qpdf` and `@giovanni/core/ghostscript`.
+[qpdf](https://github.com/qpdf/qpdf) built for multiple runtimes — compress, split, merge, extract images, inspect, and organize PDFs across WebAssembly (browser and Node.js), native C FFI, and React Native JSI targets. Experimental **Ghostscript** support adds lossy image recompression. The root package is task-oriented; engine-specific APIs live under `@giovanni/core/qpdf` and `@giovanni/core/ghostscript`.
 
 **PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@giovanni/pdf-render`**, not in this module.
 
@@ -197,7 +197,6 @@ build/      WASM and native artifacts (generated)
 Architecture references:
 
 - [`native/README.md`](./native/README.md) — C++ native layer (interface → impl → targets)
-- [`src/ARCHITECTURE.md`](./src/ARCHITECTURE.md) — TypeScript directory contract and engine adapter shape
 
 Native source layout:
 
@@ -210,7 +209,7 @@ native/
     jsi/       React Native JSI adapter (libgiovanni_jsi)
 ```
 
-More context: [root README](https://github.com/MatteoGauthier/qpdf-wasm/blob/main/README.md).
+More context: [root README](https://github.com/acajoohq/giovanni/blob/master/README.md).
 
 ## Licensing
 

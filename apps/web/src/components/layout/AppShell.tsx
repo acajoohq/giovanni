@@ -49,12 +49,7 @@ export function AppShell() {
                 const toolPath = router.buildLocation({ to: item.to, params: { locale } }).pathname;
 
                 return (
-                    <Link
-                        key={item.to}
-                        className={cn(NAV_LINK_CLASS, pathname === toolPath && "active")}
-                        params={{ locale }}
-                        to={item.to}
-                    >
+                    <Link key={item.to} className={cn(NAV_LINK_CLASS, pathname === toolPath && "active")} params={{ locale }} to={item.to}>
                         {item.label}
                     </Link>
                 );
@@ -123,11 +118,7 @@ export function AppShell() {
             </header>
 
             <main className="relative min-h-0 flex-1 overflow-hidden pb-16 sm:pb-0">
-                {showLandingHome ? (
-                    <LandingHome initialTool={landingToolKey ?? undefined} startDocked={showLandingSession} />
-                ) : (
-                    <Outlet />
-                )}
+                {showLandingHome ? <LandingHome initialTool={landingToolKey ?? undefined} startDocked={showLandingSession} /> : <Outlet />}
             </main>
 
             <MobileNav />

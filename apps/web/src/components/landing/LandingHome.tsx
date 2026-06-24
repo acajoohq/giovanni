@@ -10,8 +10,7 @@ import type { LandingToolKey } from "@/types/landingTool.types";
 import { navigateFromLanding } from "@/utils/landingNavigation.utils";
 import { getLandingTool } from "@/utils/landingTool.utils";
 
-const LANDING_SCROLL_CLASS =
-    "h-full overflow-x-hidden overflow-y-scroll bg-app-bg [scrollbar-gutter:stable] [overflow-anchor:none]";
+const LANDING_SCROLL_CLASS = "h-full overflow-x-hidden overflow-y-scroll bg-app-bg [scrollbar-gutter:stable] [overflow-anchor:none]";
 
 interface LandingHomeProps {
     initialTool?: LandingToolKey;

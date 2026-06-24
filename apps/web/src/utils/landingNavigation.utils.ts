@@ -14,11 +14,7 @@ export function isFromLandingLocation(state: unknown): boolean {
     return typeof state === "object" && state !== null && "fromLanding" in state && state.fromLanding === true;
 }
 
-export function getLandingToolKeyFromPathname(
-    router: RegisteredRouter,
-    pathname: string,
-    locale: string,
-): LandingToolKey | null {
+export function getLandingToolKeyFromPathname(router: RegisteredRouter, pathname: string, locale: string): LandingToolKey | null {
     for (const tool of LANDING_TOOLS) {
         const toolPath = router.buildLocation({ to: tool.to, params: { locale } }).pathname;
 

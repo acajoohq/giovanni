@@ -16,12 +16,7 @@ export function HeroButtons({ activeTool, onSelectTool, variant = "overlay" }: H
     const isOverlay = variant === "overlay";
 
     return (
-        <div
-            className={cn(
-                "flex flex-col items-center justify-center px-6 text-center",
-                isOverlay ? "absolute inset-0" : "relative min-h-full w-full py-20",
-            )}
-        >
+        <div className={cn("flex flex-col items-center justify-center px-6 text-center", isOverlay ? "absolute inset-0" : "relative min-h-full w-full py-20")}>
             <HeroGlow className="left-1/2 top-[40%] size-[36rem] -translate-x-1/2 -translate-y-1/2" />
 
             <div className="relative flex w-full max-w-xl flex-col items-center">

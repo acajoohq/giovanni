@@ -19,6 +19,7 @@ export const en = {
     },
     about: {
         tagline: "PDF tools \u00b7 offline & private",
+        githubLink: "View on GitHub",
         madeBy: "Made by",
         poweredBy: "Powered by <qpdf>qpdf</qpdf> compiled to WebAssembly. No files leave your browser.",
     },

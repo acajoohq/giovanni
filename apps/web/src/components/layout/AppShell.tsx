@@ -1,15 +1,20 @@
 import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
-import { Link, Outlet, useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { Link, Outlet, useParams, useRouter, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AboutDialog } from "@/components/dialogs/AboutDialog";
 import { LanguageMenu } from "@/components/layout/LanguageMenu";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { ToolbarIconButton } from "@/components/layout/ToolbarIconButton";
 import { ModeToggle } from "@/components/theme/ModeToggle";
+import { LandingHome } from "@/components/landing/LandingHome";
+import { LANDING_TOOLS } from "@/components/landing/landingTool.registry";
 import { useTauriStartup } from "@/hooks/useTauriStartup";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useIsDesktopMacOS } from "@/lib/desktop/hooks/useIsDesktopMacOS";
 import { cn } from "@/lib/utils";
+import { getLandingToolKeyFromPathname, isFromLandingLocation } from "@/utils/landingNavigation.utils";
+import { clearLandingSessionPath, readLandingSessionPath, storeLandingSessionPath } from "@/utils/landingSession.utils";
 
 const NAV_LINK_CLASS =
     "shrink-0 rounded-[5px] px-3 py-1 text-[12px] font-medium tracking-[-0.01em] text-app-text-subtle transition-[color,background-color,box-shadow] hover:text-app-text [&.active]:bg-app-control [&.active]:text-app-text";
@@ -17,27 +22,64 @@ const NAV_LINK_CLASS =
 export function AppShell() {
     const { t } = useTranslation();
     const [aboutOpen, setAboutOpen] = useState(false);
+    const router = useRouter();
     const { locale = "en" } = useParams({ strict: false });
+    const { fromLanding, pathname } = useRouterState({
+        select: (state) => ({
+            fromLanding: isFromLandingLocation(state.location.state),
+            pathname: state.location.pathname,
+        }),
+    });
+    const landingToolKey = getLandingToolKeyFromPathname(router, pathname, locale);
     const isMacDesktop = useIsDesktopMacOS();
+    const isMobile = useMediaQuery("(max-width: 639px)");
+    const isLandingIndex = pathname === router.buildLocation({ to: "/$locale", params: { locale } }).pathname;
+    const [hasHydrated, setHasHydrated] = useState(false);
 
     useTauriStartup();
 
-    const navigationItems = [
-        { label: t("nav.compress"), to: "/$locale/compress" as const },
-        { label: t("nav.split"), to: "/$locale/split" as const },
-        { label: t("nav.merge"), to: "/$locale/merge" as const },
-        { label: t("nav.organize"), to: "/$locale/organize" as const },
-        { label: t("nav.extractImages"), to: "/$locale/extract-images" as const },
-        { label: t("nav.pdfToJpg"), to: "/$locale/pdf-to-jpg" as const },
-    ];
+    useEffect(() => {
+        setHasHydrated(true);
+    }, []);
+
+    const showLandingSession = hasHydrated && !isMobile && landingToolKey !== null && (fromLanding || readLandingSessionPath() === pathname);
+    const showLandingHome = isLandingIndex || showLandingSession;
+
+    useEffect(() => {
+        if (!hasHydrated) {
+            return;
+        }
+
+        if (isLandingIndex || landingToolKey === null || isMobile) {
+            clearLandingSessionPath();
+            return;
+        }
+
+        if (fromLanding) {
+            storeLandingSessionPath(pathname);
+        }
+    }, [fromLanding, hasHydrated, isLandingIndex, isMobile, landingToolKey, pathname]);
+
+    const clearLandingSession = () => {
+        clearLandingSessionPath();
+    };
+
+    const navigationItems = LANDING_TOOLS.map((tool) => ({
+        label: t(`nav.${tool.key}` as const),
+        to: tool.to,
+    }));
 
     const nav = (
         <nav className="app-toolbar-nav hidden items-center gap-0.5 sm:flex sm:max-w-[min(100vw-12rem,42rem)]">
-            {navigationItems.map((item) => (
-                <Link key={item.to} className={NAV_LINK_CLASS} params={{ locale }} to={item.to}>
-                    {item.label}
-                </Link>
-            ))}
+            {navigationItems.map((item) => {
+                const toolPath = router.buildLocation({ to: item.to, params: { locale } }).pathname;
+
+                return (
+                    <Link key={item.to} className={cn(NAV_LINK_CLASS, pathname === toolPath && "active")} params={{ locale }} to={item.to} onClick={clearLandingSession}>
+                        {item.label}
+                    </Link>
+                );
+            })}
         </nav>
     );
 
@@ -52,12 +94,18 @@ export function AppShell() {
     );
 
     const brand = (
-        <div className="app-toolbar-brand flex shrink-0 items-center gap-2">
+        <Link
+            className="app-toolbar-brand pointer-events-auto flex shrink-0 items-center gap-2 rounded-[5px] transition-opacity hover:opacity-80"
+            data-tauri-drag-region={false}
+            params={{ locale }}
+            to="/$locale"
+            onClick={clearLandingSession}
+        >
             <div className="flex size-[1.375rem] shrink-0 items-center justify-center rounded-[5px] bg-brand/12 ring-1 ring-brand/20">
                 <RiFilePdfLine className="size-3 text-brand" />
             </div>
             <span className="text-[13px] font-semibold leading-none tracking-[-0.02em] text-app-text">Giovanni</span>
-        </div>
+        </Link>
     );
 
     return (
@@ -97,7 +145,7 @@ export function AppShell() {
             </header>
 
             <main className="relative min-h-0 flex-1 overflow-hidden pb-16 sm:pb-0">
-                <Outlet />
+                {showLandingHome ? <LandingHome key={pathname} initialTool={landingToolKey ?? undefined} startDocked={showLandingSession} /> : <Outlet />}
             </main>
 
             <MobileNav />

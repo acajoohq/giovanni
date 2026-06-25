@@ -1,6 +1,6 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
-import { CompressTool } from "@/components/pdf/tools/CompressTool";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/$locale/")({
-    component: CompressTool,
+    // LandingHome is rendered by AppShell so the instance survives hero → tool navigation.
+    component: () => null,
 });

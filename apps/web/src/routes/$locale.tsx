@@ -1,5 +1,4 @@
 ﻿import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_LOCALE } from "@/lib/features/locales/constants/locales.constants";
 import { isSupportedLocale } from "@/lib/features/locales/utils/locales.utils";
@@ -18,16 +17,6 @@ export const Route = createFileRoute("/$locale")({
 });
 
 function LocaleLayout() {
-    const { locale } = Route.useParams();
-    const { i18n } = useTranslation();
-
-    // Client-side: keep language in sync when navigating between locales
-    useEffect(() => {
-        if (i18n.language !== locale) {
-            i18n.changeLanguage(locale);
-        }
-    }, [locale, i18n]);
-
     return <Outlet />;
 }
 

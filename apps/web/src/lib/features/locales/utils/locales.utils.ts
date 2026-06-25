@@ -22,3 +22,18 @@ export function resolveInitialClientLocale() {
 
     return hydratedRouteLocale ?? pathnameLocale ?? DEFAULT_LOCALE;
 }
+
+export function localizePathname(pathname: string, newLocale: SupportedLocale) {
+    const normalizedPathname = pathname.startsWith("/") ? pathname : `/${pathname}`;
+    const pathnameLocale = resolveSupportedLocale(normalizedPathname.split("/")[1]?.toLowerCase());
+
+    if (pathnameLocale) {
+        return normalizedPathname.replace(/^\/[^/]*(?=\/|$)/, `/${newLocale}`);
+    }
+
+    if (normalizedPathname === "/") {
+        return `/${newLocale}`;
+    }
+
+    return `/${newLocale}${normalizedPathname}`;
+}

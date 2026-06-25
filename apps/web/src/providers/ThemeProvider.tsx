@@ -40,12 +40,22 @@ function applyTheme(theme: Theme) {
     root.style.colorScheme = resolved;
 }
 
-export function ThemeProvider({ children, defaultTheme = "system", storageKey = "theme" }: ThemeProviderProps) {
-    const [theme, setThemeState] = useState<Theme>(() => {
-        if (typeof window === "undefined") return defaultTheme;
+function readStoredTheme(storageKey: string, defaultTheme: Theme): Theme {
+    try {
         const stored = localStorage.getItem(storageKey);
         return stored === "light" || stored === "dark" || stored === "system" ? stored : defaultTheme;
-    });
+    } catch {
+        return defaultTheme;
+    }
+}
+
+export function ThemeProvider({ children, defaultTheme = "system", storageKey = "theme" }: ThemeProviderProps) {
+    // keep the first client render aligned with SSR; initThemeScript already applies the stored theme to <html>
+    const [theme, setThemeState] = useState<Theme>(defaultTheme);
+
+    useEffect(() => {
+        setThemeState(readStoredTheme(storageKey, defaultTheme));
+    }, [defaultTheme, storageKey]);
 
     useEffect(() => {
         applyTheme(theme);

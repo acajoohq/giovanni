@@ -42,8 +42,7 @@ export function AppShell() {
         setHasHydrated(true);
     }, []);
 
-    const showLandingSession =
-        hasHydrated && !isMobile && landingToolKey !== null && (fromLanding || readLandingSessionPath() === pathname);
+    const showLandingSession = hasHydrated && !isMobile && landingToolKey !== null && (fromLanding || readLandingSessionPath() === pathname);
     const showLandingHome = isLandingIndex || showLandingSession;
 
     useEffect(() => {
@@ -146,11 +145,7 @@ export function AppShell() {
             </header>
 
             <main className="relative min-h-0 flex-1 overflow-hidden pb-16 sm:pb-0">
-                {showLandingHome ? (
-                    <LandingHome key={pathname} initialTool={landingToolKey ?? undefined} startDocked={showLandingSession} />
-                ) : (
-                    <Outlet />
-                )}
+                {showLandingHome ? <LandingHome key={pathname} initialTool={landingToolKey ?? undefined} startDocked={showLandingSession} /> : <Outlet />}
             </main>
 
             <MobileNav />

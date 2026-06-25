@@ -34,35 +34,35 @@ export function AppShell() {
     const isMacDesktop = useIsDesktopMacOS();
     const isMobile = useMediaQuery("(max-width: 639px)");
     const isLandingIndex = pathname === router.buildLocation({ to: "/$locale", params: { locale } }).pathname;
-    const [storedLandingSessionPath, setStoredLandingSessionPath] = useState<string | null>(null);
-    const showLandingSession = !isMobile && landingToolKey !== null && (fromLanding || storedLandingSessionPath === pathname);
-    const showLandingHome = isLandingIndex || showLandingSession;
+    const [hasHydrated, setHasHydrated] = useState(false);
 
     useTauriStartup();
 
     useEffect(() => {
-        setStoredLandingSessionPath(readLandingSessionPath());
-    }, [pathname]);
+        setHasHydrated(true);
+    }, []);
+
+    const showLandingSession =
+        hasHydrated && !isMobile && landingToolKey !== null && (fromLanding || readLandingSessionPath() === pathname);
+    const showLandingHome = isLandingIndex || showLandingSession;
 
     useEffect(() => {
-        if (isLandingIndex || landingToolKey === null || isMobile) {
-            if (storedLandingSessionPath !== null) {
-                clearLandingSessionPath();
-                setStoredLandingSessionPath(null);
-            }
+        if (!hasHydrated) {
+            return;
+        }
 
+        if (isLandingIndex || landingToolKey === null || isMobile) {
+            clearLandingSessionPath();
             return;
         }
 
         if (fromLanding) {
             storeLandingSessionPath(pathname);
-            setStoredLandingSessionPath(pathname);
         }
-    }, [fromLanding, isLandingIndex, isMobile, landingToolKey, pathname, storedLandingSessionPath]);
+    }, [fromLanding, hasHydrated, isLandingIndex, isMobile, landingToolKey, pathname]);
 
     const clearLandingSession = () => {
         clearLandingSessionPath();
-        setStoredLandingSessionPath(null);
     };
 
     const navigationItems = LANDING_TOOLS.map((tool) => ({
@@ -146,7 +146,11 @@ export function AppShell() {
             </header>
 
             <main className="relative min-h-0 flex-1 overflow-hidden pb-16 sm:pb-0">
-                {showLandingHome ? <LandingHome initialTool={landingToolKey ?? undefined} startDocked={showLandingSession} /> : <Outlet />}
+                {showLandingHome ? (
+                    <LandingHome key={pathname} initialTool={landingToolKey ?? undefined} startDocked={showLandingSession} />
+                ) : (
+                    <Outlet />
+                )}
             </main>
 
             <MobileNav />

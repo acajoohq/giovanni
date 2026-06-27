@@ -1,4 +1,5 @@
-﻿mod cli;
+﻿pub mod giovanni;
+mod cli;
 mod commands;
 #[cfg(feature = "devtools")]
 mod app_menu;

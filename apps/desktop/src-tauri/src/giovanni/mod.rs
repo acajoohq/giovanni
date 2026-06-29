@@ -2,4 +2,4 @@
 pub mod ffi;
 pub mod engine;
 
-pub use engine::GiovanniEngine;
+pub use engine::{DocumentInfo, GiovanniEngine, WriteOptions};

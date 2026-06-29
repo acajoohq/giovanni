@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 
+use crate::giovanni::{DocumentInfo, GiovanniEngine, WriteOptions};
 use crate::state::{AppState, PendingOpenResult};
 
 #[tauri::command]
@@ -68,4 +69,39 @@ pub fn unregister_context_menu() -> Result<(), String> {
 
     #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
     Err("OS context menu unregistration is not supported on this platform.".to_string())
+}
+
+// ── Giovanni PDF commands ─────────────────────────────────────────────────────
+
+#[tauri::command]
+pub fn pdf_get_version() -> Result<String, String> {
+    GiovanniEngine::new()?.get_version()
+}
+
+#[tauri::command]
+pub fn pdf_get_info(
+    pdf_bytes: Vec<u8>,
+    password: Option<String>,
+) -> Result<DocumentInfo, String> {
+    GiovanniEngine::new()?.get_info(&pdf_bytes, password.as_deref())
+}
+
+#[tauri::command]
+pub fn pdf_write(
+    pdf_bytes: Vec<u8>,
+    options: Option<WriteOptions>,
+    password: Option<String>,
+) -> Result<Vec<u8>, String> {
+    GiovanniEngine::new()?.write_pdf(&pdf_bytes, options.as_ref(), password.as_deref())
+}
+
+#[tauri::command]
+pub fn pdf_split(pdf_bytes: Vec<u8>) -> Result<Vec<Vec<u8>>, String> {
+    GiovanniEngine::new()?.split_pages(&pdf_bytes)
+}
+
+#[tauri::command]
+pub fn pdf_merge(pdf_bytes_list: Vec<Vec<u8>>) -> Result<Vec<u8>, String> {
+    let refs: Vec<&[u8]> = pdf_bytes_list.iter().map(Vec::as_slice).collect();
+    GiovanniEngine::new()?.merge_pdfs(&refs)
 }

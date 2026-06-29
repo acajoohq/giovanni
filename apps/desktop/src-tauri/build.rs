@@ -34,6 +34,29 @@ fn main() {
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
     println!("cargo:rustc-link-lib=static=giovanni_native");
 
+    #[cfg(windows)]
+    {
+        // build:native:win copies qpdf and its vcpkg deps into build/native/
+        // alongside giovanni_native.lib. Link every .lib found there except
+        // giovanni_native itself (already linked above).
+        for entry in std::fs::read_dir(&lib_dir).unwrap().flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|e| e.to_str()) == Some("lib") {
+                if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                    if stem != "giovanni_native" {
+                        println!("cargo:rustc-link-lib=static={stem}");
+                    }
+                }
+            }
+        }
+
+        // Windows system libs required by qpdf / OpenSSL at final link time.
+        // These are OS import libs and cannot be bundled into a static archive.
+        println!("cargo:rustc-link-lib=Crypt32");
+        println!("cargo:rustc-link-lib=Wldap32");
+        println!("cargo:rustc-link-lib=bcrypt");
+    }
+
     #[cfg(target_os = "macos")]
     println!("cargo:rustc-link-lib=dylib=c++");
 

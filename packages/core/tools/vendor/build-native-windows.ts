@@ -21,7 +21,7 @@
  */
 
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { cp, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -78,28 +78,29 @@ async function capture(command: string, args: string[], cwd = repoRoot): Promise
 }
 
 // ---------------------------------------------------------------------------
-// CMake discovery
+// MSVC tool discovery
 // ---------------------------------------------------------------------------
 
+const VS_BASE_PATHS = [
+    "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community",
+    "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise",
+    "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional",
+    "C:\\Program Files\\Microsoft Visual Studio\\18\\Community",
+    "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise",
+    "C:\\Program Files\\Microsoft Visual Studio\\18\\Professional",
+];
+
 function findCmake(): string {
-    const vsCmakePaths = [
-        "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community",
-        "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise",
-        "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional",
-        "C:\\Program Files\\Microsoft Visual Studio\\18\\Community",
-        "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise",
-        "C:\\Program Files\\Microsoft Visual Studio\\18\\Professional",
-    ].map((vs) =>
-        join(vs, "Common7", "IDE", "CommonExtensions", "Microsoft", "CMake", "CMake", "bin", "cmake.exe"),
-    );
-
-    for (const p of vsCmakePaths) {
-        if (existsSync(p)) return p;
+    for (const vsBase of VS_BASE_PATHS) {
+        const candidate = join(
+            vsBase,
+            "Common7", "IDE", "CommonExtensions", "Microsoft", "CMake", "CMake", "bin", "cmake.exe",
+        );
+        if (existsSync(candidate)) return candidate;
     }
-
-    // Fall back to whatever cmake is in PATH
     return "cmake";
 }
+
 
 // ---------------------------------------------------------------------------
 // vcpkg bootstrap
@@ -195,6 +196,11 @@ async function main(): Promise<void> {
     await writeFile(join(BUILD_DIR, "vcpkg.json"), JSON.stringify(manifest, null, 2) + "\n");
 
     // ── 4. CMake configure ─────────────────────────────────────────────────
+    // CMAKE_MSVC_RUNTIME_LIBRARY must match the vcpkg triplet's CRT linkage.
+    // x64-windows-static uses /MT (static CRT); CMake defaults to /MD, which
+    // causes LNK2038 (CRT mismatch) when linking against qpdf.lib.
+    const msvcRuntime = buildType === "Debug" ? "MultiThreadedDebug" : "MultiThreaded";
+
     console.log("\n[giovanni] cmake configure...");
     await run(cmake, [
         "-S", NATIVE_TARGET_DIR,
@@ -206,6 +212,7 @@ async function main(): Promise<void> {
         `-DVCPKG_MANIFEST_DIR=${BUILD_DIR}`,
         "-DGIOVANNI_USE_SYSTEM_QPDF=ON",
         "-DBUILD_SHARED_LIBS=OFF",
+        `-DCMAKE_MSVC_RUNTIME_LIBRARY=${msvcRuntime}`,
         `-DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}`,
     ]);
 
@@ -237,6 +244,21 @@ async function main(): Promise<void> {
     await cp(libSrc, join(OUTPUT_DIR, "giovanni_native.lib"));
     if (existsSync(headerSrc)) {
         await cp(headerSrc, join(OUTPUT_DIR, "giovanni_c.h"));
+    }
+
+    // ── 8. Copy vcpkg dep libs into build/native/ ────────────────────────────
+    // MSVC static libs don't carry transitive dependency metadata. Copying qpdf
+    // and its vcpkg deps alongside giovanni_native.lib lets build.rs discover
+    // everything from one known directory without needing to know where vcpkg is.
+    // In vcpkg manifest mode, CMake installs packages to <build_dir>/vcpkg_installed/,
+    // not to <vcpkg_root>/installed/.
+    const vcpkgLibDir = join(BUILD_DIR, "vcpkg_installed", VCPKG_TRIPLET, "lib");
+    if (existsSync(vcpkgLibDir)) {
+        const depLibs = readdirSync(vcpkgLibDir).filter((f) => f.endsWith(".lib"));
+        for (const lib of depLibs) {
+            await cp(join(vcpkgLibDir, lib), join(OUTPUT_DIR, lib));
+        }
+        console.log(`\n[giovanni] Copied ${depLibs.length} vcpkg dep lib(s) to build/native/`);
     }
 
     console.log(`\n[giovanni] Done: build/native/giovanni_native.lib`);

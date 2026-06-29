@@ -12,11 +12,22 @@ fn main() {
     lib_dir.push("build");
     lib_dir.push("native");
 
-    if !lib_dir.exists() {
+    // MSVC names static archives <target>.lib; GNU/Clang use lib<target>.a
+    #[cfg(windows)]
+    let lib_file = lib_dir.join("giovanni_native.lib");
+    #[cfg(not(windows))]
+    let lib_file = lib_dir.join("libgiovanni_native.a");
+
+    if !lib_file.exists() {
+        #[cfg(windows)]
+        let build_cmd = "pnpm --filter @giovanni/core build:native:win";
+        #[cfg(not(windows))]
+        let build_cmd = "pnpm --filter @giovanni/core build:native";
+
         panic!(
-            "Native library directory not found: {}\n\
-             Run `pnpm --filter @giovanni/core build:native` first.",
-            lib_dir.display()
+            "Native library not found: {}\nBuild it first:\n  {}",
+            lib_file.display(),
+            build_cmd,
         );
     }
 
@@ -30,10 +41,7 @@ fn main() {
     println!("cargo:rustc-link-lib=dylib=stdc++");
 
     println!("cargo:rerun-if-changed=build.rs");
-    println!(
-        "cargo:rerun-if-changed={}",
-        lib_dir.join("libgiovanni_native.a").display()
-    );
+    println!("cargo:rerun-if-changed={}", lib_file.display());
 
     tauri_build::build()
 }

@@ -44,8 +44,11 @@ fn register_group(
 pub fn register(app_exe: &str) -> Result<(), String> {
     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
 
+    // Remove legacy keys left over from earlier versions.
+    let _ = hkcu.delete_subkey_all(format!(r"{BASE}\Giovanni"));
+
     // Group 1 — instant headless actions (no window opens)
-    register_group(&hkcu, "Giovanni", "Giovanni", app_exe, super::HEADLESS_ACTIONS, false)?;
+    register_group(&hkcu, "GiovanniQuick", "Use Giovanni", app_exe, super::HEADLESS_ACTIONS, false)?;
 
     // Group 2 — always opens the UI (--open-ui bypasses the headless fast-path)
     register_group(&hkcu, "GiovanniOpen", "Open with Giovanni", app_exe, super::UI_ACTIONS, true)?;
@@ -55,7 +58,7 @@ pub fn register(app_exe: &str) -> Result<(), String> {
 
 pub fn unregister() -> Result<(), String> {
     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-    for key_name in ["Giovanni", "GiovanniOpen"] {
+    for key_name in ["GiovanniQuick", "GiovanniOpen"] {
         let _ = hkcu.delete_subkey_all(format!(r"{BASE}\{key_name}"));
     }
     Ok(())

@@ -52,7 +52,12 @@ pub fn register(app_exe: &str) -> Result<(), String> {
     let servicemenus_dir = home_path.join(".local/share/kio/servicemenus");
     fs::create_dir_all(&servicemenus_dir).map_err(|e| e.to_string())?;
 
-    let action_ids: Vec<String> = super::ACTIONS.iter().map(|(a, _)| kde_action_id(a)).collect();
+    let headless_ids: Vec<String> = super::HEADLESS_ACTIONS
+        .iter()
+        .map(|(a, _)| kde_action_id(a))
+        .collect();
+    let ui_ids: Vec<String> = super::UI_ACTIONS.iter().map(|(a, _)| kde_action_id(a)).collect();
+    let all_ids: Vec<String> = headless_ids.iter().chain(ui_ids.iter()).cloned().collect();
 
     let mut desktop = format!(
         "[Desktop Entry]\n\
@@ -61,12 +66,28 @@ pub fn register(app_exe: &str) -> Result<(), String> {
          MimeType=application/pdf;\n\
          Icon=document-viewer\n\
          X-KDE-Priority=TopLevel\n\
-         X-KDE-Submenu=Open with Giovanni\n\
+         X-KDE-Submenu=Giovanni\n\
          Actions={}\n\n",
-        action_ids.join(";")
+        all_ids.join(";")
     );
 
-    for (action, label) in super::ACTIONS {
+    for (action, label) in super::HEADLESS_ACTIONS {
+        desktop.push_str(&format!(
+            "[Desktop Action {}]\n\
+             Name={}\n\
+             Icon=application-pdf\n\
+             Exec=\"{}\" --action {} --file %f\n\n",
+            kde_action_id(action),
+            label,
+            app_exe,
+            action,
+        ));
+    }
+
+    // Separator between groups (KDE 5+)
+    desktop.push_str("[Desktop Action Separator]\nName=\nX-KDE-Separator=true\n\n");
+
+    for (action, label) in super::UI_ACTIONS {
         desktop.push_str(&format!(
             "[Desktop Action {}]\n\
              Name={}\n\

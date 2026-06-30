@@ -10,6 +10,10 @@ use crate::state::PendingOpenAction;
 /// it inherently needs user interaction or because the operation failed (in which
 /// case the pending action is kept so the UI can display the error).
 pub fn try_run_headless(action: &PendingOpenAction) -> bool {
+    if action.open_ui {
+        return false;
+    }
+
     match action.action.as_str() {
         "compress" => run_compress(&action.file_path).is_ok(),
         "split" => run_split(&action.file_path).is_ok(),

@@ -179,15 +179,15 @@ pnpm --filter @giovanni/core build:native:all
 
 ### Build environment variables
 
-| Variable                      | Applies to          | Description                                                    |
-| ----------------------------- | ------------------- | -------------------------------------------------------------- |
-| `GIOVANNI_DOCKER_CACHE_ROOT`  | WASM builds         | Override Docker buildx cache directory                         |
-| `GIOVANNI_NATIVE_SHARED=1`    | `build:native`      | Build shared library instead of static                         |
-| `GIOVANNI_JSI_INCLUDE_DIR`    | `build:jsi`         | Path to `ReactCommon/` (JSI headers)                           |
-| `GIOVANNI_NATIVE_JOBS`        | native / JSI        | Parallel CMake build jobs                                      |
-| `VCPKG_ROOT`                  | `build:native:win`  | Use an existing standalone vcpkg instead of the auto-bootstrap |
-| `GIOVANNI_VCPKG_TRIPLET`      | `build:native:win`  | Override vcpkg triplet (default: `x64-windows-static`)         |
-| `GIOVANNI_CMAKE_GENERATOR`    | `build:native:win`  | Override CMake generator (default: `Visual Studio 17 2022`)    |
+| Variable                     | Applies to         | Description                                                    |
+| ---------------------------- | ------------------ | -------------------------------------------------------------- |
+| `GIOVANNI_DOCKER_CACHE_ROOT` | WASM builds        | Override Docker buildx cache directory                         |
+| `GIOVANNI_NATIVE_SHARED=1`   | `build:native`     | Build shared library instead of static                         |
+| `GIOVANNI_JSI_INCLUDE_DIR`   | `build:jsi`        | Path to `ReactCommon/` (JSI headers)                           |
+| `GIOVANNI_NATIVE_JOBS`       | native / JSI       | Parallel CMake build jobs                                      |
+| `VCPKG_ROOT`                 | `build:native:win` | Use an existing standalone vcpkg instead of the auto-bootstrap |
+| `GIOVANNI_VCPKG_TRIPLET`     | `build:native:win` | Override vcpkg triplet (default: `x64-windows-static`)         |
+| `GIOVANNI_CMAKE_GENERATOR`   | `build:native:win` | Override CMake generator (default: `Visual Studio 17 2022`)    |
 
 ## Development
 

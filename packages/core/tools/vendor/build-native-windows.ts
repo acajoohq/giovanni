@@ -68,7 +68,9 @@ async function capture(command: string, args: string[], cwd = repoRoot): Promise
     return new Promise<string>((resolve, reject) => {
         const child = spawn(command, args, { cwd, stdio: ["ignore", "pipe", "inherit"], shell: false });
         let stdout = "";
-        child.stdout?.on("data", (chunk: Buffer) => { stdout += chunk.toString(); });
+        child.stdout?.on("data", (chunk: Buffer) => {
+            stdout += chunk.toString();
+        });
         child.on("error", reject);
         child.on("exit", (code) => {
             if (code === 0) resolve(stdout.trim());
@@ -92,15 +94,11 @@ const VS_BASE_PATHS = [
 
 function findCmake(): string {
     for (const vsBase of VS_BASE_PATHS) {
-        const candidate = join(
-            vsBase,
-            "Common7", "IDE", "CommonExtensions", "Microsoft", "CMake", "CMake", "bin", "cmake.exe",
-        );
+        const candidate = join(vsBase, "Common7", "IDE", "CommonExtensions", "Microsoft", "CMake", "CMake", "bin", "cmake.exe");
         if (existsSync(candidate)) return candidate;
     }
     return "cmake";
 }
-
 
 // ---------------------------------------------------------------------------
 // vcpkg bootstrap
@@ -127,12 +125,7 @@ async function ensureVcpkg(): Promise<string> {
     // Bootstrap project-local vcpkg
     if (!existsSync(join(LOCAL_VCPKG, ".git"))) {
         console.log(`\n[giovanni] Cloning vcpkg into .tmp/vcpkg (one-time, ~50 MB)...`);
-        await run("git", [
-            "clone",
-            "--depth=1",
-            "https://github.com/microsoft/vcpkg.git",
-            LOCAL_VCPKG,
-        ]);
+        await run("git", ["clone", "--depth=1", "https://github.com/microsoft/vcpkg.git", LOCAL_VCPKG]);
     }
 
     if (!existsSync(join(LOCAL_VCPKG, "vcpkg.exe"))) {
@@ -203,10 +196,14 @@ async function main(): Promise<void> {
 
     console.log("\n[giovanni] cmake configure...");
     await run(cmake, [
-        "-S", NATIVE_TARGET_DIR,
-        "-B", BUILD_DIR,
-        "-G", generator,
-        "-A", "x64",
+        "-S",
+        NATIVE_TARGET_DIR,
+        "-B",
+        BUILD_DIR,
+        "-G",
+        generator,
+        "-A",
+        "x64",
         `-DCMAKE_TOOLCHAIN_FILE=${toolchain}`,
         `-DVCPKG_TARGET_TRIPLET=${VCPKG_TRIPLET}`,
         `-DVCPKG_MANIFEST_DIR=${BUILD_DIR}`,
@@ -218,12 +215,7 @@ async function main(): Promise<void> {
 
     // ── 5. CMake build ─────────────────────────────────────────────────────
     console.log(`\n[giovanni] cmake build (${buildType})...`);
-    await run(cmake, [
-        "--build", BUILD_DIR,
-        "--config", buildType,
-        "--target", "giovanni_native",
-        ...(jobs ? ["--parallel", jobs] : ["--parallel"]),
-    ]);
+    await run(cmake, ["--build", BUILD_DIR, "--config", buildType, "--target", "giovanni_native", ...(jobs ? ["--parallel", jobs] : ["--parallel"])]);
 
     // ── 6. CMake install ───────────────────────────────────────────────────
     console.log("\n[giovanni] cmake install...");
@@ -235,10 +227,7 @@ async function main(): Promise<void> {
     const headerSrc = join(INSTALL_DIR, "include", "giovanni_c.h");
 
     if (!existsSync(libSrc)) {
-        throw new Error(
-            `Expected library not found after install: ${libSrc}\n` +
-            "Check the cmake build output above for errors.",
-        );
+        throw new Error(`Expected library not found after install: ${libSrc}\n` + "Check the cmake build output above for errors.");
     }
 
     await cp(libSrc, join(OUTPUT_DIR, "giovanni_native.lib"));

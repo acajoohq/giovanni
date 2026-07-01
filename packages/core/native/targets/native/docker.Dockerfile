@@ -50,6 +50,7 @@ RUN set -eux; \
         -S /src/packages/core/native/targets/native \
         -B "$BUILD_DIR" \
         -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
         -DQPDF_SOURCE_DIR=/src/vendor/qpdf; \
     cmake --build "$BUILD_DIR" --parallel "$BUILD_JOBS"; \
     ctest --output-on-failure --test-dir "$BUILD_DIR" -R giovanni_; \

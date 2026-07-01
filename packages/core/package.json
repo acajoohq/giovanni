@@ -155,6 +155,7 @@
         "build:wasm": "pnpm run build:vendor -- all prd",
         "build:wasm:dev": "pnpm run build:vendor -- all dev",
         "build:native": "tsx tools/vendor/build-native.ts native",
+        "build:native:win": "tsx tools/vendor/build-native-windows.ts",
         "build:jsi": "tsx tools/vendor/build-native.ts jsi",
         "build:native:all": "tsx tools/vendor/build-native.ts all",
         "test:native": "tsx tools/vendor/build-native.ts native",

@@ -118,13 +118,32 @@ Vendor sync contract:
 
 ### C FFI (native)
 
-Produces `libgiovanni_native` (static by default) and a C header `giovanni_c.h`. Requires **CMake** and a **C++20 compiler** — no Docker needed.
+Produces `libgiovanni_native` (static by default) and a C header `giovanni_c.h`. No Docker needed.
+
+#### Linux / macOS
+
+Requires **Docker** (fetches qpdf source inside the container, same pipeline as WASM).
 
 ```bash
 pnpm --filter @giovanni/core build:native
 ```
 
-Output lands in `build/native/`.
+#### Windows
+
+Requires **Git**, **MSVC** (Visual Studio 2022 with the C++ Desktop workload), and **CMake** (bundled with VS). No manual dependency setup — on first run the script clones and bootstraps a project-local vcpkg under `.tmp/vcpkg` and uses it to fetch qpdf automatically.
+
+```powershell
+pnpm --filter @giovanni/core build:native:win
+```
+
+Subsequent runs skip the clone/bootstrap step; vcpkg caches installed packages between builds.
+
+---
+
+Output lands in `build/native/` for both platforms:
+
+- Linux / macOS: `libgiovanni_native.a` + `giovanni_c.h`
+- Windows: `giovanni_native.lib` + `giovanni_c.h`
 
 ```c
 #include "giovanni_c.h"
@@ -160,12 +179,15 @@ pnpm --filter @giovanni/core build:native:all
 
 ### Build environment variables
 
-| Variable                     | Applies to     | Description                            |
-| ---------------------------- | -------------- | -------------------------------------- |
-| `GIOVANNI_DOCKER_CACHE_ROOT` | WASM builds    | Override Docker buildx cache directory |
-| `GIOVANNI_NATIVE_SHARED=1`   | `build:native` | Build shared library instead of static |
-| `GIOVANNI_JSI_INCLUDE_DIR`   | `build:jsi`    | Path to `ReactCommon/` (JSI headers)   |
-| `GIOVANNI_NATIVE_JOBS`       | native / JSI   | Parallel CMake build jobs (default: 4) |
+| Variable                     | Applies to         | Description                                                    |
+| ---------------------------- | ------------------ | -------------------------------------------------------------- |
+| `GIOVANNI_DOCKER_CACHE_ROOT` | WASM builds        | Override Docker buildx cache directory                         |
+| `GIOVANNI_NATIVE_SHARED=1`   | `build:native`     | Build shared library instead of static                         |
+| `GIOVANNI_JSI_INCLUDE_DIR`   | `build:jsi`        | Path to `ReactCommon/` (JSI headers)                           |
+| `GIOVANNI_NATIVE_JOBS`       | native / JSI       | Parallel CMake build jobs                                      |
+| `VCPKG_ROOT`                 | `build:native:win` | Use an existing standalone vcpkg instead of the auto-bootstrap |
+| `GIOVANNI_VCPKG_TRIPLET`     | `build:native:win` | Override vcpkg triplet (default: `x64-windows-static`)         |
+| `GIOVANNI_CMAKE_GENERATOR`   | `build:native:win` | Override CMake generator (default: `Visual Studio 17 2022`)    |
 
 ## Development
 

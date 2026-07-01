@@ -95,6 +95,20 @@ cmake --build build
 
 ### Standalone C library (FFI)
 
+Use the package scripts from the repo root — they handle dependency resolution and output placement automatically:
+
+```bash
+# Linux / macOS (Docker-based, same pipeline as WASM)
+pnpm --filter @giovanni/core build:native
+
+# Windows (vcpkg + MSVC, no Docker)
+pnpm --filter @giovanni/core build:native:win
+```
+
+Both produce `build/native/libgiovanni_native.a` (Linux/macOS) or `build/native/giovanni_native.lib` (Windows) alongside `giovanni_c.h`.
+
+To build manually with CMake (Linux/macOS, qpdf source already available):
+
 ```bash
 cd targets/native
 cmake -B build -DQPDF_SOURCE_DIR=../../../../../vendor/qpdf

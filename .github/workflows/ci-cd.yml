@@ -124,6 +124,15 @@ jobs:
             - name: Run build
               run: pnpm run build
 
+            - name: Build native library (Linux)
+              run: pnpm --filter @giovanni/core build:native
+
+            - name: Upload native library artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: native-lib-linux
+                  path: packages/core/build/native/
+
             - name: Upload @giovanni/core dist artifact
               uses: actions/upload-artifact@v4
               with:
@@ -297,6 +306,12 @@ jobs:
               with:
                   name: pdf-render-dist
                   path: packages/pdf-render/dist
+
+            - name: Download native library
+              uses: actions/download-artifact@v4
+              with:
+                  name: native-lib-linux
+                  path: packages/core/build/native/
 
             - name: Install Rust stable
               uses: dtolnay/rust-toolchain@stable

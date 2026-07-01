@@ -57,11 +57,31 @@ fn main() {
         println!("cargo:rustc-link-lib=bcrypt");
     }
 
+    #[cfg(target_os = "linux")]
+    {
+        // Link libqpdf.a (and any other .a deps exported from the Docker build)
+        // alongside libgiovanni_native.a into build/native/.
+        for entry in std::fs::read_dir(&lib_dir).unwrap().flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|e| e.to_str()) == Some("a") {
+                if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                    let name = stem.strip_prefix("lib").unwrap_or(stem);
+                    if name != "giovanni_native" {
+                        println!("cargo:rustc-link-lib=static={name}");
+                    }
+                }
+            }
+        }
+        // System libs qpdf links against — available on any Linux with the dev packages.
+        println!("cargo:rustc-link-lib=z");
+        println!("cargo:rustc-link-lib=jpeg");
+        println!("cargo:rustc-link-lib=ssl");
+        println!("cargo:rustc-link-lib=crypto");
+        println!("cargo:rustc-link-lib=dylib=stdc++");
+    }
+
     #[cfg(target_os = "macos")]
     println!("cargo:rustc-link-lib=dylib=c++");
-
-    #[cfg(target_os = "linux")]
-    println!("cargo:rustc-link-lib=dylib=stdc++");
 
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed={}", lib_file.display());

@@ -54,6 +54,7 @@ RUN set -eux; \
     cmake --build "$BUILD_DIR" --parallel "$BUILD_JOBS"; \
     ctest --output-on-failure --test-dir "$BUILD_DIR" -R giovanni_; \
     cp "$BUILD_DIR/libgiovanni_native.a" "$OUT_DIR/"; \
+    find "$BUILD_DIR" -name "libqpdf.a" -exec cp {} "$OUT_DIR/" \; ; \
     cp /src/packages/core/native/targets/native/giovanni_c.h "$OUT_DIR/"
 
 FROM scratch AS export

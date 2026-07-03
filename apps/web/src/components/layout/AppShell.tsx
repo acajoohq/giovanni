@@ -1,6 +1,6 @@
 import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
 import { Link, Outlet, useParams, useRouter, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AboutDialog } from "@/components/dialogs/AboutDialog";
 import { LanguageMenu } from "@/components/layout/LanguageMenu";
@@ -8,66 +8,31 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { ToolbarIconButton } from "@/components/layout/ToolbarIconButton";
 import { ModeToggle } from "@/components/theme/ModeToggle";
 import { LandingHome } from "@/components/landing/LandingHome";
-import { LANDING_TOOLS } from "@/components/landing/landingTool.registry";
+import { LANDING_TOOL_KEYS } from "@/constants/landingTool.constants";
+import { useLandingSession } from "@/hooks/useLandingSession";
 import { useTauriStartup } from "@/hooks/useTauriStartup";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useIsDesktopMacOS } from "@/lib/desktop/hooks/useIsDesktopMacOS";
 import { cn } from "@/lib/utils";
-import { getLandingToolKeyFromPathname, isFromLandingLocation } from "@/utils/landingNavigation.utils";
-import { clearLandingSessionPath, readLandingSessionPath, storeLandingSessionPath } from "@/utils/landingSession.utils";
+import { getLandingToolRoute } from "@/utils/landingNavigation.utils";
 
 const NAV_LINK_CLASS =
     "shrink-0 rounded-[5px] px-3 py-1 text-[12px] font-medium tracking-[-0.01em] text-app-text-subtle transition-[color,background-color,box-shadow] hover:text-app-text [&.active]:bg-app-control [&.active]:text-app-text";
 
 export function AppShell() {
     const { t } = useTranslation();
-    const [aboutOpen, setAboutOpen] = useState(false);
     const router = useRouter();
     const { locale = "en" } = useParams({ strict: false });
-    const { fromLanding, pathname } = useRouterState({
-        select: (state) => ({
-            fromLanding: isFromLandingLocation(state.location.state),
-            pathname: state.location.pathname,
-        }),
-    });
-    const landingToolKey = getLandingToolKeyFromPathname(router, pathname, locale);
+    const pathname = useRouterState({ select: (state) => state.location.pathname });
+    const { isLandingHomeVisible, isLandingIndex, isLandingSessionActive, landingToolKey, clearLandingSession } = useLandingSession();
     const isMacDesktop = useIsDesktopMacOS();
-    const isMobile = useMediaQuery("(max-width: 639px)");
-    const isLandingIndex = pathname === router.buildLocation({ to: "/$locale", params: { locale } }).pathname;
-    const [hasHydrated, setHasHydrated] = useState(false);
+
+    const [aboutOpen, setAboutOpen] = useState(false);
 
     useTauriStartup();
 
-    useEffect(() => {
-        setHasHydrated(true);
-    }, []);
-
-    const showLandingSession =
-        hasHydrated && !isMobile && landingToolKey !== null && (fromLanding || readLandingSessionPath() === pathname);
-    const showLandingHome = isLandingIndex || showLandingSession;
-
-    useEffect(() => {
-        if (!hasHydrated) {
-            return;
-        }
-
-        if (isLandingIndex || landingToolKey === null || isMobile) {
-            clearLandingSessionPath();
-            return;
-        }
-
-        if (fromLanding) {
-            storeLandingSessionPath(pathname);
-        }
-    }, [fromLanding, hasHydrated, isLandingIndex, isMobile, landingToolKey, pathname]);
-
-    const clearLandingSession = () => {
-        clearLandingSessionPath();
-    };
-
-    const navigationItems = LANDING_TOOLS.map((tool) => ({
-        label: t(`nav.${tool.key}` as const),
-        to: tool.to,
+    const navigationItems = LANDING_TOOL_KEYS.map((tool) => ({
+        label: t(`nav.${tool}` as const),
+        to: getLandingToolRoute(tool),
     }));
 
     const nav = (
@@ -145,15 +110,11 @@ export function AppShell() {
                 )}
             </header>
 
-            <main className="relative min-h-0 flex-1 overflow-hidden pb-16 sm:pb-0">
-                {showLandingHome ? (
-                    <LandingHome key={pathname} initialTool={landingToolKey ?? undefined} startDocked={showLandingSession} />
-                ) : (
-                    <Outlet />
-                )}
+            <main className={cn("relative min-h-0 flex-1 overflow-hidden sm:pb-0", !isLandingIndex && "pb-16")}>
+                {isLandingHomeVisible ? <LandingHome initialTool={landingToolKey ?? undefined} startDocked={isLandingSessionActive} /> : <Outlet />}
             </main>
 
-            <MobileNav />
+            {!isLandingIndex && <MobileNav />}
             <AboutDialog onClose={() => setAboutOpen(false)} open={aboutOpen} />
         </div>
     );

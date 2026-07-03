@@ -71,24 +71,8 @@ export function useLandingDock(scrollRef: RefObject<HTMLElement | null>, options
         return () => container.removeEventListener("scroll", syncScroll);
     }, [scrollRef, syncScroll]);
 
-    const scrollToDock = useCallback(
-        (onComplete?: () => void) => {
-            const container = scrollRef.current;
-
-            if (!container) {
-                onComplete?.();
-
-                return;
-            }
-
-            const targetScrollTop = getDockScrollTop(container, sectionRef?.current);
-
-            if (isContainerDocked(container, sectionRef?.current)) {
-                onComplete?.();
-
-                return;
-            }
-
+    const animateScrollTo = useCallback(
+        (container: HTMLElement, targetScrollTop: number, onComplete?: () => void) => {
             cancelScrollRef.current?.();
             isAnimatingRef.current = true;
             syncScrollSnap(container, usesScrollSnap, container.scrollTop, true);
@@ -114,8 +98,33 @@ export function useLandingDock(scrollRef: RefObject<HTMLElement | null>, options
                 syncScroll();
             };
         },
-        [scrollRef, sectionRef, syncScroll, usesScrollSnap],
+        [syncScroll, usesScrollSnap],
     );
+
+    const scrollToDock = useCallback(
+        (onComplete?: () => void) => {
+            const container = scrollRef.current;
+
+            if (!container || isContainerDocked(container, sectionRef?.current)) {
+                onComplete?.();
+
+                return;
+            }
+
+            animateScrollTo(container, getDockScrollTop(container, sectionRef?.current), onComplete);
+        },
+        [animateScrollTo, scrollRef, sectionRef],
+    );
+
+    const scrollToHero = useCallback(() => {
+        const container = scrollRef.current;
+
+        if (!container || container.scrollTop === 0) {
+            return;
+        }
+
+        animateScrollTo(container, 0);
+    }, [animateScrollTo, scrollRef]);
 
     const jumpToDock = useCallback(() => {
         const container = scrollRef.current;
@@ -132,5 +141,5 @@ export function useLandingDock(scrollRef: RefObject<HTMLElement | null>, options
 
     useEffect(() => () => cancelScrollRef.current?.(), []);
 
-    return { getIsDocked, scrollToDock, jumpToDock };
+    return { getIsDocked, scrollToDock, scrollToHero, jumpToDock };
 }

@@ -45,7 +45,7 @@ impl Default for WriteOptions {
             compression_level: 6,
             recompress_flate: true,
             decode_level: "generalized".into(),
-            object_streams: "preserve".into(),
+            object_streams: "generate".into(),
             compress_pages: false,
             remove_unreferenced_resources: false,
             linearize: false,

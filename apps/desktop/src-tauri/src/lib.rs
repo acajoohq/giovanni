@@ -1,5 +1,7 @@
-﻿mod cli;
+﻿pub mod giovanni;
+mod cli;
 mod commands;
+mod headless;
 #[cfg(feature = "devtools")]
 mod app_menu;
 mod platform;
@@ -14,6 +16,14 @@ use state::AppState;
 pub fn run() {
     let pending_action = cli::parse_pending_action();
 
+    // For single-file actions that need no user input, run directly and exit
+    // without starting the window. On failure, fall through so the UI handles it.
+    if let Some(ref action) = pending_action {
+        if headless::try_run_headless(action) {
+            return;
+        }
+    }
+
     let builder = tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .manage(Mutex::new(AppState { pending_action }))
@@ -22,6 +32,11 @@ pub fn run() {
             commands::get_pending_action,
             commands::register_context_menu,
             commands::unregister_context_menu,
+            commands::pdf_get_version,
+            commands::pdf_get_info,
+            commands::pdf_write,
+            commands::pdf_split,
+            commands::pdf_merge,
         ])
         .setup(|_app| {
             // Auto-register the OS context menu every startup so the path stays

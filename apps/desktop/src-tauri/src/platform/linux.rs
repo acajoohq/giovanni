@@ -56,7 +56,13 @@ pub fn register(app_exe: &str) -> Result<(), String> {
         .iter()
         .map(|(a, _)| kde_action_id(a))
         .collect();
-    let ui_ids: Vec<String> = super::UI_ACTIONS.iter().map(|(a, _)| kde_action_id(a)).collect();
+    // Avoid duplicate action IDs/sections in the .desktop file (compress/split exist in both groups).
+    let ui_only_actions: Vec<(&str, &str)> = super::UI_ACTIONS
+        .iter()
+        .copied()
+        .filter(|(a, _)| !super::HEADLESS_ACTIONS.iter().any(|(h, _)| h == a))
+        .collect();
+    let ui_ids: Vec<String> = ui_only_actions.iter().map(|(a, _)| kde_action_id(a)).collect();
     let all_ids: Vec<String> = headless_ids.iter().chain(ui_ids.iter()).cloned().collect();
 
     let mut desktop = format!(
@@ -87,7 +93,7 @@ pub fn register(app_exe: &str) -> Result<(), String> {
     // Separator between groups (KDE 5+)
     desktop.push_str("[Desktop Action Separator]\nName=\nX-KDE-Separator=true\n\n");
 
-    for (action, label) in super::UI_ACTIONS {
+    for (action, label) in &ui_only_actions {
         desktop.push_str(&format!(
             "[Desktop Action {}]\n\
              Name={}\n\

@@ -3,6 +3,14 @@ use winreg::RegKey;
 
 const BASE: &str = r"Software\Classes\SystemFileAssociations\.pdf\shell";
 
+fn delete_subkey_all_if_exists(hkcu: &RegKey, path: &str) -> Result<(), String> {
+    match hkcu.delete_subkey_all(path) {
+        Ok(()) => Ok(()),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
 fn register_group(
     hkcu: &RegKey,
     key_name: &str,
@@ -45,7 +53,7 @@ pub fn register(app_exe: &str) -> Result<(), String> {
     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
 
     // Remove legacy keys left over from earlier versions.
-    let _ = hkcu.delete_subkey_all(format!(r"{BASE}\Giovanni"));
+    delete_subkey_all_if_exists(&hkcu, &format!(r"{BASE}\Giovanni"))?;
 
     // Group 1 — instant headless actions (no window opens)
     register_group(&hkcu, "GiovanniQuick", "Use Giovanni", app_exe, super::HEADLESS_ACTIONS, false)?;
@@ -59,7 +67,7 @@ pub fn register(app_exe: &str) -> Result<(), String> {
 pub fn unregister() -> Result<(), String> {
     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
     for key_name in ["GiovanniQuick", "GiovanniOpen"] {
-        let _ = hkcu.delete_subkey_all(format!(r"{BASE}\{key_name}"));
+        delete_subkey_all_if_exists(&hkcu, &format!(r"{BASE}\{key_name}"))?;
     }
     Ok(())
 }

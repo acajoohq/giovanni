@@ -118,7 +118,7 @@ Vendor sync contract:
 
 ### C FFI (native)
 
-Produces `libgiovanni_native` (static by default) and a C header `giovanni_c.h`. No Docker needed.
+Produces `libgiovanni_native` (static by default) and a C header `giovanni_c.h`.
 
 #### Linux / macOS
 

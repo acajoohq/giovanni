@@ -33,8 +33,7 @@ export function useLandingSession(): UseLandingSessionResult {
     const [hasHydrated, setHasHydrated] = useState(false);
 
     const landingToolKey = getLandingToolKeyFromPathname(router, pathname, locale);
-    const isLandingSessionActive =
-        hasHydrated && !isMobile && landingToolKey !== null && (fromLanding || readLandingSessionPath() === pathname);
+    const isLandingSessionActive = hasHydrated && !isMobile && landingToolKey !== null && (fromLanding || readLandingSessionPath() === pathname);
 
     useEffect(() => {
         setHasHydrated(true);

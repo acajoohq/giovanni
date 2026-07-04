@@ -19,6 +19,7 @@ export const en = {
     },
     about: {
         tagline: "PDF tools \u00b7 offline & private",
+        githubLink: "View on GitHub",
         madeBy: "Made by",
         poweredBy: "Powered by <qpdf>qpdf</qpdf> compiled to WebAssembly. No files leave your browser.",
     },
@@ -274,5 +275,9 @@ export const en = {
             failedLoad: "Failed to load PDF.",
             failedReorganize: "Failed to reorganize PDF.",
         },
+    },
+    home: {
+        headline: "Do more with your files, privately.",
+        subhead: "Compress, convert, and organize PDFs right in your browser. Nothing is ever uploaded.",
     },
 } as const;

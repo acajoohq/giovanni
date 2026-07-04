@@ -21,6 +21,7 @@ export const fr: Translations = {
     },
     about: {
         tagline: "Outils PDF · hors ligne & privé",
+        githubLink: "Voir sur GitHub",
         madeBy: "Créé par",
         poweredBy: "Propulsé par <qpdf>qpdf</qpdf> compilé en WebAssembly. Aucun fichier ne quitte votre navigateur.",
     },
@@ -276,5 +277,9 @@ export const fr: Translations = {
             failedLoad: "Échec du chargement du PDF.",
             failedReorganize: "Échec de la réorganisation du PDF.",
         },
+    },
+    home: {
+        headline: "Faites plus avec vos fichiers, en privé.",
+        subhead: "Compressez, convertissez et organisez vos PDF dans votre navigateur. Rien n'est jamais envoyé.",
     },
 } as const;

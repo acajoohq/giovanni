@@ -5,34 +5,42 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { toolbarIconButtonClass } from "@/components/layout/ToolbarIconButton";
+import { DEFAULT_LOCALE } from "@/lib/features/locales/constants/locales.constants";
+import { localizePathname, resolveSupportedLocale } from "@/lib/features/locales/utils/locales.utils";
+import type { SupportedLocale } from "@/lib/features/locales/types/locales.types";
+import { isFromLandingLocation } from "@/utils/landingNavigation.utils";
+import { isStoredLandingSessionPath, storeLandingSessionPath } from "@/utils/landingSession.utils";
 
 const LANGUAGES = [
     { code: "en", label: "English" },
     { code: "fr", label: "Fran\u00e7ais" },
-] as const;
+] as const satisfies readonly { code: SupportedLocale; label: string }[];
 
 export function LanguageMenu() {
     const { t, i18n } = useTranslation();
-    const { locale = "en" } = useParams({ strict: false });
+    const { locale } = useParams({ strict: false });
     const navigate = useNavigate();
     const location = useRouterState({ select: (s) => s.location });
     const [open, setOpen] = useState(false);
+    const currentLocale = resolveSupportedLocale(locale) ?? resolveSupportedLocale(i18n.resolvedLanguage) ?? DEFAULT_LOCALE;
 
-    const switchLocale = (newLocale: string) => {
-        // Fire-and-forget: start the language change without awaiting so we don't
-        // trigger an intermediate re-render with the backdrop still visible.
-        // LocaleLayout's useEffect also keeps i18n in sync with the route param.
-        void i18n.changeLanguage(newLocale);
-        // Replace the current locale segment in the pathname with the new one
-        // e.g. /en/compress -> /fr/compress
-        const newPathname = location.pathname.replace(new RegExp(`^/${locale}(/|$)`), `/${newLocale}$1`);
+    const switchLocale = (newLocale: SupportedLocale) => {
+        const newPathname = localizePathname(location.pathname, newLocale);
+        const isLandingSession = isFromLandingLocation(location.state) || isStoredLandingSessionPath(location.pathname);
+
+        if (isLandingSession) {
+            storeLandingSessionPath(newPathname);
+        }
+
         // Close first so React batches this with navigate() in the same render pass,
         // avoiding the backdrop lingering over the new page.
         setOpen(false);
-        navigate({ to: newPathname + location.searchStr + location.hash, replace: true });
+        navigate({
+            to: newPathname + location.searchStr + location.hash,
+            replace: true,
+            state: isLandingSession ? { fromLanding: true } : undefined,
+        });
     };
-
-    const current = locale ?? i18n.resolvedLanguage ?? "en";
 
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -59,7 +67,7 @@ export function LanguageMenu() {
                             )}
                             onClick={() => switchLocale(code)}
                         >
-                            <RiCheckLine className={cn("size-3.5 shrink-0 sm:size-3", current.startsWith(code) ? "text-brand" : "opacity-0")} />
+                            <RiCheckLine className={cn("size-3.5 shrink-0 sm:size-3", currentLocale === code ? "text-brand" : "opacity-0")} />
                             {label}
                         </button>
                     ))}

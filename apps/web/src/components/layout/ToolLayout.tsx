@@ -1,6 +1,7 @@
-import { useCallback, useRef, useState, useSyncExternalStore, type DragEvent, type HTMLAttributes, type ReactNode } from "react";
+import { useRef, useState, type DragEvent, type HTMLAttributes, type ReactNode } from "react";
 import { RiUploadCloud2Line } from "@remixicon/react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/shadcn/Resizable";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface ToolLayoutProps {
     title: string;
@@ -58,7 +59,7 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
 
     if (isDesktop) {
         return (
-            <ResizablePanelGroup className="h-full w-full bg-app-bg text-app-text" direction="horizontal">
+            <ResizablePanelGroup className="landing-tool-view h-full w-full bg-app-bg text-app-text" direction="horizontal">
                 <ResizablePanel defaultSize={82} minSize="500px">
                     {workspace}
                 </ResizablePanel>
@@ -73,29 +74,13 @@ export function ToolLayout({ title, sidebar, children, onFiles, isMultiple }: To
     }
 
     return (
-        <div className="flex h-full w-full flex-col bg-app-bg text-app-text lg:hidden">
+        <div className="landing-tool-view flex h-full w-full flex-col bg-app-bg text-app-text lg:hidden">
             <div className="min-h-0 flex-1">{workspace}</div>
             <div className="max-h-[42vh] min-h-52 shrink-0 overflow-hidden border-t border-app-border">
                 <ToolSidebar sidebar={sidebar} title={title} />
             </div>
         </div>
     );
-}
-
-function useMediaQuery(query: string): boolean {
-    const subscribe = useCallback(
-        (onStoreChange: () => void) => {
-            const mediaQueryList = window.matchMedia(query);
-            mediaQueryList.addEventListener("change", onStoreChange);
-
-            return () => mediaQueryList.removeEventListener("change", onStoreChange);
-        },
-        [query],
-    );
-
-    const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query]);
-
-    return useSyncExternalStore(subscribe, getSnapshot, () => false);
 }
 
 interface ToolWorkspaceProps extends HTMLAttributes<HTMLDivElement> {

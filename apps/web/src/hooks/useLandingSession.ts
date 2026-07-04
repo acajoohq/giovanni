@@ -22,17 +22,17 @@ interface UseLandingSessionResult {
 export function useLandingSession(): UseLandingSessionResult {
     const router = useRouter();
     const { locale = "en" } = useParams({ strict: false });
-    const { fromLanding, pathname } = useRouterState({
+    const { fromLanding, pathname, isLandingIndex } = useRouterState({
         select: (state) => ({
             fromLanding: isFromLandingLocation(state.location.state),
             pathname: state.location.pathname,
+            isLandingIndex: state.matches.some((match) => match.routeId === "/$locale/"),
         }),
     });
     const isMobile = useMediaQuery("(max-width: 639px)");
     const [hasHydrated, setHasHydrated] = useState(false);
 
     const landingToolKey = getLandingToolKeyFromPathname(router, pathname, locale);
-    const isLandingIndex = pathname === router.buildLocation({ to: "/$locale", params: { locale } }).pathname;
     const isLandingSessionActive = hasHydrated && !isMobile && landingToolKey !== null && (fromLanding || readLandingSessionPath() === pathname);
 
     useEffect(() => {

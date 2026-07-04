@@ -54,6 +54,16 @@ pnpm validate
 
 `pnpm -F <pkg> <script>` — packages include `web`, `@giovanni/core`, `desktop`. See [pnpm-workspace.yaml](pnpm-workspace.yaml).
 
+## Releases
+
+Publishing to npm is automated with [Changesets](https://github.com/changesets/changesets) ([.github/workflows/release.yml](.github/workflows/release.yml)), scoped to **`@giovanni/core` only** — `@giovanni/pdf-render` and `@giovanni/react-native` are excluded via `.changeset/config.json`'s `ignore` list until they're ready to ship.
+
+1. On a PR that changes `@giovanni/core`, run `pnpm changeset` and describe the change + bump type (patch/minor/major). Commit the generated `.changeset/*.md` file.
+2. Merging to `master` makes the release workflow open/update a **"chore: version packages"** PR that bumps `@giovanni/core`'s version and changelog.
+3. Merging *that* PR triggers the workflow again, which builds (WASM included) and runs `changeset publish`.
+
+Requires an `NPM_TOKEN` repo secret (npm automation token with publish rights on the `@giovanni` scope).
+
 ## License
 
 [@giovanni/core](packages/core) is **Apache-2.0** ([LICENSE](packages/core/LICENSE)). **Repo:** [github.com/acajoohq/giovanni](https://github.com/acajoohq/giovanni)

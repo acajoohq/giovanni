@@ -90,6 +90,7 @@
         }
     },
     "publishConfig": {
+        "access": "public",
         "exports": {
             ".": {
                 "import": {

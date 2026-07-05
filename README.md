@@ -62,8 +62,6 @@ Publishing to npm is automated with [Changesets](https://github.com/changesets/c
 2. Merging to `master` makes the release workflow open/update a **"chore: version packages"** PR that bumps `@giovanni/core`'s version and changelog.
 3. Merging _that_ PR triggers the workflow again, which builds (WASM included) and runs `changeset publish`.
 
-Requires an `NPM_TOKEN` repo secret (npm automation token with publish rights on the `@giovanni` scope).
-
 ## License
 
 [@giovanni/core](packages/core) is **Apache-2.0** ([LICENSE](packages/core/LICENSE)). **Repo:** [github.com/acajoohq/giovanni](https://github.com/acajoohq/giovanni)

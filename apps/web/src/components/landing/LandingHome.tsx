@@ -22,7 +22,7 @@ export function LandingHome({ initialTool, startDocked = false }: LandingHomePro
 
     return (
         <>
-            <div className="h-full min-h-0 overflow-y-auto bg-app-bg sm:hidden">
+            <div className="h-full min-h-0 overflow-x-hidden overflow-y-auto bg-app-bg sm:hidden">
                 <LandingHero variant="static">
                     <HeroToolNav className="mt-9" />
                 </LandingHero>

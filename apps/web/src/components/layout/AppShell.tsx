@@ -75,7 +75,7 @@ export function AppShell() {
     );
 
     return (
-        <div className="flex h-dvh w-screen min-w-0 flex-col overflow-hidden bg-app-bg font-sans text-app-text">
+        <div className="flex h-dvh w-full min-w-0 flex-col overflow-hidden bg-app-bg font-sans text-app-text">
             <header
                 className={cn(
                     "app-toolbar z-20 shrink-0 bg-app-surface-raised/90 backdrop-blur-2xl supports-[backdrop-filter]:bg-app-surface-raised/75",

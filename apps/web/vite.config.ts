@@ -128,7 +128,14 @@ export default defineConfig(({ mode }) => {
             ssr: {
                 build: {
                     rollupOptions: {
-                        external: ["canvas", /\.node$/, "@acajoo/giovanni-pdf-render", "@acajoo/giovanni-pdf-render/pdfjs/browser", "@acajoo/giovanni-pdf-render/pdfjs-legacy/browser", "pdfjs-dist"],
+                        external: [
+                            "canvas",
+                            /\.node$/,
+                            "@acajoo/giovanni-pdf-render",
+                            "@acajoo/giovanni-pdf-render/pdfjs/browser",
+                            "@acajoo/giovanni-pdf-render/pdfjs-legacy/browser",
+                            "pdfjs-dist",
+                        ],
                     },
                 },
             },

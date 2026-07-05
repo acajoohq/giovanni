@@ -1,5 +1,5 @@
 /**
- * @giovanni/pdf-render - PDF.js-based page rasterisation to JPEG.
+ * @acajoo/giovanni-pdf-render - PDF.js-based page rasterisation to JPEG.
  */
 
 // pdf operations

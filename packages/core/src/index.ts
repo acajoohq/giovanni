@@ -1,5 +1,5 @@
 /**
- * @giovanni/core - qpdf WebAssembly API for local-first PDF workflows.
+ * @acajoo/giovanni-core - qpdf WebAssembly API for local-first PDF workflows.
  */
 
 // compression api

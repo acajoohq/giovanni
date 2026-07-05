@@ -21,7 +21,7 @@ export function getQpdfBinding(): QpdfBinding {
  *
  * @example
  * ```typescript
- * import { setQpdfBinding } from "@giovanni/core/bindings";
+ * import { setQpdfBinding } from "@acajoo/giovanni-core/bindings";
  * setQpdfBinding(myJsiQpdfBinding);
  * ```
  */
@@ -48,7 +48,7 @@ export function getGhostscriptBinding(): GhostscriptBinding {
  *
  * @example
  * ```typescript
- * import { setGhostscriptBinding } from "@giovanni/core/bindings";
+ * import { setGhostscriptBinding } from "@acajoo/giovanni-core/bindings";
  * setGhostscriptBinding(myJsiGhostscriptBinding);
  * ```
  */

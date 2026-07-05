@@ -1,5 +1,5 @@
-import { formatBytes } from "@giovanni/core";
-import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@giovanni/pdf-render";
+import { formatBytes } from "@acajoo/giovanni-core";
+import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@acajoo/giovanni-pdf-render";
 import { RiAddLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";

@@ -1,6 +1,6 @@
-import { compressPdf, formatBytes, type CompressionEngine, type CompressResult } from "@giovanni/core";
-import { QPDF_PRESETS, type DecodeLevel, type ObjectStreamMode, type QpdfOptimizePreset } from "@giovanni/core/qpdf";
-import { type GhostscriptColorConversionStrategy, type GhostscriptPdfSettings } from "@giovanni/core/ghostscript";
+import { compressPdf, formatBytes, type CompressionEngine, type CompressResult } from "@acajoo/giovanni-core";
+import { QPDF_PRESETS, type DecodeLevel, type ObjectStreamMode, type QpdfOptimizePreset } from "@acajoo/giovanni-core/qpdf";
+import { type GhostscriptColorConversionStrategy, type GhostscriptPdfSettings } from "@acajoo/giovanni-core/ghostscript";
 import { RiAddLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { useId, useRef, useState } from "react";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";

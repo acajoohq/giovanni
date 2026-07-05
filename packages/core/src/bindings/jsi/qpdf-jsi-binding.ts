@@ -24,8 +24,8 @@ function toUint8Array(ab: ArrayBuffer): Uint8Array {
  *
  * @example
  * ```typescript
- * import { setQpdfBinding } from "@giovanni/core/bindings";
- * import { qpdfJsiBinding } from "@giovanni/core/bindings/jsi";
+ * import { setQpdfBinding } from "@acajoo/giovanni-core/bindings";
+ * import { qpdfJsiBinding } from "@acajoo/giovanni-core/bindings/jsi";
  *
  * setQpdfBinding(qpdfJsiBinding);
  * ```

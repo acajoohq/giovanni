@@ -55,11 +55,11 @@ export interface NativeExtractedImage {
  *
  * Implement this interface to provide a binding for a specific runtime
  * (WASM, JSI, native Node addon, …). Register your implementation via
- * {@link setQpdfBinding} from `@giovanni/core/bindings`.
+ * {@link setQpdfBinding} from `@acajoo/giovanni-core/bindings`.
  *
  * @example
  * ```typescript
- * import { setQpdfBinding } from "@giovanni/core/bindings";
+ * import { setQpdfBinding } from "@acajoo/giovanni-core/bindings";
  * import { myJsiQpdfBinding } from "./my-jsi-binding";
  *
  * setQpdfBinding(myJsiQpdfBinding);

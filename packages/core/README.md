@@ -1,14 +1,14 @@
-﻿# @giovanni/core
+﻿# @acajoo/giovanni-core
 
-[qpdf](https://github.com/qpdf/qpdf) built for multiple runtimes — compress, split, merge, extract images, inspect, and organize PDFs across WebAssembly (browser and Node.js), native C FFI, and React Native JSI targets. Experimental **Ghostscript** support adds lossy image recompression. The root package is task-oriented; engine-specific APIs live under `@giovanni/core/qpdf` and `@giovanni/core/ghostscript`.
+[qpdf](https://github.com/qpdf/qpdf) built for multiple runtimes — compress, split, merge, extract images, inspect, and organize PDFs across WebAssembly (browser and Node.js), native C FFI, and React Native JSI targets. Experimental **Ghostscript** support adds lossy image recompression. The root package is task-oriented; engine-specific APIs live under `@acajoo/giovanni-core/qpdf` and `@acajoo/giovanni-core/ghostscript`.
 
-**PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@giovanni/pdf-render`**, not in this module.
+**PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@acajoo/giovanni-pdf-render`**, not in this module.
 
 ## Install
 
 ```bash
-pnpm add @giovanni/core
-# npm install @giovanni/core
+pnpm add @acajoo/giovanni-core
+# npm install @acajoo/giovanni-core
 ```
 
 Needs **Node 24+** for local dev ([`engines`](package.json)). Docker is the build toolchain for the vendored WASM engines. On Windows, use Docker Desktop with Linux containers enabled.
@@ -16,7 +16,7 @@ Needs **Node 24+** for local dev ([`engines`](package.json)). Docker is the buil
 ## Usage
 
 ```ts
-import { compressPdf, inspectPdf, splitPdf } from "@giovanni/core";
+import { compressPdf, inspectPdf, splitPdf } from "@acajoo/giovanni-core";
 
 const input = await fetch("document.pdf").then((r) => r.arrayBuffer());
 
@@ -33,9 +33,9 @@ const pages = await splitPdf(compressed.data);
 Engine-specific entrypoints are available via subpath imports:
 
 ```ts
-import { compressPdf } from "@giovanni/core";
-import { optimizePdf, QpdfDocument } from "@giovanni/core/qpdf";
-import { compressPdfWithGhostscript } from "@giovanni/core/ghostscript";
+import { compressPdf } from "@acajoo/giovanni-core";
+import { optimizePdf, QpdfDocument } from "@acajoo/giovanni-core/qpdf";
+import { compressPdfWithGhostscript } from "@acajoo/giovanni-core/ghostscript";
 
 const qpdfResult = await compressPdf(input, { engine: "qpdf", preset: "web" });
 
@@ -64,7 +64,7 @@ Omitted optimization options fall back to `OptimizeOptions` defaults. Notably **
 To render PDF pages to JPEG via PDF.js, use the sibling package:
 
 ```ts
-import { renderPdfPagesToJpg } from "@giovanni/pdf-render";
+import { renderPdfPagesToJpg } from "@acajoo/giovanni-pdf-render";
 ```
 
 ### Ghostscript
@@ -92,22 +92,22 @@ Requires **Docker Desktop** (Linux containers). Pinned source archives are fetch
 
 ```bash
 # Full build (WASM + bundle)
-pnpm --filter @giovanni/core build
+pnpm --filter @acajoo/giovanni-core build
 
 # WASM engines only (parallel)
-pnpm --filter @giovanni/core build:wasm
+pnpm --filter @acajoo/giovanni-core build:wasm
 
 # Individual engine builds
-pnpm --filter @giovanni/core build:qpdf:dev
-pnpm --filter @giovanni/core build:qpdf:prd
-pnpm --filter @giovanni/core build:ghostscript:dev
-pnpm --filter @giovanni/core build:ghostscript:prd
+pnpm --filter @acajoo/giovanni-core build:qpdf:dev
+pnpm --filter @acajoo/giovanni-core build:qpdf:prd
+pnpm --filter @acajoo/giovanni-core build:ghostscript:dev
+pnpm --filter @acajoo/giovanni-core build:ghostscript:prd
 ```
 
 If your Docker buildx driver supports local cache export, the build reuses a per-engine cache directory. Override the cache location with:
 
 ```bash
-GIOVANNI_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
+GIOVANNI_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @acajoo/giovanni-core build:wasm
 ```
 
 Vendor sync contract:
@@ -125,7 +125,7 @@ Produces `libgiovanni_native` (static by default) and a C header `giovanni_c.h`.
 Requires **Docker** (fetches qpdf source inside the container, same pipeline as WASM).
 
 ```bash
-pnpm --filter @giovanni/core build:native
+pnpm --filter @acajoo/giovanni-core build:native
 ```
 
 #### Windows
@@ -133,7 +133,7 @@ pnpm --filter @giovanni/core build:native
 Requires **Git**, **MSVC** (Visual Studio 2022 with the C++ Desktop workload), and **CMake** (bundled with VS). No manual dependency setup — on first run the script clones and bootstraps a project-local vcpkg under `.tmp/vcpkg` and uses it to fetch qpdf automatically.
 
 ```powershell
-pnpm --filter @giovanni/core build:native:win
+pnpm --filter @acajoo/giovanni-core build:native:win
 ```
 
 Subsequent runs skip the clone/bootstrap step; vcpkg caches installed packages between builds.
@@ -156,7 +156,7 @@ giovanni_qpdf_destroy(h);
 Usable from Python, Rust, Go, Swift, or any language with a C FFI. Build as a shared library instead of static:
 
 ```bash
-GIOVANNI_NATIVE_SHARED=1 pnpm --filter @giovanni/core build:native
+GIOVANNI_NATIVE_SHARED=1 pnpm --filter @acajoo/giovanni-core build:native
 ```
 
 ### React Native (JSI)
@@ -166,7 +166,7 @@ Produces `libgiovanni_jsi` (shared library) that registers a synchronous `giovan
 ```bash
 # Point to your ReactCommon directory (contains jsi/jsi.h)
 GIOVANNI_JSI_INCLUDE_DIR=/path/to/node_modules/react-native/ReactCommon \
-  pnpm --filter @giovanni/core build:jsi
+  pnpm --filter @acajoo/giovanni-core build:jsi
 ```
 
 Output lands in `build/jsi/`. If `GIOVANNI_JSI_INCLUDE_DIR` is not set, the build compiles a stub-only fallback without the JSI runtime dependency.
@@ -174,7 +174,7 @@ Output lands in `build/jsi/`. If `GIOVANNI_JSI_INCLUDE_DIR` is not set, the buil
 ### Build all native targets
 
 ```bash
-pnpm --filter @giovanni/core build:native:all
+pnpm --filter @acajoo/giovanni-core build:native:all
 ```
 
 ### Build environment variables
@@ -192,15 +192,15 @@ pnpm --filter @giovanni/core build:native:all
 ## Development
 
 ```bash
-pnpm --filter @giovanni/core test
-pnpm --filter @giovanni/core validate
-pnpm --filter @giovanni/core package:check
+pnpm --filter @acajoo/giovanni-core test
+pnpm --filter @acajoo/giovanni-core validate
+pnpm --filter @acajoo/giovanni-core package:check
 ```
 
 Smoke test the Ghostscript WASM artifact end to end:
 
 ```bash
-pnpm --filter @giovanni/core smoke:ghostscript \
+pnpm --filter @acajoo/giovanni-core smoke:ghostscript \
   src/test/fixtures/pdfs/upstream/pdfium/rectangles.pdf \
   .tmp/ghostscript-smoke-rectangles.pdf \
   screen

@@ -1,5 +1,5 @@
-import type { CompressOptions } from "@giovanni/core";
-import type { GhostscriptPdfSettings } from "@giovanni/core/ghostscript";
+import type { CompressOptions } from "@acajoo/giovanni-core";
+import type { GhostscriptPdfSettings } from "@acajoo/giovanni-core/ghostscript";
 import { GHOSTSCRIPT_ENGINE_PRESETS, SIMPLE_COMPRESSION_PRESETS } from "../constants/compressTool.constants";
 import type { CompressionJobSettings, GhostscriptSettings, SimpleCompressionPreset } from "../types/compressTool.types";
 

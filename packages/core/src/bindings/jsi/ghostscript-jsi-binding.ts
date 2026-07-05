@@ -25,8 +25,8 @@ function toArrayBuffer(data: Uint8Array): ArrayBuffer {
  *
  * @example
  * ```typescript
- * import { setGhostscriptBinding } from "@giovanni/core/bindings";
- * import { ghostscriptJsiBinding } from "@giovanni/core/bindings/jsi";
+ * import { setGhostscriptBinding } from "@acajoo/giovanni-core/bindings";
+ * import { ghostscriptJsiBinding } from "@acajoo/giovanni-core/bindings/jsi";
  *
  * setGhostscriptBinding(ghostscriptJsiBinding);
  * ```

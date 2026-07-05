@@ -1,6 +1,6 @@
 # Web
 
-Web is the static-first React frontend for the PDF tools app. It uses TanStack Start, TanStack Router, Vite, Tailwind CSS, and the local `@giovanni/core` package.
+Web is the static-first React frontend for the PDF tools app. It uses TanStack Start, TanStack Router, Vite, Tailwind CSS, and the local `@acajoo/giovanni-core` package.
 
 ## Routes
 
@@ -55,7 +55,7 @@ Keep the interface dense and tool-like:
 
 `PdfPreview` is SSR-safe. Browser-only pdf.js setup, worker configuration, canvas rendering, `window`, `document`, and `ResizeObserver` live behind client-only imports so prerender does not evaluate pdf.js.
 
-Preview uses `@giovanni/pdf-render/pdfjs/browser`, which selects the standard or polyfill pdf.js build at runtime. See [`packages/pdf-render/README.md`](../../packages/pdf-render/README.md).
+Preview uses `@acajoo/giovanni-pdf-render/pdfjs/browser`, which selects the standard or polyfill pdf.js build at runtime. See [`packages/pdf-render/README.md`](../../packages/pdf-render/README.md).
 
 ## Validation
 

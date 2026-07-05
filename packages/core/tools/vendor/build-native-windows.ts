@@ -6,7 +6,7 @@
  * Produces build/native/giovanni_native.lib + giovanni_c.h.
  *
  * Usage:
- *   pnpm --filter @giovanni/core build:native:win [dev|prd]
+ *   pnpm --filter @acajoo/giovanni-core build:native:win [dev|prd]
  *
  * Prerequisites:
  *   - git   (to clone vcpkg on first run if not already present)

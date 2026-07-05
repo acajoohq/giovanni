@@ -17,8 +17,8 @@
         "check": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run format:check",
         "validate": "turbo validate",
         "changeset": "changeset",
-        "version-packages": "changeset version && pnpm install --no-frozen-lockfile",
-        "release": "pnpm run build && changeset publish"
+        "version-packages": "changeset version && pnpm install --no-frozen-lockfile --lockfile-only",
+        "release": "pnpm run build && pnpm --filter @giovanni/core package:check && pnpm --filter @giovanni/core test && changeset publish"
     },
     "devDependencies": {
         "@changesets/changelog-github": "^0.7.0",

@@ -1,6 +1,7 @@
 {
     "name": "@acajoo/giovanni-react-native",
     "version": "0.1.0",
+    "private": true,
     "description": "React Native TurboModule that wires @acajoo/giovanni-core to the native JSI giovanni engine",
     "keywords": [
         "jsi",

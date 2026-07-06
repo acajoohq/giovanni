@@ -10,4 +10,3 @@ export default defineConfig({
         exclude: ["@acajoo/giovanni-core", "@acajoo/giovanni-core/qpdf", "@acajoo/giovanni-core/ghostscript"],
     },
 });
-

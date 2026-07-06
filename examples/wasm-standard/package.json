@@ -1,18 +1,18 @@
 {
-  "name": "@example/wasm-standard",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "typescript": "~6.0.2",
-    "vite": "^8.1.1"
-  },
-  "dependencies": {
-    "@acajoo/giovanni-core": "^0.1.0"
-  }
+    "name": "@example/wasm-standard",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@acajoo/giovanni-core": "^0.1.0"
+    },
+    "devDependencies": {
+        "typescript": "~6.0.2",
+        "vite": "^8.1.1"
+    }
 }

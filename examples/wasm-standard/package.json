@@ -9,7 +9,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@acajoo/giovanni-core": "^0.1.0"
+        "@acajoo/giovanni-core": "workspace:*"
     },
     "devDependencies": {
         "typescript": "~6.0.2",

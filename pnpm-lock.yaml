@@ -170,8 +170,8 @@ importers:
   examples/wasm-standard:
     dependencies:
       '@acajoo/giovanni-core':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: workspace:*
+        version: link:../../packages/core
     devDependencies:
       typescript:
         specifier: ~6.0.2
@@ -260,10 +260,6 @@ importers:
         version: 0.85.3(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.5)
 
 packages:
-
-  '@acajoo/giovanni-core@0.1.0':
-    resolution: {integrity: sha512-OVGx5tWnikeKtnqGz5fRHM5lUsMPqlB8RAYE5MHsffGDzz+K4ZkTKjXh4ws430o1ePa7Kn4BUqUsVT9T51Nb7w==}
-    engines: {node: '>=24.0.0'}
 
   '@andrewbranch/untar.js@1.0.3':
     resolution: {integrity: sha512-Jh15/qVmrLGhkKJBdXlK1+9tY4lZruYjsgkDFj08ZmDiWVBLJcqkok7Z0/R0In+i1rScBpJlSvrTS2Lm41Pbnw==}
@@ -5258,8 +5254,6 @@ packages:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
 snapshots:
-
-  '@acajoo/giovanni-core@0.1.0': {}
 
   '@andrewbranch/untar.js@1.0.3': {}
 

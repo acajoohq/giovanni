@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <DirectoryRef Id="TARGETDIR">
+      <Component Id="GiovanniContextMenuCleanup" Guid="*">
+        <RegistryKey
+          Root="HKCU"
+          Key="Software\Classes\SystemFileAssociations\.pdf\shell\GiovanniQuick"
+          Action="createAndRemoveOnUninstall"
+        >
+          <RegistryValue Type="integer" Name="ContextMenuCleanupMarker" Value="1" KeyPath="yes" />
+        </RegistryKey>
+
+        <RemoveRegistryKey
+          Root="HKCU"
+          Key="Software\Classes\SystemFileAssociations\.pdf\shell\GiovanniQuick"
+          Action="removeOnUninstall"
+        />
+        <RemoveRegistryKey
+          Root="HKCU"
+          Key="Software\Classes\SystemFileAssociations\.pdf\shell\GiovanniOpen"
+          Action="removeOnUninstall"
+        />
+        <RemoveRegistryKey
+          Root="HKCU"
+          Key="Software\Classes\SystemFileAssociations\.pdf\shell\Giovanni"
+          Action="removeOnUninstall"
+        />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

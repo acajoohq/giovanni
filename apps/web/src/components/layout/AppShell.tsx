@@ -14,6 +14,7 @@ import { useTauriStartup } from "@/hooks/useTauriStartup";
 import { useIsDesktopMacOS } from "@/lib/desktop/hooks/useIsDesktopMacOS";
 import { cn } from "@/lib/utils";
 import { getLandingToolRoute } from "@/utils/landingNavigation.utils";
+import { GiovanniIcon } from "../theme/GiovanniIcon";
 
 const NAV_LINK_CLASS =
     "shrink-0 rounded-[5px] px-3 py-1 text-[12px] font-medium tracking-[-0.01em] text-app-text-subtle transition-[color,background-color,box-shadow] hover:text-app-text [&.active]:bg-app-control [&.active]:text-app-text";
@@ -68,7 +69,7 @@ export function AppShell() {
             onClick={clearLandingSession}
         >
             <div className="flex size-[1.375rem] shrink-0 p-1 items-center justify-center rounded-[5px] bg-brand/12 ring-1 ring-brand/20">
-                <img src="./favicon.svg" alt="Giovanni Logo" />
+                <GiovanniIcon />
             </div>
             <span className="text-[13px] font-semibold leading-none tracking-[-0.02em] text-app-text">Giovanni</span>
         </Link>

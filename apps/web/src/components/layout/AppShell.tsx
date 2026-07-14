@@ -67,8 +67,8 @@ export function AppShell() {
             to="/$locale"
             onClick={clearLandingSession}
         >
-            <div className="flex size-[1.375rem] shrink-0 items-center justify-center rounded-[5px] bg-brand/12 ring-1 ring-brand/20">
-                <RiFilePdfLine className="size-3 text-brand" />
+            <div className="flex size-[1.375rem] shrink-0 p-1 items-center justify-center rounded-[5px] bg-brand/12 ring-1 ring-brand/20">
+                <img src="./favicon.svg" alt="Giovanni Logo" />
             </div>
             <span className="text-[13px] font-semibold leading-none tracking-[-0.02em] text-app-text">Giovanni</span>
         </Link>

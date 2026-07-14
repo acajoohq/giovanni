@@ -37,27 +37,13 @@ export function GiovanniIcon({ className }: { className?: string }) {
                 strokeWidth="0.1"
             />
             <defs>
-                <radialGradient
-                    id={paint0}
-                    cx="0"
-                    cy="0"
-                    r="1"
-                    gradientUnits="userSpaceOnUse"
-                    gradientTransform="translate(33.5505 18.6012) rotate(135) scale(4.41598 5.245)"
-                >
+                <radialGradient id={paint0} cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(33.5505 18.6012) rotate(135) scale(4.41598 5.245)">
                     <stop stopColor="#EB5A3F" stopOpacity="0.01" />
                     <stop offset="0.3" stopColor="#EB5A3F" stopOpacity="0.015" />
                     <stop offset="0.6" stopColor="#EB5A3F" stopOpacity="0.01" />
                     <stop offset="1" stopColor="#EB5A3F" stopOpacity="0" />
                 </radialGradient>
-                <radialGradient
-                    id={paint1}
-                    cx="0"
-                    cy="0"
-                    r="1"
-                    gradientUnits="userSpaceOnUse"
-                    gradientTransform="translate(28.1829 16.8366) rotate(135) scale(8.49227 10.0865)"
-                >
+                <radialGradient id={paint1} cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(28.1829 16.8366) rotate(135) scale(8.49227 10.0865)">
                     <stop stopColor="#EB5A3F" stopOpacity="0.054" />
                     <stop offset="0.7" stopColor="#EB5A3F" stopOpacity="0.04" />
                     <stop offset="1" stopColor="#F0F0FF" stopOpacity="0" />

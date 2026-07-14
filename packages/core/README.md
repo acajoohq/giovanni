@@ -187,7 +187,7 @@ pnpm --filter @giovanni/core build:native:all
 | `GIOVANNI_NATIVE_JOBS`       | native / JSI       | Parallel CMake build jobs                                      |
 | `VCPKG_ROOT`                 | `build:native:win` | Use an existing standalone vcpkg instead of the auto-bootstrap |
 | `GIOVANNI_VCPKG_TRIPLET`     | `build:native:win` | Override vcpkg triplet (default: `x64-windows-static`)         |
-| `GIOVANNI_CMAKE_GENERATOR`   | `build:native:win` | Override CMake generator (default: `Visual Studio 17 2022`)    |
+| `GIOVANNI_CMAKE_GENERATOR`   | `build:native:win` | Override CMake generator (default: auto-detected by VS install) |
 
 ## Development
 

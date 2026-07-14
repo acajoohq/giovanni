@@ -1,4 +1,4 @@
-import { formatBytes } from "@giovanni/core";
+import { formatBytes } from "@acajoo/giovanni-core";
 import { RiArrowDownSLine, RiArrowUpSLine, RiCloseLine, RiFilePdf2Line } from "@remixicon/react";
 import { Button } from "@/components/ui/shadcn/Button";
 

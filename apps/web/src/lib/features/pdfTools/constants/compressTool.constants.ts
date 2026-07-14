@@ -1,6 +1,6 @@
-import type { CompressOptions } from "@giovanni/core";
-import { GHOSTSCRIPT_PRESETS, type GhostscriptCompatibilityLevel, type GhostscriptPdfSettings } from "@giovanni/core/ghostscript";
-import { QPDF_PRESETS, type QpdfOptimizePreset } from "@giovanni/core/qpdf";
+import type { CompressOptions } from "@acajoo/giovanni-core";
+import { GHOSTSCRIPT_PRESETS, type GhostscriptCompatibilityLevel, type GhostscriptPdfSettings } from "@acajoo/giovanni-core/ghostscript";
+import { QPDF_PRESETS, type QpdfOptimizePreset } from "@acajoo/giovanni-core/qpdf";
 import type { CompressionUiMode, GhostscriptSettings, QpdfSettings, SimpleCompressionPreset } from "../types/compressTool.types";
 
 export const COMPRESSION_UI_MODES = ["simple", "advanced"] as const satisfies readonly CompressionUiMode[];

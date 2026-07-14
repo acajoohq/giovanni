@@ -1,6 +1,7 @@
 {
-    "name": "@giovanni/pdf-render",
+    "name": "@acajoo/giovanni-pdf-render",
     "version": "0.1.0",
+    "private": true,
     "description": "PDF.js-based page rasterisation to JPEG (browser and Node with optional canvas)",
     "keywords": [
         "jpg",

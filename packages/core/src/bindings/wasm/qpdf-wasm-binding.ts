@@ -49,6 +49,21 @@ async function getDocumentInfo(data: Uint8Array, password?: string): Promise<Nat
                 isLinearized: instance.isLinearized(),
             };
 
+            // Some damaged/object-stream-heavy PDFs can under-report page count via
+            // QPDFWrapper#getNumPages while splitPages still discovers all pages.
+            // Reconcile using the larger count to keep inspect/open metadata aligned
+            // with page-level operations.
+            try {
+                if (typeof module.splitPages === "function") {
+                    const discoveredPageCount = module.splitPages(data).length;
+                    if (discoveredPageCount > info.numPages) {
+                        info.numPages = discoveredPageCount;
+                    }
+                }
+            } catch {
+                // Keep wrapper-derived metadata when split page probing fails.
+            }
+
             const title = typeof instance.getTitle === "function" ? instance.getTitle() : "";
             if (title) info.title = title;
 

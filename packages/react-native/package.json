@@ -1,7 +1,8 @@
 {
-    "name": "@giovanni/react-native",
+    "name": "@acajoo/giovanni-react-native",
     "version": "0.1.0",
-    "description": "React Native TurboModule that wires @giovanni/core to the native JSI giovanni engine",
+    "private": true,
+    "description": "React Native TurboModule that wires @acajoo/giovanni-core to the native JSI giovanni engine",
     "keywords": [
         "jsi",
         "pdf",
@@ -21,7 +22,7 @@
         ".": "./src/index.ts"
     },
     "dependencies": {
-        "@giovanni/core": "workspace:*"
+        "@acajoo/giovanni-core": "workspace:*"
     },
     "peerDependencies": {
         "react-native": ">=0.73.0"

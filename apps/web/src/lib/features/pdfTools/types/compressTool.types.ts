@@ -1,6 +1,6 @@
-import type { CompressionEngine } from "@giovanni/core";
-import type { GhostscriptCompressOptions, GhostscriptPdfSettings } from "@giovanni/core/ghostscript";
-import type { QpdfOptimizePreset, WriteOptions } from "@giovanni/core/qpdf";
+import type { CompressionEngine } from "@acajoo/giovanni-core";
+import type { GhostscriptCompressOptions, GhostscriptPdfSettings } from "@acajoo/giovanni-core/ghostscript";
+import type { QpdfOptimizePreset, WriteOptions } from "@acajoo/giovanni-core/qpdf";
 
 export type GhostscriptSettings = { preset: GhostscriptPdfSettings } & Required<
     Pick<GhostscriptCompressOptions, "compatibilityLevel" | "colorConversionStrategy" | "downsampleColorImages" | "downsampleGrayImages">

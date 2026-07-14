@@ -1,5 +1,5 @@
 /**
- * @giovanni/react-native
+ * @acajoo/giovanni-react-native
  *
  * Call `setupGiovanni()` once at app startup (e.g. in index.js before the app
  * renders) to swap the default WASM bindings for the native JSI bindings.
@@ -11,7 +11,7 @@
  * @example
  * ```typescript
  * // index.js
- * import { setupGiovanni } from "@giovanni/react-native";
+ * import { setupGiovanni } from "@acajoo/giovanni-react-native";
  * setupGiovanni();
  *
  * import { AppRegistry } from "react-native";
@@ -20,8 +20,8 @@
  * ```
  */
 
-import { setQpdfBinding, setGhostscriptBinding } from "@giovanni/core/bindings";
-import { qpdfJsiBinding, ghostscriptJsiBinding } from "@giovanni/core/bindings/jsi";
+import { setQpdfBinding, setGhostscriptBinding } from "@acajoo/giovanni-core/bindings";
+import { qpdfJsiBinding, ghostscriptJsiBinding } from "@acajoo/giovanni-core/bindings/jsi";
 
 export function setupGiovanni(): void {
     setQpdfBinding(qpdfJsiBinding);

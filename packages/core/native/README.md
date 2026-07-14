@@ -99,10 +99,10 @@ Use the package scripts from the repo root — they handle dependency resolution
 
 ```bash
 # Linux / macOS (Docker-based, same pipeline as WASM)
-pnpm --filter @giovanni/core build:native
+pnpm --filter @acajoo/giovanni-core build:native
 
 # Windows (vcpkg + MSVC, no Docker)
-pnpm --filter @giovanni/core build:native:win
+pnpm --filter @acajoo/giovanni-core build:native:win
 ```
 
 Both produce `build/native/libgiovanni_native.a` (Linux/macOS) or `build/native/giovanni_native.lib` (Windows) alongside `giovanni_c.h`.
@@ -210,9 +210,9 @@ Keep tweaks explicit and narrow.
 Example:
 
 ```bash
-GIOVANNI_QPDF_JOBS=2 pnpm --filter @giovanni/core build:qpdf:prd
-GIOVANNI_GHOSTSCRIPT_JOBS=4 pnpm --filter @giovanni/core build:ghostscript:prd
-GIOVANNI_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @giovanni/core build:wasm
+GIOVANNI_QPDF_JOBS=2 pnpm --filter @acajoo/giovanni-core build:qpdf:prd
+GIOVANNI_GHOSTSCRIPT_JOBS=4 pnpm --filter @acajoo/giovanni-core build:ghostscript:prd
+GIOVANNI_DOCKER_CACHE_ROOT=.tmp/docker-buildx-cache pnpm --filter @acajoo/giovanni-core build:wasm
 ```
 
 ## Build behavior

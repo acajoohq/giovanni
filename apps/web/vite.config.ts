@@ -108,7 +108,7 @@ export default defineConfig(({ mode }) => {
             babel({ presets: [reactCompilerPreset()] }),
         ],
         optimizeDeps: {
-            exclude: ["@giovanni/pdf-render/pdfjs/browser", "@giovanni/pdf-render/pdfjs-legacy/browser"],
+            exclude: ["@acajoo/giovanni-pdf-render/pdfjs/browser", "@acajoo/giovanni-pdf-render/pdfjs-legacy/browser"],
         },
         resolve: {
             alias: {
@@ -123,12 +123,19 @@ export default defineConfig(({ mode }) => {
             "import.meta.env.VITE_GIT_COMMIT": JSON.stringify(gitCommit),
         },
         environments: {
-            // `canvas` and `.node` binaries are pulled in by `@giovanni/core` (noExternal by TanStack Start) but can't be bundled by Rolldown.
+            // `canvas` and `.node` binaries are pulled in by `@acajoo/giovanni-core` (noExternal by TanStack Start) but can't be bundled by Rolldown.
             // `pdfjs-dist` uses DOM/Canvas APIs unavailable in Node.js — loading it during prerender crashes the SSR process.
             ssr: {
                 build: {
                     rollupOptions: {
-                        external: ["canvas", /\.node$/, "@giovanni/pdf-render", "@giovanni/pdf-render/pdfjs/browser", "@giovanni/pdf-render/pdfjs-legacy/browser", "pdfjs-dist"],
+                        external: [
+                            "canvas",
+                            /\.node$/,
+                            "@acajoo/giovanni-pdf-render",
+                            "@acajoo/giovanni-pdf-render/pdfjs/browser",
+                            "@acajoo/giovanni-pdf-render/pdfjs-legacy/browser",
+                            "pdfjs-dist",
+                        ],
                     },
                 },
             },

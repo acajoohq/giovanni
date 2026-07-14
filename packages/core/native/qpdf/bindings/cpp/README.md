@@ -118,7 +118,7 @@ int main() {
 
 ## Relationship to the TypeScript API
 
-This library mirrors `QpdfBinding` from `@giovanni/core/bindings`:
+This library mirrors `QpdfBinding` from `@acajoo/giovanni-core/bindings`:
 
 | TypeScript (`QpdfBinding`)           | C++ (`giovanni::`)                  |
 | ------------------------------------ | ----------------------------------- |

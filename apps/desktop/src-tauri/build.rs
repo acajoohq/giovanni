@@ -20,9 +20,9 @@ fn main() {
 
     if !lib_file.exists() {
         #[cfg(windows)]
-        let build_cmd = "pnpm --filter @giovanni/core build:native:win";
+        let build_cmd = "pnpm --filter @acajoo/giovanni-core build:native:win";
         #[cfg(not(windows))]
-        let build_cmd = "pnpm --filter @giovanni/core build:native";
+        let build_cmd = "pnpm --filter @acajoo/giovanni-core build:native";
 
         panic!(
             "Native library not found: {}\nBuild it first:\n  {}",

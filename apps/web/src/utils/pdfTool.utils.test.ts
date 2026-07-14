@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { ExtractedImage } from "@giovanni/core";
-import type { PdfPageJpg } from "@giovanni/pdf-render";
+import type { ExtractedImage } from "@acajoo/giovanni-core";
+import type { PdfPageJpg } from "@acajoo/giovanni-pdf-render";
 import {
     buildExtractedImageEntries,
     buildJpgPageEntries,

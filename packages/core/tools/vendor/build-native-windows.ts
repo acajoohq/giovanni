@@ -16,7 +16,7 @@
  * Optional env vars:
  *   VCPKG_ROOT              — use an existing standalone vcpkg instead of bootstrapping
  *   GIOVANNI_VCPKG_TRIPLET  — override triplet (default: x64-windows-static)
- *   GIOVANNI_CMAKE_GENERATOR — override generator (default: Visual Studio 17 2022)
+ *   GIOVANNI_CMAKE_GENERATOR — override generator (default: auto-detected)
  *   GIOVANNI_NATIVE_JOBS    — cmake --parallel value
  */
 
@@ -100,6 +100,14 @@ function findCmake(): string {
     return "cmake";
 }
 
+function defaultGeneratorForCmake(cmakePath: string): string {
+    const normalized = cmakePath.replace(/\\/g, "/");
+    if (normalized.includes("/Microsoft Visual Studio/18/")) {
+        return "Visual Studio 18 2026";
+    }
+    return "Visual Studio 17 2022";
+}
+
 // ---------------------------------------------------------------------------
 // vcpkg bootstrap
 // ---------------------------------------------------------------------------
@@ -157,7 +165,7 @@ async function main(): Promise<void> {
 
     const buildType = modeArg === "prd" ? "Release" : "Debug";
     const cmake = findCmake();
-    const generator = process.env.GIOVANNI_CMAKE_GENERATOR ?? "Visual Studio 17 2022";
+    const generator = process.env.GIOVANNI_CMAKE_GENERATOR ?? defaultGeneratorForCmake(cmake);
     const jobs = process.env.GIOVANNI_NATIVE_JOBS ?? "";
 
     // ── 1. Ensure vcpkg ────────────────────────────────────────────────────

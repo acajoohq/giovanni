@@ -25,6 +25,58 @@ env:
     SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 jobs:
+    changeset-guard:
+        name: Changeset Guard
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                  ref: ${{ env.SOURCE_SHA }}
+
+            - name: Validate changeset presence for releasable changes
+              shell: bash
+              run: |
+                  set -euo pipefail
+
+                  # Skip the auto-generated release PR because it intentionally
+                  # consumes and removes changeset files.
+                  if [ "${{ github.event.pull_request.head.ref }}" = "changeset-release/master" ]; then
+                      echo "Skipping changeset guard for changeset-release/master"
+                      exit 0
+                  fi
+
+                  git fetch --no-tags --depth=1 origin "${{ github.event.pull_request.base.ref }}"
+                  BASE="origin/${{ github.event.pull_request.base.ref }}"
+                  HEAD="${{ env.SOURCE_SHA }}"
+
+                  changed_files="$(git diff --name-only "$BASE...$HEAD")"
+
+                  if [ -z "$changed_files" ]; then
+                      echo "No changed files detected"
+                      exit 0
+                  fi
+
+                  has_changeset="false"
+                  if printf '%s\n' "$changed_files" | grep -Eq '^\.changeset/.+\.md$'; then
+                      has_changeset="true"
+                  fi
+
+                  release_impacting="false"
+                  if printf '%s\n' "$changed_files" | grep -Eq '^(packages/core/|apps/web/|examples/wasm-standard/)'; then
+                      release_impacting="true"
+                  fi
+
+                  if [ "$release_impacting" = "true" ] && [ "$has_changeset" != "true" ]; then
+                      echo "Release-impacting files changed without a .changeset/*.md entry"
+                      echo "Run: pnpm changeset"
+                      exit 1
+                  fi
+
+                  echo "Changeset guard passed"
+
     checks:
         name: ${{ matrix.check.name }}
         runs-on: ubuntu-latest

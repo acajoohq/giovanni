@@ -37,45 +37,39 @@ jobs:
                   ref: ${{ env.SOURCE_SHA }}
 
             - name: Validate changeset presence for releasable changes
-              shell: bash
-              run: |
-                  set -euo pipefail
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const headRef = context.payload.pull_request?.head?.ref;
+                      if (headRef === "changeset-release/master") {
+                        core.info("Skipping changeset guard for changeset-release/master");
+                        return;
+                      }
 
-                  # Skip the auto-generated release PR because it intentionally
-                  # consumes and removes changeset files.
-                  if [ "${{ github.event.pull_request.head.ref }}" = "changeset-release/master" ]; then
-                      echo "Skipping changeset guard for changeset-release/master"
-                      exit 0
-                  fi
+                      const files = await github.paginate(github.rest.pulls.listFiles, {
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        pull_number: context.payload.pull_request.number,
+                        per_page: 100,
+                      });
 
-                  git fetch --no-tags --depth=1 origin "${{ github.event.pull_request.base.ref }}"
-                  BASE="origin/${{ github.event.pull_request.base.ref }}"
-                  HEAD="${{ env.SOURCE_SHA }}"
+                      const changedFiles = files.map((file) => file.filename);
+                      if (changedFiles.length === 0) {
+                        core.info("No changed files detected");
+                        return;
+                      }
 
-                  changed_files="$(git diff --name-only "$BASE...$HEAD")"
+                      const hasChangeset = changedFiles.some((name) => /^\.changeset\/.+\.md$/.test(name));
+                      const hasReleaseImpact = changedFiles.some((name) =>
+                        /^(packages\/core\/|apps\/web\/|examples\/wasm-standard\/)/.test(name),
+                      );
 
-                  if [ -z "$changed_files" ]; then
-                      echo "No changed files detected"
-                      exit 0
-                  fi
+                      core.info(`Changed files: ${changedFiles.length}`);
+                      core.info(`hasChangeset=${hasChangeset} hasReleaseImpact=${hasReleaseImpact}`);
 
-                  has_changeset="false"
-                  if printf '%s\n' "$changed_files" | grep -Eq '^\.changeset/.+\.md$'; then
-                      has_changeset="true"
-                  fi
-
-                  release_impacting="false"
-                  if printf '%s\n' "$changed_files" | grep -Eq '^(packages/core/|apps/web/|examples/wasm-standard/)'; then
-                      release_impacting="true"
-                  fi
-
-                  if [ "$release_impacting" = "true" ] && [ "$has_changeset" != "true" ]; then
-                      echo "Release-impacting files changed without a .changeset/*.md entry"
-                      echo "Run: pnpm changeset"
-                      exit 1
-                  fi
-
-                  echo "Changeset guard passed"
+                      if (hasReleaseImpact && !hasChangeset) {
+                        core.setFailed("Release-impacting files changed without a .changeset/*.md entry. Run: pnpm changeset");
+                      }
 
     checks:
         name: ${{ matrix.check.name }}

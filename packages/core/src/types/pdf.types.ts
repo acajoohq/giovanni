@@ -39,6 +39,34 @@ export interface OrganizeOptions extends OpenDocumentOptions {
     pages: number[];
 }
 
+export type WatermarkPlacement = "overlay" | "underlay";
+
+/**
+ * Options for watermarking a PDF with another PDF page.
+ */
+export interface WatermarkOptions extends OpenDocumentOptions {
+    /**
+     * Watermark/stamp PDF bytes. The first page is used as the watermark source.
+     */
+    watermark: PdfInput;
+
+    /**
+     * Whether to place the watermark above or below page content.
+     * Defaults to "overlay".
+     */
+    placement?: WatermarkPlacement;
+
+    /**
+     * Zero-based destination page indices to watermark. If omitted, all pages are watermarked.
+     */
+    pages?: number[];
+
+    /**
+     * Password for encrypted watermark PDFs.
+     */
+    watermarkPassword?: string;
+}
+
 /**
  * Options for inspecting a PDF.
  */
@@ -130,4 +158,24 @@ export interface MergeResult extends PdfData {
      * Number of PDFs that were merged
      */
     sourceCount: number;
+}
+
+/**
+ * Result of a PDF watermark operation.
+ */
+export interface WatermarkResult extends PdfData {
+    /**
+     * Total page count in the output PDF.
+     */
+    pageCount: number;
+
+    /**
+     * Number of pages that received a watermark.
+     */
+    watermarkedPageCount: number;
+
+    /**
+     * Placement mode used for watermarking.
+     */
+    placement: WatermarkPlacement;
 }

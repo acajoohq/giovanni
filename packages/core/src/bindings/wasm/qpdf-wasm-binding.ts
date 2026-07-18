@@ -1,6 +1,6 @@
-import { QpdfCompressionError, QpdfImageExtractionError, QpdfInitError, QpdfMergeError, QpdfSplitError, QpdfValidationError } from "../../errors/index.js";
+import { QpdfCompressionError, QpdfImageExtractionError, QpdfInitError, QpdfMergeError, QpdfSplitError, QpdfValidationError, QpdfWatermarkError } from "../../errors/index.js";
 import { initQpdfModule } from "../../engines/qpdf/module-loader.js";
-import type { NativeDocumentInfo, NativeExtractedImage, NativeWriteOptions, QpdfBinding } from "../qpdf-binding.interface.js";
+import type { NativeDocumentInfo, NativeExtractedImage, NativeWatermarkOptions, NativeWriteOptions, QpdfBinding } from "../qpdf-binding.interface.js";
 
 async function writePdf(data: Uint8Array, options: NativeWriteOptions, password?: string): Promise<Uint8Array> {
     try {
@@ -99,6 +99,30 @@ async function extractImages(data: Uint8Array): Promise<NativeExtractedImage[]> 
     return module.extractImages(data);
 }
 
+async function watermarkPdf(
+    data: Uint8Array,
+    watermark: Uint8Array,
+    options: NativeWatermarkOptions,
+    password?: string,
+    watermarkPassword?: string,
+): Promise<Uint8Array> {
+    try {
+        const module = await initQpdfModule();
+        if (typeof module.watermarkPdf !== "function") {
+            throw new QpdfWatermarkError("Failed to initialize PDF watermarking: qpdf module is missing the watermarkPdf export. Ensure qpdf.js and qpdf.wasm are up to date.");
+        }
+        return module.watermarkPdf(data, watermark, options, password ?? "", watermarkPassword ?? "").slice();
+    } catch (error) {
+        if (error instanceof QpdfValidationError || error instanceof QpdfInitError || error instanceof QpdfWatermarkError) {
+            throw error;
+        }
+        if (error instanceof TypeError) {
+            throw new QpdfValidationError(error.message, { cause: error, code: "invalid_input" });
+        }
+        throw new QpdfWatermarkError("Failed to apply PDF watermark", { cause: error });
+    }
+}
+
 export const qpdfWasmBinding: QpdfBinding = {
     async init(): Promise<void> {
         await initQpdfModule();
@@ -114,4 +138,5 @@ export const qpdfWasmBinding: QpdfBinding = {
     mergePdfs,
     getDocumentInfo,
     extractImages,
+    watermarkPdf,
 };

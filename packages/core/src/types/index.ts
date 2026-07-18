@@ -15,6 +15,9 @@ export type {
     PixelColorModel,
     SplitOptions,
     SplitResult,
+    WatermarkOptions,
+    WatermarkPlacement,
+    WatermarkResult,
 } from "./pdf.types.js";
 export type {
     DecodeLevel,
@@ -39,4 +42,5 @@ export type {
     WasmPixelColorModel,
     WasmQPDFWrapper,
     WasmQPDFWriter,
+    WasmWatermarkOptions,
 } from "./wasm.types.js";

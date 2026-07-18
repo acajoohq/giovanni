@@ -12,6 +12,11 @@ export interface NativeWriteOptions {
     linearize: boolean;
 }
 
+export interface NativeWatermarkOptions {
+    underlay: boolean;
+    pages: number[];
+}
+
 /**
  * Document metadata returned by the native binding.
  */
@@ -115,4 +120,21 @@ export interface QpdfBinding {
      * @param data - Input PDF bytes
      */
     extractImages(data: Uint8Array): Promise<NativeExtractedImage[]>;
+
+    /**
+     * Apply a watermark page from another PDF onto selected pages.
+     *
+     * @param data - Input PDF bytes
+     * @param watermark - Watermark PDF bytes (first page is used)
+     * @param options - Normalized watermark options
+     * @param password - Optional password for encrypted input PDFs
+     * @param watermarkPassword - Optional password for encrypted watermark PDFs
+     */
+    watermarkPdf(
+        data: Uint8Array,
+        watermark: Uint8Array,
+        options: NativeWatermarkOptions,
+        password?: string,
+        watermarkPassword?: string,
+    ): Promise<Uint8Array>;
 }

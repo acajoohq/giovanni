@@ -1,5 +1,5 @@
-import type { NativeDocumentInfo, NativeExtractedImage, NativeWriteOptions, QpdfBinding } from "../qpdf-binding.interface.js";
-import { QpdfInitError } from "../../errors/index.js";
+import type { NativeDocumentInfo, NativeExtractedImage, NativeWatermarkOptions, NativeWriteOptions, QpdfBinding } from "../qpdf-binding.interface.js";
+import { QpdfInitError, QpdfWatermarkError } from "../../errors/index.js";
 
 function getGlobal(): NonNullable<typeof globalThis.giovanni> {
     if (!globalThis.giovanni) {
@@ -65,5 +65,20 @@ export const qpdfJsiBinding: QpdfBinding = {
             ...img,
             bytes: toUint8Array(img.bytes),
         }));
+    },
+
+    async watermarkPdf(
+        data: Uint8Array,
+        watermark: Uint8Array,
+        options: NativeWatermarkOptions,
+        password?: string,
+        watermarkPassword?: string,
+    ): Promise<Uint8Array> {
+        const giovanni = getGlobal();
+        if (typeof giovanni.watermarkPdf !== "function") {
+            throw new QpdfWatermarkError("giovanni JSI module does not expose watermarkPdf. Update the native bridge to a build that supports watermarking.");
+        }
+        const result = giovanni.watermarkPdf(toArrayBuffer(data), toArrayBuffer(watermark), options, password, watermarkPassword);
+        return toUint8Array(result);
     },
 };

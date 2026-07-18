@@ -57,6 +57,7 @@ jobs:
                       const releaseImpactPrefixes = [
                         "packages/core/",
                         "apps/web/",
+                        "apps/desktop/",
                         "examples/wasm-standard/",
                       ];
 

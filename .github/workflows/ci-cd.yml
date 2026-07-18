@@ -59,9 +59,17 @@ jobs:
                         return;
                       }
 
-                      const hasChangeset = changedFiles.some((name) => /^\.changeset\/.+\.md$/.test(name));
+                      const releaseImpactPrefixes = [
+                        "packages/core/",
+                        "apps/web/",
+                        "examples/wasm-standard/",
+                      ];
+
+                      const hasChangeset = changedFiles.some(
+                        (name) => name.startsWith(".changeset/") && name.endsWith(".md"),
+                      );
                       const hasReleaseImpact = changedFiles.some((name) =>
-                        /^(packages\/core\/|apps\/web\/|examples\/wasm-standard\/)/.test(name),
+                        releaseImpactPrefixes.some((prefix) => name.startsWith(prefix)),
                       );
 
                       core.info(`Changed files: ${changedFiles.length}`);

@@ -25,9 +25,60 @@ env:
     SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 jobs:
+    changeset-guard:
+        name: Changeset Guard
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Validate changeset presence for releasable changes
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const headRef = context.payload.pull_request?.head?.ref;
+                      if (headRef === "changeset-release/master") {
+                        core.info("Skipping changeset guard for changeset-release/master");
+                        return;
+                      }
+
+                      const files = await github.paginate(github.rest.pulls.listFiles, {
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        pull_number: context.payload.pull_request.number,
+                        per_page: 100,
+                      });
+
+                      const changedFiles = files.map((file) => file.filename);
+                      if (changedFiles.length === 0) {
+                        core.info("No changed files detected");
+                        return;
+                      }
+
+                      const releaseImpactPrefixes = [
+                        "packages/core/",
+                        "apps/web/",
+                        "apps/desktop/",
+                        "examples/wasm-standard/",
+                      ];
+
+                      const hasChangeset = changedFiles.some(
+                        (name) => name.startsWith(".changeset/") && name.endsWith(".md"),
+                      );
+                      const hasReleaseImpact = changedFiles.some((name) =>
+                        releaseImpactPrefixes.some((prefix) => name.startsWith(prefix)),
+                      );
+
+                      core.info(`Changed files: ${changedFiles.length}`);
+                      core.info(`hasChangeset=${hasChangeset} hasReleaseImpact=${hasReleaseImpact}`);
+
+                      if (hasReleaseImpact && !hasChangeset) {
+                        core.setFailed("Release-impacting files changed without a .changeset/*.md entry. Run: pnpm changeset");
+                      }
+
     checks:
         name: ${{ matrix.check.name }}
         runs-on: ubuntu-latest
+        needs: changeset-guard
 
         strategy:
             fail-fast: false

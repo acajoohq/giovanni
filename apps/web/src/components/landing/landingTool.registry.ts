@@ -5,6 +5,7 @@ import { MergeTool } from "@/components/pdf/tools/MergeTool";
 import { OrganizeTool } from "@/components/pdf/tools/organize/OrganizeTool";
 import { PdfToJpgTool } from "@/components/pdf/tools/PdfToJpgTool";
 import { SplitTool } from "@/components/pdf/tools/SplitTool";
+import { WatermarkTool } from "@/components/pdf/tools/WatermarkTool";
 import type { LandingToolKey } from "@/types/landingTool.types";
 
 export const LANDING_TOOL_COMPONENTS = {
@@ -12,6 +13,7 @@ export const LANDING_TOOL_COMPONENTS = {
     split: SplitTool,
     merge: MergeTool,
     organize: OrganizeTool,
+    watermark: WatermarkTool,
     extractImages: ExtractImagesTool,
     pdfToJpg: PdfToJpgTool,
 } satisfies Record<LandingToolKey, ComponentType>;

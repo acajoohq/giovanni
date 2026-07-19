@@ -81,6 +81,10 @@ export interface QpdfWasmModule {
     QPDFWrapper: new () => WasmQPDFWrapper;
     QPDF?: new () => WasmQPDFWrapper;
     QPDFWriter: new (qpdf: WasmQPDFWrapper) => WasmQPDFWriter;
+    VectorInt?: new () => {
+        push_back(value: number): void;
+        delete?(): void;
+    };
 }
 
 /**

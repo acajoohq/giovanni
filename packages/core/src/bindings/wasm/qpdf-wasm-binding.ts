@@ -111,7 +111,44 @@ async function watermarkPdf(
         if (typeof module.watermarkPdf !== "function") {
             throw new QpdfWatermarkError("Failed to initialize PDF watermarking: qpdf module is missing the watermarkPdf export. Ensure qpdf.js and qpdf.wasm are up to date.");
         }
-        return module.watermarkPdf(data, watermark, options, password ?? "", watermarkPassword ?? "").slice();
+
+        const pageIndexes = options.pages.map((page) => {
+            if (!Number.isInteger(page)) {
+                throw new QpdfValidationError(`Invalid page index ${page}: expected an integer`, { code: "invalid_input" });
+            }
+            return page;
+        });
+
+        let vectorPages: { push_back(value: number): void; delete?(): void } | null = null;
+        let marshaledOptions: { underlay: boolean; pages: unknown } = {
+            underlay: options.underlay,
+            pages: pageIndexes,
+        };
+
+        if (typeof module.VectorInt === "function") {
+            vectorPages = new module.VectorInt();
+            for (const page of pageIndexes) {
+                vectorPages.push_back(page);
+            }
+            marshaledOptions = {
+                underlay: options.underlay,
+                pages: vectorPages,
+            };
+        }
+
+        const invokeWatermark = module.watermarkPdf as (
+            data: Uint8Array,
+            watermark: Uint8Array,
+            options: { underlay: boolean; pages: unknown },
+            password?: string,
+            watermarkPassword?: string,
+        ) => Uint8Array;
+
+        try {
+            return invokeWatermark(data, watermark, marshaledOptions, password ?? "", watermarkPassword ?? "").slice();
+        } finally {
+            vectorPages?.delete?.();
+        }
     } catch (error) {
         if (error instanceof QpdfValidationError || error instanceof QpdfInitError || error instanceof QpdfWatermarkError) {
             throw error;

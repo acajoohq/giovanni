@@ -1,5 +1,5 @@
 import { Dialog } from "@base-ui/react/dialog";
-import { RiCloseLine, RiFileZipLine, RiImage2Line, RiImageLine, RiMoreFill, RiScissorsCutLine, RiSortAsc, RiStackLine } from "@remixicon/react";
+import { RiCloseLine, RiFileZipLine, RiImage2Line, RiImageLine, RiInkBottleLine, RiMoreFill, RiScissorsCutLine, RiSortAsc, RiStackLine } from "@remixicon/react";
 import { Link, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ const BOTTOM_TAB_ITEMS = [
 ] as const;
 
 const MORE_ITEMS = [
+    { key: "watermark", icon: RiInkBottleLine, to: "/$locale/watermark" as const },
     { key: "extractImages", icon: RiImageLine, to: "/$locale/extract-images" as const },
     { key: "pdfToJpg", icon: RiImage2Line, to: "/$locale/pdf-to-jpg" as const },
 ] as const;

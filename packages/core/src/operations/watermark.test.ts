@@ -4,9 +4,8 @@ import { watermarkPdf } from "./watermark.js";
 
 const mockBinding = {
     getDocumentInfo: vi.fn<(data: Uint8Array, password?: string) => Promise<{ numPages: number }>>(),
-    watermarkPdf: vi.fn<
-        (data: Uint8Array, watermark: Uint8Array, options: { underlay: boolean; pages: number[] }, password?: string, watermarkPassword?: string) => Promise<Uint8Array>
-    >(),
+    watermarkPdf:
+        vi.fn<(data: Uint8Array, watermark: Uint8Array, options: { underlay: boolean; pages: number[] }, password?: string, watermarkPassword?: string) => Promise<Uint8Array>>(),
 };
 
 vi.mock("../bindings/index.js", () => ({

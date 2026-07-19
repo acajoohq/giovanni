@@ -7,7 +7,18 @@ import { ToolLayout } from "@/components/layout/ToolLayout";
 import { ResultTray } from "@/components/pdf/ResultTray";
 import { PdfPreview } from "@/components/pdf/PdfPreview";
 import { Button } from "@/components/ui/shadcn/Button";
-import { Sidebar, SidebarContent, SidebarField, SidebarHeader, SidebarInput, SidebarReadonlyValue, SidebarSection, SidebarSelect, SidebarToggle, SidebarToggleGroup } from "@/components/sidebar";
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarField,
+    SidebarHeader,
+    SidebarInput,
+    SidebarReadonlyValue,
+    SidebarSection,
+    SidebarSelect,
+    SidebarToggle,
+    SidebarToggleGroup,
+} from "@/components/sidebar";
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";
@@ -125,10 +136,7 @@ export function WatermarkTool() {
         await runJob({
             execute: async () => {
                 const sourceBuffer = await sourceFile.arrayBuffer();
-                const watermarkBuffer =
-                    watermarkSourceMode === "custom" && watermarkFile
-                        ? await watermarkFile.arrayBuffer()
-                        : createDefaultWatermarkPdf(defaultWatermarkText);
+                const watermarkBuffer = watermarkSourceMode === "custom" && watermarkFile ? await watermarkFile.arrayBuffer() : createDefaultWatermarkPdf(defaultWatermarkText);
 
                 return watermarkPdf(sourceBuffer, {
                     watermark: watermarkBuffer,
@@ -254,11 +262,7 @@ export function WatermarkTool() {
 
     const centerContent = sourceFile ? (
         <div className="relative h-full w-full">
-            <BeforeAfterView
-                after={result ? <PdfPreview data={result.data} /> : undefined}
-                before={<PdfPreview file={sourceFile} />}
-                isProcessing={isWorking}
-            />
+            <BeforeAfterView after={result ? <PdfPreview data={result.data} /> : undefined} before={<PdfPreview file={sourceFile} />} isProcessing={isWorking} />
             <ResultTray
                 fileName={sourceFile.name}
                 fileSize={formatBytes(sourceFile.size)}
@@ -284,11 +288,7 @@ export function WatermarkTool() {
             fileInputId={sourceInputId}
             onFiles={handleSourceFiles}
             title={t("watermark.emptyTitle")}
-            visual={
-                <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-app-border bg-app-panel text-[11px] text-app-text-subtle">
-                    PDF
-                </div>
-            }
+            visual={<div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-app-border bg-app-panel text-[11px] text-app-text-subtle">PDF</div>}
         />
     );
 

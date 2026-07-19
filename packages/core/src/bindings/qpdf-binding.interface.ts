@@ -130,11 +130,5 @@ export interface QpdfBinding {
      * @param password - Optional password for encrypted input PDFs
      * @param watermarkPassword - Optional password for encrypted watermark PDFs
      */
-    watermarkPdf(
-        data: Uint8Array,
-        watermark: Uint8Array,
-        options: NativeWatermarkOptions,
-        password?: string,
-        watermarkPassword?: string,
-    ): Promise<Uint8Array>;
+    watermarkPdf(data: Uint8Array, watermark: Uint8Array, options: NativeWatermarkOptions, password?: string, watermarkPassword?: string): Promise<Uint8Array>;
 }

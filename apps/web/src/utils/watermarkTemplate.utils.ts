@@ -39,17 +39,7 @@ function buildPdf(objects: string[]): Uint8Array {
  */
 export function createDefaultWatermarkPdf(text: string): Uint8Array {
     const safeText = sanitizePdfText(text);
-    const content = [
-        "q",
-        "0.7071 0.7071 -0.7071 0.7071 250 190 cm",
-        "BT",
-        "/F1 64 Tf",
-        "0.85 g",
-        `(${safeText}) Tj`,
-        "ET",
-        "Q",
-        "",
-    ].join("\n");
+    const content = ["q", "0.7071 0.7071 -0.7071 0.7071 250 190 cm", "BT", "/F1 64 Tf", "0.85 g", `(${safeText}) Tj`, "ET", "Q", ""].join("\n");
 
     const contentLength = new TextEncoder().encode(content).length;
 

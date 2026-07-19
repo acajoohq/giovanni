@@ -99,13 +99,7 @@ async function extractImages(data: Uint8Array): Promise<NativeExtractedImage[]> 
     return module.extractImages(data);
 }
 
-async function watermarkPdf(
-    data: Uint8Array,
-    watermark: Uint8Array,
-    options: NativeWatermarkOptions,
-    password?: string,
-    watermarkPassword?: string,
-): Promise<Uint8Array> {
+async function watermarkPdf(data: Uint8Array, watermark: Uint8Array, options: NativeWatermarkOptions, password?: string, watermarkPassword?: string): Promise<Uint8Array> {
     try {
         const module = await initQpdfModule();
         if (typeof module.watermarkPdf !== "function") {

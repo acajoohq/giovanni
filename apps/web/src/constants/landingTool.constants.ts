@@ -11,6 +11,14 @@ export const LANDING_TOOL_ACTION = {
     pdfToJpg: "pdf-to-jpg",
 } as const satisfies Record<string, ToolAction>;
 
-export const LANDING_TOOL_KEYS = ["compress", "split", "merge", "organize", "watermark", "extractImages", "pdfToJpg"] as const satisfies readonly (keyof typeof LANDING_TOOL_ACTION)[];
+export const LANDING_TOOL_KEYS = [
+    "compress",
+    "split",
+    "merge",
+    "organize",
+    "watermark",
+    "extractImages",
+    "pdfToJpg",
+] as const satisfies readonly (keyof typeof LANDING_TOOL_ACTION)[];
 
 export const DEFAULT_LANDING_TOOL = "compress" satisfies (typeof LANDING_TOOL_KEYS)[number];

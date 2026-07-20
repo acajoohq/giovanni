@@ -296,7 +296,7 @@ export const en = {
         },
         source: {
             default: "Default",
-            custom: "Custom PDF",
+            custom: "Custom file",
         },
         pageTarget: {
             all: "All pages",
@@ -323,7 +323,7 @@ export const en = {
         },
         status: {
             selectSource: "Please select a source PDF first.",
-            selectWatermark: "Please select a watermark PDF.",
+            selectWatermark: "Please select a watermark file (PDF, PNG, or JPEG).",
             invalidPages: "Invalid page selection.",
             failedInspect: "Failed to read source PDF page count.",
             applying: "Applying watermark...",

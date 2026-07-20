@@ -22,8 +22,13 @@ import {
 import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";
-import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, pdfBaseName } from "@/utils/pdfTool.utils";
-import { createDefaultWatermarkPdf, DEFAULT_WATERMARK_TEXT } from "@/utils/watermarkTemplate.utils";
+import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, isPdfFile, pdfBaseName } from "@/utils/pdfTool.utils";
+import {
+    createDefaultWatermarkPdf,
+    createImageWatermarkPdf,
+    DEFAULT_WATERMARK_TEXT,
+    isImageWatermarkFile,
+} from "@/utils/watermarkTemplate.utils";
 
 type WatermarkSourceMode = "default" | "custom";
 type WatermarkPageTargetMode = "all" | "first" | "last" | "odd" | "even" | "single";
@@ -70,9 +75,9 @@ export function WatermarkTool() {
     usePendingFileHandler(handleSourceFiles);
 
     const handleWatermarkFiles = (files: File[]) => {
-        const nextFile = findFirstPdfFile(files);
+        const nextFile = files.find((file) => isPdfFile(file) || isImageWatermarkFile(file)) ?? null;
         if (!nextFile) {
-            setStatus({ tone: "error", message: t("common.selectPdf") });
+            setStatus({ tone: "error", message: t("watermark.status.selectWatermark") });
             return;
         }
 
@@ -136,7 +141,12 @@ export function WatermarkTool() {
         await runJob({
             execute: async () => {
                 const sourceBuffer = await sourceFile.arrayBuffer();
-                const watermarkBuffer = watermarkSourceMode === "custom" && watermarkFile ? await watermarkFile.arrayBuffer() : createDefaultWatermarkPdf(defaultWatermarkText);
+                const watermarkBuffer =
+                    watermarkSourceMode === "custom" && watermarkFile
+                        ? isPdfFile(watermarkFile)
+                            ? new Uint8Array(await watermarkFile.arrayBuffer())
+                            : await createImageWatermarkPdf(watermarkFile)
+                        : createDefaultWatermarkPdf(defaultWatermarkText);
 
                 return watermarkPdf(sourceBuffer, {
                     watermark: watermarkBuffer,
@@ -308,7 +318,7 @@ export function WatermarkTool() {
             <input
                 ref={watermarkInputRef}
                 hidden
-                accept="application/pdf,.pdf"
+                accept="application/pdf,.pdf,image/png,.png,image/jpeg,.jpg,.jpeg"
                 type="file"
                 onChange={(event) => {
                     handleWatermarkFiles(Array.from(event.currentTarget.files ?? []));

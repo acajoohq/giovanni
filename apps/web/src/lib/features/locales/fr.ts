@@ -298,7 +298,7 @@ export const fr: Translations = {
         },
         source: {
             default: "Par défaut",
-            custom: "PDF personnalisé",
+            custom: "Fichier personnalisé",
         },
         pageTarget: {
             all: "Toutes les pages",
@@ -325,7 +325,7 @@ export const fr: Translations = {
         },
         status: {
             selectSource: "Veuillez d'abord sélectionner un PDF source.",
-            selectWatermark: "Veuillez sélectionner un PDF de filigrane.",
+            selectWatermark: "Veuillez sélectionner un fichier de filigrane (PDF, PNG ou JPEG).",
             invalidPages: "Sélection de pages invalide.",
             failedInspect: "Impossible de lire le nombre de pages du PDF source.",
             applying: "Application du filigrane...",

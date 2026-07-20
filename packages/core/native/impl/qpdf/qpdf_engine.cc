@@ -112,6 +112,33 @@ static std::string resolvePixelColorModel(int components) {
     }
 }
 
+static QPDFObjectHandle ensurePageResourcesDictionary(QPDFPageObjectHelper& page) {
+    QPDFObjectHandle resources = page.getAttribute("/Resources", true);
+    if (resources.isDictionary()) {
+        return resources;
+    }
+
+    QPDFObjectHandle newResources = QPDFObjectHandle::newDictionary();
+    page.getObjectHandle().replaceKey("/Resources", newResources);
+    return newResources;
+}
+
+static QPDFObjectHandle ensureMutableXObjectDictionary(QPDFObjectHandle& resources) {
+    QPDFObjectHandle xObjects = resources.getKey("/XObject");
+    if (!xObjects.isDictionary()) {
+        xObjects = QPDFObjectHandle::newDictionary();
+        resources.replaceKey("/XObject", xObjects);
+        return xObjects;
+    }
+
+    if (xObjects.isIndirect()) {
+        xObjects = xObjects.shallowCopy();
+        resources.replaceKey("/XObject", xObjects);
+    }
+
+    return xObjects;
+}
+
 // ---------------------------------------------------------------------------
 // QpdfEngine::getVersion
 // ---------------------------------------------------------------------------
@@ -304,10 +331,10 @@ std::vector<uint8_t> QpdfEngine::watermarkPdf(
             }
 
             QPDFPageObjectHelper& destinationPage = destinationPages.at(static_cast<size_t>(targetPageIndex));
-            int watermarkPageIndex = static_cast<int>(i % watermarkPages.size());
+            int watermarkPageIndex = 0;
             QPDFObjectHandle stampFo = getCopiedFormXObject(watermarkPageIndex);
 
-            QPDFObjectHandle resources = destinationPage.getAttribute("/Resources", true);
+            QPDFObjectHandle resources = ensurePageResourcesDictionary(destinationPage);
             int minSuffix = 1;
             std::string resourceName = resources.getUniqueResourceName("/Fx", minSuffix);
 
@@ -317,11 +344,7 @@ std::vector<uint8_t> QpdfEngine::watermarkPdf(
                 continue;
             }
 
-            QPDFObjectHandle xObjects = resources.getKey("/XObject");
-            if (!xObjects.isDictionary()) {
-                xObjects = QPDFObjectHandle::newDictionary();
-                resources.replaceKey("/XObject", xObjects);
-            }
+            QPDFObjectHandle xObjects = ensureMutableXObjectDictionary(resources);
             xObjects.replaceKey(resourceName, stampFo);
 
             std::string isolatedPlacement = std::string("q\n") + placement + "\nQ\n";

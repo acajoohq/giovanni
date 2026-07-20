@@ -4,6 +4,9 @@ const PDF_CATALOG_OBJECT = "<< /Type /Catalog /Pages 2 0 R >>";
 const PDF_SINGLE_PAGE_TREE_OBJECT = "<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
 const PDF_DEFAULT_WATERMARK_PAGE_OBJECT = "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>";
 const PDF_HELVETICA_BOLD_FONT_OBJECT = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>";
+const PDF_CONTENT_TERMINATOR = "";
+const DEFAULT_TEXT_WATERMARK_PREFIX = ["q", "0.7071 0.7071 -0.7071 0.7071 250 190 cm", "BT", "/F1 64 Tf", "0.85 g"];
+const DEFAULT_TEXT_WATERMARK_SUFFIX = ["ET", "Q", PDF_CONTENT_TERMINATOR];
 
 type PdfObject = {
     dictionary: string;
@@ -55,6 +58,18 @@ function encodeAscii(text: string): Uint8Array {
     return new TextEncoder().encode(text);
 }
 
+function encodeContentLines(lines: string[]): Uint8Array {
+    return encodeAscii(lines.join("\n"));
+}
+
+function createImageDrawContentLines(width: number, height: number): string[] {
+    return ["q", `${width} 0 0 ${height} 0 0 cm`, "/Im0 Do", "Q", PDF_CONTENT_TERMINATOR];
+}
+
+function createDefaultTextWatermarkContentLines(safeText: string): string[] {
+    return [...DEFAULT_TEXT_WATERMARK_PREFIX, `(${safeText}) Tj`, ...DEFAULT_TEXT_WATERMARK_SUFFIX];
+}
+
 function buildPdf(objects: PdfObject[]): Uint8Array {
     const objectBytes: Uint8Array[] = [];
     const objectOffsets: number[] = [0];
@@ -96,8 +111,7 @@ function buildPdf(objects: PdfObject[]): Uint8Array {
 }
 
 function encodeJpegToPdf(jpegBytes: Uint8Array, width: number, height: number): Uint8Array {
-    const content = [`q`, `${width} 0 0 ${height} 0 0 cm`, `/Im0 Do`, `Q`, ``].join("\n");
-    const contentBytes = encodeAscii(content);
+    const contentBytes = encodeContentLines(createImageDrawContentLines(width, height));
 
     const objects: PdfObject[] = [
         { dictionary: PDF_CATALOG_OBJECT },
@@ -177,9 +191,7 @@ async function readJpegMetadata(file: File): Promise<{ data: Uint8Array; width: 
  */
 export function createDefaultWatermarkPdf(text: string): Uint8Array {
     const safeText = sanitizePdfText(text);
-    const content = ["q", "0.7071 0.7071 -0.7071 0.7071 250 190 cm", "BT", "/F1 64 Tf", "0.85 g", `(${safeText}) Tj`, "ET", "Q", ""].join("\n");
-
-    const contentBytes = encodeAscii(content);
+    const contentBytes = encodeContentLines(createDefaultTextWatermarkContentLines(safeText));
 
     const objects: PdfObject[] = [
         { dictionary: PDF_CATALOG_OBJECT },

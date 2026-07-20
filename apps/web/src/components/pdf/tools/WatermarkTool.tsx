@@ -23,12 +23,7 @@ import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";
 import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, isPdfFile, pdfBaseName } from "@/utils/pdfTool.utils";
-import {
-    createDefaultWatermarkPdf,
-    createImageWatermarkPdf,
-    DEFAULT_WATERMARK_TEXT,
-    isImageWatermarkFile,
-} from "@/utils/watermarkTemplate.utils";
+import { createDefaultWatermarkPdf, createImageWatermarkPdf, DEFAULT_WATERMARK_TEXT, isImageWatermarkFile } from "@/utils/watermarkTemplate.utils";
 
 type WatermarkSourceMode = "default" | "custom";
 type WatermarkPageTargetMode = "all" | "first" | "last" | "odd" | "even" | "single";

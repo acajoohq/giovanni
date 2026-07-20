@@ -1,9 +1,34 @@
 const DEFAULT_WATERMARK_TEXT = "CONFIDENTIAL";
+const PDF_HEADER = "%PDF-1.4\n%----\n";
+const PDF_CATALOG_OBJECT = "<< /Type /Catalog /Pages 2 0 R >>";
+const PDF_SINGLE_PAGE_TREE_OBJECT = "<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
+const PDF_DEFAULT_WATERMARK_PAGE_OBJECT = "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>";
+const PDF_HELVETICA_BOLD_FONT_OBJECT = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>";
 
 type PdfObject = {
     dictionary: string;
     stream?: Uint8Array;
 };
+
+function createStreamObject(stream: Uint8Array): PdfObject {
+    return {
+        dictionary: `<< /Length ${stream.length} >>`,
+        stream,
+    };
+}
+
+function createImagePageObject(width: number, height: number): PdfObject {
+    return {
+        dictionary: `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`,
+    };
+}
+
+function createJpegImageObject(jpegBytes: Uint8Array, width: number, height: number): PdfObject {
+    return {
+        dictionary: `<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>`,
+        stream: jpegBytes,
+    };
+}
 
 function sanitizePdfText(text: string): string {
     const normalized = text.trim().replace(/\s+/g, " ");
@@ -34,7 +59,7 @@ function buildPdf(objects: PdfObject[]): Uint8Array {
     const objectBytes: Uint8Array[] = [];
     const objectOffsets: number[] = [0];
 
-    let currentOffset = encodeAscii("%PDF-1.4\n%----\n").length;
+    let currentOffset = encodeAscii(PDF_HEADER).length;
 
     for (let index = 0; index < objects.length; index += 1) {
         const objectNumber = index + 1;
@@ -67,7 +92,7 @@ function buildPdf(objects: PdfObject[]): Uint8Array {
         "%%EOF\n",
     ];
 
-    return concatBytes([encodeAscii("%PDF-1.4\n%----\n"), ...objectBytes, encodeAscii(xrefLines.join(""))]);
+    return concatBytes([encodeAscii(PDF_HEADER), ...objectBytes, encodeAscii(xrefLines.join(""))]);
 }
 
 function encodeJpegToPdf(jpegBytes: Uint8Array, width: number, height: number): Uint8Array {
@@ -75,14 +100,11 @@ function encodeJpegToPdf(jpegBytes: Uint8Array, width: number, height: number): 
     const contentBytes = encodeAscii(content);
 
     const objects: PdfObject[] = [
-        { dictionary: "<< /Type /Catalog /Pages 2 0 R >>" },
-        { dictionary: "<< /Type /Pages /Kids [3 0 R] /Count 1 >>" },
-        { dictionary: `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>` },
-        {
-            dictionary: `<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>`,
-            stream: jpegBytes,
-        },
-        { dictionary: `<< /Length ${contentBytes.length} >>`, stream: contentBytes },
+        { dictionary: PDF_CATALOG_OBJECT },
+        { dictionary: PDF_SINGLE_PAGE_TREE_OBJECT },
+        createImagePageObject(width, height),
+        createJpegImageObject(jpegBytes, width, height),
+        createStreamObject(contentBytes),
     ];
 
     return buildPdf(objects);
@@ -160,11 +182,11 @@ export function createDefaultWatermarkPdf(text: string): Uint8Array {
     const contentBytes = encodeAscii(content);
 
     const objects: PdfObject[] = [
-        { dictionary: "<< /Type /Catalog /Pages 2 0 R >>" },
-        { dictionary: "<< /Type /Pages /Kids [3 0 R] /Count 1 >>" },
-        { dictionary: "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>" },
-        { dictionary: "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>" },
-        { dictionary: `<< /Length ${contentBytes.length} >>`, stream: contentBytes },
+        { dictionary: PDF_CATALOG_OBJECT },
+        { dictionary: PDF_SINGLE_PAGE_TREE_OBJECT },
+        { dictionary: PDF_DEFAULT_WATERMARK_PAGE_OBJECT },
+        { dictionary: PDF_HELVETICA_BOLD_FONT_OBJECT },
+        createStreamObject(contentBytes),
     ];
 
     return buildPdf(objects);

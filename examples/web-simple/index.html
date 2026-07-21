@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>web-simple</title>
+  </head>
+  <body>
+    <main class="shell" id="app">
+      <header class="title-block">
+        <p class="eyebrow">@acajoo/giovanni-core</p>
+        <h1>PDF Compression Demo</h1>
+        <p class="subtitle">Drop a PDF to run local qpdf compression in the browser.</p>
+      </header>
+
+      <section class="card upload-card">
+        <label id="dropzone" for="file-input" class="dropzone" tabindex="0">
+          <span class="dropzone-title">Drop PDF here</span>
+          <span class="dropzone-meta">or click to choose a file</span>
+          <span id="selected-file" class="selected-file">No file selected</span>
+        </label>
+
+        <input id="file-input" type="file" accept="application/pdf,.pdf" hidden />
+
+        <div class="actions">
+          <button id="compress-btn" class="btn" type="button" disabled>Compress PDF</button>
+          <p id="status" class="status" role="status" aria-live="polite">Choose a PDF to get started.</p>
+        </div>
+      </section>
+
+      <section id="result" class="card result-card" hidden>
+        <h2>Result</h2>
+        <dl class="stats">
+          <div><dt>Original size</dt><dd id="original-size">-</dd></div>
+          <div><dt>Compressed size</dt><dd id="compressed-size">-</dd></div>
+          <div><dt>Saved</dt><dd id="saved-size">-</dd></div>
+          <div><dt>Compression</dt><dd id="saved-percent">-</dd></div>
+          <div><dt>Engine</dt><dd id="engine">-</dd></div>
+          <div><dt>Time</dt><dd id="duration">-</dd></div>
+        </dl>
+        <a id="download-link" class="btn secondary" href="#" download>Download compressed PDF</a>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

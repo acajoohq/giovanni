@@ -119,6 +119,38 @@ h1 {
   font-size: 0.9rem;
 }
 
+.controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.control {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.control span {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.control select {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+}
+
+.control select:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .actions {
   display: flex;
   gap: 0.8rem;
@@ -206,5 +238,9 @@ h1 {
 
   .dropzone {
     padding: 1.3rem 0.9rem;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
   }
 }

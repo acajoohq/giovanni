@@ -1,10 +1,12 @@
 import './style.css'
 import {
   compressPdf,
+  getAvailableCompressionEngines,
   formatBytes,
   formatPercentage,
   initCompressionEngine,
 } from '@acajoo/giovanni-core'
+import type { CompressionEngine } from '@acajoo/giovanni-core'
 
 function mustQuery<T extends Element>(selector: string): T {
   const element = document.querySelector<T>(selector)
@@ -17,6 +19,8 @@ function mustQuery<T extends Element>(selector: string): T {
 
 const dropzone = mustQuery<HTMLLabelElement>('#dropzone')
 const fileInput = mustQuery<HTMLInputElement>('#file-input')
+const engineSelect = mustQuery<HTMLSelectElement>('#engine-select')
+const presetSelect = mustQuery<HTMLSelectElement>('#preset-select')
 const selectedFileEl = mustQuery<HTMLSpanElement>('#selected-file')
 const compressBtn = mustQuery<HTMLButtonElement>('#compress-btn')
 const statusEl = mustQuery<HTMLParagraphElement>('#status')
@@ -31,7 +35,20 @@ const durationEl = mustQuery<HTMLElement>('#duration')
 
 let selectedFile: File | null = null
 let resultUrl: string | null = null
-let qpdfInitPromise: Promise<void> | null = null
+const initPromises: Partial<Record<CompressionEngine, Promise<void>>> = {}
+
+const enginePresets = {
+  qpdf: ['default', 'web', 'archive'],
+  ghostscript: ['default', 'screen', 'ebook', 'printer', 'prepress'],
+} as const
+
+const engineDefaults = {
+  qpdf: 'web',
+  ghostscript: 'default',
+} as const
+
+type QpdfPreset = (typeof enginePresets.qpdf)[number]
+type GhostscriptPreset = (typeof enginePresets.ghostscript)[number]
 
 function setStatus(message: string, kind: 'info' | 'error' = 'info') {
   statusEl.textContent = message
@@ -75,12 +92,57 @@ function ensurePdf(file: File): boolean {
   return nameLooksPdf || mimeLooksPdf
 }
 
-async function initQpdfOnce() {
-  if (!qpdfInitPromise) {
-    qpdfInitPromise = initCompressionEngine('qpdf')
+function selectedEngine(): CompressionEngine {
+  return engineSelect.value as CompressionEngine
+}
+
+function selectedPreset(engine: CompressionEngine): string {
+  const selected = presetSelect.value
+  const valid = enginePresets[engine].includes(selected as never)
+  return valid ? selected : engineDefaults[engine]
+}
+
+function syncPresetSelect(engine: CompressionEngine) {
+  const previous = presetSelect.value
+  presetSelect.replaceChildren()
+
+  for (const preset of enginePresets[engine]) {
+    const option = document.createElement('option')
+    option.value = preset
+    option.textContent = preset
+    presetSelect.append(option)
   }
 
-  await qpdfInitPromise
+  if (enginePresets[engine].includes(previous as never)) {
+    presetSelect.value = previous
+  } else {
+    presetSelect.value = engineDefaults[engine]
+  }
+}
+
+function setupEngineChoices() {
+  const availableEngines = getAvailableCompressionEngines()
+  const preferredDefaultEngine: CompressionEngine = 'ghostscript'
+
+  for (const option of Array.from(engineSelect.options)) {
+    option.disabled = !availableEngines.includes(option.value as CompressionEngine)
+  }
+
+  if (availableEngines.includes(preferredDefaultEngine)) {
+    engineSelect.value = preferredDefaultEngine
+  } else if (!availableEngines.includes(engineSelect.value as CompressionEngine)) {
+    engineSelect.value = availableEngines[0] ?? 'qpdf'
+  }
+
+  syncPresetSelect(selectedEngine())
+}
+
+async function initEngineOnce(engine: CompressionEngine) {
+  if (!initPromises[engine]) {
+    initPromises[engine] = initCompressionEngine(engine)
+  }
+
+  await initPromises[engine]
 }
 
 function updateResultStats(result: Awaited<ReturnType<typeof compressPdf>>, durationMs: number) {
@@ -88,7 +150,8 @@ function updateResultStats(result: Awaited<ReturnType<typeof compressPdf>>, dura
   originalSizeEl.textContent = formatBytes(result.originalSize)
   compressedSizeEl.textContent = formatBytes(result.compressedSize)
   savedSizeEl.textContent = formatBytes(result.savedBytes)
-  savedPercentEl.textContent = formatPercentage(result.percentageSaved)
+  const compressionDelta = -result.percentageSaved
+  savedPercentEl.textContent = formatPercentage(compressionDelta)
   engineEl.textContent = `${result.engine} / ${result.preset}`
   durationEl.textContent = `${Math.round(durationMs)} ms`
 }
@@ -105,19 +168,28 @@ async function handleCompression() {
   }
 
   setBusy(true)
-  setStatus('Initializing qpdf engine...')
+  const engine = selectedEngine()
+  const preset = selectedPreset(engine)
+  setStatus(`Initializing ${engine} engine...`)
 
   try {
-    await initQpdfOnce()
+    await initEngineOnce(engine)
 
     setStatus('Compressing PDF...')
     const start = performance.now()
     const bytes = await selectedFile.arrayBuffer()
-    const result = await compressPdf(bytes, {
-      engine: 'qpdf',
-      preset: 'web',
-      linearize: true,
-    })
+    const qpdfPreset = preset as QpdfPreset
+    const ghostscriptPreset = preset as GhostscriptPreset
+    const result = engine === 'qpdf'
+      ? await compressPdf(bytes, {
+        engine: 'qpdf',
+        preset: qpdfPreset,
+        linearize: qpdfPreset === 'web',
+      })
+      : await compressPdf(bytes, {
+        engine: 'ghostscript',
+        preset: ghostscriptPreset,
+      })
 
     const elapsed = performance.now() - start
     updateResultStats(result, elapsed)
@@ -175,6 +247,12 @@ compressBtn.addEventListener('click', () => {
   void handleCompression()
 })
 
+engineSelect.addEventListener('change', () => {
+  syncPresetSelect(selectedEngine())
+})
+
 window.addEventListener('beforeunload', () => {
   clearResultLink()
 })
+
+setupEngineChoices()

@@ -23,6 +23,21 @@
 
         <input id="file-input" type="file" accept="application/pdf,.pdf" hidden />
 
+        <div class="controls" aria-label="Compression options">
+          <label class="control">
+            <span>Engine</span>
+            <select id="engine-select">
+              <option value="qpdf">qpdf</option>
+              <option value="ghostscript" selected>ghostscript</option>
+            </select>
+          </label>
+
+          <label class="control">
+            <span>Preset</span>
+            <select id="preset-select"></select>
+          </label>
+        </div>
+
         <div class="actions">
           <button id="compress-btn" class="btn" type="button" disabled>Compress PDF</button>
           <p id="status" class="status" role="status" aria-live="polite">Choose a PDF to get started.</p>

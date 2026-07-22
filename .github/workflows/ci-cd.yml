@@ -59,6 +59,7 @@ jobs:
                         "apps/web/",
                         "apps/desktop/",
                         "examples/wasm-standard/",
+                        "examples/web-simple/",
                       ];
 
                       const hasChangeset = changedFiles.some(

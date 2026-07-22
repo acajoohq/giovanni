@@ -22,6 +22,7 @@ extern "C" {
 // ---------------------------------------------------------------------------
 
 typedef struct GiovanniQpdf_s* GiovanniQpdfHandle;
+typedef struct GiovanniGhostscript_s* GiovanniGhostscriptHandle;
 
 // ---------------------------------------------------------------------------
 // Write options (mirrors giovanni::WriteOptions)
@@ -63,12 +64,19 @@ GiovanniQpdfHandle giovanni_qpdf_create(void);
 // Destroy a QpdfEngine instance.
 void giovanni_qpdf_destroy(GiovanniQpdfHandle handle);
 
+// Create a new GhostscriptEngine instance. Returns NULL on failure.
+GiovanniGhostscriptHandle giovanni_ghostscript_create(void);
+
+// Destroy a Ghostscript instance.
+void giovanni_ghostscript_destroy(GiovanniGhostscriptHandle handle);
+
 // ---------------------------------------------------------------------------
 // Version
 // ---------------------------------------------------------------------------
 
 // Write the qpdf library version string into out (null-terminated).
 int giovanni_get_version(GiovanniQpdfHandle handle, char* out, size_t out_len);
+int giovanni_get_ghostscript_version(GiovanniGhostscriptHandle handle, char* out, size_t out_len);
 
 // ---------------------------------------------------------------------------
 // Write options
@@ -88,6 +96,12 @@ int giovanni_write_pdf(
     const uint8_t* input, size_t input_size,
     const GiovanniWriteOptions* options,   // NULL = use defaults
     const char* password,               // NULL = no password
+    uint8_t** out_data, size_t* out_size);
+
+int giovanni_rewrite_pdf(
+    GiovanniGhostscriptHandle handle,
+    const uint8_t* input, size_t input_size,
+    const char* const* args, size_t arg_count,
     uint8_t** out_data, size_t* out_size);
 
 // Split a PDF into per-page PDFs.

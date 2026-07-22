@@ -1,6 +1,7 @@
 #include "giovanni_c.h"
 
 #include "../../impl/qpdf/qpdf_engine.h"
+#include "../../impl/ghostscript/gs_engine.h"
 
 #include <cstring>
 #include <stdexcept>
@@ -57,6 +58,19 @@ int giovanni_get_version(GiovanniQpdfHandle handle, char* out, size_t out_len) {
     }
 }
 
+int giovanni_get_version(GiovanniGhostscriptHandle handle, char* out, size_t out_len) {
+    if (!handle || !out || out_len == 0) return setError("invalid arguments");
+    try {
+        auto* eng = reinterpret_cast<giovanni::GhostscriptEngine*>(handle);
+        std::string v = eng->getVersion();
+        std::strncpy(out, v.c_str(), out_len - 1);
+        out[out_len - 1] = '\0';
+        return 0;
+    } catch (const std::exception& e) {
+        return setError(e.what());
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Write options defaults
 // ---------------------------------------------------------------------------
@@ -102,6 +116,36 @@ int giovanni_write_pdf(
         std::vector<uint8_t> in(input, input + input_size);
         std::string pwd = password ? password : "";
         auto result = eng->writePdf(in, toWriteOptions(options), pwd);
+
+        *out_size = result.size();
+        *out_data = static_cast<uint8_t*>(std::malloc(result.size()));
+        if (!*out_data) return setError("out of memory");
+        std::memcpy(*out_data, result.data(), result.size());
+        return 0;
+    } catch (const std::exception& e) {
+        return setError(e.what());
+    }
+}
+
+// ---------------------------------------------------------------------------
+// giovanni_rewrite_pdf
+// ---------------------------------------------------------------------------a
+
+int giovanni_rewrite_pdf(
+    GiovanniGhostscriptHandle handle,
+    const uint8_t* input, size_t input_size,
+    const char* const* args, size_t arg_count,
+    uint8_t** out_data, size_t* out_size)
+{
+    if (!handle || !input || !out_data || !out_size) return setError("invalid arguments");
+    try {
+        auto* eng = reinterpret_cast<giovanni::GhostscriptEngine*>(handle);
+        std::vector<uint8_t> in(input, input + input_size);
+        std::vector<std::string> argVec;
+        for (size_t i = 0; i < arg_count; ++i) {
+            argVec.emplace_back(args[i]);
+        }
+        auto result = eng->rewritePdf(in, argVec);
 
         *out_size = result.size();
         *out_data = static_cast<uint8_t*>(std::malloc(result.size()));

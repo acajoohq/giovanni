@@ -41,6 +41,19 @@ void giovanni_qpdf_destroy(GiovanniQpdfHandle handle) {
     delete reinterpret_cast<giovanni::QpdfEngine*>(handle);
 }
 
+GiovanniGhostscriptHandle giovanni_ghostscript_create(void) {
+    try {
+        return reinterpret_cast<GiovanniGhostscriptHandle>(new giovanni::GhostscriptEngine());
+    } catch (const std::exception& e) {
+        setError(e.what());
+        return nullptr;
+    }
+}
+
+void giovanni_ghostscript_destroy(GiovanniGhostscriptHandle handle) {
+    delete reinterpret_cast<giovanni::GhostscriptEngine*>(handle);
+}
+
 // ---------------------------------------------------------------------------
 // Version
 // ---------------------------------------------------------------------------
@@ -58,7 +71,7 @@ int giovanni_get_version(GiovanniQpdfHandle handle, char* out, size_t out_len) {
     }
 }
 
-int giovanni_get_version(GiovanniGhostscriptHandle handle, char* out, size_t out_len) {
+int giovanni_get_ghostscript_version(GiovanniGhostscriptHandle handle, char* out, size_t out_len) {
     if (!handle || !out || out_len == 0) return setError("invalid arguments");
     try {
         auto* eng = reinterpret_cast<giovanni::GhostscriptEngine*>(handle);

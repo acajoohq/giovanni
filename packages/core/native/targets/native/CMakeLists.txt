@@ -15,6 +15,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(GIOVANNI_NATIVE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 set(GIOVANNI_INTERFACE_INCLUDE "${GIOVANNI_NATIVE_ROOT}/interface/include")
 set(GIOVANNI_IMPL_QPDF "${GIOVANNI_NATIVE_ROOT}/impl/qpdf")
+set(GIOVANNI_IMPL_GHOSTSCRIPT "${GIOVANNI_NATIVE_ROOT}/impl/ghostscript")
 
 # ---------------------------------------------------------------------------
 # qpdf dependency
@@ -48,7 +49,8 @@ endif()
 
 add_library(giovanni_native
   giovanni_c.cc
-  ${GIOVANNI_IMPL_QPDF}/qpdf_engine.cc)
+  ${GIOVANNI_IMPL_QPDF}/qpdf_engine.cc
+  ${GIOVANNI_IMPL_GHOSTSCRIPT}/gs_engine.cc)
 
 target_include_directories(giovanni_native
   PUBLIC

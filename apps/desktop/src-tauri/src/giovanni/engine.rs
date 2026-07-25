@@ -5,11 +5,14 @@ use super::ffi::{
     giovanni_buffer_free, giovanni_document_info_free, giovanni_get_document_info,
     giovanni_get_version, giovanni_last_error, giovanni_merge_pdfs, giovanni_pages_free,
     giovanni_qpdf_create, giovanni_qpdf_destroy, giovanni_split_pages, giovanni_write_pdf,
+    giovanni_ghostscript_create, giovanni_ghostscript_destroy,
     GiovanniDocumentInfo, GiovanniQpdfHandle, GiovanniWriteOptions,
+    GiovanniGhostscriptHandle,
 };
 
 pub struct GiovanniEngine {
     handle: *mut GiovanniQpdfHandle,
+    gs_handle: *mut GiovanniGhostscriptHandle,
 }
 
 // Safety: the C library creates a per-handle context with thread-local error storage.
@@ -59,7 +62,11 @@ impl GiovanniEngine {
         if handle.is_null() {
             return Err("Failed to create giovanni engine".into());
         }
-        Ok(Self { handle })
+        let gs_handle = unsafe { giovanni_ghostscript_create() };
+        if gs_handle.is_null() {
+            return Err("Failed to create giovanni ghostscript engine".into());
+        }
+        Ok(Self { handle, gs_handle })
     }
 
     pub fn get_version(&self) -> Result<String, String> {
@@ -258,6 +265,7 @@ unsafe fn document_info_from_raw(raw: &GiovanniDocumentInfo) -> DocumentInfo {
 impl Drop for GiovanniEngine {
     fn drop(&mut self) {
         unsafe { giovanni_qpdf_destroy(self.handle) };
+        unsafe { giovanni_ghostscript_destroy(self.gs_handle) };
     }
 }
 

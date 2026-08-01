@@ -291,8 +291,8 @@ export const en = {
             settings: "Settings",
             placement: "Placement",
             pages: "Pages",
-            singlePage: "Single page",
-            pageOption: "Page {{page}}",
+            customPages: "Custom pages",
+            customPagesPlaceholder: "Example: 1-3, 5, 8-10",
         },
         source: {
             default: "Default",
@@ -300,11 +300,7 @@ export const en = {
         },
         pageTarget: {
             all: "All pages",
-            first: "First page",
-            last: "Last page",
-            odd: "Odd pages",
-            even: "Even pages",
-            single: "Single page",
+            custom: "Custom",
         },
         placement: {
             overlay: "Overlay",
@@ -319,7 +315,6 @@ export const en = {
             replaceSource: "Replace Source",
             selectWatermark: "Select Watermark",
             replaceWatermark: "Replace Watermark",
-            apply: "Apply Watermark",
         },
         status: {
             selectSource: "Please select a source PDF first.",

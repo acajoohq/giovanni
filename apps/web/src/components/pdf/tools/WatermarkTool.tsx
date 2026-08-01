@@ -1,6 +1,6 @@
 import { formatBytes, inspectPdf, watermarkPdf, type WatermarkPlacement, type WatermarkResult } from "@acajoo/giovanni-core";
 import { RiAddLine } from "@remixicon/react";
-import { useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/emptyState/EmptyState";
 import { ToolLayout } from "@/components/layout/ToolLayout";
@@ -26,7 +26,48 @@ import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, isPd
 import { createDefaultWatermarkPdf, createImageWatermarkPdf, DEFAULT_WATERMARK_TEXT, isImageWatermarkFile } from "@/utils/watermarkTemplate.utils";
 
 type WatermarkSourceMode = "default" | "custom";
-type WatermarkPageTargetMode = "all" | "first" | "last" | "odd" | "even" | "single";
+type WatermarkPageTargetMode = "all" | "custom";
+
+function parseCustomPageSelection(value: string, pageCount: number): number[] {
+    const rawTokens = value
+        .split(",")
+        .map((token) => token.trim())
+        .filter((token) => token.length > 0);
+
+    if (rawTokens.length === 0) {
+        throw new Error("invalid");
+    }
+
+    const selectedPages = new Set<number>();
+
+    for (const token of rawTokens) {
+        if (token.includes("-")) {
+            const rangeParts = token.split("-").map((part) => part.trim());
+            if (rangeParts.length !== 2 || !rangeParts[0] || !rangeParts[1]) {
+                throw new Error("invalid");
+            }
+
+            const start = Number(rangeParts[0]);
+            const end = Number(rangeParts[1]);
+            if (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end < 1 || start > end || end > pageCount) {
+                throw new Error("invalid");
+            }
+
+            for (let page = start; page <= end; page += 1) {
+                selectedPages.add(page - 1);
+            }
+            continue;
+        }
+
+        const page = Number(token);
+        if (!Number.isInteger(page) || page < 1 || page > pageCount) {
+            throw new Error("invalid");
+        }
+        selectedPages.add(page - 1);
+    }
+
+    return Array.from(selectedPages).sort((a, b) => a - b);
+}
 
 export function WatermarkTool() {
     const { t } = useTranslation();
@@ -42,9 +83,9 @@ export function WatermarkTool() {
     const [placement, setPlacement] = useState<WatermarkPlacement>("overlay");
     const [sourcePageCount, setSourcePageCount] = useState(0);
     const [pageTargetMode, setPageTargetMode] = useState<WatermarkPageTargetMode>("all");
-    const [singlePageSelection, setSinglePageSelection] = useState("1");
+    const [customPageSelection, setCustomPageSelection] = useState("1");
 
-    const { result, elapsedMs, status, isWorking, setStatus, reset, runJob } = useAsyncToolJob<WatermarkResult>();
+    const { result, elapsedMs, status, isWorking, setStatus, reset, clearResult, runJob } = useAsyncToolJob<WatermarkResult>();
 
     const handleSourceFiles = async (files: File[]) => {
         const nextFile = findFirstPdfFile(files);
@@ -60,7 +101,7 @@ export function WatermarkTool() {
             reset();
             setSourceFile(nextFile);
             setSourcePageCount(info.numPages);
-            setSinglePageSelection("1");
+            setCustomPageSelection("1");
             setPageTargetMode("all");
         } catch (error) {
             setStatus({ tone: "error", message: error instanceof Error ? error.message : t("watermark.status.failedInspect") });
@@ -90,38 +131,21 @@ export function WatermarkTool() {
             return undefined;
         }
 
-        if (pageTargetMode === "first") {
-            return [0];
-        }
-
-        if (pageTargetMode === "last") {
-            return [sourcePageCount - 1];
-        }
-
-        if (pageTargetMode === "odd") {
-            return Array.from({ length: sourcePageCount }, (_, index) => index).filter((index) => index % 2 === 0);
-        }
-
-        if (pageTargetMode === "even") {
-            return Array.from({ length: sourcePageCount }, (_, index) => index).filter((index) => index % 2 === 1);
-        }
-
-        const selected = Number(singlePageSelection);
-        if (!Number.isInteger(selected) || selected < 1 || selected > sourcePageCount) {
+        try {
+            return parseCustomPageSelection(customPageSelection, sourcePageCount);
+        } catch {
             throw new Error(t("watermark.status.invalidPages"));
         }
-
-        return [selected - 1];
     };
 
-    const runWatermark = async () => {
+    const runWatermark = useCallback(async () => {
         if (!sourceFile) {
             setStatus({ tone: "error", message: t("watermark.status.selectSource") });
             return;
         }
 
         if (watermarkSourceMode === "custom" && !watermarkFile) {
-            setStatus({ tone: "error", message: t("watermark.status.selectWatermark") });
+            clearResult();
             return;
         }
 
@@ -155,7 +179,26 @@ export function WatermarkTool() {
                 message: t("watermark.status.applied", { count: nextResult.watermarkedPageCount }),
             }),
         });
-    };
+    }, [clearResult, customPageSelection, defaultWatermarkText, pageTargetMode, placement, runJob, setStatus, sourceFile, sourcePageCount, t, watermarkFile, watermarkSourceMode]);
+
+    useEffect(() => {
+        if (!sourceFile) {
+            return;
+        }
+
+        if (watermarkSourceMode === "custom" && !watermarkFile) {
+            clearResult();
+            return;
+        }
+
+        const timeoutId = window.setTimeout(() => {
+            void runWatermark();
+        }, 300);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, [clearResult, customPageSelection, defaultWatermarkText, pageTargetMode, placement, runWatermark, sourceFile, watermarkFile, watermarkSourceMode]);
 
     const handleDownload = () => {
         if (!result || !sourceFile) {
@@ -178,11 +221,6 @@ export function WatermarkTool() {
             <SidebarSection>
                 <SidebarHeader>{t("watermark.sidebar.files")}</SidebarHeader>
                 <SidebarContent>
-                    <SidebarField label={t("watermark.sidebar.source")}>
-                        <Button size="sm" type="button" variant="secondary" onClick={() => sourceInputRef.current?.click()}>
-                            {sourceFile ? t("watermark.actions.replaceSource") : t("watermark.actions.selectSource")}
-                        </Button>
-                    </SidebarField>
                     <SidebarField label={t("watermark.sidebar.watermark")}>
                         <SidebarToggleGroup>
                             <SidebarToggle isActive={watermarkSourceMode === "default"} onClick={() => setWatermarkSourceMode("default")}>
@@ -229,37 +267,24 @@ export function WatermarkTool() {
                         <SidebarSelect
                             options={[
                                 { label: t("watermark.pageTarget.all"), value: "all" },
-                                { label: t("watermark.pageTarget.first"), value: "first" },
-                                { label: t("watermark.pageTarget.last"), value: "last" },
-                                { label: t("watermark.pageTarget.odd"), value: "odd" },
-                                { label: t("watermark.pageTarget.even"), value: "even" },
-                                { label: t("watermark.pageTarget.single"), value: "single" },
+                                { label: t("watermark.pageTarget.custom"), value: "custom" },
                             ]}
                             value={pageTargetMode}
                             onValueChange={(value) => setPageTargetMode(value as WatermarkPageTargetMode)}
                         />
                     </SidebarField>
-                    {pageTargetMode === "single" && sourcePageCount > 0 && (
-                        <SidebarField label={t("watermark.sidebar.singlePage")}>
-                            <SidebarSelect
-                                options={Array.from({ length: sourcePageCount }, (_, index) => {
-                                    const pageLabel = index + 1;
-                                    return {
-                                        label: t("watermark.sidebar.pageOption", { page: pageLabel }),
-                                        value: String(pageLabel),
-                                    };
-                                })}
-                                value={singlePageSelection}
-                                onValueChange={setSinglePageSelection}
+                    {pageTargetMode === "custom" && sourcePageCount > 0 && (
+                        <SidebarField label={t("watermark.sidebar.customPages")}>
+                            <SidebarInput
+                                placeholder={t("watermark.sidebar.customPagesPlaceholder")}
+                                value={customPageSelection}
+                                onChange={(event) => setCustomPageSelection(event.currentTarget.value)}
                             />
                         </SidebarField>
                     )}
                     <SidebarField label={t("common.sidebar.filename")}>
                         <SidebarInput value={outputName} onChange={(event) => setOutputName(event.currentTarget.value)} />
                     </SidebarField>
-                    <Button size="sm" type="button" onClick={() => void runWatermark()}>
-                        {t("watermark.actions.apply")}
-                    </Button>
                 </SidebarContent>
             </SidebarSection>
         </Sidebar>

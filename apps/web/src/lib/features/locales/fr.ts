@@ -293,8 +293,8 @@ export const fr: Translations = {
             settings: "Paramètres",
             placement: "Position",
             pages: "Pages",
-            singlePage: "Page unique",
-            pageOption: "Page {{page}}",
+            customPages: "Pages personnalisées",
+            customPagesPlaceholder: "Exemple : 1-3, 5, 8-10",
         },
         source: {
             default: "Par défaut",
@@ -302,11 +302,7 @@ export const fr: Translations = {
         },
         pageTarget: {
             all: "Toutes les pages",
-            first: "Première page",
-            last: "Dernière page",
-            odd: "Pages impaires",
-            even: "Pages paires",
-            single: "Page unique",
+            custom: "Personnalisé",
         },
         placement: {
             overlay: "Superposer",
@@ -321,7 +317,6 @@ export const fr: Translations = {
             replaceSource: "Remplacer la source",
             selectWatermark: "Choisir le filigrane",
             replaceWatermark: "Remplacer le filigrane",
-            apply: "Appliquer le filigrane",
         },
         status: {
             selectSource: "Veuillez d'abord sélectionner un PDF source.",

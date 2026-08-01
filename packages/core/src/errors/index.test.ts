@@ -9,6 +9,7 @@ import {
     QpdfValidationError,
     QpdfConversionError,
     QpdfOrganizeError,
+    QpdfWatermarkError,
 } from "./index.js";
 
 describe("Error Classes", () => {
@@ -101,6 +102,15 @@ describe("Error Classes", () => {
             expect(error).toBeInstanceOf(QpdfOrganizeError);
             expect(error).toBeInstanceOf(QpdfError);
             expect(error.name).toBe("QpdfOrganizeError");
+        });
+    });
+
+    describe("QpdfWatermarkError", () => {
+        it("should create watermark error", () => {
+            const error = new QpdfWatermarkError("watermark failed");
+            expect(error).toBeInstanceOf(QpdfWatermarkError);
+            expect(error).toBeInstanceOf(QpdfError);
+            expect(error.name).toBe("QpdfWatermarkError");
         });
     });
 });

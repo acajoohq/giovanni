@@ -88,3 +88,10 @@ export class QpdfOrganizeError extends QpdfError {
         this.name = "QpdfOrganizeError";
     }
 }
+
+export class QpdfWatermarkError extends QpdfError {
+    constructor(message: string, options?: QpdfErrorOptions) {
+        super(message, options);
+        this.name = "QpdfWatermarkError";
+    }
+}

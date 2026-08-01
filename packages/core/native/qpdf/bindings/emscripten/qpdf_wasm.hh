@@ -24,6 +24,13 @@ struct CompressionOptions {
     CompressionOptions() = default;
 };
 
+struct WatermarkOptions {
+    bool underlay = false;
+    std::vector<int> pages;
+
+    WatermarkOptions() = default;
+};
+
 // qpdf_commons.cc
 qpdf_stream_decode_level_e getDecodeLevel(const std::string& level);
 qpdf_object_stream_e getObjectStreamMode(const std::string& mode);
@@ -46,6 +53,14 @@ emscripten::val mergePdfs(const emscripten::val& inputArrays);
 
 // extract_images.cc
 emscripten::val extractImages(const emscripten::val& inputArray);
+
+// watermark.cc
+emscripten::val watermarkPdf(
+    const emscripten::val& inputArray,
+    const emscripten::val& watermarkArray,
+    const WatermarkOptions& options,
+    const std::string& password = "",
+    const std::string& watermarkPassword = "");
 
 // qpdf_wrapper.cc
 class QPDFWrapper {

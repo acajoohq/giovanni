@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WatermarkRouteImport } from './routes/watermark'
 import { Route as SplitRouteImport } from './routes/split'
 import { Route as PdfToJpgRouteImport } from './routes/pdf-to-jpg'
 import { Route as OrganizeRouteImport } from './routes/organize'
@@ -18,6 +19,7 @@ import { Route as CompressRouteImport } from './routes/compress'
 import { Route as LocaleRouteImport } from './routes/$locale'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LocaleIndexRouteImport } from './routes/$locale/index'
+import { Route as LocaleWatermarkRouteImport } from './routes/$locale/watermark'
 import { Route as LocaleSplitRouteImport } from './routes/$locale/split'
 import { Route as LocalePdfToJpgRouteImport } from './routes/$locale/pdf-to-jpg'
 import { Route as LocaleOrganizeRouteImport } from './routes/$locale/organize'
@@ -25,6 +27,11 @@ import { Route as LocaleMergeRouteImport } from './routes/$locale/merge'
 import { Route as LocaleExtractImagesRouteImport } from './routes/$locale/extract-images'
 import { Route as LocaleCompressRouteImport } from './routes/$locale/compress'
 
+const WatermarkRoute = WatermarkRouteImport.update({
+  id: '/watermark',
+  path: '/watermark',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SplitRoute = SplitRouteImport.update({
   id: '/split',
   path: '/split',
@@ -70,6 +77,11 @@ const LocaleIndexRoute = LocaleIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LocaleRoute,
 } as any)
+const LocaleWatermarkRoute = LocaleWatermarkRouteImport.update({
+  id: '/watermark',
+  path: '/watermark',
+  getParentRoute: () => LocaleRoute,
+} as any)
 const LocaleSplitRoute = LocaleSplitRouteImport.update({
   id: '/split',
   path: '/split',
@@ -110,12 +122,14 @@ export interface FileRoutesByFullPath {
   '/organize': typeof OrganizeRoute
   '/pdf-to-jpg': typeof PdfToJpgRoute
   '/split': typeof SplitRoute
+  '/watermark': typeof WatermarkRoute
   '/$locale/compress': typeof LocaleCompressRoute
   '/$locale/extract-images': typeof LocaleExtractImagesRoute
   '/$locale/merge': typeof LocaleMergeRoute
   '/$locale/organize': typeof LocaleOrganizeRoute
   '/$locale/pdf-to-jpg': typeof LocalePdfToJpgRoute
   '/$locale/split': typeof LocaleSplitRoute
+  '/$locale/watermark': typeof LocaleWatermarkRoute
   '/$locale/': typeof LocaleIndexRoute
 }
 export interface FileRoutesByTo {
@@ -126,12 +140,14 @@ export interface FileRoutesByTo {
   '/organize': typeof OrganizeRoute
   '/pdf-to-jpg': typeof PdfToJpgRoute
   '/split': typeof SplitRoute
+  '/watermark': typeof WatermarkRoute
   '/$locale/compress': typeof LocaleCompressRoute
   '/$locale/extract-images': typeof LocaleExtractImagesRoute
   '/$locale/merge': typeof LocaleMergeRoute
   '/$locale/organize': typeof LocaleOrganizeRoute
   '/$locale/pdf-to-jpg': typeof LocalePdfToJpgRoute
   '/$locale/split': typeof LocaleSplitRoute
+  '/$locale/watermark': typeof LocaleWatermarkRoute
   '/$locale': typeof LocaleIndexRoute
 }
 export interface FileRoutesById {
@@ -144,12 +160,14 @@ export interface FileRoutesById {
   '/organize': typeof OrganizeRoute
   '/pdf-to-jpg': typeof PdfToJpgRoute
   '/split': typeof SplitRoute
+  '/watermark': typeof WatermarkRoute
   '/$locale/compress': typeof LocaleCompressRoute
   '/$locale/extract-images': typeof LocaleExtractImagesRoute
   '/$locale/merge': typeof LocaleMergeRoute
   '/$locale/organize': typeof LocaleOrganizeRoute
   '/$locale/pdf-to-jpg': typeof LocalePdfToJpgRoute
   '/$locale/split': typeof LocaleSplitRoute
+  '/$locale/watermark': typeof LocaleWatermarkRoute
   '/$locale/': typeof LocaleIndexRoute
 }
 export interface FileRouteTypes {
@@ -163,12 +181,14 @@ export interface FileRouteTypes {
     | '/organize'
     | '/pdf-to-jpg'
     | '/split'
+    | '/watermark'
     | '/$locale/compress'
     | '/$locale/extract-images'
     | '/$locale/merge'
     | '/$locale/organize'
     | '/$locale/pdf-to-jpg'
     | '/$locale/split'
+    | '/$locale/watermark'
     | '/$locale/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -179,12 +199,14 @@ export interface FileRouteTypes {
     | '/organize'
     | '/pdf-to-jpg'
     | '/split'
+    | '/watermark'
     | '/$locale/compress'
     | '/$locale/extract-images'
     | '/$locale/merge'
     | '/$locale/organize'
     | '/$locale/pdf-to-jpg'
     | '/$locale/split'
+    | '/$locale/watermark'
     | '/$locale'
   id:
     | '__root__'
@@ -196,12 +218,14 @@ export interface FileRouteTypes {
     | '/organize'
     | '/pdf-to-jpg'
     | '/split'
+    | '/watermark'
     | '/$locale/compress'
     | '/$locale/extract-images'
     | '/$locale/merge'
     | '/$locale/organize'
     | '/$locale/pdf-to-jpg'
     | '/$locale/split'
+    | '/$locale/watermark'
     | '/$locale/'
   fileRoutesById: FileRoutesById
 }
@@ -214,10 +238,18 @@ export interface RootRouteChildren {
   OrganizeRoute: typeof OrganizeRoute
   PdfToJpgRoute: typeof PdfToJpgRoute
   SplitRoute: typeof SplitRoute
+  WatermarkRoute: typeof WatermarkRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/watermark': {
+      id: '/watermark'
+      path: '/watermark'
+      fullPath: '/watermark'
+      preLoaderRoute: typeof WatermarkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/split': {
       id: '/split'
       path: '/split'
@@ -281,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleIndexRouteImport
       parentRoute: typeof LocaleRoute
     }
+    '/$locale/watermark': {
+      id: '/$locale/watermark'
+      path: '/watermark'
+      fullPath: '/$locale/watermark'
+      preLoaderRoute: typeof LocaleWatermarkRouteImport
+      parentRoute: typeof LocaleRoute
+    }
     '/$locale/split': {
       id: '/$locale/split'
       path: '/split'
@@ -333,6 +372,7 @@ interface LocaleRouteChildren {
   LocaleOrganizeRoute: typeof LocaleOrganizeRoute
   LocalePdfToJpgRoute: typeof LocalePdfToJpgRoute
   LocaleSplitRoute: typeof LocaleSplitRoute
+  LocaleWatermarkRoute: typeof LocaleWatermarkRoute
   LocaleIndexRoute: typeof LocaleIndexRoute
 }
 
@@ -343,6 +383,7 @@ const LocaleRouteChildren: LocaleRouteChildren = {
   LocaleOrganizeRoute: LocaleOrganizeRoute,
   LocalePdfToJpgRoute: LocalePdfToJpgRoute,
   LocaleSplitRoute: LocaleSplitRoute,
+  LocaleWatermarkRoute: LocaleWatermarkRoute,
   LocaleIndexRoute: LocaleIndexRoute,
 }
 
@@ -358,6 +399,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrganizeRoute: OrganizeRoute,
   PdfToJpgRoute: PdfToJpgRoute,
   SplitRoute: SplitRoute,
+  WatermarkRoute: WatermarkRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

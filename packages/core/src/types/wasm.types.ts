@@ -13,6 +13,11 @@ export interface WasmCompressionOptions {
     linearize: boolean;
 }
 
+export interface WasmWatermarkOptions {
+    underlay: boolean;
+    pages: number[];
+}
+
 export interface WasmQPDFWrapper {
     processMemoryFile(data: Uint8Array, password?: string): void;
     getNumPages(): number;
@@ -70,11 +75,16 @@ export interface QpdfWasmModule {
     splitPages(data: Uint8Array): Uint8Array[];
     mergePdfs(inputs: Uint8Array[]): Uint8Array;
     extractImages(data: Uint8Array): WasmExtractedImage[];
+    watermarkPdf(data: Uint8Array, watermark: Uint8Array, options: WasmWatermarkOptions, password?: string, watermarkPassword?: string): Uint8Array;
     getVersion(): string;
     getQpdfVersion?: () => string;
     QPDFWrapper: new () => WasmQPDFWrapper;
     QPDF?: new () => WasmQPDFWrapper;
     QPDFWriter: new (qpdf: WasmQPDFWrapper) => WasmQPDFWriter;
+    VectorInt?: new () => {
+        push_back(value: number): void;
+        delete?(): void;
+    };
 }
 
 /**

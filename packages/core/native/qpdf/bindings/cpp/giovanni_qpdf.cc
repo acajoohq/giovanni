@@ -35,6 +35,17 @@ std::vector<uint8_t> mergePdfs(const std::vector<std::vector<uint8_t>>& inputs) 
     return defaultEngine().mergePdfs(inputs);
 }
 
+std::vector<uint8_t> watermarkPdf(
+    const std::vector<uint8_t>& input,
+    const std::vector<uint8_t>& watermark,
+    bool underlay,
+    const std::vector<int>& pages,
+    const std::string& password,
+    const std::string& watermarkPassword)
+{
+    return defaultEngine().watermarkPdf(input, watermark, underlay, pages, password, watermarkPassword);
+}
+
 DocumentInfo getDocumentInfo(const std::vector<uint8_t>& input, const std::string& password) {
     return defaultEngine().getDocumentInfo(input, password);
 }

@@ -11,6 +11,7 @@
 #include <qpdf/QPDFWriter.hh>
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <set>
 #include <stdexcept>
@@ -109,6 +110,33 @@ static std::string resolvePixelColorModel(int components) {
         case 4:  return "cmyk";
         default: return "unknown";
     }
+}
+
+static QPDFObjectHandle ensurePageResourcesDictionary(QPDFPageObjectHelper& page) {
+    QPDFObjectHandle resources = page.getAttribute("/Resources", true);
+    if (resources.isDictionary()) {
+        return resources;
+    }
+
+    QPDFObjectHandle newResources = QPDFObjectHandle::newDictionary();
+    page.getObjectHandle().replaceKey("/Resources", newResources);
+    return newResources;
+}
+
+static QPDFObjectHandle ensureMutableXObjectDictionary(QPDFObjectHandle& resources) {
+    QPDFObjectHandle xObjects = resources.getKey("/XObject");
+    if (!xObjects.isDictionary()) {
+        xObjects = QPDFObjectHandle::newDictionary();
+        resources.replaceKey("/XObject", xObjects);
+        return xObjects;
+    }
+
+    if (xObjects.isIndirect()) {
+        xObjects = xObjects.shallowCopy();
+        resources.replaceKey("/XObject", xObjects);
+    }
+
+    return xObjects;
 }
 
 // ---------------------------------------------------------------------------
@@ -235,6 +263,102 @@ std::vector<uint8_t> QpdfEngine::mergePdfs(const std::vector<std::vector<uint8_t
         return bufferToVec(writer.getBufferSharedPointer());
     } catch (const std::exception& e) {
         throw std::runtime_error(std::string("mergePdfs failed: ") + e.what());
+    }
+}
+
+// ---------------------------------------------------------------------------
+// QpdfEngine::watermarkPdf
+// ---------------------------------------------------------------------------
+
+std::vector<uint8_t> QpdfEngine::watermarkPdf(
+    const std::vector<uint8_t>& input,
+    const std::vector<uint8_t>& watermark,
+    bool underlay,
+    const std::vector<int>& pages,
+    const std::string& password,
+    const std::string& watermarkPassword)
+{
+    try {
+        QPDF pdf;
+        pdf.processMemoryFile(
+            "input.pdf",
+            reinterpret_cast<const char*>(input.data()),
+            input.size(),
+            password.empty() ? nullptr : password.c_str());
+
+        QPDF watermarkPdf;
+        watermarkPdf.processMemoryFile(
+            "watermark.pdf",
+            reinterpret_cast<const char*>(watermark.data()),
+            watermark.size(),
+            watermarkPassword.empty() ? nullptr : watermarkPassword.c_str());
+
+        auto destinationPages = QPDFPageDocumentHelper(pdf).getAllPages();
+        if (destinationPages.empty()) {
+            throw std::runtime_error("input PDF has no pages");
+        }
+
+        auto watermarkPages = QPDFPageDocumentHelper(watermarkPdf).getAllPages();
+        if (watermarkPages.empty()) {
+            throw std::runtime_error("watermark PDF has no pages");
+        }
+
+        std::vector<int> targetPages = pages;
+        if (targetPages.empty()) {
+            targetPages.reserve(destinationPages.size());
+            for (int i = 0; i < static_cast<int>(destinationPages.size()); ++i) {
+                targetPages.push_back(i);
+            }
+        }
+
+        std::map<int, QPDFObjectHandle> copiedFormXObjects;
+        auto getCopiedFormXObject = [&](int watermarkPageIndex) -> QPDFObjectHandle {
+            auto found = copiedFormXObjects.find(watermarkPageIndex);
+            if (found != copiedFormXObjects.end()) {
+                return found->second;
+            }
+
+            QPDFObjectHandle foreignForm = watermarkPages.at(static_cast<size_t>(watermarkPageIndex)).getFormXObjectForPage();
+            QPDFObjectHandle copied = pdf.copyForeignObject(foreignForm);
+            copiedFormXObjects.emplace(watermarkPageIndex, copied);
+            return copied;
+        };
+
+        for (size_t i = 0; i < targetPages.size(); ++i) {
+            int targetPageIndex = targetPages[i];
+            if (targetPageIndex < 0 || targetPageIndex >= static_cast<int>(destinationPages.size())) {
+                throw std::runtime_error("watermark page index out of range: " + std::to_string(targetPageIndex));
+            }
+
+            QPDFPageObjectHelper& destinationPage = destinationPages.at(static_cast<size_t>(targetPageIndex));
+            int watermarkPageIndex = 0;
+            QPDFObjectHandle stampFo = getCopiedFormXObject(watermarkPageIndex);
+
+            QPDFObjectHandle resources = ensurePageResourcesDictionary(destinationPage);
+            int minSuffix = 1;
+            std::string resourceName = resources.getUniqueResourceName("/Fx", minSuffix);
+
+            QPDFMatrix m;
+            std::string placement = destinationPage.placeFormXObject(stampFo, resourceName, destinationPage.getTrimBox().getArrayAsRectangle(), m);
+            if (placement.empty()) {
+                continue;
+            }
+
+            QPDFObjectHandle xObjects = ensureMutableXObjectDictionary(resources);
+            xObjects.replaceKey(resourceName, stampFo);
+
+            std::string isolatedPlacement = std::string("q\n") + placement + "\nQ\n";
+            destinationPage.addPageContents(pdf.newStream(isolatedPlacement), underlay);
+        }
+
+        QPDFWriter writer(pdf);
+        writer.setOutputMemory();
+        writer.setObjectStreamMode(qpdf_o_generate);
+        writer.write();
+
+        return bufferToVec(writer.getBufferSharedPointer());
+    } catch (const std::exception& e) {
+        throw std::runtime_error(std::string("watermarkPdf failed: ") + e.what());
     }
 }
 

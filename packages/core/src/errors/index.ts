@@ -11,6 +11,7 @@ export {
     QpdfOrganizeError,
     QpdfSplitError,
     QpdfValidationError,
+    QpdfWatermarkError,
 } from "./qpdf.error.js";
 export {
     GhostscriptCompressionError,

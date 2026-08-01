@@ -6,6 +6,8 @@
 using namespace emscripten;
 
 EMSCRIPTEN_BINDINGS(qpdf_module) {
+    register_vector<int>("VectorInt");
+
     value_object<CompressionOptions>("CompressionOptions")
         .field("compressionLevel", &CompressionOptions::compressionLevel)
         .field("recompressFlate", &CompressionOptions::recompressFlate)
@@ -15,10 +17,15 @@ EMSCRIPTEN_BINDINGS(qpdf_module) {
         .field("removeUnreferencedResources", &CompressionOptions::removeUnreferencedResources)
         .field("linearize", &CompressionOptions::linearize);
 
+    value_object<WatermarkOptions>("WatermarkOptions")
+        .field("underlay", &WatermarkOptions::underlay)
+        .field("pages", &WatermarkOptions::pages);
+
     function("compressPdf", &compressPdf, allow_raw_pointers());
     function("splitPages", &splitPages);
     function("mergePdfs", &mergePdfs);
     function("extractImages", &extractImages);
+    function("watermarkPdf", &watermarkPdf);
     function("getQpdfVersion", &getQpdfVersion);
 
     class_<QPDFWrapper>("QPDF")

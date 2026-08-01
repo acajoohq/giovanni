@@ -10,6 +10,7 @@ export { inspectPdf, checkPdf } from "./operations/inspect.js";
 export { splitPdf } from "./operations/split.js";
 export { mergePdfs } from "./operations/merge.js";
 export { organizePdf } from "./operations/organize.js";
+export { watermarkPdf } from "./operations/watermark.js";
 export { extractImages } from "./operations/extract-images.js";
 
 // error classes
@@ -24,6 +25,7 @@ export {
     QpdfImageExtractionError,
     QpdfConversionError,
     QpdfOrganizeError,
+    QpdfWatermarkError,
     isGhostscriptError,
     GhostscriptError,
     GhostscriptInitError,
@@ -50,6 +52,9 @@ export type {
     QpdfCheckResult,
     QpdfDocumentInfo,
     SplitResult,
+    WatermarkOptions,
+    WatermarkPlacement,
+    WatermarkResult,
 } from "./types/index.js";
 
 // binding registry — swap WASM for JSI, native addons, or test stubs
@@ -60,6 +65,7 @@ export type {
     NativeDocumentInfo,
     NativeExtractedImage,
     NativePixelColorModel,
+    NativeWatermarkOptions,
     NativeWriteOptions,
     QpdfBinding,
 } from "./bindings/index.js";

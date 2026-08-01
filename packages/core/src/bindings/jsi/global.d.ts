@@ -38,6 +38,7 @@ interface GiovanniJsiGlobal {
     writePdf(data: ArrayBuffer, opts: object, password?: string): ArrayBuffer;
     splitPages(data: ArrayBuffer): ArrayBuffer[];
     mergePdfs(inputs: ArrayBuffer[]): ArrayBuffer;
+    watermarkPdf?(data: ArrayBuffer, watermark: ArrayBuffer, opts: object, password?: string, watermarkPassword?: string): ArrayBuffer;
     getDocumentInfo(data: ArrayBuffer, password?: string): GiovanniJsiDocumentInfo;
     extractImages(data: ArrayBuffer): GiovanniJsiExtractedImage[];
 }

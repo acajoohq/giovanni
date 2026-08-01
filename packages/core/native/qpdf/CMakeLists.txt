@@ -56,6 +56,7 @@ set(QPDF_WASM_SOURCES
   bindings/emscripten/api/split.cc
   bindings/emscripten/api/merge.cc
   bindings/emscripten/api/extract_images.cc
+  bindings/emscripten/api/watermark.cc
   bindings/emscripten/api/qpdf_wrapper.cc
   ${GIOVANNI_NATIVE_ROOT}/impl/qpdf/qpdf_engine.cc
 )

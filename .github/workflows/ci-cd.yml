@@ -82,6 +82,7 @@ jobs:
         name: ${{ matrix.check.name }}
         runs-on: ubuntu-latest
         needs: changeset-guard
+        if: ${{ always() && (github.event_name != 'pull_request' || needs.changeset-guard.result == 'success') }}
 
         strategy:
             fail-fast: false

@@ -65,8 +65,10 @@ jobs:
                       const hasChangeset = changedFiles.some(
                         (name) => name.startsWith(".changeset/") && name.endsWith(".md"),
                       );
+                      const isMarkdownFile = (name) => /\.mdx?$/i.test(name);
                       const hasReleaseImpact = changedFiles.some((name) =>
-                        releaseImpactPrefixes.some((prefix) => name.startsWith(prefix)),
+                        releaseImpactPrefixes.some((prefix) => name.startsWith(prefix)) &&
+                        !isMarkdownFile(name),
                       );
 
                       core.info(`Changed files: ${changedFiles.length}`);

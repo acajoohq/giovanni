@@ -27,11 +27,11 @@ env:
 jobs:
     changeset-guard:
         name: Changeset Guard
-        if: github.event_name == 'pull_request'
         runs-on: ubuntu-latest
 
         steps:
             - name: Validate changeset presence for releasable changes
+              if: github.event_name == 'pull_request'
               uses: actions/github-script@v7
               with:
                   script: |
@@ -82,7 +82,6 @@ jobs:
         name: ${{ matrix.check.name }}
         runs-on: ubuntu-latest
         needs: changeset-guard
-        if: ${{ always() && (github.event_name != 'pull_request' || needs.changeset-guard.result == 'success') }}
 
         strategy:
             fail-fast: false

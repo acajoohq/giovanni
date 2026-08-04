@@ -11,7 +11,7 @@ apps/*/dist/
 packages/*/dist/
 packages/*/build/
 apps/*/.turbo/
-apps/**/.vitepress/
+apps/**/src/.vitepress/
 packages/*/.turbo/
 packages/*/python/
 packages/*/.tmp/

@@ -59,6 +59,13 @@ importers:
         version: link:../web
 
   apps/documentation:
+    dependencies:
+      '@fontsource-variable/inter':
+        specifier: ^5.2.8
+        version: 5.2.8
+      '@fontsource-variable/rethink-sans':
+        specifier: ^5.2.8
+        version: 5.2.8
     devDependencies:
       vitepress:
         specifier: 2.0.0-alpha.19

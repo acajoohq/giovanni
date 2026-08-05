@@ -6,16 +6,16 @@ Ces endpoints sont exportés par `@acajoo/giovanni-core` et constituent la surfa
 
 ```ts
 import {
-  compressPdf,
-  getAvailableCompressionEngines,
-  initCompressionEngine,
-  inspectPdf,
-  checkPdf,
-  splitPdf,
-  mergePdfs,
-  organizePdf,
-  watermarkPdf,
-  extractImages,
+    compressPdf,
+    getAvailableCompressionEngines,
+    initCompressionEngine,
+    inspectPdf,
+    checkPdf,
+    splitPdf,
+    mergePdfs,
+    organizePdf,
+    watermarkPdf,
+    extractImages,
 } from "@acajoo/giovanni-core";
 ```
 

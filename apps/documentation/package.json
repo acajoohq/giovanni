@@ -4,15 +4,15 @@
     "private": true,
     "type": "module",
     "scripts": {
-    "dev": "vitepress dev src",
-    "build": "vitepress build src",
-    "preview": "vitepress preview src"
-  },
-  "dependencies": {
-    "@fontsource-variable/inter": "^5.2.8",
-    "@fontsource-variable/rethink-sans": "^5.2.8"
-  },
-  "devDependencies": {
-    "vitepress": "2.0.0-alpha.19"
-  }
+        "dev": "vitepress dev src",
+        "build": "vitepress build src",
+        "preview": "vitepress preview src"
+    },
+    "dependencies": {
+        "@fontsource-variable/inter": "^5.2.8",
+        "@fontsource-variable/rethink-sans": "^5.2.8"
+    },
+    "devDependencies": {
+        "vitepress": "2.0.0-alpha.19"
+    }
 }

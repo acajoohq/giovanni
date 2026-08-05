@@ -6,16 +6,16 @@ These endpoints are exported by `@acajoo/giovanni-core` and represent the primar
 
 ```ts
 import {
-  compressPdf,
-  getAvailableCompressionEngines,
-  initCompressionEngine,
-  inspectPdf,
-  checkPdf,
-  splitPdf,
-  mergePdfs,
-  organizePdf,
-  watermarkPdf,
-  extractImages,
+    compressPdf,
+    getAvailableCompressionEngines,
+    initCompressionEngine,
+    inspectPdf,
+    checkPdf,
+    splitPdf,
+    mergePdfs,
+    organizePdf,
+    watermarkPdf,
+    extractImages,
 } from "@acajoo/giovanni-core";
 ```
 

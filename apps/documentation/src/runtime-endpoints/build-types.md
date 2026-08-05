@@ -4,11 +4,11 @@ This page centralizes the endpoints exposed for each build/runtime type.
 
 ## Overview
 
-| Build Type | Package / Surface | Primary Endpoints |
-| --- | --- | --- |
-| WASM (Web/Node) | `@acajoo/giovanni-core` | `compressPdf`, `getAvailableCompressionEngines`, `initCompressionEngine`, `inspectPdf`, `checkPdf`, `splitPdf`, `mergePdfs`, `organizePdf`, `watermarkPdf`, `extractImages` |
-| React Native JSI | `@acajoo/giovanni-react-native` + `globalThis.giovanni` | `setupGiovanni`, `getVersion`, `writePdf`, `splitPages`, `mergePdfs`, `getDocumentInfo`, `extractImages` |
-| Native C FFI | `giovanni_c.h` | `giovanni_qpdf_create`, `giovanni_qpdf_destroy`, `giovanni_get_version`, `giovanni_write_options_default`, `giovanni_write_pdf`, `giovanni_split_pages`, `giovanni_merge_pdfs`, `giovanni_get_document_info`, `giovanni_buffer_free`, `giovanni_pages_free`, `giovanni_document_info_free`, `giovanni_last_error` |
+| Build Type       | Package / Surface                                       | Primary Endpoints                                                                                                                                                                                                                                                                                                 |
+| ---------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WASM (Web/Node)  | `@acajoo/giovanni-core`                                 | `compressPdf`, `getAvailableCompressionEngines`, `initCompressionEngine`, `inspectPdf`, `checkPdf`, `splitPdf`, `mergePdfs`, `organizePdf`, `watermarkPdf`, `extractImages`                                                                                                                                       |
+| React Native JSI | `@acajoo/giovanni-react-native` + `globalThis.giovanni` | `setupGiovanni`, `getVersion`, `writePdf`, `splitPages`, `mergePdfs`, `getDocumentInfo`, `extractImages`                                                                                                                                                                                                          |
+| Native C FFI     | `giovanni_c.h`                                          | `giovanni_qpdf_create`, `giovanni_qpdf_destroy`, `giovanni_get_version`, `giovanni_write_options_default`, `giovanni_write_pdf`, `giovanni_split_pages`, `giovanni_merge_pdfs`, `giovanni_get_document_info`, `giovanni_buffer_free`, `giovanni_pages_free`, `giovanni_document_info_free`, `giovanni_last_error` |
 
 ## Details by Build
 
@@ -18,16 +18,16 @@ Application import:
 
 ```ts
 import {
-  compressPdf,
-  getAvailableCompressionEngines,
-  initCompressionEngine,
-  inspectPdf,
-  checkPdf,
-  splitPdf,
-  mergePdfs,
-  organizePdf,
-  watermarkPdf,
-  extractImages,
+    compressPdf,
+    getAvailableCompressionEngines,
+    initCompressionEngine,
+    inspectPdf,
+    checkPdf,
+    splitPdf,
+    mergePdfs,
+    organizePdf,
+    watermarkPdf,
+    extractImages,
 } from "@acajoo/giovanni-core";
 ```
 

@@ -4,52 +4,52 @@
  */
 
 :root {
-  /* Brand accent (see apps/web --brand / --brand-hover / --brand-dark) */
-  --vp-c-brand-1: #b33e29;
-  --vp-c-brand-2: #d65037;
-  --vp-c-brand-3: #eb5a3f;
-  --vp-c-brand-soft: rgba(235, 90, 63, 0.14);
+    /* Brand accent (see apps/web --brand / --brand-hover / --brand-dark) */
+    --vp-c-brand-1: #b33e29;
+    --vp-c-brand-2: #d65037;
+    --vp-c-brand-3: #eb5a3f;
+    --vp-c-brand-soft: rgba(235, 90, 63, 0.14);
 
-  /* Surfaces (see apps/web --app-bg / --app-workspace / --app-panel / --app-surface-raised) */
-  --vp-c-bg: #fafafa;
-  --vp-c-bg-alt: #f5f5f5;
-  --vp-c-bg-elv: #ffffff;
-  --vp-c-bg-soft: #f0f0f0;
+    /* Surfaces (see apps/web --app-bg / --app-workspace / --app-panel / --app-surface-raised) */
+    --vp-c-bg: #fafafa;
+    --vp-c-bg-alt: #f5f5f5;
+    --vp-c-bg-elv: #ffffff;
+    --vp-c-bg-soft: #f0f0f0;
 
-  /* Borders (see apps/web --app-border / --app-border-strong) */
-  --vp-c-border: #d4d4d4;
-  --vp-c-divider: #e5e5e5;
-  --vp-c-gutter: #e5e5e5;
+    /* Borders (see apps/web --app-border / --app-border-strong) */
+    --vp-c-border: #d4d4d4;
+    --vp-c-divider: #e5e5e5;
+    --vp-c-gutter: #e5e5e5;
 
-  /* Text (see apps/web --app-text / --app-text-muted / --app-text-subtle) */
-  --vp-c-text-1: #171717;
-  --vp-c-text-2: #404040;
-  --vp-c-text-3: #717171;
+    /* Text (see apps/web --app-text / --app-text-muted / --app-text-subtle) */
+    --vp-c-text-1: #171717;
+    --vp-c-text-2: #404040;
+    --vp-c-text-3: #717171;
 
-  --vp-home-hero-name-color: var(--vp-c-brand-1);
-  --vp-home-hero-name-background: transparent;
+    --vp-home-hero-name-color: var(--vp-c-brand-1);
+    --vp-home-hero-name-background: transparent;
 
-  --vp-font-family-base: "Inter Variable", -apple-system, BlinkMacSystemFont, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --vp-font-family-base: "Inter Variable", -apple-system, BlinkMacSystemFont, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .dark {
-  --vp-c-brand-1: #ff7b63;
-  --vp-c-brand-2: #eb5a3f;
-  --vp-c-brand-3: #d65037;
-  --vp-c-brand-soft: rgba(235, 90, 63, 0.16);
+    --vp-c-brand-1: #ff7b63;
+    --vp-c-brand-2: #eb5a3f;
+    --vp-c-brand-3: #d65037;
+    --vp-c-brand-soft: rgba(235, 90, 63, 0.16);
 
-  --vp-c-bg: #0a0a0a;
-  --vp-c-bg-alt: #0f0f0f;
-  --vp-c-bg-elv: #141414;
-  --vp-c-bg-soft: #181818;
+    --vp-c-bg: #0a0a0a;
+    --vp-c-bg-alt: #0f0f0f;
+    --vp-c-bg-elv: #141414;
+    --vp-c-bg-soft: #181818;
 
-  --vp-c-border: #333333;
-  --vp-c-divider: #282828;
-  --vp-c-gutter: #282828;
+    --vp-c-border: #333333;
+    --vp-c-divider: #282828;
+    --vp-c-gutter: #282828;
 
-  --vp-c-text-1: #ededed;
-  --vp-c-text-2: #d4d4d4;
-  --vp-c-text-3: #858585;
+    --vp-c-text-1: #ededed;
+    --vp-c-text-2: #d4d4d4;
+    --vp-c-text-3: #858585;
 }
 
 h1,
@@ -58,27 +58,27 @@ h3,
 .VPHero .name,
 .VPHero .text,
 .VPNavBarTitle .title {
-  font-family: "Rethink Sans Variable", "Inter Variable", sans-serif;
+    font-family: "Rethink Sans Variable", "Inter Variable", sans-serif;
 }
 
 .VPContent a {
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
 }
 
 *:focus-visible {
-  outline: 3px solid var(--vp-c-brand-1);
-  outline-offset: 2px;
-  border-radius: 2px;
+    outline: 3px solid var(--vp-c-brand-1);
+    outline-offset: 2px;
+    border-radius: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

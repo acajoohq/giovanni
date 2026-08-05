@@ -4,15 +4,15 @@
 
 ```ts
 function organizePdf(
-  input: Uint8Array | ArrayBuffer,
-  options: {
-    password?: string;
-    pages: number[];
-  }
+    input: Uint8Array | ArrayBuffer,
+    options: {
+        password?: string;
+        pages: number[];
+    },
 ): Promise<{
-  data: Uint8Array;
-  pageCount: number;
-  originalPageCount: number;
+    data: Uint8Array;
+    pageCount: number;
+    originalPageCount: number;
 }>;
 ```
 

@@ -4,17 +4,17 @@
 
 ```ts
 function inspectPdf(
-  input: Uint8Array | ArrayBuffer,
-  options?: { password?: string }
+    input: Uint8Array | ArrayBuffer,
+    options?: { password?: string },
 ): Promise<{
-  numPages: number;
-  pdfVersion: string;
-  isEncrypted: boolean;
-  isLinearized: boolean;
-  title?: string;
-  author?: string;
-  subject?: string;
-  creator?: string;
+    numPages: number;
+    pdfVersion: string;
+    isEncrypted: boolean;
+    isLinearized: boolean;
+    title?: string;
+    author?: string;
+    subject?: string;
+    creator?: string;
 }>;
 ```
 
@@ -24,17 +24,17 @@ Returns document metadata for a PDF.
 
 ```ts
 function checkPdf(
-  input: Uint8Array | ArrayBuffer,
-  options?: { password?: string }
+    input: Uint8Array | ArrayBuffer,
+    options?: { password?: string },
 ): Promise<{
-  info: {
-    numPages: number;
-    pdfVersion: string;
-    isEncrypted: boolean;
-    isLinearized: boolean;
-  };
-  isValid: boolean;
-  warnings: string[];
+    info: {
+        numPages: number;
+        pdfVersion: string;
+        isEncrypted: boolean;
+        isLinearized: boolean;
+    };
+    isValid: boolean;
+    warnings: string[];
 }>;
 ```
 

@@ -4,8 +4,8 @@
 
 ```ts
 function splitPdf(input: Uint8Array | ArrayBuffer): Promise<{
-  pages: Uint8Array[];
-  pageCount: number;
+    pages: Uint8Array[];
+    pageCount: number;
 }>;
 ```
 

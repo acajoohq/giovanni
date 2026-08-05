@@ -3,11 +3,9 @@
 ## mergePdfs
 
 ```ts
-function mergePdfs(
-  inputs: Array<Uint8Array | ArrayBuffer>
-): Promise<{
-  data: Uint8Array;
-  sourceCount: number;
+function mergePdfs(inputs: Array<Uint8Array | ArrayBuffer>): Promise<{
+    data: Uint8Array;
+    sourceCount: number;
 }>;
 ```
 

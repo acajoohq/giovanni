@@ -1,12 +1,12 @@
 # Runtime Endpoints Overview
 
-Cette section documente les endpoints runtime bas niveau (JSI et C FFI).
+These endpoints expose low-level runtime bridge APIs under React Native JSI and native C FFI.
 
-Point d entree recommande:
+Recommended entry point:
 
-- [Endpoints centralises par type de build](/runtime-endpoints/build-types)
+- [Endpoints by Build Type (Centralized)](/runtime-endpoints/build-types)
 
-Pages detaillees:
+Detailed pages:
 
 - [React Native JSI Endpoints](/runtime-endpoints/jsi)
 - [Native C Endpoints](/runtime-endpoints/native-c)

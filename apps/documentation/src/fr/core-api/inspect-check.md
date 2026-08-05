@@ -1,4 +1,4 @@
-# Inspect and Check Endpoints
+# Endpoints Inspecter et Vérifier
 
 ## inspectPdf
 
@@ -18,7 +18,7 @@ function inspectPdf(
 }>;
 ```
 
-Returns document metadata for a PDF.
+Retourne les métadonnées d'un document PDF.
 
 ## checkPdf
 
@@ -38,9 +38,9 @@ function checkPdf(
 }>;
 ```
 
-Performs a validity check and returns warnings for recoverable PDF issues.
+Effectue un contrôle de validité et retourne des avertissements pour les problèmes de PDF récupérables.
 
-Example:
+Exemple :
 
 ```ts
 const inspection = await inspectPdf(pdfBytes);

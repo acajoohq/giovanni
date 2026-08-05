@@ -1,4 +1,4 @@
-# mergePdfs Endpoint
+# Endpoint mergePdfs
 
 ## mergePdfs
 
@@ -11,9 +11,9 @@ function mergePdfs(
 }>;
 ```
 
-Merges multiple PDFs into a single output PDF.
+Fusionne plusieurs PDF en un seul PDF de sortie.
 
-Example:
+Exemple :
 
 ```ts
 const merged = await mergePdfs([pdfA, pdfB, pdfC]);

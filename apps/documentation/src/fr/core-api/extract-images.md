@@ -1,4 +1,4 @@
-# extractImages Endpoint
+# Endpoint extractImages
 
 ## extractImages
 
@@ -27,9 +27,9 @@ function extractImages(input: Uint8Array | ArrayBuffer): Promise<{
 }>;
 ```
 
-Extracts embedded raster images from a PDF and returns metadata plus image payloads.
+Extrait les images matricielles intégrées d'un PDF et retourne leurs métadonnées ainsi que les données image.
 
-Example:
+Exemple :
 
 ```ts
 const { images } = await extractImages(pdfBytes);

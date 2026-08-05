@@ -1,4 +1,4 @@
-# watermarkPdf Endpoint
+# Endpoint watermarkPdf
 
 ## watermarkPdf
 
@@ -20,9 +20,9 @@ function watermarkPdf(
 }>;
 ```
 
-Applies the first page of a watermark PDF to selected or all pages of the input PDF.
+Applique la première page d'un PDF de filigrane aux pages sélectionnées ou à toutes les pages du PDF d'entrée.
 
-Example:
+Exemple :
 
 ```ts
 const result = await watermarkPdf(pdfBytes, {

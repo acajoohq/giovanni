@@ -1,4 +1,4 @@
-# organizePdf Endpoint
+# Endpoint organizePdf
 
 ## organizePdf
 
@@ -16,9 +16,9 @@ function organizePdf(
 }>;
 ```
 
-Reorders, duplicates, or removes pages using zero-based indices.
+Réorganise, duplique ou supprime des pages à partir d'indices commençant à zéro.
 
-Example:
+Exemple :
 
 ```ts
 const reorganized = await organizePdf(pdfBytes, { pages: [2, 1, 0] });

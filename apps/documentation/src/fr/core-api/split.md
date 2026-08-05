@@ -1,4 +1,4 @@
-# splitPdf Endpoint
+# Endpoint splitPdf
 
 ## splitPdf
 
@@ -9,9 +9,9 @@ function splitPdf(input: Uint8Array | ArrayBuffer): Promise<{
 }>;
 ```
 
-Splits one PDF into one PDF per page.
+Divise un PDF en un PDF par page.
 
-Example:
+Exemple :
 
 ```ts
 const result = await splitPdf(pdfBytes);

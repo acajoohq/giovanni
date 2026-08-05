@@ -3,15 +3,15 @@ layout: home
 
 hero:
   name: "Giovanni Core API"
-  text: "Operations PDF pour @acajoo/giovanni-core"
-  tagline: "Documentation FR pour compression, inspection, split, merge, organisation, watermark et extraction d images."
+  text: "Opérations PDF pour @acajoo/giovanni-core"
+  tagline: "Documentation de référence pour les API de compression, inspection, division, fusion, organisation, filigrane et extraction d'images."
   actions:
     - theme: brand
-      text: Vue API Core
+      text: Vue d'ensemble de l'API Core
       link: /fr/core-api/
     - theme: alt
-      text: Endpoints par Build
-      link: /fr/runtime-endpoints/build-types
+      text: Endpoint de Compression
+      link: /fr/core-api/compress
 
 features:
   - title: Compression

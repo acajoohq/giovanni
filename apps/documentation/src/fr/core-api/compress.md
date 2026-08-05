@@ -1,4 +1,4 @@
-# Compression Endpoints
+# Endpoints de Compression
 
 ## getAvailableCompressionEngines
 
@@ -6,7 +6,7 @@
 function getAvailableCompressionEngines(): Array<"qpdf" | "ghostscript">;
 ```
 
-Returns the list of supported compression engines.
+Retourne la liste des moteurs de compression pris en charge.
 
 ## initCompressionEngine
 
@@ -14,7 +14,7 @@ Returns the list of supported compression engines.
 function initCompressionEngine(engine: "qpdf" | "ghostscript"): Promise<void>;
 ```
 
-Pre-initializes a compression engine runtime.
+Pré-initialise le runtime d'un moteur de compression.
 
 ## compressPdf
 
@@ -57,7 +57,7 @@ function compressPdf(
 }>;
 ```
 
-Example:
+Exemple :
 
 ```ts
 const result = await compressPdf(pdfBytes, {

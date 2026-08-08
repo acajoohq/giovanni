@@ -326,6 +326,25 @@ jobs:
                       );
                       await run(github, context, core);
 
+            - name: Deploy documentation to Cloudflare Pages (production)
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: pages deploy apps/documentation/src/.vitepress/dist --project-name giovanni-docs --branch master
+
+            - name: Deploy documentation preview to Cloudflare Pages
+              if: >
+                  github.event_name == 'pull_request' &&
+                  github.event.pull_request.base.ref == 'master' &&
+                  github.event.pull_request.head.repo.full_name == github.repository
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: pages deploy apps/documentation/src/.vitepress/dist --project-name giovanni-docs --branch pr-${{ github.event.pull_request.number }}
+
     desktop:
         name: Desktop Build
         runs-on: ubuntu-latest

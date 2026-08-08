@@ -326,6 +326,25 @@ jobs:
                       );
                       await run(github, context, core);
 
+            - name: Deploy documentation Worker (production)
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: deploy --config wrangler-docs.jsonc
+
+            - name: Upload documentation Worker preview
+              if: >
+                  github.event_name == 'pull_request' &&
+                  github.event.pull_request.base.ref == 'master' &&
+                  github.event.pull_request.head.repo.full_name == github.repository
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: versions upload --config wrangler-docs.jsonc --preview-alias pr-${{ github.event.pull_request.number }} --message "PR ${{ github.event.pull_request.number }}"
+
     desktop:
         name: Desktop Build
         runs-on: ubuntu-latest

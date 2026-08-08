@@ -1,0 +1,8 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "giovanni-docs",
+    "compatibility_date": "2026-04-26",
+    "assets": {
+        "directory": "./apps/documentation/src/.vitepress/dist",
+    },
+}

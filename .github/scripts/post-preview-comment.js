@@ -40,7 +40,7 @@ function buildCommentBody({ vid, previewUrl, aliasUrl, docsPreviewUrl, docsAlias
 
     const docsPreviewCell = docsPreviewUrl ? `[Open Last Commit Preview](${docsPreviewUrl})` : "—";
     const docsAliasCell = docsAliasUrl ? `[Open PR Preview](${docsAliasUrl})` : "—";
-    const docsRow = (docsPreviewUrl || docsAliasUrl) ? `| 📄 Docs | — | ${docsPreviewCell} | ${docsAliasCell} |` : null;
+    const docsRow = docsPreviewUrl || docsAliasUrl ? `| 📄 Docs | — | ${docsPreviewCell} | ${docsAliasCell} |` : null;
 
     const body =
         !vid && !previewUrl && !aliasUrl

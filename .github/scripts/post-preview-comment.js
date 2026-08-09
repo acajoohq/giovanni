@@ -18,6 +18,8 @@ function readEnv() {
         vid: env("VERSION_ID") || pick(/Worker Version ID:\s*(\S+)/i),
         previewUrl: env("DEPLOYMENT_URL") || pick(/Version Preview URL:\s*(\S+)/i),
         aliasUrl: env("DEPLOYMENT_ALIAS_URL") || pick(/Version Preview Alias URL:\s*(\S+)/i),
+        docsPreviewUrl: env("DOCS_DEPLOYMENT_URL"),
+        docsAliasUrl: env("DOCS_DEPLOYMENT_ALIAS_URL"),
         sha: env("SOURCE_SHA"),
     };
 }
@@ -26,7 +28,7 @@ function readEnv() {
  * @param {{ vid: string; previewUrl: string; aliasUrl: string; sha: string }} params
  * @returns {{ body: string; shortSha: string }}
  */
-function buildCommentBody({ vid, previewUrl, aliasUrl, sha }) {
+function buildCommentBody({ vid, previewUrl, aliasUrl, docsPreviewUrl, docsAliasUrl, sha }) {
     const { owner, repo } = context.repo;
     const shortSha = sha ? sha.substring(0, 7) : "";
     const shaCell = shortSha ? `[\`${shortSha}\`](https://github.com/${owner}/${repo}/commit/${sha})` : "—";
@@ -35,6 +37,10 @@ function buildCommentBody({ vid, previewUrl, aliasUrl, sha }) {
     const idCell = vid ? `\`${vid.replace(/`/g, "'")}\`` : "—";
     const previewCell = previewUrl ? `[Open Last Commit Preview](${previewUrl})` : "—";
     const aliasCell = aliasUrl ? `[Open PR Preview](${aliasUrl})` : "—";
+
+    const docsPreviewCell = docsPreviewUrl ? `[Open Last Commit Preview](${docsPreviewUrl})` : "—";
+    const docsAliasCell = docsAliasUrl ? `[Open PR Preview](${docsAliasUrl})` : "—";
+    const docsRow = (docsPreviewUrl || docsAliasUrl) ? `| 📄 Docs | — | ${docsPreviewCell} | ${docsAliasCell} |` : null;
 
     const body =
         !vid && !previewUrl && !aliasUrl
@@ -48,9 +54,10 @@ function buildCommentBody({ vid, previewUrl, aliasUrl, sha }) {
                   "",
                   "From the latest successful **versions upload** on this PR:",
                   "",
-                  `| 🔖 Version | 🌐 This upload | 📌 Stable preview |`,
-                  `| :--- | :--- | :--- |`,
-                  `| ${idCell} | ${previewCell} | ${aliasCell} |`,
+                  `| App | 🔖 Version | 🌐 This upload | 📌 Stable preview |`,
+                  `| :--- | :--- | :--- | :--- |`,
+                  `| 🌐 Web | ${idCell} | ${previewCell} | ${aliasCell} |`,
+                  ...(docsRow ? [docsRow] : []),
                   "",
               ].join("\n");
 

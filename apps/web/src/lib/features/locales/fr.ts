@@ -290,7 +290,11 @@ export const fr: Translations = {
             watermark: "PDF filigrane",
             selectedWatermark: "Filigrane sélectionné",
             noWatermarkSelected: "Aucun PDF filigrane sélectionné",
-            defaultText: "Texte du filigrane par défaut",
+            defaultText: "Texte du filigrane",
+            fontSize: "Taille de police",
+            opacity: "Opacité",
+            angle: "Angle",
+            pattern: "Motif",
             settings: "Paramètres",
             placement: "Position",
             pages: "Pages",
@@ -300,6 +304,10 @@ export const fr: Translations = {
         source: {
             default: "Par défaut",
             custom: "Fichier personnalisé",
+        },
+        pattern: {
+            tile: "Répété",
+            single: "Unique",
         },
         pageTarget: {
             all: "Toutes les pages",

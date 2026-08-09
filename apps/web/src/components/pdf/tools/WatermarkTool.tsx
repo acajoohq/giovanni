@@ -1,4 +1,4 @@
-import { formatBytes, inspectPdf, watermarkPdf, type WatermarkPlacement, type WatermarkResult } from "@acajoo/giovanni-core";
+import { formatBytes, inspectPdf, watermarkPdf, watermarkTextPdf, type WatermarkPlacement, type WatermarkResult, type WatermarkTextPattern } from "@acajoo/giovanni-core";
 import { RiAddLine } from "@remixicon/react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,10 +23,36 @@ import { BeforeAfterView } from "@/components/viewer/BeforeAfterView";
 import { useAsyncToolJob } from "@/hooks/useAsyncToolJob";
 import { usePendingFileHandler } from "@/hooks/usePendingFileHandler";
 import { downloadPdf, ensurePdfExtension, findFirstPdfFile, formatDuration, isPdfFile, pdfBaseName } from "@/utils/pdfTool.utils";
-import { createDefaultWatermarkPdf, createImageWatermarkPdf, DEFAULT_WATERMARK_TEXT, isImageWatermarkFile } from "@/utils/watermarkTemplate.utils";
+import { createImageWatermarkPdf, isImageWatermarkFile } from "@/utils/watermarkTemplate.utils";
 
 type WatermarkSourceMode = "default" | "custom";
 type WatermarkPageTargetMode = "all" | "custom";
+
+const FONT_SIZE_OPTIONS = [
+    { label: "32pt", value: "32" },
+    { label: "48pt", value: "48" },
+    { label: "64pt", value: "64" },
+    { label: "80pt", value: "80" },
+    { label: "96pt", value: "96" },
+    { label: "128pt", value: "128" },
+];
+
+const OPACITY_OPTIONS = [
+    { label: "5%", value: "0.05" },
+    { label: "10%", value: "0.10" },
+    { label: "15%", value: "0.15" },
+    { label: "20%", value: "0.20" },
+    { label: "30%", value: "0.30" },
+    { label: "50%", value: "0.50" },
+];
+
+const ANGLE_OPTIONS = [
+    { label: "0°", value: "0" },
+    { label: "30°", value: "30" },
+    { label: "45°", value: "45" },
+    { label: "60°", value: "60" },
+    { label: "90°", value: "90" },
+];
 
 function parseCustomPageSelection(value: string, pageCount: number): number[] {
     const rawTokens = value
@@ -78,7 +104,11 @@ export function WatermarkTool() {
     const [sourceFile, setSourceFile] = useState<File | null>(null);
     const [watermarkFile, setWatermarkFile] = useState<File | null>(null);
     const [watermarkSourceMode, setWatermarkSourceMode] = useState<WatermarkSourceMode>("default");
-    const [defaultWatermarkText, setDefaultWatermarkText] = useState(DEFAULT_WATERMARK_TEXT);
+    const [defaultWatermarkText, setDefaultWatermarkText] = useState("CONFIDENTIAL");
+    const [textFontSize, setTextFontSize] = useState("64");
+    const [textOpacity, setTextOpacity] = useState("0.15");
+    const [textAngle, setTextAngle] = useState("45");
+    const [textPattern, setTextPattern] = useState<WatermarkTextPattern>("tile");
     const [outputName, setOutputName] = useState("watermarked.pdf");
     const [placement, setPlacement] = useState<WatermarkPlacement>("overlay");
     const [sourcePageCount, setSourcePageCount] = useState(0);
@@ -160,12 +190,22 @@ export function WatermarkTool() {
         await runJob({
             execute: async () => {
                 const sourceBuffer = await sourceFile.arrayBuffer();
-                const watermarkBuffer =
-                    watermarkSourceMode === "custom" && watermarkFile
-                        ? isPdfFile(watermarkFile)
-                            ? new Uint8Array(await watermarkFile.arrayBuffer())
-                            : await createImageWatermarkPdf(watermarkFile)
-                        : createDefaultWatermarkPdf(defaultWatermarkText);
+
+                if (watermarkSourceMode === "default") {
+                    return watermarkTextPdf(sourceBuffer, {
+                        text: defaultWatermarkText,
+                        fontSize: Number(textFontSize),
+                        opacity: Number(textOpacity),
+                        angle: Number(textAngle),
+                        pattern: textPattern,
+                        placement,
+                        pages,
+                    });
+                }
+
+                const watermarkBuffer = isPdfFile(watermarkFile!)
+                    ? new Uint8Array(await watermarkFile!.arrayBuffer())
+                    : await createImageWatermarkPdf(watermarkFile!);
 
                 return watermarkPdf(sourceBuffer, {
                     watermark: watermarkBuffer,
@@ -179,7 +219,7 @@ export function WatermarkTool() {
                 message: t("watermark.status.applied", { count: nextResult.watermarkedPageCount }),
             }),
         });
-    }, [clearResult, customPageSelection, defaultWatermarkText, pageTargetMode, placement, runJob, setStatus, sourceFile, sourcePageCount, t, watermarkFile, watermarkSourceMode]);
+    }, [clearResult, customPageSelection, defaultWatermarkText, pageTargetMode, placement, runJob, setStatus, sourceFile, sourcePageCount, t, textAngle, textFontSize, textOpacity, textPattern, watermarkFile, watermarkSourceMode]);
 
     useEffect(() => {
         if (!sourceFile) {
@@ -198,7 +238,7 @@ export function WatermarkTool() {
         return () => {
             window.clearTimeout(timeoutId);
         };
-    }, [clearResult, customPageSelection, defaultWatermarkText, pageTargetMode, placement, runWatermark, sourceFile, watermarkFile, watermarkSourceMode]);
+    }, [clearResult, customPageSelection, defaultWatermarkText, pageTargetMode, placement, runWatermark, sourceFile, textAngle, textFontSize, textOpacity, textPattern, watermarkFile, watermarkSourceMode]);
 
     const handleDownload = () => {
         if (!result || !sourceFile) {
@@ -232,9 +272,42 @@ export function WatermarkTool() {
                         </SidebarToggleGroup>
                     </SidebarField>
                     {watermarkSourceMode === "default" ? (
-                        <SidebarField label={t("watermark.sidebar.defaultText")}>
-                            <SidebarInput value={defaultWatermarkText} onChange={(event) => setDefaultWatermarkText(event.currentTarget.value)} />
-                        </SidebarField>
+                        <>
+                            <SidebarField label={t("watermark.sidebar.defaultText")}>
+                                <SidebarInput value={defaultWatermarkText} onChange={(event) => setDefaultWatermarkText(event.currentTarget.value)} />
+                            </SidebarField>
+                            <SidebarField label={t("watermark.sidebar.fontSize")}>
+                                <SidebarSelect
+                                    options={FONT_SIZE_OPTIONS}
+                                    value={textFontSize}
+                                    onValueChange={setTextFontSize}
+                                />
+                            </SidebarField>
+                            <SidebarField label={t("watermark.sidebar.opacity")}>
+                                <SidebarSelect
+                                    options={OPACITY_OPTIONS}
+                                    value={textOpacity}
+                                    onValueChange={setTextOpacity}
+                                />
+                            </SidebarField>
+                            <SidebarField label={t("watermark.sidebar.angle")}>
+                                <SidebarSelect
+                                    options={ANGLE_OPTIONS}
+                                    value={textAngle}
+                                    onValueChange={setTextAngle}
+                                />
+                            </SidebarField>
+                            <SidebarField label={t("watermark.sidebar.pattern")}>
+                                <SidebarToggleGroup>
+                                    <SidebarToggle isActive={textPattern === "tile"} onClick={() => setTextPattern("tile")}>
+                                        {t("watermark.pattern.tile")}
+                                    </SidebarToggle>
+                                    <SidebarToggle isActive={textPattern === "single"} onClick={() => setTextPattern("single")}>
+                                        {t("watermark.pattern.single")}
+                                    </SidebarToggle>
+                                </SidebarToggleGroup>
+                            </SidebarField>
+                        </>
                     ) : (
                         <>
                             <SidebarField label={t("watermark.sidebar.watermark")}>

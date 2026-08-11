@@ -299,6 +299,26 @@ jobs:
                   echo "steps.cf_preview.outputs"
                   printf '%s' "${CF_PREVIEW_OUTPUTS_JSON}" | jq .
 
+            - name: Deploy documentation Worker (production)
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: deploy --config wrangler-docs.jsonc
+
+            - name: Upload documentation Worker preview
+              id: cf_docs_preview
+              if: >
+                  github.event_name == 'pull_request' &&
+                  github.event.pull_request.base.ref == 'master' &&
+                  github.event.pull_request.head.repo.full_name == github.repository
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  command: versions upload --config wrangler-docs.jsonc --preview-alias pr-${{ github.event.pull_request.number }} --message "PR ${{ github.event.pull_request.number }}"
+
             - name: Upsert Worker preview comment on PR
               if: >
                   github.event_name == 'pull_request' &&
@@ -311,6 +331,9 @@ jobs:
                   DEPLOYMENT_ALIAS_URL: ${{ steps.cf_preview.outputs.deployment-alias-url }}
                   VERSION_ID: ${{ steps.cf_preview.outputs.version-id }}
                   COMMAND_OUTPUT: ${{ steps.cf_preview.outputs.command-output }}
+                  DOCS_DEPLOYMENT_URL: ${{ steps.cf_docs_preview.outputs.deployment-url }}
+                  DOCS_DEPLOYMENT_ALIAS_URL: ${{ steps.cf_docs_preview.outputs.deployment-alias-url }}
+                  DOCS_COMMAND_OUTPUT: ${{ steps.cf_docs_preview.outputs.command-output }}
                   SOURCE_SHA: ${{ env.SOURCE_SHA }}
               with:
                   script: |

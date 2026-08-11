@@ -14,12 +14,15 @@ function readEnv() {
     const cmdOut = env("COMMAND_OUTPUT");
     const pick = (re) => cmdOut.match(re)?.[1]?.trim() ?? "";
 
+    const docsCmdOut = env("DOCS_COMMAND_OUTPUT");
+    const pickDocs = (re) => docsCmdOut.match(re)?.[1]?.trim() ?? "";
+
     return {
         vid: env("VERSION_ID") || pick(/Worker Version ID:\s*(\S+)/i),
         previewUrl: env("DEPLOYMENT_URL") || pick(/Version Preview URL:\s*(\S+)/i),
         aliasUrl: env("DEPLOYMENT_ALIAS_URL") || pick(/Version Preview Alias URL:\s*(\S+)/i),
-        docsPreviewUrl: env("DOCS_DEPLOYMENT_URL"),
-        docsAliasUrl: env("DOCS_DEPLOYMENT_ALIAS_URL"),
+        docsPreviewUrl: env("DOCS_DEPLOYMENT_URL") || pickDocs(/Version Preview URL:\s*(\S+)/i),
+        docsAliasUrl: env("DOCS_DEPLOYMENT_ALIAS_URL") || pickDocs(/Version Preview Alias URL:\s*(\S+)/i),
         sha: env("SOURCE_SHA"),
     };
 }

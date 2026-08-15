@@ -177,7 +177,9 @@ async function ensureGhostpdlSource(): Promise<string> {
     await writeFile(GHOSTPDL_ARCHIVE, Buffer.from(await response.arrayBuffer()));
 
     if (VENDOR_PINS.ghostscript.sha256) {
-        const hash = createHash("sha256").update(await readFile(GHOSTPDL_ARCHIVE)).digest("hex");
+        const hash = createHash("sha256")
+            .update(await readFile(GHOSTPDL_ARCHIVE))
+            .digest("hex");
         if (hash !== VENDOR_PINS.ghostscript.sha256) {
             throw new Error(`GhostPDL archive checksum mismatch: expected ${VENDOR_PINS.ghostscript.sha256}, got ${hash}`);
         }
@@ -332,11 +334,7 @@ async function main(): Promise<void> {
         `-DCMAKE_MSVC_RUNTIME_LIBRARY=${msvcRuntime}`,
         `-DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}`,
         ...(ghostscript
-            ? [
-                  `-DGIOVANNI_GHOSTSCRIPT_LIB=${ghostscript.lib}`,
-                  `-DGIOVANNI_GHOSTSCRIPT_DLL=${ghostscript.dll}`,
-                  `-DGIOVANNI_GHOSTSCRIPT_SOURCE_DIR=${ghostscript.sourceDir}`,
-              ]
+            ? [`-DGIOVANNI_GHOSTSCRIPT_LIB=${ghostscript.lib}`, `-DGIOVANNI_GHOSTSCRIPT_DLL=${ghostscript.dll}`, `-DGIOVANNI_GHOSTSCRIPT_SOURCE_DIR=${ghostscript.sourceDir}`]
             : []),
     ]);
 

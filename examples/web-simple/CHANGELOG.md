@@ -1,5 +1,12 @@
 # @example/web-simple
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`10e760c`](https://github.com/acajoohq/giovanni/commit/10e760c3e954f650c9732b95742201c91db56b52)]:
+    - @acajoo/giovanni-core@0.2.1
+
 ## 1.0.1
 
 ### Patch Changes

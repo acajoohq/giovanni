@@ -1,6 +1,6 @@
 {
     "name": "@acajoo/giovanni-core",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Modern WebAssembly build of qpdf for PDF compression and manipulation",
     "keywords": [
         "compression",

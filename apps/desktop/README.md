@@ -30,6 +30,17 @@ After installing, restart your terminal so `cargo` is available on your PATH.
 
 See the [root README](../../README.md#requirements) for Node and pnpm requirements.
 
+### Native PDF engine (giovanni_native)
+
+`cargo build`/`tauri dev` need `giovanni_native` built first, or `build.rs` panics:
+
+```bash
+pnpm --filter @acajoo/giovanni-core build:native      # Linux / macOS
+pnpm --filter @acajoo/giovanni-core build:native:win  # Windows
+```
+
+Details: [`packages/core/README.md`](../../packages/core/README.md#c-ffi-native). Ghostscript is linked in by default (powers the right-click "Compress PDF" action); on Windows that makes `gsdll64.dll` a runtime dependency `build.rs` copies it next to the built binary, but ship it alongside if you distribute the `.exe` yourself.
+
 ## Development
 
 ```bash
@@ -51,7 +62,7 @@ Fallback on macOS: enable **Safari → Settings → Advanced → Show features f
 
 Devtools are dev-only: the menu item and `devtools` Cargo feature are enabled by `pnpm dev` (`tauri dev --features devtools`). Release builds omit both.
 
-File drag-and-drop uses the web app's HTML5 drop handlers (`ToolLayout`, `EmptyState`). Tauri's native file-drop handler is disabled via `"dragDropEnabled": false` in `tauri.conf.json` — with it enabled (the default), the webview intercepts OS file drops before they reach the DOM.
+File drag-and-drop uses the web app's HTML5 drop handlers (`ToolLayout`, `EmptyState`). Tauri's native file-drop handler is disabled via `"dragDropEnabled": false` in `tauri.conf.json` with it enabled (the default), the webview intercepts OS file drops before they reach the DOM.
 
 ## Build
 

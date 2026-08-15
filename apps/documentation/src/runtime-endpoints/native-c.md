@@ -7,13 +7,24 @@ Native C FFI endpoints are declared in `giovanni_c.h` and target direct host-lan
 ```c
 GiovanniQpdfHandle giovanni_qpdf_create(void);
 void giovanni_qpdf_destroy(GiovanniQpdfHandle handle);
+
+GiovanniGhostscriptHandle giovanni_ghostscript_create(void);
+void giovanni_ghostscript_destroy(GiovanniGhostscriptHandle handle);
 ```
+
+`giovanni_ghostscript_create` always succeeds if the build ran at all. Whether it's backed by a real Ghostscript or a stub is decided at native-library build time, not at runtime see [Ghostscript support](#ghostscript-support) below.
 
 ## Version
 
 ```c
 int giovanni_get_version(
   GiovanniQpdfHandle handle,
+  char* out,
+  size_t out_len
+);
+
+int giovanni_get_ghostscript_version(
+  GiovanniGhostscriptHandle handle,
   char* out,
   size_t out_len
 );
@@ -73,7 +84,19 @@ int giovanni_get_document_info(
   const char* password,
   GiovanniDocumentInfo* out
 );
+
+int giovanni_rewrite_pdf(
+  GiovanniGhostscriptHandle handle,
+  const uint8_t* input,
+  size_t input_size,
+  const char* const* args,
+  size_t args_count,
+  uint8_t** out_data,
+  size_t* out_size
+);
 ```
+
+`giovanni_rewrite_pdf` runs a Ghostscript `pdfwrite` pass. `args` are plain Ghostscript command-line arguments, the caller supplies device/quality flags (e.g. `-sDEVICE=pdfwrite`, `-dPDFSETTINGS=/screen`); input/output file arguments are added internally. See [Ghostscript support](#ghostscript-support) for what happens when the native library was built without Ghostscript.
 
 ## Memory Management Endpoints
 
@@ -88,6 +111,17 @@ void giovanni_document_info_free(GiovanniDocumentInfo* info);
 ```c
 const char* giovanni_last_error(void);
 ```
+
+## Ghostscript support
+
+Ghostscript support is decided when `libgiovanni_native` itself is built, not per-call:
+
+- Built **with** Ghostscript linked in: `giovanni_rewrite_pdf` / `giovanni_get_ghostscript_version` run a real `pdfwrite` pass through the `gsapi_*` embedding API.
+- Built **without** it (e.g. `GIOVANNI_SKIP_GHOSTSCRIPT` on the Windows build, or no GhostPDL source available): `GhostscriptEngine` is a stub the handle still creates/destroys fine, but `giovanni_rewrite_pdf` / `giovanni_get_ghostscript_version` return an error. Check `giovanni_last_error()`.
+
+There's no runtime flag to query which case you're in if you need to know, call `giovanni_get_ghostscript_version` and check the return code.
+
+On Windows specifically, Ghostscript links as a DLL import lib (`gsdll64.lib`), not a static archive `gsdll64.dll` must be present alongside the executable at runtime, or the process fails to start entirely (not just at first Ghostscript call), since it's an ordinary load-time DLL dependency.
 
 ## Return Contract
 

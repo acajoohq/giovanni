@@ -1,6 +1,6 @@
 ﻿# @acajoo/giovanni-core
 
-[qpdf](https://github.com/qpdf/qpdf) built for multiple runtimes — compress, split, merge, extract images, inspect, and organize PDFs across WebAssembly (browser and Node.js), native C FFI, and React Native JSI targets. Experimental **Ghostscript** support adds lossy image recompression. The root package is task-oriented; engine-specific APIs live under `@acajoo/giovanni-core/qpdf` and `@acajoo/giovanni-core/ghostscript`.
+[qpdf](https://github.com/qpdf/qpdf) built for multiple runtimes compress, split, merge, extract images, inspect, and organize PDFs across WebAssembly (browser and Node.js), native C FFI, and React Native JSI targets. Experimental **Ghostscript** support adds lossy image recompression. The root package is task-oriented; engine-specific APIs live under `@acajoo/giovanni-core/qpdf` and `@acajoo/giovanni-core/ghostscript`.
 
 **PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@acajoo/giovanni-pdf-render`**, not in this module.
 
@@ -77,8 +77,8 @@ Ghostscript is the lossy rewrite path. It re-encodes images and rewrites the ent
 
 Observed behavior in this repo:
 
-- `qpdf.wasm` ≈ 1 MB — fast, lossless structural rewrites
-- `ghostscript.wasm` ≈ 17 MB — slower; can save significantly more on image-heavy PDFs
+- `qpdf.wasm` ≈ 1 MB - fast, lossless structural rewrites
+- `ghostscript.wasm` ≈ 17 MB - slower; can save significantly more on image-heavy PDFs
 - Processing time for larger scanned PDFs can reach several seconds
 
 **Licensing:** Ghostscript is dual-licensed under AGPLv3 or a commercial license by Artifex. This package's metadata reflects `(Apache-2.0 AND AGPL-3.0-or-later)`. SaaS and closed-source distribution likely require careful AGPL compliance review or a commercial license. Read the official pages before distributing a Ghostscript-enabled build:
@@ -90,7 +90,7 @@ Observed behavior in this repo:
 
 ### WASM (web / Node.js)
 
-Requires **Docker Desktop** (Linux containers). Pinned source archives are fetched inside the container — no manual vendor clone needed.
+Requires **Docker Desktop** (Linux containers). Pinned source archives are fetched inside the container - no manual vendor clone needed.
 
 ```bash
 # Full build (WASM + bundle)
@@ -120,11 +120,11 @@ Vendor sync contract:
 
 ### C FFI (native)
 
-Produces `libgiovanni_native` (static by default) and a C header `giovanni_c.h`.
+Produces `libgiovanni_native` (static by default) and a C header `giovanni_c.h`. This build **optionally links Ghostscript in too**, in addition to qpdf.
 
 #### Linux / macOS
 
-Requires **Docker** (fetches qpdf source inside the container, same pipeline as WASM).
+Requires **Docker** (fetches qpdf and, optionally, GhostPDL source inside the container, same pipeline as WASM). GhostPDL's own `./configure && make libgs` produces a real static archive that gets linked into `libgiovanni_native.a` like any other static dependency.
 
 ```bash
 pnpm --filter @acajoo/giovanni-core build:native
@@ -132,20 +132,22 @@ pnpm --filter @acajoo/giovanni-core build:native
 
 #### Windows
 
-Requires **Git**, **MSVC** (Visual Studio 2022 with the C++ Desktop workload), and **CMake** (bundled with VS). No manual dependency setup — on first run the script clones and bootstraps a project-local vcpkg under `.tmp/vcpkg` and uses it to fetch qpdf automatically.
+Requires **Git**, **MSVC** (Visual Studio 2022 with the C++ Desktop workload, including `nmake`), and **CMake** (bundled with VS). No manual dependency setup for qpdf on first run the script clones and bootstraps a project-local vcpkg under `.tmp/vcpkg` and uses it to fetch qpdf automatically. Ghostscript is different: GhostPDL's MSVC makefile has no static-lib target, only a DLL (`gsdll64.dll`) + its import lib (`gsdll64.lib`), so the script fetches GhostPDL source and builds that separately with `nmake`.
 
 ```powershell
 pnpm --filter @acajoo/giovanni-core build:native:win
 ```
 
-Subsequent runs skip the clone/bootstrap step; vcpkg caches installed packages between builds.
+Subsequent runs skip the qpdf clone/bootstrap step and the GhostPDL source fetch; vcpkg caches installed packages, and GhostPDL only rebuilds objects nmake considers stale. Set `GIOVANNI_SKIP_GHOSTSCRIPT=1` to skip building Ghostscript entirely `GhostscriptEngine` then compiles as a stub that throws instead of failing the whole build.
+
+**Because Ghostscript is a DLL on Windows (not a static lib), `gsdll64.dll` is a runtime dependency** of anything that links `giovanni_native.lib` - it must sit next to the final executable, not just be available at link time. The script copies it into `build/native/`; consumers need their own copy step for their own output directory (e.g. `apps/desktop/src-tauri/build.rs` copies it next to the compiled Tauri binary).
 
 ---
 
 Output lands in `build/native/` for both platforms:
 
-- Linux / macOS: `libgiovanni_native.a` + `giovanni_c.h`
-- Windows: `giovanni_native.lib` + `giovanni_c.h`
+- Linux / macOS: `libgiovanni_native.a` + `giovanni_c.h` (+ `libgs.a` if Ghostscript was built)
+- Windows: `giovanni_native.lib` + `giovanni_c.h` (+ `gsdll64.lib` and `gsdll64.dll` if Ghostscript was built)
 
 ```c
 #include "giovanni_c.h"
@@ -154,6 +156,25 @@ GiovanniQpdfHandle h = giovanni_qpdf_create();
 // ... giovanni_write_pdf, giovanni_split_pages, giovanni_merge_pdfs ...
 giovanni_qpdf_destroy(h);
 ```
+
+If the build linked Ghostscript in, `giovanni_rewrite_pdf` runs a `pdfwrite` pass through the real `gsapi_*` embedding API, same lossy rewrite path as the WASM Ghostscript engine, just with plain `gs` command-line args instead of the TypeScript option objects:
+
+```c
+GiovanniGhostscriptHandle gs = giovanni_ghostscript_create();
+
+const char* args[] = {
+    "-sDEVICE=pdfwrite", "-dBATCH", "-dNOPAUSE", "-dSAFER", "-dQUIET",
+    "-dPDFSETTINGS=/screen",
+};
+uint8_t* out_data;
+size_t out_size;
+giovanni_rewrite_pdf(gs, input, input_size, args, 6, &out_data, &out_size);
+// ... use out_data / out_size, then giovanni_buffer_free(out_data) ...
+
+giovanni_ghostscript_destroy(gs);
+```
+
+If Ghostscript wasn't linked in (`GIOVANNI_SKIP_GHOSTSCRIPT` on Windows, or no GhostPDL source available on Linux), `giovanni_ghostscript_create` still succeeds but `giovanni_rewrite_pdf`/`giovanni_get_ghostscript_version` return an error, check `giovanni_last_error()`.
 
 Usable from Python, Rust, Go, Swift, or any language with a C FFI. Build as a shared library instead of static:
 
@@ -181,15 +202,16 @@ pnpm --filter @acajoo/giovanni-core build:native:all
 
 ### Build environment variables
 
-| Variable                     | Applies to         | Description                                                     |
-| ---------------------------- | ------------------ | --------------------------------------------------------------- |
-| `GIOVANNI_DOCKER_CACHE_ROOT` | WASM builds        | Override Docker buildx cache directory                          |
-| `GIOVANNI_NATIVE_SHARED=1`   | `build:native`     | Build shared library instead of static                          |
-| `GIOVANNI_JSI_INCLUDE_DIR`   | `build:jsi`        | Path to `ReactCommon/` (JSI headers)                            |
-| `GIOVANNI_NATIVE_JOBS`       | native / JSI       | Parallel CMake build jobs                                       |
-| `VCPKG_ROOT`                 | `build:native:win` | Use an existing standalone vcpkg instead of the auto-bootstrap  |
-| `GIOVANNI_VCPKG_TRIPLET`     | `build:native:win` | Override vcpkg triplet (default: `x64-windows-static`)          |
-| `GIOVANNI_CMAKE_GENERATOR`   | `build:native:win` | Override CMake generator (default: auto-detected by VS install) |
+| Variable                     | Applies to         | Description                                                       |
+| ---------------------------- | ------------------ | ----------------------------------------------------------------- |
+| `GIOVANNI_DOCKER_CACHE_ROOT` | WASM builds        | Override Docker buildx cache directory                            |
+| `GIOVANNI_NATIVE_SHARED=1`   | `build:native`     | Build shared library instead of static                            |
+| `GIOVANNI_JSI_INCLUDE_DIR`   | `build:jsi`        | Path to `ReactCommon/` (JSI headers)                              |
+| `GIOVANNI_NATIVE_JOBS`       | native / JSI       | Parallel CMake build jobs                                         |
+| `VCPKG_ROOT`                 | `build:native:win` | Use an existing standalone vcpkg instead of the auto-bootstrap    |
+| `GIOVANNI_VCPKG_TRIPLET`     | `build:native:win` | Override vcpkg triplet (default: `x64-windows-static`)            |
+| `GIOVANNI_CMAKE_GENERATOR`   | `build:native:win` | Override CMake generator (default: auto-detected by VS install)   |
+| `GIOVANNI_SKIP_GHOSTSCRIPT`  | `build:native:win` | Skip building Ghostscript; `GhostscriptEngine` compiles as a stub |
 
 ## Development
 
@@ -220,7 +242,7 @@ build/      WASM and native artifacts (generated)
 
 Architecture references:
 
-- [`native/README.md`](./native/README.md) — C++ native layer (interface → impl → targets)
+- [`native/README.md`](./native/README.md) C++ native layer (interface → impl → targets)
 
 Native source layout:
 
@@ -243,4 +265,4 @@ The package-authored TypeScript code is **Apache-2.0**. The bundled Ghostscript 
 (Apache-2.0 AND AGPL-3.0-or-later)
 ```
 
-The qpdf C++ library is separately licensed — see [`vendor/qpdf/LICENSE.txt`](../../vendor/qpdf/LICENSE.txt).
+The qpdf C++ library is separately licensed, see [`vendor/qpdf/LICENSE.txt`](../../vendor/qpdf/LICENSE.txt).

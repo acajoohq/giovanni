@@ -35,10 +35,10 @@ These types mirror the TypeScript `NativeWriteOptions` / `NativeDocumentInfo` /
 Platform-agnostic **concrete implementations** of the abstract interfaces.
 No Emscripten, no JSI, no browser APIs.
 
-| Directory           | Class               | Implements                            |
-| ------------------- | ------------------- | ------------------------------------- |
-| `impl/qpdf/`        | `QpdfEngine`        | `IQpdfEngine` via libqpdf             |
-| `impl/ghostscript/` | `GhostscriptEngine` | `IGhostscriptEngine` via gsapi (TODO) |
+| Directory           | Class               | Implements                                            |
+| ------------------- | ------------------- | ----------------------------------------------------- |
+| `impl/qpdf/`        | `QpdfEngine`        | `IQpdfEngine` via libqpdf                             |
+| `impl/ghostscript/` | `GhostscriptEngine` | `IGhostscriptEngine` via gsapi, or a stub — see below |
 
 ### Layer 3 — `targets/`
 
@@ -57,10 +57,10 @@ as a dependency and adapts the input/output types for its runtime.
 - **`tools/vendor/*`**
   Orchestration only: pinned source definitions, target selection, Docker invocation
 
-- **`qpdf/`** (Emscripten target — WASM output)
+- **`qpdf/`** (Emscripten target WASM output)
   qpdf-specific Emscripten build: Docker recipe, CMake, toolchains, Emscripten bindings
 
-- **`ghostscript/`** (Emscripten target — WASM output)
+- **`ghostscript/`** (Emscripten target WASM output)
   Ghostscript-specific Docker-driven build + narrow `gsapi_*` Emscripten wrapper
 
 - **`build/qpdf`** and **`build/ghostscript`**
@@ -78,7 +78,7 @@ as a dependency and adapts the input/output types for its runtime.
 
 It exists to keep Ghostscript lifecycle, stdio capture, temp file handling, and `gsapi_*` calls out of TypeScript, and to keep the engine layout parallel with `native/qpdf/bindings/emscripten/`.
 
-Design rule: keep the native surface small and operation-oriented — do not mirror the full Ghostscript embedding API into JS unless the product actually needs it.
+Design rule: keep the native surface small and operation-oriented, do not mirror the full Ghostscript embedding API into JS unless the product actually needs it.
 
 **TODO:** Add `bindings/cpp/` to support native build targets (desktop, React Native, server), mirroring the QPDF two-layer structure.
 
@@ -95,7 +95,7 @@ cmake --build build
 
 ### Standalone C library (FFI)
 
-Use the package scripts from the repo root — they handle dependency resolution and output placement automatically:
+Use the package scripts from the repo root, they handle dependency resolution and output placement automatically:
 
 ```bash
 # Linux / macOS (Docker-based, same pipeline as WASM)
@@ -106,6 +106,12 @@ pnpm --filter @acajoo/giovanni-core build:native:win
 ```
 
 Both produce `build/native/libgiovanni_native.a` (Linux/macOS) or `build/native/giovanni_native.lib` (Windows) alongside `giovanni_c.h`.
+
+#### Ghostscript in the native (FFI) build
+
+GhostPDL doesn't build with CMake, so unlike qpdf it's built out-of-tree and handed in as a prebuilt library, a real static archive on Linux (`./configure && make libgs`), but a DLL + import lib on Windows (`psi/msvc.mak` has no static-lib target). That makes `gsdll64.dll` a runtime dependency on Windows, not just a link-time one, it must ship next to whatever links `giovanni_native.lib` (`build-native-windows.ts` copies it into `build/native/`; consumers like the desktop app need their own copy step, e.g. `apps/desktop/src-tauri/build.rs`).
+
+Set `GIOVANNI_SKIP_GHOSTSCRIPT` (Windows) or omit `GIOVANNI_GHOSTSCRIPT_LIB` to build without it,`GhostscriptEngine` then compiles as a stub that throws.
 
 To build manually with CMake (Linux/macOS, qpdf source already available):
 

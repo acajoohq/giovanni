@@ -70,11 +70,15 @@ std::string trimTrailingWhitespace(std::string text) {
 }
 
 std::string buildFailureMessage(int code, const GhostscriptRunContext& context) {
+    // gs_errstr() isn't part of the gsapi_* embedding surface GhostPDL
+    // exports from gsdll64.dll on Windows (only visible when linking the
+    // full static archive, as on Linux) — stick to the numeric code so this
+    // stays portable across both link models.
     std::string message = "Ghostscript failed";
     if (code == gs_error_Info) {
         message = "Ghostscript returned informational output";
     } else if (code < 0) {
-        message += " with error " + std::to_string(code) + " (" + gs_errstr(code) + ")";
+        message += " with error " + std::to_string(code);
     }
 
     const std::string detail = trimTrailingWhitespace(context.stderrText.empty() ? context.stdoutText : context.stderrText);

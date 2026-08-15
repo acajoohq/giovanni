@@ -46,15 +46,28 @@ endif()
 # ---------------------------------------------------------------------------
 # Ghostscript dependency (optional)
 # ---------------------------------------------------------------------------
-# GhostPDL builds with autoconf/make, not CMake, so unlike qpdf it can't be
-# vendored in-tree via add_subdirectory(). Build it out-of-tree instead (see
-# docker.Dockerfile, which runs ./configure && make libgs) and point CMake at
-# the resulting static library + source tree for headers.
+# GhostPDL builds with autoconf/make (Linux) or nmake (Windows), not CMake,
+# so unlike qpdf it can't be vendored in-tree via add_subdirectory(). Build it
+# out-of-tree instead and point CMake at the result:
+#
+#   Linux   (docker.Dockerfile, ./configure && make libgs)
+#     -> a real static archive: set GIOVANNI_GHOSTSCRIPT_LIB to bin/gs.a
+#
+#   Windows (build-native-windows.ts, nmake -f psi\msvc.mak)
+#     -> GhostPDL's MSVC makefile has no static-lib target at all, only
+#        gsdll64.dll + its import lib (gsdll64.lib). Set GIOVANNI_GHOSTSCRIPT_LIB
+#        to the .lib AND GIOVANNI_GHOSTSCRIPT_DLL to the .dll; giovanni_native
+#        links against the import lib and the .dll must ship alongside it at
+#        runtime (copied into build/native by build-native-windows.ts).
+#
+# In both cases GIOVANNI_GHOSTSCRIPT_SOURCE_DIR must point at the GhostPDL
+# source tree used to produce the lib, for base/*.h, psi/*.h.
 #
 # When these aren't supplied, GhostscriptEngine falls back to a stub
 # implementation so the rest of the native target keeps building.
 
-set(GIOVANNI_GHOSTSCRIPT_LIB "" CACHE FILEPATH "Path to a prebuilt Ghostscript static library (libgs.a)")
+set(GIOVANNI_GHOSTSCRIPT_LIB "" CACHE FILEPATH "Path to a prebuilt Ghostscript library: libgs.a (Linux) or gsdll64.lib import lib (Windows)")
+set(GIOVANNI_GHOSTSCRIPT_DLL "" CACHE FILEPATH "Windows only: path to gsdll64.dll matching GIOVANNI_GHOSTSCRIPT_LIB")
 set(GIOVANNI_GHOSTSCRIPT_SOURCE_DIR "" CACHE PATH "Path to the GhostPDL source tree used to build GIOVANNI_GHOSTSCRIPT_LIB (for base/*.h, psi/*.h)")
 
 set(GIOVANNI_HAVE_GHOSTSCRIPT OFF)
@@ -69,10 +82,20 @@ if(GIOVANNI_GHOSTSCRIPT_LIB)
       "  cmake .. -DGIOVANNI_GHOSTSCRIPT_LIB=/path/to/bin/gs.a -DGIOVANNI_GHOSTSCRIPT_SOURCE_DIR=/path/to/ghostpdl")
   endif()
 
-  add_library(ghostscript_prebuilt STATIC IMPORTED)
-  set_target_properties(ghostscript_prebuilt PROPERTIES
-    IMPORTED_LOCATION "${GIOVANNI_GHOSTSCRIPT_LIB}"
-    INTERFACE_INCLUDE_DIRECTORIES "${GIOVANNI_GHOSTSCRIPT_SOURCE_DIR}")
+  add_library(ghostscript_prebuilt UNKNOWN IMPORTED)
+  if(GIOVANNI_GHOSTSCRIPT_DLL)
+    if(NOT EXISTS "${GIOVANNI_GHOSTSCRIPT_DLL}")
+      message(FATAL_ERROR "GIOVANNI_GHOSTSCRIPT_DLL does not exist: ${GIOVANNI_GHOSTSCRIPT_DLL}")
+    endif()
+    set_target_properties(ghostscript_prebuilt PROPERTIES
+      IMPORTED_LOCATION "${GIOVANNI_GHOSTSCRIPT_DLL}"
+      IMPORTED_IMPLIB "${GIOVANNI_GHOSTSCRIPT_LIB}"
+      INTERFACE_INCLUDE_DIRECTORIES "${GIOVANNI_GHOSTSCRIPT_SOURCE_DIR}")
+  else()
+    set_target_properties(ghostscript_prebuilt PROPERTIES
+      IMPORTED_LOCATION "${GIOVANNI_GHOSTSCRIPT_LIB}"
+      INTERFACE_INCLUDE_DIRECTORIES "${GIOVANNI_GHOSTSCRIPT_SOURCE_DIR}")
+  endif()
   set(GIOVANNI_HAVE_GHOSTSCRIPT ON)
 endif()
 

@@ -23,6 +23,7 @@ export const fr: Translations = {
     about: {
         tagline: "Outils PDF · hors ligne & privé",
         githubLink: "Voir sur GitHub",
+        docsLink: "Documentation",
         madeBy: "Créé par",
         poweredBy: "Propulsé par <qpdf>qpdf</qpdf> compilé en WebAssembly. Aucun fichier ne quitte votre navigateur.",
     },

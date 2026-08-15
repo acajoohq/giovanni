@@ -4,6 +4,8 @@
 
 **PDF.js rasterisation** (full page → JPEG) lives in the sibling package **`@acajoo/giovanni-pdf-render`**, not in this module.
 
+Full public API documentation: [docs.giovanni.pizza](https://docs.giovanni.pizza).
+
 ## Install
 
 ```bash

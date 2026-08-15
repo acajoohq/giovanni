@@ -1,5 +1,5 @@
 ﻿import { useState } from "react";
-import { RiCloseLine, RiFilePdfLine, RiGithubLine } from "@remixicon/react";
+import { RiBookLine, RiCloseLine, RiFilePdfLine, RiGithubLine } from "@remixicon/react";
 import { Trans, useTranslation } from "react-i18next";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/shadcn/Dialog";
 
@@ -16,6 +16,7 @@ const CONTRIBUTORS = [
 const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 const GIT_COMMIT = import.meta.env.VITE_GIT_COMMIT;
 const GITHUB_REPO_URL = "https://github.com/acajoohq/giovanni";
+const DOCS_URL = "https://docs.giovanni.pizza";
 
 function Avatar({ name, github, initials, color }: (typeof CONTRIBUTORS)[number]) {
     const [failed, setFailed] = useState(false);
@@ -65,15 +66,26 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                     </div>
                     <DialogTitle className="text-[15px] font-semibold text-foreground">Giovanni</DialogTitle>
                     <p className="mt-1 text-[11px] text-muted-foreground">{t("about.tagline")}</p>
-                    <a
-                        className="mt-3 inline-flex items-center gap-1.5 text-[11px] text-muted-foreground transition-colors hover:text-brand"
-                        href={GITHUB_REPO_URL}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        <RiGithubLine className="size-3.5" />
-                        {t("about.githubLink")}
-                    </a>
+                    <div className="mt-3 flex items-center justify-center gap-4">
+                        <a
+                            className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground transition-colors hover:text-brand"
+                            href={GITHUB_REPO_URL}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                        >
+                            <RiGithubLine className="size-3.5" />
+                            {t("about.githubLink")}
+                        </a>
+                        <a
+                            className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground transition-colors hover:text-brand"
+                            href={DOCS_URL}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                        >
+                            <RiBookLine className="size-3.5" />
+                            {t("about.docsLink")}
+                        </a>
+                    </div>
                 </div>
 
                 <div className="border-y border-foreground/5 bg-foreground/2 px-6 py-5">

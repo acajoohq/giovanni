@@ -1,5 +1,11 @@
 # @acajoo/giovanni-core
 
+## 0.2.1
+
+### Patch Changes
+
+- [#53](https://github.com/acajoohq/giovanni/pull/53) [`10e760c`](https://github.com/acajoohq/giovanni/commit/10e760c3e954f650c9732b95742201c91db56b52) Thanks [@P4tt4te](https://github.com/P4tt4te)! - Add API documentation mention
+
 ## 0.2.0
 
 ### Minor Changes

@@ -67,7 +67,7 @@ extern "C" {
         handle: *mut GiovanniGhostscriptHandle,
         input: *const u8,
         input_size: usize,
-        args: *const c_char,
+        args: *const *const c_char,
         args_count: usize,
         out_data: *mut *mut u8,
         out_size: *mut usize,

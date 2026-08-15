@@ -1,7 +1,24 @@
 use std::path::{Path, PathBuf};
 
-use crate::giovanni::{GiovanniEngine, WriteOptions};
+use crate::giovanni::GiovanniEngine;
 use crate::state::PendingOpenAction;
+
+/// Ghostscript args for the "default" PDFSETTINGS preset — kept in sync with
+/// GHOSTSCRIPT_PRESETS.default in packages/core/src/engines/ghostscript/options.ts.
+/// The desktop app doesn't depend on packages/core (it talks to the native FFI
+/// directly), so there's no single shared source for this — mirror it by hand.
+const GHOSTSCRIPT_DEFAULT_PRESET_ARGS: &[&str] = &[
+    "-sDEVICE=pdfwrite",
+    "-dBATCH",
+    "-dNOPAUSE",
+    "-dSAFER",
+    "-dQUIET",
+    "-dPDFSETTINGS=/default",
+    "-dCompatibilityLevel=1.7",
+    "-sColorConversionStrategy=LeaveColorUnchanged",
+    "-dDownsampleColorImages=false",
+    "-dDownsampleGrayImages=false",
+];
 
 /// Try to run `action` directly, without opening the Tauri window.
 ///
@@ -26,7 +43,7 @@ fn run_compress(file_path: &str) -> Result<(), String> {
     let input = std::fs::read(file_path).map_err(|e| e.to_string())?;
 
     let engine = GiovanniEngine::new()?;
-    let output = engine.write_pdf(&input, Some(&WriteOptions::default()), None)?;
+    let output = engine.rewrite_pdf(&input, GHOSTSCRIPT_DEFAULT_PRESET_ARGS)?;
 
     let out_path = sibling_path(file_path, "compressed", "pdf");
     std::fs::write(&out_path, &output).map_err(|e| e.to_string())?;

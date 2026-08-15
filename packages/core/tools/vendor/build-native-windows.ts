@@ -377,14 +377,15 @@ async function main(): Promise<void> {
         console.log(`\n[giovanni] Copied ${depLibs.length} vcpkg dep lib(s) to build/native/`);
     }
 
-    // ── 9. Copy gsdll64.dll into build/native/ ─────────────────────────────
+    // ── 9. Copy gsdll64.dll + gsdll64.lib into build/native/ ────────────────
     // Unlike qpdf, Ghostscript is linked as a DLL import lib, not a static
-    // archive — gsdll64.dll is a genuine runtime dependency of anything that
-    // links giovanni_native.lib and must ship alongside it (and eventually
-    // alongside the Tauri app's .exe).
+    // archive. build.rs's "link every .lib in build/native/" loop needs
+    // gsdll64.lib to resolve gsapi_* symbols at link time, and gsdll64.dll is
+    // a genuine runtime dependency that must ship alongside the built .exe.
     if (ghostscript) {
+        await cp(ghostscript.lib, join(OUTPUT_DIR, "gsdll64.lib"));
         await cp(ghostscript.dll, join(OUTPUT_DIR, "gsdll64.dll"));
-        console.log("[giovanni] Copied gsdll64.dll to build/native/ (runtime dependency — must ship with the app)");
+        console.log("[giovanni] Copied gsdll64.lib + gsdll64.dll to build/native/ (the .dll is a runtime dependency — must ship with the app)");
     }
 
     console.log(`\n[giovanni] Done: build/native/giovanni_native.lib`);

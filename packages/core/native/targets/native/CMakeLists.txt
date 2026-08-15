@@ -44,6 +44,39 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------
+# Ghostscript dependency (optional)
+# ---------------------------------------------------------------------------
+# GhostPDL builds with autoconf/make, not CMake, so unlike qpdf it can't be
+# vendored in-tree via add_subdirectory(). Build it out-of-tree instead (see
+# docker.Dockerfile, which runs ./configure && make libgs) and point CMake at
+# the resulting static library + source tree for headers.
+#
+# When these aren't supplied, GhostscriptEngine falls back to a stub
+# implementation so the rest of the native target keeps building.
+
+set(GIOVANNI_GHOSTSCRIPT_LIB "" CACHE FILEPATH "Path to a prebuilt Ghostscript static library (libgs.a)")
+set(GIOVANNI_GHOSTSCRIPT_SOURCE_DIR "" CACHE PATH "Path to the GhostPDL source tree used to build GIOVANNI_GHOSTSCRIPT_LIB (for base/*.h, psi/*.h)")
+
+set(GIOVANNI_HAVE_GHOSTSCRIPT OFF)
+if(GIOVANNI_GHOSTSCRIPT_LIB)
+  if(NOT EXISTS "${GIOVANNI_GHOSTSCRIPT_LIB}")
+    message(FATAL_ERROR "GIOVANNI_GHOSTSCRIPT_LIB does not exist: ${GIOVANNI_GHOSTSCRIPT_LIB}")
+  endif()
+  if(NOT GIOVANNI_GHOSTSCRIPT_SOURCE_DIR OR NOT EXISTS "${GIOVANNI_GHOSTSCRIPT_SOURCE_DIR}/psi/iapi.h")
+    message(FATAL_ERROR
+      "GIOVANNI_GHOSTSCRIPT_LIB is set but GIOVANNI_GHOSTSCRIPT_SOURCE_DIR does not point at "
+      "a GhostPDL source tree (missing psi/iapi.h). Set both, e.g.:\n"
+      "  cmake .. -DGIOVANNI_GHOSTSCRIPT_LIB=/path/to/bin/gs.a -DGIOVANNI_GHOSTSCRIPT_SOURCE_DIR=/path/to/ghostpdl")
+  endif()
+
+  add_library(ghostscript_prebuilt STATIC IMPORTED)
+  set_target_properties(ghostscript_prebuilt PROPERTIES
+    IMPORTED_LOCATION "${GIOVANNI_GHOSTSCRIPT_LIB}"
+    INTERFACE_INCLUDE_DIRECTORIES "${GIOVANNI_GHOSTSCRIPT_SOURCE_DIR}")
+  set(GIOVANNI_HAVE_GHOSTSCRIPT ON)
+endif()
+
+# ---------------------------------------------------------------------------
 # giovanni_native — shared/static C library for FFI consumers
 # ---------------------------------------------------------------------------
 
@@ -58,9 +91,15 @@ target_include_directories(giovanni_native
     $<INSTALL_INTERFACE:include>
   PRIVATE
     ${GIOVANNI_INTERFACE_INCLUDE}
-    ${GIOVANNI_IMPL_QPDF})
+    ${GIOVANNI_IMPL_QPDF}
+    ${GIOVANNI_IMPL_GHOSTSCRIPT})
 
 target_link_libraries(giovanni_native PUBLIC ${GIOVANNI_QPDF_TARGET})
+
+if(GIOVANNI_HAVE_GHOSTSCRIPT)
+  target_link_libraries(giovanni_native PUBLIC ghostscript_prebuilt)
+  target_compile_definitions(giovanni_native PRIVATE GIOVANNI_HAVE_GHOSTSCRIPT=1)
+endif()
 
 # ---------------------------------------------------------------------------
 # Install

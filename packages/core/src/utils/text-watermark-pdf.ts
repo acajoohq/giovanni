@@ -80,18 +80,7 @@ function buildSingleContentStream(safeText: string, fontSize: number, angleDeg: 
     const halfWidth = (-(safeText.length * fontSize * HELV_BOLD_AVG_WIDTH * 0.5)).toFixed(1);
     const baseline = (-(fontSize * 0.25)).toFixed(1);
 
-    const lines = [
-        "q",
-        "/GS1 gs",
-        `${cos} ${sin} ${negSin} ${cos} ${cx} ${cy} cm`,
-        "BT",
-        `/F1 ${fontSize} Tf`,
-        `${halfWidth} ${baseline} Td`,
-        `(${safeText}) Tj`,
-        "ET",
-        "Q",
-        "",
-    ];
+    const lines = ["q", "/GS1 gs", `${cos} ${sin} ${negSin} ${cos} ${cx} ${cy} cm`, "BT", `/F1 ${fontSize} Tf`, `${halfWidth} ${baseline} Td`, `(${safeText}) Tj`, "ET", "Q", ""];
     return encodeAscii(lines.join("\n"));
 }
 
@@ -116,13 +105,7 @@ function buildTileContentStream(safeText: string, fontSize: number, angleDeg: nu
     const yMax = Math.max(...ys) + rowStep;
 
     // Rotate the CTM once; each Tm is then an identity-rotation placement in that space.
-    const lines: string[] = [
-        "q",
-        "/GS1 gs",
-        `${cosA.toFixed(4)} ${sinA.toFixed(4)} ${(-sinA).toFixed(4)} ${cosA.toFixed(4)} 0 0 cm`,
-        "BT",
-        `/F1 ${fontSize} Tf`,
-    ];
+    const lines: string[] = ["q", "/GS1 gs", `${cosA.toFixed(4)} ${sinA.toFixed(4)} ${(-sinA).toFixed(4)} ${cosA.toFixed(4)} 0 0 cm`, "BT", `/F1 ${fontSize} Tf`];
 
     let row = 0;
     for (let y = yMin; y <= yMax; y += rowStep) {
@@ -143,18 +126,9 @@ function buildTileContentStream(safeText: string, fontSize: number, angleDeg: nu
  * Uses PDF 1.4 ExtGState for real fill opacity.
  * "tile" pattern repeats the text in a staggered grid across the page.
  */
-export function buildTextWatermarkPdf(
-    text: string,
-    fontSize: number,
-    opacity: number,
-    angleDeg: number,
-    pattern: "single" | "tile",
-): Uint8Array {
+export function buildTextWatermarkPdf(text: string, fontSize: number, opacity: number, angleDeg: number, pattern: "single" | "tile"): Uint8Array {
     const safeText = sanitizeText(text);
-    const contentBytes =
-        pattern === "tile"
-            ? buildTileContentStream(safeText, fontSize, angleDeg)
-            : buildSingleContentStream(safeText, fontSize, angleDeg);
+    const contentBytes = pattern === "tile" ? buildTileContentStream(safeText, fontSize, angleDeg) : buildSingleContentStream(safeText, fontSize, angleDeg);
 
     const objects: PdfObject[] = [
         { dictionary: "<< /Type /Catalog /Pages 2 0 R >>" },

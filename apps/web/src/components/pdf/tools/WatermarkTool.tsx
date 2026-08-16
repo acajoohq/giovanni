@@ -203,9 +203,7 @@ export function WatermarkTool() {
                     });
                 }
 
-                const watermarkBuffer = isPdfFile(watermarkFile!)
-                    ? new Uint8Array(await watermarkFile!.arrayBuffer())
-                    : await createImageWatermarkPdf(watermarkFile!);
+                const watermarkBuffer = isPdfFile(watermarkFile!) ? new Uint8Array(await watermarkFile!.arrayBuffer()) : await createImageWatermarkPdf(watermarkFile!);
 
                 return watermarkPdf(sourceBuffer, {
                     watermark: watermarkBuffer,
@@ -219,7 +217,24 @@ export function WatermarkTool() {
                 message: t("watermark.status.applied", { count: nextResult.watermarkedPageCount }),
             }),
         });
-    }, [clearResult, customPageSelection, defaultWatermarkText, pageTargetMode, placement, runJob, setStatus, sourceFile, sourcePageCount, t, textAngle, textFontSize, textOpacity, textPattern, watermarkFile, watermarkSourceMode]);
+    }, [
+        clearResult,
+        customPageSelection,
+        defaultWatermarkText,
+        pageTargetMode,
+        placement,
+        runJob,
+        setStatus,
+        sourceFile,
+        sourcePageCount,
+        t,
+        textAngle,
+        textFontSize,
+        textOpacity,
+        textPattern,
+        watermarkFile,
+        watermarkSourceMode,
+    ]);
 
     useEffect(() => {
         if (!sourceFile) {
@@ -238,7 +253,21 @@ export function WatermarkTool() {
         return () => {
             window.clearTimeout(timeoutId);
         };
-    }, [clearResult, customPageSelection, defaultWatermarkText, pageTargetMode, placement, runWatermark, sourceFile, textAngle, textFontSize, textOpacity, textPattern, watermarkFile, watermarkSourceMode]);
+    }, [
+        clearResult,
+        customPageSelection,
+        defaultWatermarkText,
+        pageTargetMode,
+        placement,
+        runWatermark,
+        sourceFile,
+        textAngle,
+        textFontSize,
+        textOpacity,
+        textPattern,
+        watermarkFile,
+        watermarkSourceMode,
+    ]);
 
     const handleDownload = () => {
         if (!result || !sourceFile) {
@@ -277,25 +306,13 @@ export function WatermarkTool() {
                                 <SidebarInput value={defaultWatermarkText} onChange={(event) => setDefaultWatermarkText(event.currentTarget.value)} />
                             </SidebarField>
                             <SidebarField label={t("watermark.sidebar.fontSize")}>
-                                <SidebarSelect
-                                    options={FONT_SIZE_OPTIONS}
-                                    value={textFontSize}
-                                    onValueChange={setTextFontSize}
-                                />
+                                <SidebarSelect options={FONT_SIZE_OPTIONS} value={textFontSize} onValueChange={setTextFontSize} />
                             </SidebarField>
                             <SidebarField label={t("watermark.sidebar.opacity")}>
-                                <SidebarSelect
-                                    options={OPACITY_OPTIONS}
-                                    value={textOpacity}
-                                    onValueChange={setTextOpacity}
-                                />
+                                <SidebarSelect options={OPACITY_OPTIONS} value={textOpacity} onValueChange={setTextOpacity} />
                             </SidebarField>
                             <SidebarField label={t("watermark.sidebar.angle")}>
-                                <SidebarSelect
-                                    options={ANGLE_OPTIONS}
-                                    value={textAngle}
-                                    onValueChange={setTextAngle}
-                                />
+                                <SidebarSelect options={ANGLE_OPTIONS} value={textAngle} onValueChange={setTextAngle} />
                             </SidebarField>
                             <SidebarField label={t("watermark.sidebar.pattern")}>
                                 <SidebarToggleGroup>

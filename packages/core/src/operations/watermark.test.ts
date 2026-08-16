@@ -79,13 +79,7 @@ describe("watermarkTextPdf", () => {
         expect(result.watermarkedPageCount).toBe(2);
         expect(result.placement).toBe("overlay");
         // default pattern is "tile" — watermark PDF should be a real non-empty PDF
-        expect(mockBinding.watermarkPdf).toHaveBeenCalledWith(
-            expect.any(Uint8Array),
-            expect.any(Uint8Array),
-            { underlay: false, pages: [] },
-            undefined,
-            undefined,
-        );
+        expect(mockBinding.watermarkPdf).toHaveBeenCalledWith(expect.any(Uint8Array), expect.any(Uint8Array), { underlay: false, pages: [] }, undefined, undefined);
     });
 
     it("passes custom font size, opacity, angle and pattern through to the watermark PDF", async () => {
@@ -108,13 +102,7 @@ describe("watermarkTextPdf", () => {
 
         expect(result.watermarkedPageCount).toBe(2);
         expect(result.placement).toBe("underlay");
-        expect(mockBinding.watermarkPdf).toHaveBeenCalledWith(
-            expect.any(Uint8Array),
-            expect.any(Uint8Array),
-            { underlay: true, pages: [0, 2] },
-            undefined,
-            undefined,
-        );
+        expect(mockBinding.watermarkPdf).toHaveBeenCalledWith(expect.any(Uint8Array), expect.any(Uint8Array), { underlay: true, pages: [0, 2] }, undefined, undefined);
     });
 
     it("falls back to CONFIDENTIAL when text is blank", async () => {
@@ -134,4 +122,3 @@ describe("watermarkTextPdf", () => {
         await expect(watermarkTextPdf(new Uint8Array([10]), { text: "X", opacity: 2 })).resolves.toBeDefined();
     });
 });
-

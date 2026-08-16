@@ -11,7 +11,7 @@ use super::ffi::{
 };
 
 pub struct GiovanniEngine {
-    handle: *mut GiovanniQpdfHandle,
+    qpdf_handle: *mut GiovanniQpdfHandle,
     gs_handle: *mut GiovanniGhostscriptHandle,
 }
 
@@ -58,20 +58,20 @@ impl Default for WriteOptions {
 
 impl GiovanniEngine {
     pub fn new() -> Result<Self, String> {
-        let handle = unsafe { giovanni_qpdf_create() };
-        if handle.is_null() {
+        let qpdf_handle = unsafe { giovanni_qpdf_create() };
+        if qpdf_handle.is_null() {
             return Err("Failed to create giovanni engine".into());
         }
         let gs_handle = unsafe { giovanni_ghostscript_create() };
         if gs_handle.is_null() {
             return Err("Failed to create giovanni ghostscript engine".into());
         }
-        Ok(Self { handle, gs_handle })
+        Ok(Self { qpdf_handle, gs_handle })
     }
 
     pub fn get_version(&self) -> Result<String, String> {
         let mut buf = [0i8; 64];
-        let res = unsafe { giovanni_get_version(self.handle, buf.as_mut_ptr(), buf.len()) };
+        let res = unsafe { giovanni_get_version(self.qpdf_handle, buf.as_mut_ptr(), buf.len()) };
         if res != 0 {
             return Err(self.last_error());
         }
@@ -91,7 +91,7 @@ impl GiovanniEngine {
         let mut raw: GiovanniDocumentInfo = unsafe { std::mem::zeroed() };
         let res = unsafe {
             giovanni_get_document_info(
-                self.handle,
+                self.qpdf_handle,
                 data.as_ptr(),
                 data.len(),
                 password_ptr,
@@ -147,7 +147,7 @@ impl GiovanniEngine {
 
         let res = unsafe {
             giovanni_write_pdf(
-                self.handle,
+                self.qpdf_handle,
                 data.as_ptr(),
                 data.len(),
                 opts_ptr,
@@ -212,7 +212,7 @@ impl GiovanniEngine {
 
         let res = unsafe {
             giovanni_split_pages(
-                self.handle,
+                self.qpdf_handle,
                 data.as_ptr(),
                 data.len(),
                 &mut out_pages,
@@ -248,7 +248,7 @@ impl GiovanniEngine {
 
         let res = unsafe {
             giovanni_merge_pdfs(
-                self.handle,
+                self.qpdf_handle,
                 ptrs.as_ptr(),
                 sizes.as_ptr(),
                 inputs.len(),
@@ -300,7 +300,7 @@ unsafe fn document_info_from_raw(raw: &GiovanniDocumentInfo) -> DocumentInfo {
 
 impl Drop for GiovanniEngine {
     fn drop(&mut self) {
-        unsafe { giovanni_qpdf_destroy(self.handle) };
+        unsafe { giovanni_qpdf_destroy(self.qpdf_handle) };
         unsafe { giovanni_ghostscript_destroy(self.gs_handle) };
     }
 }

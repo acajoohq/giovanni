@@ -152,7 +152,7 @@ export function WatermarkTool() {
         setWatermarkFile(nextFile);
     };
 
-    const resolveTargetPages = (): number[] | undefined => {
+    const resolveTargetPages = useCallback((): number[] | undefined => {
         if (sourcePageCount <= 0) {
             throw new Error(t("watermark.status.failedInspect"));
         }
@@ -166,7 +166,7 @@ export function WatermarkTool() {
         } catch {
             throw new Error(t("watermark.status.invalidPages"));
         }
-    };
+    }, [customPageSelection, pageTargetMode, sourcePageCount, t]);
 
     const runWatermark = useCallback(async () => {
         if (!sourceFile) {
@@ -203,7 +203,12 @@ export function WatermarkTool() {
                     });
                 }
 
-                const watermarkBuffer = isPdfFile(watermarkFile!) ? new Uint8Array(await watermarkFile!.arrayBuffer()) : await createImageWatermarkPdf(watermarkFile!);
+                let watermarkBuffer: Uint8Array | null = null;
+                if (watermarkFile) {
+                    watermarkBuffer = isPdfFile(watermarkFile) ? new Uint8Array(await watermarkFile.arrayBuffer()) : await createImageWatermarkPdf(watermarkFile);
+                } else {
+                    throw new Error(t("watermark.status.selectWatermark"));
+                }
 
                 return watermarkPdf(sourceBuffer, {
                     watermark: watermarkBuffer,
@@ -219,14 +224,11 @@ export function WatermarkTool() {
         });
     }, [
         clearResult,
-        customPageSelection,
         defaultWatermarkText,
-        pageTargetMode,
         placement,
         runJob,
         setStatus,
         sourceFile,
-        sourcePageCount,
         t,
         textAngle,
         textFontSize,
@@ -234,6 +236,7 @@ export function WatermarkTool() {
         textPattern,
         watermarkFile,
         watermarkSourceMode,
+        resolveTargetPages,
     ]);
 
     useEffect(() => {

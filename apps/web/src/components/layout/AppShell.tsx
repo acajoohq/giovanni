@@ -1,4 +1,4 @@
-import { RiFilePdfLine, RiInformationLine } from "@remixicon/react";
+import { RiInformationLine } from "@remixicon/react";
 import { Link, Outlet, useParams, useRouter, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

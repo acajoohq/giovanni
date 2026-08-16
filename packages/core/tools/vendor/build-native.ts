@@ -46,6 +46,10 @@ const NATIVE_TARGETS: Record<NativeBuildTarget, NativeTargetConfig> = {
                 QPDF_ARCHIVE_URL: VENDOR_PINS.qpdf.archiveUrl,
                 QPDF_SHA256: VENDOR_PINS.qpdf.sha256 ?? "",
                 QPDF_JOBS: process.env.GIOVANNI_NATIVE_JOBS ?? "",
+                GHOSTPDL_VERSION: VENDOR_PINS.ghostscript.version,
+                GHOSTPDL_ARCHIVE_URL: VENDOR_PINS.ghostscript.archiveUrl,
+                GHOSTPDL_SHA256: VENDOR_PINS.ghostscript.sha256 ?? "",
+                GHOSTPDL_JOBS: process.env.GIOVANNI_NATIVE_JOBS ?? "",
             };
         },
     },

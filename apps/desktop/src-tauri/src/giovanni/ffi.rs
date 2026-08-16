@@ -4,6 +4,10 @@ use std::ffi::{c_char, c_int, c_void};
 pub struct GiovanniQpdfHandle(c_void);
 
 #[repr(C)]
+pub struct GiovanniGhostscriptHandle(c_void);
+
+
+#[repr(C)]
 pub struct GiovanniWriteOptions {
     pub compression_level: c_int,
     pub recompress_flate: c_int,
@@ -30,10 +34,17 @@ extern "C" {
     // Lifecycle
     pub fn giovanni_qpdf_create() -> *mut GiovanniQpdfHandle;
     pub fn giovanni_qpdf_destroy(handle: *mut GiovanniQpdfHandle);
+    pub fn giovanni_ghostscript_create() -> *mut GiovanniGhostscriptHandle;
+    pub fn giovanni_ghostscript_destroy(handle: *mut GiovanniGhostscriptHandle);
 
     // Version
     pub fn giovanni_get_version(
         handle: *mut GiovanniQpdfHandle,
+        out: *mut c_char,
+        out_len: usize,
+    ) -> c_int;
+    pub fn giovanni_get_ghostscript_version(
+        handle: *mut GiovanniGhostscriptHandle,
         out: *mut c_char,
         out_len: usize,
     ) -> c_int;
@@ -48,6 +59,16 @@ extern "C" {
         input_size: usize,
         options: *const GiovanniWriteOptions,
         password: *const c_char,
+        out_data: *mut *mut u8,
+        out_size: *mut usize,
+    ) -> c_int;
+
+    pub fn giovanni_rewrite_pdf(
+        handle: *mut GiovanniGhostscriptHandle,
+        input: *const u8,
+        input_size: usize,
+        args: *const *const c_char,
+        args_count: usize,
         out_data: *mut *mut u8,
         out_size: *mut usize,
     ) -> c_int;

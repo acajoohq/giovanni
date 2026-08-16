@@ -16,6 +16,12 @@ static int fail(const char* msg, GiovanniQpdfHandle h) {
     return 1;
 }
 
+static int failGs(const char* msg, GiovanniGhostscriptHandle h) {
+    fprintf(stderr, "FAILED: %s\n", msg);
+    if (h) giovanni_ghostscript_destroy(h);
+    return 1;
+}
+
 int main() {
     // 1. Create engine handle
     GiovanniQpdfHandle h = giovanni_qpdf_create();
@@ -32,6 +38,12 @@ int main() {
 
     // 3. Destroy handle — must not crash or leak
     giovanni_qpdf_destroy(h);
+
+    // 4. Ghostscript engine lifecycle — create/destroy must not crash even
+    //    when built as a stub (see impl/ghostscript/gs_engine.cc).
+    GiovanniGhostscriptHandle gs = giovanni_ghostscript_create();
+    if (!gs) return failGs("giovanni_ghostscript_create returned null", nullptr);
+    giovanni_ghostscript_destroy(gs);
 
     printf("giovanni_native smoke test: PASSED\n");
     return 0;

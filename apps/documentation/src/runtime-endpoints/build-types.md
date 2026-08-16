@@ -4,11 +4,11 @@ This page centralizes the endpoints exposed for each build/runtime type.
 
 ## Overview
 
-| Build Type       | Package / Surface                                       | Primary Endpoints                                                                                                                                                                                                                                                                                                 |
-| ---------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| WASM (Web/Node)  | `@acajoo/giovanni-core`                                 | `compressPdf`, `getAvailableCompressionEngines`, `initCompressionEngine`, `inspectPdf`, `checkPdf`, `splitPdf`, `mergePdfs`, `organizePdf`, `watermarkPdf`, `extractImages`                                                                                                                                       |
-| React Native JSI | `@acajoo/giovanni-react-native` + `globalThis.giovanni` | `setupGiovanni`, `getVersion`, `writePdf`, `splitPages`, `mergePdfs`, `getDocumentInfo`, `extractImages`                                                                                                                                                                                                          |
-| Native C FFI     | `giovanni_c.h`                                          | `giovanni_qpdf_create`, `giovanni_qpdf_destroy`, `giovanni_get_version`, `giovanni_write_options_default`, `giovanni_write_pdf`, `giovanni_split_pages`, `giovanni_merge_pdfs`, `giovanni_get_document_info`, `giovanni_buffer_free`, `giovanni_pages_free`, `giovanni_document_info_free`, `giovanni_last_error` |
+| Build Type       | Package / Surface                                       | Primary Endpoints                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WASM (Web/Node)  | `@acajoo/giovanni-core`                                 | `compressPdf`, `getAvailableCompressionEngines`, `initCompressionEngine`, `inspectPdf`, `checkPdf`, `splitPdf`, `mergePdfs`, `organizePdf`, `watermarkPdf`, `extractImages`                                                                                                                                                                                                                                                                  |
+| React Native JSI | `@acajoo/giovanni-react-native` + `globalThis.giovanni` | `setupGiovanni`, `getVersion`, `writePdf`, `splitPages`, `mergePdfs`, `getDocumentInfo`, `extractImages`                                                                                                                                                                                                                                                                                                                                     |
+| Native C FFI     | `giovanni_c.h`                                          | `giovanni_qpdf_create`, `giovanni_qpdf_destroy`, `giovanni_get_version`, `giovanni_write_options_default`, `giovanni_write_pdf`, `giovanni_split_pages`, `giovanni_merge_pdfs`, `giovanni_get_document_info`, `giovanni_ghostscript_create`, `giovanni_ghostscript_destroy`, `giovanni_get_ghostscript_version`, `giovanni_rewrite_pdf`, `giovanni_buffer_free`, `giovanni_pages_free`, `giovanni_document_info_free`, `giovanni_last_error` |
 
 ## Details by Build
 
@@ -61,12 +61,14 @@ See details:
 
 C endpoints exposed by `giovanni_c.h`:
 
-- Lifecycle: `giovanni_qpdf_create`, `giovanni_qpdf_destroy`
-- Version: `giovanni_get_version`
+- Lifecycle: `giovanni_qpdf_create`, `giovanni_qpdf_destroy`, `giovanni_ghostscript_create`, `giovanni_ghostscript_destroy`
+- Version: `giovanni_get_version`, `giovanni_get_ghostscript_version`
 - Write options: `giovanni_write_options_default`
-- Operations: `giovanni_write_pdf`, `giovanni_split_pages`, `giovanni_merge_pdfs`, `giovanni_get_document_info`
+- Operations: `giovanni_write_pdf`, `giovanni_split_pages`, `giovanni_merge_pdfs`, `giovanni_get_document_info`, `giovanni_rewrite_pdf`
 - Memory: `giovanni_buffer_free`, `giovanni_pages_free`, `giovanni_document_info_free`
 - Errors: `giovanni_last_error`
+
+Ghostscript support (`giovanni_rewrite_pdf`, `giovanni_get_ghostscript_version`) is decided at native-library build time the handle always creates, but those two calls return an error if the library was built without Ghostscript linked in. See [Ghostscript support](/runtime-endpoints/native-c#ghostscript-support).
 
 See details:
 
@@ -77,3 +79,4 @@ See details:
 - JSI endpoints are synchronous at the native bridge level.
 - The TypeScript binding then exposes them via async methods.
 - The Ghostscript JSI binding is declared, but the native Ghostscript JSI target is not yet fully implemented.
+- The native C FFI target's Ghostscript support **is** implemented (Linux via a static archive, Windows via a DLL import lib), but is optional at build time — see [Ghostscript support](/runtime-endpoints/native-c#ghostscript-support).

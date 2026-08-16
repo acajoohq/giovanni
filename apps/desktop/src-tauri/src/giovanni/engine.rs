@@ -5,11 +5,14 @@ use super::ffi::{
     giovanni_buffer_free, giovanni_document_info_free, giovanni_get_document_info,
     giovanni_get_version, giovanni_last_error, giovanni_merge_pdfs, giovanni_pages_free,
     giovanni_qpdf_create, giovanni_qpdf_destroy, giovanni_split_pages, giovanni_write_pdf,
+    giovanni_ghostscript_create, giovanni_ghostscript_destroy, giovanni_rewrite_pdf,
     GiovanniDocumentInfo, GiovanniQpdfHandle, GiovanniWriteOptions,
+    GiovanniGhostscriptHandle,
 };
 
 pub struct GiovanniEngine {
-    handle: *mut GiovanniQpdfHandle,
+    qpdf_handle: *mut GiovanniQpdfHandle,
+    gs_handle: *mut GiovanniGhostscriptHandle,
 }
 
 // Safety: the C library creates a per-handle context with thread-local error storage.
@@ -55,16 +58,20 @@ impl Default for WriteOptions {
 
 impl GiovanniEngine {
     pub fn new() -> Result<Self, String> {
-        let handle = unsafe { giovanni_qpdf_create() };
-        if handle.is_null() {
+        let qpdf_handle = unsafe { giovanni_qpdf_create() };
+        if qpdf_handle.is_null() {
             return Err("Failed to create giovanni engine".into());
         }
-        Ok(Self { handle })
+        let gs_handle = unsafe { giovanni_ghostscript_create() };
+        if gs_handle.is_null() {
+            return Err("Failed to create giovanni ghostscript engine".into());
+        }
+        Ok(Self { qpdf_handle, gs_handle })
     }
 
     pub fn get_version(&self) -> Result<String, String> {
         let mut buf = [0i8; 64];
-        let res = unsafe { giovanni_get_version(self.handle, buf.as_mut_ptr(), buf.len()) };
+        let res = unsafe { giovanni_get_version(self.qpdf_handle, buf.as_mut_ptr(), buf.len()) };
         if res != 0 {
             return Err(self.last_error());
         }
@@ -84,7 +91,7 @@ impl GiovanniEngine {
         let mut raw: GiovanniDocumentInfo = unsafe { std::mem::zeroed() };
         let res = unsafe {
             giovanni_get_document_info(
-                self.handle,
+                self.qpdf_handle,
                 data.as_ptr(),
                 data.len(),
                 password_ptr,
@@ -140,7 +147,7 @@ impl GiovanniEngine {
 
         let res = unsafe {
             giovanni_write_pdf(
-                self.handle,
+                self.qpdf_handle,
                 data.as_ptr(),
                 data.len(),
                 opts_ptr,
@@ -162,6 +169,42 @@ impl GiovanniEngine {
         Ok(result)
     }
 
+    pub fn rewrite_pdf(&self, data: &[u8], args: &[&str]) -> Result<Vec<u8>, String> {
+        let c_args: Vec<CString> = args
+            .iter()
+            .map(|a| CString::new(*a).map_err(|_| "Invalid ghostscript argument".to_string()))
+            .collect::<Result<_, _>>()?;
+        let c_arg_ptrs: Vec<*const std::ffi::c_char> =
+            c_args.iter().map(|s| s.as_ptr()).collect();
+
+        let mut out_data: *mut u8 = std::ptr::null_mut();
+        let mut out_size: usize = 0;
+
+        let res = unsafe {
+            giovanni_rewrite_pdf(
+                self.gs_handle,
+                data.as_ptr(),
+                data.len(),
+                c_arg_ptrs.as_ptr(),
+                c_arg_ptrs.len(),
+                &mut out_data,
+                &mut out_size,
+            )
+        };
+
+        // Keep the CStrings (and the pointer vec derived from them) alive until
+        // after the C call returns.
+        drop(c_args);
+
+        if res != 0 {
+            return Err(self.last_error());
+        }
+
+        let result = unsafe { std::slice::from_raw_parts(out_data, out_size).to_vec() };
+        unsafe { giovanni_buffer_free(out_data) };
+        Ok(result)
+    }
+
     pub fn split_pages(&self, data: &[u8]) -> Result<Vec<Vec<u8>>, String> {
         let mut out_pages: *mut *mut u8 = std::ptr::null_mut();
         let mut out_sizes: *mut usize = std::ptr::null_mut();
@@ -169,7 +212,7 @@ impl GiovanniEngine {
 
         let res = unsafe {
             giovanni_split_pages(
-                self.handle,
+                self.qpdf_handle,
                 data.as_ptr(),
                 data.len(),
                 &mut out_pages,
@@ -205,7 +248,7 @@ impl GiovanniEngine {
 
         let res = unsafe {
             giovanni_merge_pdfs(
-                self.handle,
+                self.qpdf_handle,
                 ptrs.as_ptr(),
                 sizes.as_ptr(),
                 inputs.len(),
@@ -257,7 +300,8 @@ unsafe fn document_info_from_raw(raw: &GiovanniDocumentInfo) -> DocumentInfo {
 
 impl Drop for GiovanniEngine {
     fn drop(&mut self) {
-        unsafe { giovanni_qpdf_destroy(self.handle) };
+        unsafe { giovanni_qpdf_destroy(self.qpdf_handle) };
+        unsafe { giovanni_ghostscript_destroy(self.gs_handle) };
     }
 }
 
@@ -276,5 +320,27 @@ mod tests {
         let engine = GiovanniEngine::new().unwrap();
         let result = engine.get_info(b"not a pdf", None);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_rewrite_pdf_with_ghostscript() {
+        const MINI_PDF: &[u8] = b"%PDF-1.4\n\
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n\
+2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n\
+3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]>>endobj\n\
+xref\n\
+0 4\n\
+0000000000 65535 f \n\
+trailer<</Size 4/Root 1 0 R>>\n\
+startxref\n\
+0\n\
+%%EOF\n";
+
+        let engine = GiovanniEngine::new().unwrap();
+        let args = ["-sDEVICE=pdfwrite", "-dNOPAUSE", "-dBATCH", "-dSAFER"];
+        let output = engine.rewrite_pdf(MINI_PDF, &args).unwrap();
+
+        assert!(!output.is_empty());
+        assert_eq!(&output[..4], b"%PDF");
     }
 }

@@ -55,6 +55,22 @@ fn main() {
         println!("cargo:rustc-link-lib=Crypt32");
         println!("cargo:rustc-link-lib=Wldap32");
         println!("cargo:rustc-link-lib=bcrypt");
+
+        // gsdll64.dll (unlike qpdf's static libs) is a genuine runtime
+        // dependency, not just a link-time one — copy it next to the built
+        // .exe so Windows can find it at load time. OUT_DIR is
+        // target/<profile>/build/<pkg>-<hash>/out; the exe lives three
+        // levels up, at target/<profile>/.
+        let gsdll = lib_dir.join("gsdll64.dll");
+        if gsdll.exists() {
+            let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+            if let Some(profile_dir) = out_dir.ancestors().nth(3) {
+                let dest = profile_dir.join("gsdll64.dll");
+                if let Err(err) = std::fs::copy(&gsdll, &dest) {
+                    println!("cargo:warning=Failed to copy gsdll64.dll to {}: {err}", dest.display());
+                }
+            }
+        }
     }
 
     #[cfg(target_os = "linux")]
@@ -84,7 +100,11 @@ fn main() {
     println!("cargo:rustc-link-lib=dylib=c++");
 
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed={}", lib_file.display());
+    // Watch the whole directory, not just giovanni_native.lib itself — the
+    // link-lib list above is built by scanning every .lib file in lib_dir,
+    // so adding/removing a dep (e.g. gsdll64.lib) must also invalidate this
+    // build script, or Cargo silently keeps linking the stale file list.
+    println!("cargo:rerun-if-changed={}", lib_dir.display());
 
     tauri_build::build()
 }

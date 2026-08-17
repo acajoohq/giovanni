@@ -1,5 +1,9 @@
-const PAGE_WIDTH = 612;
-const PAGE_HEIGHT = 792;
+// TODO: fixed at A4 portrait. Destination pages with a different size/aspect ratio
+// (US Letter, Legal, landscape, ...) still end up with uncovered areas because
+// qpdf_engine.cc's watermark placement shrinks-to-fit and centers this template rather
+// than stretching it — see the TODO next to placeFormXObject in native/impl/qpdf/qpdf_engine.cc.
+const PAGE_WIDTH = 595;
+const PAGE_HEIGHT = 842;
 
 // Helvetica-Bold average glyph advance width in em units
 const HELV_BOLD_AVG_WIDTH = 0.52;

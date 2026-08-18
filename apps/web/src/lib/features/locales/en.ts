@@ -288,7 +288,11 @@ export const en = {
             watermark: "Watermark PDF",
             selectedWatermark: "Selected watermark",
             noWatermarkSelected: "No watermark PDF selected",
-            defaultText: "Default watermark text",
+            defaultText: "Watermark text",
+            fontSize: "Font size",
+            opacity: "Opacity",
+            angle: "Angle",
+            pattern: "Pattern",
             settings: "Settings",
             placement: "Placement",
             pages: "Pages",
@@ -298,6 +302,10 @@ export const en = {
         source: {
             default: "Default",
             custom: "Custom file",
+        },
+        pattern: {
+            tile: "Tiled",
+            single: "Single",
         },
         pageTarget: {
             all: "All pages",

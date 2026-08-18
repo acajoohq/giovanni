@@ -10,7 +10,7 @@ export { inspectPdf, checkPdf } from "./operations/inspect.js";
 export { splitPdf } from "./operations/split.js";
 export { mergePdfs } from "./operations/merge.js";
 export { organizePdf } from "./operations/organize.js";
-export { watermarkPdf } from "./operations/watermark.js";
+export { watermarkPdf, watermarkTextPdf } from "./operations/watermark.js";
 export { extractImages } from "./operations/extract-images.js";
 
 // error classes
@@ -55,6 +55,8 @@ export type {
     WatermarkOptions,
     WatermarkPlacement,
     WatermarkResult,
+    WatermarkTextOptions,
+    WatermarkTextPattern,
 } from "./types/index.js";
 
 // binding registry — swap WASM for JSI, native addons, or test stubs

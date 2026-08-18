@@ -18,6 +18,8 @@ export type {
     WatermarkOptions,
     WatermarkPlacement,
     WatermarkResult,
+    WatermarkTextOptions,
+    WatermarkTextPattern,
 } from "./pdf.types.js";
 export type {
     DecodeLevel,

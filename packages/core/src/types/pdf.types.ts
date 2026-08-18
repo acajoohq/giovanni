@@ -41,6 +41,9 @@ export interface OrganizeOptions extends OpenDocumentOptions {
 
 export type WatermarkPlacement = "overlay" | "underlay";
 
+/** How the text watermark is laid out on each page. */
+export type WatermarkTextPattern = "single" | "tile";
+
 /**
  * Options for watermarking a PDF with another PDF page.
  */
@@ -158,6 +161,52 @@ export interface MergeResult extends PdfData {
      * Number of PDFs that were merged
      */
     sourceCount: number;
+}
+
+/**
+ * Options for applying a text watermark generated directly from styling parameters.
+ */
+export interface WatermarkTextOptions extends OpenDocumentOptions {
+    /**
+     * Watermark text. Non-ASCII characters are stripped; defaults to "CONFIDENTIAL".
+     */
+    text: string;
+
+    /**
+     * Font size in points.
+     * @default 64
+     */
+    fontSize?: number;
+
+    /**
+     * Fill and stroke opacity (0–1). 0 = fully transparent, 1 = fully opaque.
+     * @default 0.15
+     */
+    opacity?: number;
+
+    /**
+     * Counter-clockwise rotation angle in degrees.
+     * @default 45
+     */
+    angle?: number;
+
+    /**
+     * Whether to place the watermark above or below page content.
+     * @default "overlay"
+     */
+    placement?: WatermarkPlacement;
+
+    /**
+     * Zero-based destination page indices. If omitted, all pages are watermarked.
+     */
+    pages?: number[];
+
+    /**
+     * Layout pattern. "tile" repeats the text in a staggered grid across the page;
+     * "single" places one centred instance.
+     * @default "tile"
+     */
+    pattern?: WatermarkTextPattern;
 }
 
 /**

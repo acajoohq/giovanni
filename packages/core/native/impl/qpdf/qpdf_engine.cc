@@ -338,6 +338,13 @@ std::vector<uint8_t> QpdfEngine::watermarkPdf(
             int minSuffix = 1;
             std::string resourceName = resources.getUniqueResourceName("/Fx", minSuffix);
 
+            // TODO: placeFormXObject preserves aspect ratio and never upscales, then centers.
+            // The generated text-watermark template is fixed at 595x842 (A4 portrait, see
+            // PAGE_WIDTH/PAGE_HEIGHT in text-watermark-pdf.ts), so on any destination page with
+            // a different size/aspect ratio (US Letter, Legal, landscape, ...) large parts of the
+            // page are left uncovered instead of watermarked (e.g. ~40% of width on a landscape
+            // Letter page). Fix by computing a stretch-to-fill matrix from stampFo's BBox to the
+            // destination rect instead of relying on placeFormXObject's fit-and-center behavior.
             QPDFMatrix m;
             std::string placement = destinationPage.placeFormXObject(stampFo, resourceName, destinationPage.getTrimBox().getArrayAsRectangle(), m);
             if (placement.empty()) {

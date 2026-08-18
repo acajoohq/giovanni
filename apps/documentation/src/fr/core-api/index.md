@@ -15,6 +15,7 @@ import {
     mergePdfs,
     organizePdf,
     watermarkPdf,
+    watermarkTextPdf,
     extractImages,
 } from "@acajoo/giovanni-core";
 ```

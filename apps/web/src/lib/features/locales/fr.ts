@@ -95,9 +95,15 @@ export const fr: Translations = {
                 label: "Ghostscript",
                 description: "Réécriture avec perte. Idéal pour les scans ou les PDF riches en images.",
             },
+            combined: {
+                label: "Combiné",
+                description: "Enchaîne la réécriture d'image Ghostscript puis le nettoyage structurel qpdf sur le résultat. Le meilleur des deux, au prix d'un traitement plus lent.",
+            },
         },
         preset: {
             header: "Preset",
+            imageHeader: "Preset image",
+            structuralHeader: "Preset structurel",
         },
         qpdfPreset: {
             default: { label: "Défaut", description: "Réécriture sans perte" },

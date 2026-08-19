@@ -1,5 +1,5 @@
 import { getCompressionEngine, getCompressionEngineAdapter, listCompressionEngines } from "../compression/compression-engine.registry.js";
-import type { CompressionEngine, CompressOptions, CompressResult, GhostscriptCompressOptions, OptimizeOptions, QpdfCompressOptions } from "../types/index.js";
+import type { CombinedCompressOptions, CombinedEngineCompressOptions, CompressionEngine, CompressOptions, CompressResult, GhostscriptCompressOptions, OptimizeOptions, QpdfCompressOptions } from "../types/index.js";
 
 export { linearizePdf, optimizePdf } from "../engines/qpdf/optimize.js";
 
@@ -16,6 +16,10 @@ export async function compressPdf(input: Uint8Array | ArrayBuffer, options?: Com
         return getCompressionEngineAdapter("ghostscript").compress(input, toGhostscriptEngineOptions(options));
     }
 
+    if (options?.engine === "combined") {
+        return getCompressionEngineAdapter("combined").compress(input, toCombinedEngineOptions(options));
+    }
+
     getCompressionEngine(options);
 
     return getCompressionEngineAdapter("qpdf").compress(input, toQpdfEngineOptions(options));
@@ -27,6 +31,11 @@ function toQpdfEngineOptions(options?: QpdfCompressOptions): OptimizeOptions {
 }
 
 function toGhostscriptEngineOptions(options: { engine: "ghostscript" } & GhostscriptCompressOptions): GhostscriptCompressOptions {
+    const { engine: _engine, ...engineOptions } = options;
+    return engineOptions;
+}
+
+function toCombinedEngineOptions(options: CombinedEngineCompressOptions): CombinedCompressOptions {
     const { engine: _engine, ...engineOptions } = options;
     return engineOptions;
 }

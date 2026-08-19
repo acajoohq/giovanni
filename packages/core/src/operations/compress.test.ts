@@ -141,6 +141,28 @@ describe("compressPdf", () => {
         expect(result.engine).toBe("ghostscript");
     });
 
+    it("dispatches the combined engine through Ghostscript then qpdf", async () => {
+        mockCompressPdfWithGhostscript.mockResolvedValue({
+            engine: "ghostscript",
+            data: new Uint8Array(700),
+            preset: "ebook",
+            originalSize: 1000,
+            compressedSize: 700,
+            compressionRatio: 0.7,
+            savedBytes: 300,
+            percentageSaved: 30,
+        });
+        mockInitQpdfModule.mockResolvedValue(makeFakeModule(new Uint8Array(500)) as never);
+
+        const result = await compressPdf(new Uint8Array(1000), { engine: "combined", ghostscript: { preset: "ebook" } });
+
+        expect(mockCompressPdfWithGhostscript).toHaveBeenCalledWith(expect.any(Uint8Array), { preset: "ebook" });
+        expect(result.engine).toBe("combined");
+        expect(result.preset).toBe("ebook");
+        expect(result.originalSize).toBe(1000);
+        expect(result.compressedSize).toBe(500);
+    });
+
     it("rejects invalid runtime compression engines instead of falling back to qpdf", async () => {
         await expect(compressPdf(new Uint8Array(1000), { engine: "bad" } as never)).rejects.toBeInstanceOf(QpdfValidationError);
 
@@ -170,7 +192,7 @@ describe("linearizePdf", () => {
 
 describe("compression engine helpers", () => {
     it("lists the available engines", () => {
-        expect(getAvailableCompressionEngines()).toEqual(["qpdf", "ghostscript"]);
+        expect(getAvailableCompressionEngines()).toEqual(["qpdf", "ghostscript", "combined"]);
     });
 
     it("initializes qpdf through the existing module loader", async () => {

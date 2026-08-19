@@ -35,6 +35,7 @@ export {
 
 // types
 export type {
+    CombinedCompressOptions,
     CompressionEngine,
     CheckOptions,
     CompressOptions,

@@ -5,6 +5,7 @@
 #include <qpdf/Pl_Buffer.hh>
 #include <qpdf/Pl_Flate.hh>
 #include <qpdf/QPDF.hh>
+#include <qpdf/QPDFMatrix.hh>
 #include <qpdf/QPDFObjectHandle.hh>
 #include <qpdf/QPDFPageDocumentHelper.hh>
 #include <qpdf/QPDFPageObjectHelper.hh>
@@ -137,6 +138,61 @@ static QPDFObjectHandle ensureMutableXObjectDictionary(QPDFObjectHandle& resourc
     }
 
     return xObjects;
+}
+
+// Place a form XObject by stretching it non-uniformly to exactly fill rect, instead of
+// QPDFPageObjectHelper::placeFormXObject's aspect-preserving shrink-and-center behavior.
+// Mirrors qpdf's own placement math (see QPDFPageObjectHelper::getMatrixForFormXObjectPlacement)
+// but computes independent x/y scale factors so the result always fully covers the destination
+// rectangle regardless of how the form's aspect ratio compares to it.
+static std::string placeFormXObjectStretch(
+    QPDFPageObjectHelper& destinationPage,
+    QPDFObjectHandle fo,
+    std::string const& name,
+    QPDFObjectHandle::Rectangle rect)
+{
+    QPDFObjectHandle fdict = fo.getDict();
+    QPDFObjectHandle bboxObj = fdict.getKey("/BBox");
+    if (!bboxObj.isRectangle()) {
+        return "";
+    }
+    QPDFObjectHandle::Rectangle bbox = bboxObj.getArrayAsRectangle();
+
+    QPDFMatrix tmatrix(destinationPage.getMatrixForTransformations(true));
+    QPDFMatrix fmatrix;
+    if (fdict.getKey("/Matrix").isMatrix()) {
+        fmatrix = QPDFMatrix(fdict.getKey("/Matrix").getArrayAsMatrix());
+    }
+
+    QPDFMatrix wmatrix;
+    wmatrix.concat(tmatrix);
+    wmatrix.concat(fmatrix);
+
+    QPDFObjectHandle::Rectangle T = wmatrix.transformRectangle(bbox);
+    double tWidth = T.urx - T.llx;
+    double tHeight = T.ury - T.lly;
+    if (tWidth == 0.0 || tHeight == 0.0) {
+        return "";
+    }
+
+    double xScale = (rect.urx - rect.llx) / tWidth;
+    double yScale = (rect.ury - rect.lly) / tHeight;
+
+    wmatrix = QPDFMatrix();
+    wmatrix.scale(xScale, yScale);
+    wmatrix.concat(tmatrix);
+    wmatrix.concat(fmatrix);
+
+    T = wmatrix.transformRectangle(bbox);
+    double tx = rect.llx - T.llx;
+    double ty = rect.lly - T.lly;
+
+    QPDFMatrix cm;
+    cm.translate(tx, ty);
+    cm.scale(xScale, yScale);
+    cm.concat(tmatrix);
+
+    return "q\n" + cm.unparse() + " cm\n" + name + " Do\n" + "Q\n";
 }
 
 // ---------------------------------------------------------------------------
@@ -338,15 +394,12 @@ std::vector<uint8_t> QpdfEngine::watermarkPdf(
             int minSuffix = 1;
             std::string resourceName = resources.getUniqueResourceName("/Fx", minSuffix);
 
-            // TODO: placeFormXObject preserves aspect ratio and never upscales, then centers.
-            // The generated text-watermark template is fixed at 595x842 (A4 portrait, see
-            // PAGE_WIDTH/PAGE_HEIGHT in text-watermark-pdf.ts), so on any destination page with
-            // a different size/aspect ratio (US Letter, Legal, landscape, ...) large parts of the
-            // page are left uncovered instead of watermarked (e.g. ~40% of width on a landscape
-            // Letter page). Fix by computing a stretch-to-fill matrix from stampFo's BBox to the
-            // destination rect instead of relying on placeFormXObject's fit-and-center behavior.
-            QPDFMatrix m;
-            std::string placement = destinationPage.placeFormXObject(stampFo, resourceName, destinationPage.getTrimBox().getArrayAsRectangle(), m);
+            // Stretch (non-uniform scale) the watermark form to exactly fill the destination
+            // page's TrimBox, rather than QPDFPageObjectHelper::placeFormXObject's
+            // aspect-preserving shrink-and-center behavior. This guarantees full coverage
+            // regardless of how the watermark template's page size/aspect ratio compares to the
+            // destination page (A4, US Letter, Legal, landscape, ...).
+            std::string placement = placeFormXObjectStretch(destinationPage, stampFo, resourceName, destinationPage.getTrimBox().getArrayAsRectangle());
             if (placement.empty()) {
                 continue;
             }

@@ -97,7 +97,8 @@ export const fr: Translations = {
             },
             combined: {
                 label: "Combiné",
-                description: "Enchaîne la réécriture d'image Ghostscript puis le nettoyage structurel qpdf sur le résultat. Le meilleur des deux, au prix d'un traitement plus lent.",
+                description:
+                    "Enchaîne la réécriture d'image Ghostscript puis le nettoyage structurel qpdf sur le résultat. Le meilleur des deux, au prix d'un traitement plus lent.",
             },
         },
         preset: {

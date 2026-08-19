@@ -1,5 +1,14 @@
 import { getCompressionEngine, getCompressionEngineAdapter, listCompressionEngines } from "../compression/compression-engine.registry.js";
-import type { CombinedCompressOptions, CombinedEngineCompressOptions, CompressionEngine, CompressOptions, CompressResult, GhostscriptCompressOptions, OptimizeOptions, QpdfCompressOptions } from "../types/index.js";
+import type {
+    CombinedCompressOptions,
+    CombinedEngineCompressOptions,
+    CompressionEngine,
+    CompressOptions,
+    CompressResult,
+    GhostscriptCompressOptions,
+    OptimizeOptions,
+    QpdfCompressOptions,
+} from "../types/index.js";
 
 export { linearizePdf, optimizePdf } from "../engines/qpdf/optimize.js";
 

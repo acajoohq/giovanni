@@ -25,7 +25,16 @@ import { compressPdf, linearizePdf, optimizePdf } from "../operations/compress.j
 import { GhostscriptCompressionError, QpdfCompressionError } from "../errors/index.js";
 import { GHOSTSCRIPT_PRESETS } from "../engines/ghostscript/options.js";
 import { QPDF_PRESETS } from "../engines/qpdf/options.js";
-import type { CompressionEngine, CompressOptions, CompressResult, DecodeLevel, GhostscriptPdfSettings, OptimizeOptions, OptimizeResult, QpdfOptimizePreset } from "../types/index.js";
+import type {
+    CompressionEngine,
+    CompressOptions,
+    CompressResult,
+    DecodeLevel,
+    GhostscriptPdfSettings,
+    OptimizeOptions,
+    OptimizeResult,
+    QpdfOptimizePreset,
+} from "../types/index.js";
 
 // ---------------------------------------------------------------------------
 // Fixtures

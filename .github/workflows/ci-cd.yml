@@ -147,6 +147,15 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Detect core package changes
+              id: core_changes
+              if: github.event_name == 'pull_request'
+              uses: dorny/paths-filter@v3
+              with:
+                  filters: |
+                      core:
+                        - 'packages/core/**'
+
             - name: Setup Docker Buildx
               uses: docker/setup-buildx-action@v3
 
@@ -226,7 +235,7 @@ jobs:
                   key: compression-baseline-master-${{ env.SOURCE_SHA }}
 
             - name: Restore compression baseline cache (PR only)
-              if: github.event_name == 'pull_request'
+              if: github.event_name == 'pull_request' && steps.core_changes.outputs.core == 'true'
               id: restore_baseline
               uses: actions/cache/restore@v4
               with:
@@ -236,7 +245,7 @@ jobs:
                       compression-baseline-master-
 
             - name: Generate compression summary
-              if: always()
+              if: always() && (github.event_name != 'pull_request' || steps.core_changes.outputs.core == 'true')
               run: |
                   BASELINE_FLAG=""
                   if [ -f "/tmp/compression-baseline/compression-results.xml" ]; then
@@ -246,14 +255,14 @@ jobs:
 
             - name: Upload compression summary artifact
               uses: actions/upload-artifact@v4
-              if: always()
+              if: always() && (github.event_name != 'pull_request' || steps.core_changes.outputs.core == 'true')
               with:
                   name: compression-summary
                   path: packages/core/test-report/compression-summary.md
                   if-no-files-found: ignore
 
             - name: Post compression summary as PR comment
-              if: always() && github.event_name == 'pull_request'
+              if: always() && github.event_name == 'pull_request' && steps.core_changes.outputs.core == 'true'
               uses: actions/github-script@v7
               with:
                   script: |

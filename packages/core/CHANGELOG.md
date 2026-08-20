@@ -1,5 +1,15 @@
 # @acajoo/giovanni-core
 
+## 0.4.0
+
+### Minor Changes
+
+- [#58](https://github.com/acajoohq/giovanni/pull/58) [`7a7c4a3`](https://github.com/acajoohq/giovanni/commit/7a7c4a3a75e0b940d28159bba6c735fde20c895f) Thanks [@P4tt4te](https://github.com/P4tt4te)! - Add compression "combined" preset
+
+### Patch Changes
+
+- [#58](https://github.com/acajoohq/giovanni/pull/58) [`7a7c4a3`](https://github.com/acajoohq/giovanni/commit/7a7c4a3a75e0b940d28159bba6c735fde20c895f) Thanks [@P4tt4te](https://github.com/P4tt4te)! - Fix Watermark text to fit every page size/orientation
+
 ## 0.3.0
 
 ### Minor Changes

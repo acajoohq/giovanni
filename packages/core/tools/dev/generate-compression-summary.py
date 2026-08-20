@@ -21,6 +21,7 @@ SCENARIOS = [
     ("simple-recommended", "Recommended"),
     ("simple-smallest", "Smallest file"),
     ("simple-best-quality", "Best quality"),
+    ("combined-balanced", "Combined"),
 ]
 
 

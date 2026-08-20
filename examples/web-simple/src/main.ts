@@ -34,11 +34,15 @@ const initPromises: Partial<Record<CompressionEngine, Promise<void>>> = {};
 const enginePresets = {
     qpdf: ["default", "web", "archive"],
     ghostscript: ["default", "screen", "ebook", "printer", "prepress"],
+    // "combined" runs Ghostscript's image pass (tuned by this preset) then qpdf's
+    // structural pass (fixed to "archive" below) — same preset names as ghostscript.
+    combined: ["default", "screen", "ebook", "printer", "prepress"],
 } as const;
 
 const engineDefaults = {
     qpdf: "web",
     ghostscript: "default",
+    combined: "default",
 } as const;
 
 type QpdfPreset = (typeof enginePresets.qpdf)[number];
@@ -179,10 +183,16 @@ async function handleCompression() {
                       preset: qpdfPreset,
                       linearize: qpdfPreset === "web",
                   })
-                : await compressPdf(bytes, {
-                      engine: "ghostscript",
-                      preset: ghostscriptPreset,
-                  });
+                : engine === "ghostscript"
+                  ? await compressPdf(bytes, {
+                        engine: "ghostscript",
+                        preset: ghostscriptPreset,
+                    })
+                  : await compressPdf(bytes, {
+                        engine: "combined",
+                        ghostscript: { preset: ghostscriptPreset },
+                        qpdf: { preset: "archive" },
+                    });
 
         const elapsed = performance.now() - start;
         updateResultStats(result, elapsed);

@@ -1,9 +1,10 @@
-import type { CompressOptions } from "@acajoo/giovanni-core";
+import type { CompressionEngine, CompressOptions } from "@acajoo/giovanni-core";
 import { GHOSTSCRIPT_PRESETS, type GhostscriptCompatibilityLevel, type GhostscriptPdfSettings } from "@acajoo/giovanni-core/ghostscript";
 import { QPDF_PRESETS, type QpdfOptimizePreset } from "@acajoo/giovanni-core/qpdf";
 import type { CompressionUiMode, GhostscriptSettings, QpdfSettings, SimpleCompressionPreset } from "../types/compressTool.types";
 
 export const COMPRESSION_UI_MODES = ["simple", "advanced"] as const satisfies readonly CompressionUiMode[];
+export const COMPRESSION_ENGINES = ["qpdf", "ghostscript", "combined"] as const satisfies readonly CompressionEngine[];
 export const SIMPLE_COMPRESSION_PRESET_NAMES = ["recommended", "smallest", "bestQuality"] as const satisfies readonly SimpleCompressionPreset[];
 export const QPDF_PRESET_NAMES = ["default", "web", "archive"] as const satisfies readonly QpdfOptimizePreset[];
 export const GHOSTSCRIPT_PRESET_NAMES = ["default", "screen", "ebook", "printer", "prepress"] as const satisfies readonly GhostscriptPdfSettings[];

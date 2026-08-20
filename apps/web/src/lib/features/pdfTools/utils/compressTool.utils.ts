@@ -7,6 +7,18 @@ export function getSimpleCompressionOptions(preset: SimpleCompressionPreset): Co
     return { ...SIMPLE_COMPRESSION_PRESETS[preset] };
 }
 
+function buildGhostscriptOptions(ghostscriptSettings: CompressionJobSettings["ghostscriptSettings"]) {
+    return {
+        preset: ghostscriptSettings.preset,
+        compatibilityLevel: ghostscriptSettings.compatibilityLevel,
+        colorConversionStrategy: ghostscriptSettings.colorConversionStrategy,
+        downsampleColorImages: ghostscriptSettings.downsampleColorImages,
+        downsampleGrayImages: ghostscriptSettings.downsampleGrayImages,
+        colorImageResolution: ghostscriptSettings.colorImageResolution,
+        grayImageResolution: ghostscriptSettings.grayImageResolution,
+    };
+}
+
 export function buildCompressionOptions(settings: CompressionJobSettings): CompressOptions {
     if (settings.uiMode === "simple") {
         return getSimpleCompressionOptions(settings.simplePreset);
@@ -19,15 +31,17 @@ export function buildCompressionOptions(settings: CompressionJobSettings): Compr
         };
     }
 
+    if (settings.engine === "combined") {
+        return {
+            engine: "combined",
+            ghostscript: buildGhostscriptOptions(settings.ghostscriptSettings),
+            qpdf: { ...settings.qpdfSettings },
+        };
+    }
+
     return {
         engine: "ghostscript",
-        preset: settings.ghostscriptSettings.preset,
-        compatibilityLevel: settings.ghostscriptSettings.compatibilityLevel,
-        colorConversionStrategy: settings.ghostscriptSettings.colorConversionStrategy,
-        downsampleColorImages: settings.ghostscriptSettings.downsampleColorImages,
-        downsampleGrayImages: settings.ghostscriptSettings.downsampleGrayImages,
-        colorImageResolution: settings.ghostscriptSettings.colorImageResolution,
-        grayImageResolution: settings.ghostscriptSettings.grayImageResolution,
+        ...buildGhostscriptOptions(settings.ghostscriptSettings),
     };
 }
 

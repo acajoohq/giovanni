@@ -1,7 +1,6 @@
-// TODO: fixed at A4 portrait. Destination pages with a different size/aspect ratio
-// (US Letter, Legal, landscape, ...) still end up with uncovered areas because
-// qpdf_engine.cc's watermark placement shrinks-to-fit and centers this template rather
-// than stretching it — see the TODO next to placeFormXObject in native/impl/qpdf/qpdf_engine.cc.
+// Template page size. Destination pages of any other size/aspect ratio (US Letter, Legal,
+// landscape, ...) still get full coverage: qpdf_engine.cc's watermark placement stretches this
+// template to exactly fill the destination page rather than preserving aspect ratio.
 const PAGE_WIDTH = 595;
 const PAGE_HEIGHT = 842;
 

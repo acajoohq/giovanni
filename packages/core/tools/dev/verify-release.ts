@@ -81,7 +81,7 @@ async function verifyBuiltPackageRuntime(): Promise<void> {
     const giovanniQpdf = (await import(qpdfModuleUrl)) as GiovanniQpdfModule;
     const giovanniGhostscript = (await import(ghostscriptModuleUrl)) as GiovanniGhostscriptModule;
 
-    assert.deepEqual(giovanniWasm.getAvailableCompressionEngines().sort(), ["ghostscript", "qpdf"]);
+    assert.deepEqual(giovanniWasm.getAvailableCompressionEngines().sort(), ["combined", "ghostscript", "qpdf"]);
 
     const fixturePath = resolve(packageRoot, "src/test/fixtures/pdfs/upstream/pypdf/imagemagick-images.pdf");
     const input = new Uint8Array(await readFile(fixturePath));

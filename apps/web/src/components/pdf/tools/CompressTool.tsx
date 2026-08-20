@@ -31,6 +31,7 @@ import {
     DEFAULT_GHOSTSCRIPT_SETTINGS,
     DEFAULT_QPDF_SETTINGS,
     DEFAULT_SIMPLE_COMPRESSION_PRESET,
+    COMPRESSION_ENGINES,
     COMPRESSION_UI_MODES,
     GHOSTSCRIPT_COMPATIBILITY_LEVELS,
     GHOSTSCRIPT_ENGINE_PRESETS,
@@ -84,11 +85,13 @@ export function CompressTool() {
     const engineLabels: Record<CompressionEngine, string> = {
         qpdf: t("compress.engine.qpdf.label"),
         ghostscript: t("compress.engine.ghostscript.label"),
+        combined: t("compress.engine.combined.label"),
     };
 
     const engineDescriptions: Record<CompressionEngine, string> = {
         qpdf: t("compress.engine.qpdf.description"),
         ghostscript: t("compress.engine.ghostscript.description"),
+        combined: t("compress.engine.combined.description"),
     };
 
     const qpdfPresetLabels: Record<QpdfOptimizePreset, string> = {
@@ -145,7 +148,8 @@ export function CompressTool() {
         { label: t("compress.colorStrategy.deviceIndependent"), value: "UseDeviceIndependentColor" },
     ];
 
-    const activePresetDescription = engine === "qpdf" ? qpdfPresetDescriptions[qpdfSettings.preset] : ghostscriptPresetDescriptions[ghostscriptSettings.preset];
+    const activeQpdfPresetDescription = qpdfPresetDescriptions[qpdfSettings.preset];
+    const activeGhostscriptPresetDescription = ghostscriptPresetDescriptions[ghostscriptSettings.preset];
     const activeSimplePresetDescription = simplePresetDescriptions[simplePreset];
 
     const getCurrentJobSettings = (): CompressionJobSettings => ({
@@ -309,7 +313,7 @@ export function CompressTool() {
                         <SidebarHeader>{t("compress.engine.header")}</SidebarHeader>
                         <SidebarContent>
                             <SidebarToggleGroup>
-                                {(["qpdf", "ghostscript"] as CompressionEngine[]).map((candidate) => (
+                                {COMPRESSION_ENGINES.map((candidate) => (
                                     <SidebarToggle key={candidate} isActive={engine === candidate} title={engineDescriptions[candidate]} onClick={() => selectEngine(candidate)}>
                                         {engineLabels[candidate]}
                                     </SidebarToggle>
@@ -319,92 +323,49 @@ export function CompressTool() {
                         </SidebarContent>
                     </SidebarSection>
 
-                    <SidebarSection>
-                        <SidebarHeader>{t("compress.preset.header")}</SidebarHeader>
-                        <SidebarContent>
-                            <SidebarToggleGroup>
-                                {engine === "qpdf"
-                                    ? QPDF_PRESET_NAMES.map((preset) => (
-                                          <SidebarToggle
-                                              key={preset}
-                                              isActive={qpdfSettings.preset === preset}
-                                              title={qpdfPresetDescriptions[preset]}
-                                              onClick={() => selectQpdfPreset(preset)}
-                                          >
-                                              {qpdfPresetLabels[preset]}
-                                          </SidebarToggle>
-                                      ))
-                                    : GHOSTSCRIPT_PRESET_NAMES.map((preset) => (
-                                          <SidebarToggle
-                                              key={preset}
-                                              isActive={ghostscriptSettings.preset === preset}
-                                              title={ghostscriptPresetDescriptions[preset]}
-                                              onClick={() => selectGhostscriptPreset(preset)}
-                                          >
-                                              {ghostscriptPresetLabels[preset]}
-                                          </SidebarToggle>
-                                      ))}
-                            </SidebarToggleGroup>
-                            <p className="mt-1.5 text-[11px] text-neutral-500">{activePresetDescription}</p>
-                        </SidebarContent>
-                    </SidebarSection>
+                    {engine !== "qpdf" && (
+                        <SidebarSection>
+                            <SidebarHeader>{t(engine === "combined" ? "compress.preset.imageHeader" : "compress.preset.header")}</SidebarHeader>
+                            <SidebarContent>
+                                <SidebarToggleGroup>
+                                    {GHOSTSCRIPT_PRESET_NAMES.map((preset) => (
+                                        <SidebarToggle
+                                            key={preset}
+                                            isActive={ghostscriptSettings.preset === preset}
+                                            title={ghostscriptPresetDescriptions[preset]}
+                                            onClick={() => selectGhostscriptPreset(preset)}
+                                        >
+                                            {ghostscriptPresetLabels[preset]}
+                                        </SidebarToggle>
+                                    ))}
+                                </SidebarToggleGroup>
+                                <p className="mt-1.5 text-[11px] text-neutral-500">{activeGhostscriptPresetDescription}</p>
+                            </SidebarContent>
+                        </SidebarSection>
+                    )}
 
-                    {engine === "qpdf" ? (
-                        <>
-                            <SidebarCollapsibleSection title={t("compress.sidebar.advanced")} storageKey="compress-qpdf-advanced">
-                                <SidebarContent>
-                                    <SidebarField label={t("compress.sidebar.level")}>
-                                        <SidebarRange
-                                            max={9}
-                                            min={1}
-                                            value={qpdfSettings.compressionLevel}
-                                            valueLabel={qpdfSettings.compressionLevel}
-                                            onValueChange={(compressionLevel) => updateQpdfSettings({ compressionLevel })}
-                                        />
-                                    </SidebarField>
-                                    <SidebarField label={t("compress.sidebar.decode")}>
-                                        <SidebarSelect
-                                            options={decodeLevelOptions}
-                                            value={qpdfSettings.decodeLevel}
-                                            onValueChange={(decodeLevel) => updateQpdfSettings({ decodeLevel })}
-                                        />
-                                    </SidebarField>
-                                    <SidebarField label={t("compress.sidebar.objectStreams")}>
-                                        <SidebarSelect
-                                            options={objectStreamOptions}
-                                            value={qpdfSettings.objectStreams}
-                                            onValueChange={(objectStreams) => updateQpdfSettings({ objectStreams })}
-                                        />
-                                    </SidebarField>
-                                </SidebarContent>
-                            </SidebarCollapsibleSection>
+                    {engine !== "ghostscript" && (
+                        <SidebarSection>
+                            <SidebarHeader>{t(engine === "combined" ? "compress.preset.structuralHeader" : "compress.preset.header")}</SidebarHeader>
+                            <SidebarContent>
+                                <SidebarToggleGroup>
+                                    {QPDF_PRESET_NAMES.map((preset) => (
+                                        <SidebarToggle
+                                            key={preset}
+                                            isActive={qpdfSettings.preset === preset}
+                                            title={qpdfPresetDescriptions[preset]}
+                                            onClick={() => selectQpdfPreset(preset)}
+                                        >
+                                            {qpdfPresetLabels[preset]}
+                                        </SidebarToggle>
+                                    ))}
+                                </SidebarToggleGroup>
+                                <p className="mt-1.5 text-[11px] text-neutral-500">{activeQpdfPresetDescription}</p>
+                            </SidebarContent>
+                        </SidebarSection>
+                    )}
 
-                            <SidebarCollapsibleSection title={t("compress.sidebar.streamOptions")} storageKey="compress-qpdf-stream-options">
-                                <SidebarContent>
-                                    <SidebarCheckbox
-                                        checked={qpdfSettings.linearize}
-                                        label={t("compress.sidebar.linearize")}
-                                        onChange={(event) => updateQpdfSettings({ linearize: event.currentTarget.checked })}
-                                    />
-                                    <SidebarCheckbox
-                                        checked={qpdfSettings.recompressFlate}
-                                        label={t("compress.sidebar.recompressFlate")}
-                                        onChange={(event) => updateQpdfSettings({ recompressFlate: event.currentTarget.checked })}
-                                    />
-                                    <SidebarCheckbox
-                                        checked={qpdfSettings.compressPages}
-                                        label={t("compress.sidebar.compressPages")}
-                                        onChange={(event) => updateQpdfSettings({ compressPages: event.currentTarget.checked })}
-                                    />
-                                    <SidebarCheckbox
-                                        checked={qpdfSettings.removeUnreferencedResources}
-                                        label={t("compress.sidebar.removeUnused")}
-                                        onChange={(event) => updateQpdfSettings({ removeUnreferencedResources: event.currentTarget.checked })}
-                                    />
-                                </SidebarContent>
-                            </SidebarCollapsibleSection>
-                        </>
-                    ) : (
+                    {engine !== "qpdf" && (
                         <>
                             <SidebarCollapsibleSection title={t("compress.sidebar.imageSettings")} storageKey="compress-ghostscript-images">
                                 <SidebarContent>
@@ -495,6 +456,63 @@ export function CompressTool() {
                                             onValueChange={(colorConversionStrategy) => updateGhostscriptSettings({ colorConversionStrategy })}
                                         />
                                     </SidebarField>
+                                </SidebarContent>
+                            </SidebarCollapsibleSection>
+                        </>
+                    )}
+
+                    {engine !== "ghostscript" && (
+                        <>
+                            <SidebarCollapsibleSection title={t("compress.sidebar.advanced")} storageKey="compress-qpdf-advanced">
+                                <SidebarContent>
+                                    <SidebarField label={t("compress.sidebar.level")}>
+                                        <SidebarRange
+                                            max={9}
+                                            min={1}
+                                            value={qpdfSettings.compressionLevel}
+                                            valueLabel={qpdfSettings.compressionLevel}
+                                            onValueChange={(compressionLevel) => updateQpdfSettings({ compressionLevel })}
+                                        />
+                                    </SidebarField>
+                                    <SidebarField label={t("compress.sidebar.decode")}>
+                                        <SidebarSelect
+                                            options={decodeLevelOptions}
+                                            value={qpdfSettings.decodeLevel}
+                                            onValueChange={(decodeLevel) => updateQpdfSettings({ decodeLevel })}
+                                        />
+                                    </SidebarField>
+                                    <SidebarField label={t("compress.sidebar.objectStreams")}>
+                                        <SidebarSelect
+                                            options={objectStreamOptions}
+                                            value={qpdfSettings.objectStreams}
+                                            onValueChange={(objectStreams) => updateQpdfSettings({ objectStreams })}
+                                        />
+                                    </SidebarField>
+                                </SidebarContent>
+                            </SidebarCollapsibleSection>
+
+                            <SidebarCollapsibleSection title={t("compress.sidebar.streamOptions")} storageKey="compress-qpdf-stream-options">
+                                <SidebarContent>
+                                    <SidebarCheckbox
+                                        checked={qpdfSettings.linearize}
+                                        label={t("compress.sidebar.linearize")}
+                                        onChange={(event) => updateQpdfSettings({ linearize: event.currentTarget.checked })}
+                                    />
+                                    <SidebarCheckbox
+                                        checked={qpdfSettings.recompressFlate}
+                                        label={t("compress.sidebar.recompressFlate")}
+                                        onChange={(event) => updateQpdfSettings({ recompressFlate: event.currentTarget.checked })}
+                                    />
+                                    <SidebarCheckbox
+                                        checked={qpdfSettings.compressPages}
+                                        label={t("compress.sidebar.compressPages")}
+                                        onChange={(event) => updateQpdfSettings({ compressPages: event.currentTarget.checked })}
+                                    />
+                                    <SidebarCheckbox
+                                        checked={qpdfSettings.removeUnreferencedResources}
+                                        label={t("compress.sidebar.removeUnused")}
+                                        onChange={(event) => updateQpdfSettings({ removeUnreferencedResources: event.currentTarget.checked })}
+                                    />
                                 </SidebarContent>
                             </SidebarCollapsibleSection>
                         </>

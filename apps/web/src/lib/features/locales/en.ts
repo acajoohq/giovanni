@@ -93,9 +93,15 @@ export const en = {
                 label: "Ghostscript",
                 description: "Lossy rewrite. Best for scanned or image-heavy PDFs where image resampling matters.",
             },
+            combined: {
+                label: "Combined",
+                description: "Runs Ghostscript's image rewrite, then qpdf's structural cleanup on the result. Best of both, at the cost of a slower pass.",
+            },
         },
         preset: {
             header: "Preset",
+            imageHeader: "Image preset",
+            structuralHeader: "Structural preset",
         },
         qpdfPreset: {
             default: { label: "Default", description: "Safe lossless rewrite" },

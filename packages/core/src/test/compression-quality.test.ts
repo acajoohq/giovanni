@@ -25,7 +25,16 @@ import { compressPdf, linearizePdf, optimizePdf } from "../operations/compress.j
 import { GhostscriptCompressionError, QpdfCompressionError } from "../errors/index.js";
 import { GHOSTSCRIPT_PRESETS } from "../engines/ghostscript/options.js";
 import { QPDF_PRESETS } from "../engines/qpdf/options.js";
-import type { CompressOptions, CompressResult, DecodeLevel, GhostscriptPdfSettings, OptimizeOptions, OptimizeResult, QpdfOptimizePreset } from "../types/index.js";
+import type {
+    CompressionEngine,
+    CompressOptions,
+    CompressResult,
+    DecodeLevel,
+    GhostscriptPdfSettings,
+    OptimizeOptions,
+    OptimizeResult,
+    QpdfOptimizePreset,
+} from "../types/index.js";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -155,12 +164,12 @@ const fixtures = await loadFixtures();
 // Constants
 // ---------------------------------------------------------------------------
 
-type CompressionScenarioKey = "simple-recommended" | "simple-smallest" | "simple-best-quality";
+type CompressionScenarioKey = "simple-recommended" | "simple-smallest" | "simple-best-quality" | "combined-balanced";
 
 type CompressionScenario = {
     key: CompressionScenarioKey;
     label: string;
-    engine: "qpdf" | "ghostscript";
+    engine: CompressionEngine;
     expectedPreset: QpdfOptimizePreset | GhostscriptPdfSettings;
     options: CompressOptions;
 };
@@ -199,6 +208,17 @@ const COMPRESSION_SCENARIOS: CompressionScenario[] = [
             ...QPDF_PRESETS.archive,
         },
     },
+    {
+        key: "combined-balanced",
+        label: "Balanced (combined)",
+        engine: "combined",
+        expectedPreset: "ebook",
+        options: {
+            engine: "combined",
+            ghostscript: { preset: "ebook", ...GHOSTSCRIPT_PRESETS.ebook },
+            qpdf: { preset: "archive", ...QPDF_PRESETS.archive },
+        },
+    },
 ];
 
 const QPDF_PRESET_NAMES: QpdfOptimizePreset[] = ["default", "web", "archive"];
@@ -216,7 +236,7 @@ const DECODE_LEVELS: DecodeLevel[] = ["none", "generalized", "specialized", "all
 type SizeResult = {
     name: string;
     scenario: CompressionScenarioKey;
-    engine: "qpdf" | "ghostscript";
+    engine: CompressionEngine;
     preset: QpdfOptimizePreset | GhostscriptPdfSettings;
     originalBytes: number;
     compressedBytes: number;

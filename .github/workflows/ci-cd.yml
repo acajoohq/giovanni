@@ -273,6 +273,39 @@ jobs:
                       const run = new Function("github", "context", "core", "return (async function () {\n" + body + "\n})();");
                       await run(github, context, core);
 
+            - name: Pack current PR bundle (core)
+              if: github.event_name == 'pull_request' && steps.core_changes.outputs.core == 'true'
+              run: cd packages/core && npm pack --dry-run --json > test-report/bundle-size-pr.json
+
+            - name: Fetch published npm bundle (core)
+              if: github.event_name == 'pull_request' && steps.core_changes.outputs.core == 'true'
+              continue-on-error: true
+              run: cd packages/core && npm pack @acajoo/giovanni-core --dry-run --json > test-report/bundle-size-published.json
+
+            - name: Generate bundle size summary
+              if: always() && github.event_name == 'pull_request' && steps.core_changes.outputs.core == 'true'
+              run: pnpm --filter @acajoo/giovanni-core exec tsx tools/dev/generate-bundle-size-summary.ts test-report/bundle-size-pr.json test-report/bundle-size-published.json
+
+            - name: Upload bundle size summary artifact
+              uses: actions/upload-artifact@v4
+              if: always() && github.event_name == 'pull_request' && steps.core_changes.outputs.core == 'true'
+              with:
+                  name: bundle-size-summary
+                  path: packages/core/test-report/bundle-size-summary.md
+                  if-no-files-found: ignore
+
+            - name: Post bundle size summary as PR comment
+              if: always() && github.event_name == 'pull_request' && steps.core_changes.outputs.core == 'true'
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require("fs");
+                      const path = require("path");
+                      const scriptPath = path.join(process.env.GITHUB_WORKSPACE, ".github/scripts/post-bundle-size-comment.js");
+                      const body = fs.readFileSync(scriptPath, "utf8");
+                      const run = new Function("github", "context", "core", "return (async function () {\n" + body + "\n})();");
+                      await run(github, context, core);
+
             - name: Check package contract
               run: pnpm --filter @acajoo/giovanni-core package:check
 

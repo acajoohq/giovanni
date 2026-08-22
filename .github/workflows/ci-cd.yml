@@ -251,7 +251,7 @@ jobs:
                   if [ -f "/tmp/compression-baseline/compression-results.xml" ]; then
                       BASELINE_FLAG="--baseline /tmp/compression-baseline/compression-results.xml"
                   fi
-                  python3 packages/core/tools/dev/generate-compression-summary.py $BASELINE_FLAG
+                  pnpm --filter @acajoo/giovanni-core exec tsx tools/dev/generate-compression-summary.ts $BASELINE_FLAG
 
             - name: Upload compression summary artifact
               uses: actions/upload-artifact@v4

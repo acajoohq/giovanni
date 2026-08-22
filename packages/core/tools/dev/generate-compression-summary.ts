@@ -112,11 +112,7 @@ async function main(): Promise<void> {
     const scenarioHeader = SCENARIOS.map(([, label]) => label).join(" | ");
     const scenarioSeparator = SCENARIOS.map(([, label]) => "-".repeat(label.length + 2)).join("|");
 
-    const lines = [
-        `${title}\n`,
-        `| File | Original | ${scenarioHeader} |`,
-        `|------|----------|${scenarioSeparator}|`,
-    ];
+    const lines = [`${title}\n`, `| File | Original | ${scenarioHeader} |`, `|------|----------|${scenarioSeparator}|`];
 
     for (const file of files) {
         const orig = fmtBytes(file.originalBytes);

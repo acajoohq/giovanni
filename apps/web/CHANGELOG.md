@@ -1,5 +1,16 @@
 # web
 
+## 0.3.0
+
+### Minor Changes
+
+- [#58](https://github.com/acajoohq/giovanni/pull/58) [`7a7c4a3`](https://github.com/acajoohq/giovanni/commit/7a7c4a3a75e0b940d28159bba6c735fde20c895f) Thanks [@P4tt4te](https://github.com/P4tt4te)! - Add compression "combined" preset
+
+### Patch Changes
+
+- Updated dependencies [[`1911d49`](https://github.com/acajoohq/giovanni/commit/1911d4997d9a8484c1fe20f2faef9136334360d7), [`7a7c4a3`](https://github.com/acajoohq/giovanni/commit/7a7c4a3a75e0b940d28159bba6c735fde20c895f), [`7a7c4a3`](https://github.com/acajoohq/giovanni/commit/7a7c4a3a75e0b940d28159bba6c735fde20c895f)]:
+    - @acajoo/giovanni-core@0.4.0
+
 ## 0.2.2
 
 ### Patch Changes

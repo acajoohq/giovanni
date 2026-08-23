@@ -101,7 +101,9 @@ async function main(): Promise<void> {
             const prV = prSizes[name];
             lines.push(`| ${name} | ${fmtBytes(pub)} | ${fmtBytes(prV)} | ${fmtDelta(prV - pub, pub)} |`);
         }
-        lines.push(`| **Total (unpacked)** | **${fmtBytes(published.unpackedSize)}** | **${fmtBytes(pr.unpackedSize)}** | ${fmtDelta(pr.unpackedSize - published.unpackedSize, published.unpackedSize)} |`);
+        lines.push(
+            `| **Total (unpacked)** | **${fmtBytes(published.unpackedSize)}** | **${fmtBytes(pr.unpackedSize)}** | ${fmtDelta(pr.unpackedSize - published.unpackedSize, published.unpackedSize)} |`,
+        );
         lines.push(`| **Total (packed tarball)** | **${fmtBytes(published.size)}** | **${fmtBytes(pr.size)}** | ${fmtDelta(pr.size - published.size, published.size)} |`);
     }
 

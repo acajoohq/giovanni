@@ -1,0 +1,55 @@
+// @ts-nocheck
+// Post/update a bundle size comparison comment on the PR.
+// Uses github-script@v7 globals: github, context, core, process.
+
+const { existsSync, readFileSync } = await import("node:fs");
+const { join } = await import("node:path");
+
+const COMMENT_MARKER = "<!-- bundle-size-summary -->";
+const BOT_LOGIN = "github-actions[bot]";
+const SUMMARY_PATH = join(process.env.GITHUB_WORKSPACE, "packages/core/test-report/bundle-size-summary.md");
+
+function buildCommentBody() {
+    if (!existsSync(SUMMARY_PATH)) {
+        core.warning("bundle-size-summary.md not found, skipping PR comment.");
+        return null;
+    }
+
+    const summary = readFileSync(SUMMARY_PATH, "utf8").trim();
+    return [COMMENT_MARKER, "", summary].join("\n");
+}
+
+async function upsertComment(body) {
+    const { owner, repo, number: issueNumber } = context.issue;
+
+    const comments = await github.paginate(github.rest.issues.listComments, {
+        owner,
+        repo,
+        issue_number: issueNumber,
+    });
+
+    const existing = comments
+        .filter((c) => c.user?.login === BOT_LOGIN && c.body?.includes(COMMENT_MARKER))
+        .reduce((latest, c) => (!latest || c.id > latest.id ? c : latest), null);
+
+    if (existing) {
+        await github.rest.issues.updateComment({
+            owner,
+            repo,
+            comment_id: existing.id,
+            body,
+        });
+        core.info(`Updated bundle size comment #${existing.id}`);
+    } else {
+        await github.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body,
+        });
+        core.info("Created bundle size comment");
+    }
+}
+
+const body = buildCommentBody();
+if (body) await upsertComment(body);

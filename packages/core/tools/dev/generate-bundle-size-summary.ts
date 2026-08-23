@@ -38,11 +38,12 @@ function fmtBytes(bytes: number): string {
     return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 }
 
-function fmtDelta(delta: number): string {
+function fmtDelta(delta: number, base: number): string {
     if (delta === 0) return "±0 B ✅";
     const sign = delta > 0 ? "+" : "-";
     const icon = delta > 0 ? "⚠️" : "🟢";
-    return `${sign}${fmtBytes(Math.abs(delta))} ${icon}`;
+    const pct = base > 0 ? ((Math.abs(delta) / base) * 100).toFixed(1) : "0.0";
+    return `${sign}${fmtBytes(Math.abs(delta))} (${sign}${pct}%) ${icon}`;
 }
 
 async function loadPack(path: string | undefined): Promise<PackEntry | null> {
@@ -98,12 +99,13 @@ async function main(): Promise<void> {
         for (const [name] of CATEGORIES) {
             const pub = publishedSizes[name];
             const prV = prSizes[name];
-            lines.push(`| ${name} | ${fmtBytes(pub)} | ${fmtBytes(prV)} | ${fmtDelta(prV - pub)} |`);
+            lines.push(`| ${name} | ${fmtBytes(pub)} | ${fmtBytes(prV)} | ${fmtDelta(prV - pub, pub)} |`);
         }
-        lines.push(`| **Total (unpacked)** | **${fmtBytes(published.unpackedSize)}** | **${fmtBytes(pr.unpackedSize)}** | ${fmtDelta(pr.unpackedSize - published.unpackedSize)} |`);
-        lines.push(`| **Total (packed tarball)** | **${fmtBytes(published.size)}** | **${fmtBytes(pr.size)}** | ${fmtDelta(pr.size - published.size)} |`);
+        lines.push(`| **Total (unpacked)** | **${fmtBytes(published.unpackedSize)}** | **${fmtBytes(pr.unpackedSize)}** | ${fmtDelta(pr.unpackedSize - published.unpackedSize, published.unpackedSize)} |`);
+        lines.push(`| **Total (packed tarball)** | **${fmtBytes(published.size)}** | **${fmtBytes(pr.size)}** | ${fmtDelta(pr.size - published.size, published.size)} |`);
     }
 
+    lines.push("\n> ✅ unchanged &nbsp;|&nbsp; 🟢 improved &nbsp;|&nbsp; ⚠️ regression &nbsp;|&nbsp; 🆕 new fixture");
     const content = `${lines.join("\n")}\n`;
 
     await mkdir(reportDir, { recursive: true });

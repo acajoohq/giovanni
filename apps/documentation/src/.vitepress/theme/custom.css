@@ -72,6 +72,12 @@ h3,
     border-radius: 2px;
 }
 
+.examples-table table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

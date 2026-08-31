@@ -77,7 +77,6 @@ h3,
     table-layout: fixed;
 }
 
-
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

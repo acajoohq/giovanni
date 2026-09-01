@@ -1,5 +1,11 @@
 # @acajoo/giovanni-core
 
+## 0.4.1
+
+### Patch Changes
+
+- [#61](https://github.com/acajoohq/giovanni/pull/61) [`debfb96`](https://github.com/acajoohq/giovanni/commit/debfb961029279c2479ddaf66e94085abbe145c6) Thanks [@P4tt4te](https://github.com/P4tt4te)! - Add a local bench speed test
+
 ## 0.4.0
 
 ### Minor Changes

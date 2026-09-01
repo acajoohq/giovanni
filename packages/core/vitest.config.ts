@@ -39,5 +39,12 @@ export default defineConfig({
             reporter: ["text", "json", "html"],
             exclude: ["node_modules/", "dist/", "build/", "**/*.d.ts", "**/*.config.ts", "**/*.test.ts"],
         },
+        // Local-only perf benchmarks (src/test/perf.bench.ts). Not run in CI —
+        // shared runners are too noisy for a reliable regression signal; run
+        // `pnpm bench` by hand before/after a change on the same machine instead.
+        benchmark: {
+            include: ["src/test/**/*.bench.ts"],
+            reporters: ["verbose"],
+        },
     },
 });

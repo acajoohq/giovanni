@@ -221,6 +221,12 @@ pnpm --filter @acajoo/giovanni-core validate
 pnpm --filter @acajoo/giovanni-core package:check
 ```
 
+Local performance benchmarks (`src/test/perf.bench.ts`, real WASM, no mocks) time each operation across the qpdf, ghostscript, and combined engines.
+
+```bash
+pnpm --filter @acajoo/giovanni-core bench
+```
+
 Smoke test the Ghostscript WASM artifact end to end:
 
 ```bash

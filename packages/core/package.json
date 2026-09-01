@@ -169,6 +169,7 @@
         "test": "vitest run",
         "test:coverage": "vitest run --coverage",
         "test:watch": "vitest",
+        "bench": "vitest bench --run",
         "typecheck": "tsgo --noEmit",
         "validate": "publint",
         "verify:release": "tsx tools/dev/verify-release.ts",

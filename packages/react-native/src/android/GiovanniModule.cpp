@@ -14,5 +14,6 @@ Java_com_giovanni_GiovanniModule_nativeInstall(JNIEnv* env, jobject /* this */, 
 #ifdef GIOVANNI_JSI_ENABLED
     auto* rt = reinterpret_cast<facebook::jsi::Runtime*>(jsRuntimePointer);
     giovanni::jsi::install(*rt);
+    giovanni::jsi::installGs(*rt);
 #endif
 }

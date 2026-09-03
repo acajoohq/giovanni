@@ -68,6 +68,7 @@ static Value bytesToJsValue(Runtime& rt, std::vector<uint8_t> bytes) {
 //   giovanni.splitPages(u8a)               → Uint8Array[]
 //   giovanni.mergePdfs(u8a[])              → Uint8Array
 //   giovanni.getDocumentInfo(u8a, pass?)   → object
+//   giovanni.watermarkPdf(u8a, watermark, opts, pass?, wmPass?) → Uint8Array
 //
 // All functions are synchronous (JSI does not require Promises at this layer;
 // wrap in a Promise in the JS TurboModule spec if async behaviour is needed).
@@ -195,6 +196,43 @@ inline void install(Runtime& rt, std::shared_ptr<IQpdfEngine> engine = nullptr) 
             }));
 
 
+
+    // --- watermarkPdf(u8a, watermark, opts, password?, watermarkPassword?) → ArrayBuffer ---
+    giovanni.setProperty(rt, "watermarkPdf",
+        Function::createFromHostFunction(rt,
+            PropNameID::forAscii(rt, "watermarkPdf"), 5,
+            [engine](Runtime& rt, const Value&, const Value* args, size_t count) -> Value {
+                if (count < 3) throw JSError(rt, "giovanni.watermarkPdf: expected (data, watermark, opts, password?, watermarkPassword?)");
+
+                auto input     = jsValueToBytes(rt, args[0]);
+                auto watermark = jsValueToBytes(rt, args[1]);
+
+                bool underlay = false;
+                std::vector<int> pages;
+                if (args[2].isObject()) {
+                    auto o = args[2].asObject(rt);
+                    Value ulVal = o.getProperty(rt, "underlay");
+                    if (ulVal.isBool()) underlay = ulVal.asBool();
+
+                    Value pagesVal = o.getProperty(rt, "pages");
+                    if (pagesVal.isObject()) {
+                        auto pArr = pagesVal.asObject(rt).asArray(rt);
+                        size_t n = pArr.size(rt);
+                        pages.reserve(n);
+                        for (size_t i = 0; i < n; ++i) {
+                            Value pv = pArr.getValueAtIndex(rt, i);
+                            if (pv.isNumber()) pages.push_back(static_cast<int>(pv.asNumber()));
+                        }
+                    }
+                }
+
+                std::string password, watermarkPassword;
+                if (count >= 4 && args[3].isString()) password = args[3].asString(rt).utf8(rt);
+                if (count >= 5 && args[4].isString()) watermarkPassword = args[4].asString(rt).utf8(rt);
+
+                auto result = engine->watermarkPdf(input, watermark, underlay, pages, password, watermarkPassword);
+                return bytesToJsValue(rt, std::move(result));
+            }));
     // --- extractImages(u8a) -> object[] ---
     giovanni.setProperty(rt, "extractImages",
         Function::createFromHostFunction(rt,

@@ -1,6 +1,6 @@
 // Ambient type declarations for the giovanni JSI globals injected by the native modules.
 // - giovanni:    registered by giovanni::jsi::install(rt)   (targets/jsi/qpdf)
-// - giovanni_gs: registered by giovanni::jsi::installGs(rt) (targets/jsi/ghostscript -- TODO)
+// - giovanni_gs: registered by giovanni::jsi::installGs(rt) (targets/jsi/ghostscript/gs_jsi.h)
 
 import type { NativeColorComponentCount, NativePixelColorModel } from "../qpdf-binding.interface.js";
 
@@ -51,7 +51,7 @@ interface GiovanniGsJsiGlobal {
 declare global {
     // Injected by giovanni::jsi::install(rt) -- see targets/jsi/qpdf/qpdf_jsi.h
     var giovanni: GiovanniJsiGlobal | undefined;
-    // Injected by giovanni::jsi::installGs(rt) -- see targets/jsi/ghostscript (TODO: not yet built)
+    // Injected by giovanni::jsi::installGs(rt) -- see targets/jsi/ghostscript/gs_jsi.h
     var giovanni_gs: GiovanniGsJsiGlobal | undefined;
 }
 

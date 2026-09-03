@@ -8,7 +8,7 @@ import { VENDOR_PINS } from "./upstreams";
 // Types
 // ---------------------------------------------------------------------------
 
-type NativeBuildTarget = "native" | "jsi";
+type NativeBuildTarget = "native" | "jsi" | "jsi-gs";
 type RequestedTarget = NativeBuildTarget | "all";
 type BuildMode = "dev" | "prd";
 
@@ -69,6 +69,25 @@ const NATIVE_TARGETS: Record<NativeBuildTarget, NativeTargetConfig> = {
                 QPDF_ARCHIVE_URL: VENDOR_PINS.qpdf.archiveUrl,
                 QPDF_SHA256: VENDOR_PINS.qpdf.sha256 ?? "",
                 QPDF_JOBS: process.env.GIOVANNI_NATIVE_JOBS ?? "",
+                REACT_NATIVE_VERSION: process.env.GIOVANNI_REACT_NATIVE_VERSION ?? "0.76.0",
+            };
+        },
+    },
+
+    /**
+     * React Native JSI shared library for Ghostscript (libgiovanni_jsi_gs.so + gs_jsi.h).
+     * Override GIOVANNI_REACT_NATIVE_VERSION and GIOVANNI_NATIVE_JOBS as needed.
+     */
+    "jsi-gs": {
+        dockerfile: "packages/core/native/targets/jsi/ghostscript/docker.Dockerfile",
+        outputDirectory: "build/jsi-gs",
+        resolveBuildArgs(mode) {
+            return {
+                JSI_BUILD_MODE: mode,
+                GHOSTPDL_VERSION: VENDOR_PINS.ghostscript.version,
+                GHOSTPDL_ARCHIVE_URL: VENDOR_PINS.ghostscript.archiveUrl,
+                GHOSTPDL_SHA256: VENDOR_PINS.ghostscript.sha256 ?? "",
+                GHOSTPDL_JOBS: process.env.GIOVANNI_NATIVE_JOBS ?? "",
                 REACT_NATIVE_VERSION: process.env.GIOVANNI_REACT_NATIVE_VERSION ?? "0.76.0",
             };
         },

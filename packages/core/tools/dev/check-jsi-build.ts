@@ -14,19 +14,19 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageRoot = resolve(__dirname, "..", "..");
 
-const jsiBuildDir = resolve(packageRoot, "build", "jsi");
-
-const expectedFiles = [
-    // Shared library — Docker build always targets Linux, so the artifact is always .so
-    "libgiovanni_jsi.so",
-    // Public header copied by build-native.ts
-    "qpdf_jsi.h",
+const checks: Array<{ dir: string; file: string }> = [
+    // qpdf JSI target (build:jsi:qpdf)
+    { dir: resolve(packageRoot, "build", "jsi"), file: "libgiovanni_jsi.so" },
+    { dir: resolve(packageRoot, "build", "jsi"), file: "qpdf_jsi.h" },
+    // Ghostscript JSI target (build:jsi:gs)
+    { dir: resolve(packageRoot, "build", "jsi-gs"), file: "libgiovanni_jsi_gs.so" },
+    { dir: resolve(packageRoot, "build", "jsi-gs"), file: "gs_jsi.h" },
 ];
 
 let allOk = true;
 
-for (const file of expectedFiles) {
-    const fullPath = resolve(jsiBuildDir, file);
+for (const { dir, file } of checks) {
+    const fullPath = resolve(dir, file);
     if (!existsSync(fullPath)) {
         console.error(`MISSING: ${fullPath}`);
         allOk = false;

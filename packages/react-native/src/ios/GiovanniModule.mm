@@ -23,6 +23,7 @@ RCT_EXPORT_MODULE(GiovanniModule)
 
     auto &rt = *(facebook::jsi::Runtime *)cxxBridge.runtime;
     giovanni::jsi::install(rt);
+    giovanni::jsi::installGs(rt);
 #endif
 }
 

@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Button, ActivityIndicator, TextInput } from 're
 import { useState, useCallback } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@acajoo/giovanni-pdf-render";
 
 // Simple formatBytes utility if not available
@@ -60,16 +60,7 @@ export default function PdfToJpgScreen() {
     setStatusMessage('Converting PDF to JPG...');
 
     try {
-      // Read the file as base64, then convert to Uint8Array
-      const base64 = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      // Convert base64 string to Uint8Array
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      const bytes = await new File(fileUri).bytes();
 
       const convertResult = await renderPdfPagesToJpg(bytes, {
         quality: qualityPercent / 100,
@@ -88,24 +79,14 @@ export default function PdfToJpgScreen() {
   const shareResult = useCallback(async () => {
     if (!result || result.pages.length === 0) return;
     try {
-      // Share the first converted page only since we can't create ZIP without expo-zip
+      // Share the first converted page only since we can\'t create ZIP without expo-zip
       const firstPage = result.pages[0];
-      const blob = new Blob([firstPage.blob], { type: 'image/jpeg' });
-      const arrayBuffer = await blob.arrayBuffer();
-      let binary = '';
-      const bytes = new Uint8Array(arrayBuffer);
-      for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64 = btoa(binary);
+      const bytes = new Uint8Array(await firstPage.blob.arrayBuffer());
 
-      // Write to a temporary file
-      const fileUri = `${FileSystem.cacheDirectory}converted-page-1.jpg`;
-      await FileSystem.writeAsStringAsync(fileUri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      const outFile = new File(Paths.cache, 'converted-page-1.jpg');
+      outFile.write(bytes);
 
-      await Sharing.shareAsync(fileUri, {
+      await Sharing.shareAsync(outFile.uri, {
         mimeType: 'image/jpeg',
         UTI: 'public.jpeg',
         dialogTitle: 'Share First Converted Image',

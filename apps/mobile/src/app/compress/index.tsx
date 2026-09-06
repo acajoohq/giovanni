@@ -2,7 +2,7 @@ import { Platform, StyleSheet, View, Text, Button, Switch, ActivityIndicator } f
 import { useState, useCallback } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import { compressPdf, type CompressionEngine, type CompressResult } from "@acajoo/giovanni-core";
 import { type QpdfOptimizePreset } from "@acajoo/giovanni-core/qpdf";
 import { type GhostscriptPdfSettings } from "@acajoo/giovanni-core/ghostscript";
@@ -78,16 +78,7 @@ export default function CompressScreen() {
     setStatusMessage('Compressing...');
 
     try {
-      // Read the file as base64, then convert to Uint8Array
-      const base64 = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      // Convert base64 string to Uint8Array
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      const bytes = await new File(fileUri).bytes();
 
       // Build compression options based on engine and preset
       let compressOptions: any = {};
@@ -135,21 +126,10 @@ export default function CompressScreen() {
   const shareDocument = useCallback(async () => {
     if (!result) return;
     try {
-      // Convert Uint8Array to base64 string
-      let binary = '';
-      const bytes = result.data;
-      for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64 = btoa(binary);
+      const outFile = new File(Paths.cache, "compressed.pdf");
+      outFile.write(result.data);
 
-      // Write to a temporary file
-      const fileUri = `${FileSystem.cacheDirectory}compressed.pdf`;
-      await FileSystem.writeAsStringAsync(fileUri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      await Sharing.shareAsync(fileUri, {
+      await Sharing.shareAsync(outFile.uri, {
         mimeType: 'application/pdf',
         UTI: 'com.adobe.pdf',
         dialogTitle: 'Share PDF',

@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Button, ActivityIndicator, FlatList, TextInput 
 import { useState, useCallback } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import { mergePdfs, type MergeResult } from "@acajoo/giovanni-core";
 
 // Simple formatBytes utility if not available
@@ -56,20 +56,9 @@ export default function MergeScreen() {
     setStatusMessage('Merging PDFs...');
 
     try {
-      // Read all files as base64, then convert to Uint8Array and then to ArrayBuffer
-      const arrayBuffersPromise = fileUris.map(async (fileUri) => {
-        const base64 = await FileSystem.readAsStringAsync(fileUri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        // Convert base64 string to Uint8Array
-        const binaryString = atob(base64);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        // Return ArrayBuffer (copy to avoid issues with views)
-        return bytes.slice(0).buffer;
-      });
+      const arrayBuffersPromise = fileUris.map(async (fileUri) =>
+        (await new File(fileUri).bytes()).buffer
+      );
 
       const arrayBuffers = await Promise.all(arrayBuffersPromise);
       const mergeResult = await mergePdfs(arrayBuffers);
@@ -86,21 +75,10 @@ export default function MergeScreen() {
   const shareResult = useCallback(async () => {
     if (!result) return;
     try {
-      // Convert Uint8Array to base64 string
-      let binary = '';
-      const bytes = result.data;
-      for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64 = btoa(binary);
+      const outFile = new File(Paths.document, outputName);
+      outFile.write(result.data);
 
-      // Write to a temporary file
-      const fileUri = `${FileSystem.documentDirectory}${outputName}`;
-      await FileSystem.writeAsStringAsync(fileUri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      await Sharing.shareAsync(fileUri, {
+      await Sharing.shareAsync(outFile.uri, {
         mimeType: 'application/pdf',
         UTI: 'com.adobe.pdf',
         dialogTitle: 'Share Merged PDF',

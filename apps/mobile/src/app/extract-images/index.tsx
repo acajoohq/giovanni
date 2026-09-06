@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Button, ActivityIndicator, TextInput, Switch } 
 import { useState, useCallback } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import { extractImages, type ExtractedImage, type ExtractImagesResult } from "@acajoo/giovanni-core";
 
 // Simple formatBytes utility if not available
@@ -48,16 +48,7 @@ export default function ExtractImagesScreen() {
     setStatusMessage('Extracting images...');
 
     try {
-      // Read the file as base64, then convert to Uint8Array
-      const base64 = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      // Convert base64 string to Uint8Array
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      const bytes = await new File(fileUri).bytes();
 
       const extractResult = await extractImages(bytes);
       setResult(extractResult);
@@ -73,27 +64,16 @@ export default function ExtractImagesScreen() {
   const shareResult = useCallback(async () => {
     if (!result || result.images.length === 0) return;
     try {
-      // Share the first image only since we can't create ZIP without expo-zip
+      // Share the first image only since we can\'t create ZIP without expo-zip
       const firstImage = result.images[0];
-      let binary = '';
-      for (let i = 0; i < firstImage.bytes.length; i++) {
-        binary += String.fromCharCode(firstImage.bytes[i]);
-      }
-      const base64 = btoa(binary);
-
-      // Determine file extension from format (lowercase)
       const ext = (firstImage.mimeType?.split('/')[1] ?? 'bin').toLowerCase();
-      // Ensure we have a valid extension, fallback to 'bin'
       const validExt = ['png', 'jpeg', 'jpg', 'gif', 'bmp', 'tiff', 'webp'].includes(ext) ? ext : 'bin';
       const fileName = `extracted-image-1.${validExt}`;
 
-      // Write to a temporary file
-      const fileUri = `${FileSystem.cacheDirectory}${fileName}`;
-      await FileSystem.writeAsStringAsync(fileUri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      const outFile = new File(Paths.cache, fileName);
+      outFile.write(firstImage.bytes);
 
-      await Sharing.shareAsync(fileUri, {
+      await Sharing.shareAsync(outFile.uri, {
         mimeType: `image/${ext}`,
         UTI: `public.${ext}`,
         dialogTitle: 'Share Extracted Image',

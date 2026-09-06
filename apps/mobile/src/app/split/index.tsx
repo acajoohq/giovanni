@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Button, ActivityIndicator, TextInput } from 're
 import { useState, useCallback } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import { splitPdf, type SplitResult } from "@acajoo/giovanni-core";
 
 // Simple formatBytes utility if not available
@@ -58,16 +58,7 @@ export default function SplitScreen() {
     setStatusMessage('Splitting PDF...');
 
     try {
-      // Read the file as base64, then convert to Uint8Array
-      const base64 = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      // Convert base64 string to Uint8Array
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      const bytes = await new File(fileUri).bytes();
 
       const splitResult = await splitPdf(bytes);
       setResult(splitResult);
@@ -83,21 +74,13 @@ export default function SplitScreen() {
   const shareResult = useCallback(async () => {
     if (!result || result.pages.length === 0) return;
     try {
-      // Share the first page only since we can't create ZIP without expo-zip
+      // Share the first page only since we can\'t create ZIP without expo-zip
       const firstPage = result.pages[0];
-      let binary = '';
-      for (let i = 0; i < firstPage.length; i++) {
-        binary += String.fromCharCode(firstPage[i]);
-      }
-      const base64 = btoa(binary);
 
-      // Write to a temporary file
-      const fileUri = `${FileSystem.cacheDirectory}split-page-1.pdf`;
-      await FileSystem.writeAsStringAsync(fileUri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      const outFile = new File(Paths.cache, 'split-page-1.pdf');
+      outFile.write(firstPage);
 
-      await Sharing.shareAsync(fileUri, {
+      await Sharing.shareAsync(outFile.uri, {
         mimeType: 'application/pdf',
         UTI: 'com.adobe.pdf',
         dialogTitle: 'Share First Page',

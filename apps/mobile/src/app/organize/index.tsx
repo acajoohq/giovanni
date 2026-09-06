@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Button, ActivityIndicator, TextInput, FlatList,
 import { useState, useCallback } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import { organizePdf, splitPdf, type OrganizeResult } from "@acajoo/giovanni-core";
 
 // Simple formatBytes utility if not available
@@ -44,14 +44,7 @@ export default function OrganizeScreen() {
         setStatusMessage('Loading PDF...');
 
         // Split PDF to get pages
-        const base64 = await FileSystem.readAsStringAsync(asset.uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        const binaryString = atob(base64);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
+        const bytes = await new File(asset.uri).bytes();
 
         const splitResult = await splitPdf(bytes);
         setPages(Array.from({ length: splitResult.pageCount }, (_, i) => i));
@@ -73,16 +66,7 @@ export default function OrganizeScreen() {
     setStatusMessage('Organizing PDF...');
 
     try {
-      // Read the file as base64, then convert to Uint8Array
-      const base64 = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      // Convert base64 string to Uint8Array
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      const bytes = await new File(fileUri).bytes();
 
       const organizeResult = await organizePdf(bytes, { pages });
       setResult(organizeResult);
@@ -98,21 +82,10 @@ export default function OrganizeScreen() {
   const shareResult = useCallback(async () => {
     if (!result) return;
     try {
-      // Convert Uint8Array to base64 string
-      let binary = '';
-      const bytes = result.data;
-      for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64 = btoa(binary);
+      const outFile = new File(Paths.cache, outputName);
+      outFile.write(result.data);
 
-      // Write to a temporary file
-      const fileUri = `${FileSystem.cacheDirectory}${outputName}`;
-      await FileSystem.writeAsStringAsync(fileUri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      await Sharing.shareAsync(fileUri, {
+      await Sharing.shareAsync(outFile.uri, {
         mimeType: 'application/pdf',
         UTI: 'com.adobe.pdf',
         dialogTitle: 'Share Organized PDF',

@@ -1,6 +1,5 @@
 import { StyleSheet, View, Text, Button, ActivityIndicator, TextInput } from 'react-native';
 import { useState, useCallback } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { File, Paths } from 'expo-file-system';
 import { splitPdf, type SplitResult } from "@acajoo/giovanni-core";
@@ -23,7 +22,7 @@ const DEFAULT_SPLIT_SETTINGS = {
 };
 
 export default function SplitScreen() {
-  const [fileUri, setFileUri] = useState<string | null>(null);
+  const [pickedFile, setPickedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [isSplitting, setIsSplitting] = useState(false);
   const [result, setResult] = useState<SplitResult | null>(null);
@@ -34,14 +33,10 @@ export default function SplitScreen() {
 
   const pickDocument = useCallback(async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf',
-        copyToCacheDirectory: true,
-      });
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        setFileUri(asset.uri);
-        setFileName(asset.name || 'document.pdf');
+      const picked = await File.pickFileAsync({ mimeTypes: 'application/pdf' });
+      if (!picked.canceled) {
+        setPickedFile(picked.result);
+        setFileName(decodeURIComponent(picked.result.uri.split('/').pop() ?? 'document.pdf'));
         setResult(null);
         setStatusMessage('');
       }
@@ -52,13 +47,13 @@ export default function SplitScreen() {
   }, []);
 
   const splitDocument = useCallback(async () => {
-    if (!fileUri) return;
+    if (!pickedFile) return;
 
     setIsSplitting(true);
     setStatusMessage('Splitting PDF...');
 
     try {
-      const bytes = await new File(fileUri).bytes();
+      const bytes = await pickedFile.bytes();
 
       const splitResult = await splitPdf(bytes);
       setResult(splitResult);
@@ -69,7 +64,7 @@ export default function SplitScreen() {
     } finally {
       setIsSplitting(false);
     }
-  }, [fileUri]);
+  }, [pickedFile]);
 
   const shareResult = useCallback(async () => {
     if (!result || result.pages.length === 0) return;
@@ -92,7 +87,7 @@ export default function SplitScreen() {
   }, [result]);
 
 
-  if (!fileUri) {
+  if (!pickedFile) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>PDF Splitter</Text>

@@ -1,19 +1,15 @@
-// GiovanniModule.cpp � Android JNI/JSI entry point
-// Calls giovanni::jsi::install(rt) from the JNI_OnLoad or JSI installer method.
-
+// Android JNI entry point: installs the qpdf JSI binding as globalThis.giovanni.
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <ReactCommon/CallInvokerHolder.h>
 
-#ifdef GIOVANNI_JSI_ENABLED
-#include "qpdf_jsi.h"
-#endif
+namespace pdfly { namespace jsi { void install(facebook::jsi::Runtime& rt); } }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_giovanni_GiovanniModule_nativeInstall(JNIEnv* env, jobject /* this */, jlong jsRuntimePointer) {
-#ifdef GIOVANNI_JSI_ENABLED
-    auto* rt = reinterpret_cast<facebook::jsi::Runtime*>(jsRuntimePointer);
-    giovanni::jsi::install(*rt);
-    giovanni::jsi::installGs(*rt);
-#endif
+Java_com_giovanni_GiovanniModule_nativeInstall(JNIEnv*, jobject, jlong ptr) {
+    auto& rt = *reinterpret_cast<facebook::jsi::Runtime*>(static_cast<uintptr_t>(ptr));
+    pdfly::jsi::install(rt);
+    // Rename globalThis.pdfly → globalThis.giovanni to match the JS binding
+    auto g = rt.global();
+    g.setProperty(rt, "giovanni", g.getProperty(rt, "pdfly"));
+    g.setProperty(rt, "pdfly", facebook::jsi::Value::undefined());
 }

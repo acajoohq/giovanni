@@ -1,6 +1,5 @@
 import { StyleSheet, View, Text, Button, ActivityIndicator, FlatList, TextInput } from 'react-native';
 import { useState, useCallback } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { File, Paths } from 'expo-file-system';
 import { mergePdfs, type MergeResult } from "@acajoo/giovanni-core";
@@ -21,7 +20,7 @@ const DEFAULT_MERGE_SETTINGS = {
 };
 
 export default function MergeScreen() {
-  const [fileUris, setFileUris] = useState<string[]>([]);
+  const [pickedFiles, setPickedFiles] = useState<File[]>([]);
   const [fileNames, setFileNames] = useState<string[]>([]);
   const [isMerging, setIsMerging] = useState(false);
   const [result, setResult] = useState<MergeResult | null>(null);
@@ -30,14 +29,10 @@ export default function MergeScreen() {
 
   const pickDocument = useCallback(async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf',
-        copyToCacheDirectory: true,
-      });
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        setFileUris(prev => [...prev, asset.uri]);
-        setFileNames(prev => [...prev, asset.name || 'document.pdf']);
+      const picked = await File.pickFileAsync({ mimeTypes: 'application/pdf' });
+      if (!picked.canceled) {
+        setPickedFiles(prev => [...prev, picked.result]);
+        setFileNames(prev => [...prev, decodeURIComponent(picked.result.uri.split('/').pop() ?? 'document.pdf')]);
         setStatusMessage('');
       }
     } catch (error) {
@@ -47,7 +42,7 @@ export default function MergeScreen() {
   }, []);
 
   const mergeDocuments = useCallback(async () => {
-    if (fileUris.length < 2) {
+    if (pickedFiles.length < 2) {
       setStatusMessage('Please select at least 2 PDF files to merge');
       return;
     }
@@ -56,21 +51,19 @@ export default function MergeScreen() {
     setStatusMessage('Merging PDFs...');
 
     try {
-      const arrayBuffersPromise = fileUris.map(async (fileUri) =>
-        (await new File(fileUri).bytes()).buffer
-      );
+      const arrayBuffersPromise = pickedFiles.map(async (f) => (await f.bytes()).buffer);
 
       const arrayBuffers = await Promise.all(arrayBuffersPromise);
       const mergeResult = await mergePdfs(arrayBuffers);
       setResult(mergeResult);
-      setStatusMessage(`Merge complete! Merged ${fileUris.length} files`);
+      setStatusMessage(`Merge complete! Merged ${pickedFiles.length} files`);
     } catch (error) {
       console.error('Merge error:', error);
       setStatusMessage('Merge failed: ' + (error instanceof Error ? error.message : String(error)));
     } finally {
       setIsMerging(false);
     }
-  }, [fileUris]);
+  }, [pickedFiles]);
 
   const shareResult = useCallback(async () => {
     if (!result) return;
@@ -90,11 +83,11 @@ export default function MergeScreen() {
   }, [result, outputName]);
 
   const removeFile = (index: number) => {
-    setFileUris(prev => prev.filter((_, i) => i !== index));
+    setPickedFiles(prev => prev.filter((_, i) => i !== index));
     setFileNames(prev => prev.filter((_, i) => i !== index));
   };
 
-  if (fileUris.length === 0) {
+  if (pickedFiles.length === 0) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>PDF Merger</Text>
@@ -109,9 +102,9 @@ export default function MergeScreen() {
       <Text style={styles.title}>PDF Merger</Text>
 
       <View style={styles.fileListContainer}>
-        {fileUris.length > 0 && (
+        {pickedFiles.length > 0 && (
           <FlatList
-            data={fileUris}
+            data={pickedFiles}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (
               <View style={styles.fileItem}>
@@ -140,14 +133,14 @@ export default function MergeScreen() {
           <Text style={styles.status}>Merging...</Text>
         </View>
       ) : (
-        <Button title="Merge PDFs" onPress={mergeDocuments} disabled={isMerging || fileUris.length < 2} />
+        <Button title="Merge PDFs" onPress={mergeDocuments} disabled={isMerging || pickedFiles.length < 2} />
       )}
 
       {result && (
         <View style={styles.resultContainer}>
           <Text style={styles.resultTitle}>Merge Result</Text>
           <Text style={styles.resultText}>
-            Files Merged: {fileUris.length}
+            Files Merged: {pickedFiles.length}
           </Text>
           <Text style={styles.resultText}>
             Size: {formatBytesSimple(result.data.byteLength)}

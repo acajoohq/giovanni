@@ -1,0 +1,23 @@
+# Other Expo apps - not needed for this build
+apps/desktop/
+apps/web/
+apps/documentation/
+
+# Turbo build cache
+.turbo/
+
+# Emscripten SDK
+emsdk/
+
+# C++ source and WASM build artifacts (using prebuilt libpdfly_jsi.so)
+vendor/
+packages/core/native/
+packages/core/wasm/
+build/wasm/
+build/CMakeFiles/
+build/native/
+
+# Miscellaneous
+.tmp/
+__pycache__/
+packages/core/test-report/

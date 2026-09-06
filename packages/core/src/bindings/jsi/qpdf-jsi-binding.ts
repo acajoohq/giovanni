@@ -3,7 +3,7 @@ import { QpdfInitError, QpdfWatermarkError } from "../../errors/index.js";
 
 function getGlobal(): NonNullable<typeof globalThis.giovanni> {
     if (!globalThis.giovanni) {
-        throw new QpdfInitError("giovanni JSI module is not installed. " + "Call giovanni::jsi::install(rt) from your TurboModule before using any PDF operation.");
+        throw new QpdfInitError("giovanni JSI module is not installed. " + "Call pdfly::jsi::install(rt) and alias as globalThis.giovanni from your TurboModule before using any PDF operation.");
     }
     return globalThis.giovanni;
 }

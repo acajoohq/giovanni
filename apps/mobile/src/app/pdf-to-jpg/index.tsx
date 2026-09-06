@@ -1,6 +1,5 @@
 import { StyleSheet, View, Text, Button, ActivityIndicator, TextInput } from 'react-native';
 import { useState, useCallback } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { File, Paths } from 'expo-file-system';
 import { renderPdfPagesToJpg, type PdfPageJpg, type RenderPdfPagesToJpgResult } from "@acajoo/giovanni-pdf-render";
@@ -24,7 +23,7 @@ const DEFAULT_PDF_TO_JPG_SETTINGS = {
 };
 
 export default function PdfToJpgScreen() {
-  const [fileUri, setFileUri] = useState<string | null>(null);
+  const [pickedFile, setPickedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [isConverting, setIsConverting] = useState(false);
   const [result, setResult] = useState<RenderPdfPagesToJpgResult | null>(null);
@@ -36,14 +35,10 @@ export default function PdfToJpgScreen() {
 
   const pickDocument = useCallback(async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf',
-        copyToCacheDirectory: true,
-      });
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        setFileUri(asset.uri);
-        setFileName(asset.name || 'document.pdf');
+      const picked = await File.pickFileAsync({ mimeTypes: 'application/pdf' });
+      if (!picked.canceled) {
+        setPickedFile(picked.result);
+        setFileName(decodeURIComponent(picked.result.uri.split('/').pop() ?? 'document.pdf'));
         setResult(null);
         setStatusMessage('');
       }
@@ -54,13 +49,13 @@ export default function PdfToJpgScreen() {
   }, []);
 
   const convertPdfToJpg = useCallback(async () => {
-    if (!fileUri) return;
+    if (!pickedFile) return;
 
     setIsConverting(true);
     setStatusMessage('Converting PDF to JPG...');
 
     try {
-      const bytes = await new File(fileUri).bytes();
+      const bytes = await pickedFile.bytes();
 
       const convertResult = await renderPdfPagesToJpg(bytes, {
         quality: qualityPercent / 100,
@@ -74,7 +69,7 @@ export default function PdfToJpgScreen() {
     } finally {
       setIsConverting(false);
     }
-  }, [fileUri, qualityPercent, scale]);
+  }, [pickedFile, qualityPercent, scale]);
 
   const shareResult = useCallback(async () => {
     if (!result || result.pages.length === 0) return;
@@ -97,7 +92,7 @@ export default function PdfToJpgScreen() {
     }
   }, [result]);
 
-  if (!fileUri) {
+  if (!pickedFile) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>PDF to JPG Converter</Text>

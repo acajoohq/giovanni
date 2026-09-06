@@ -1,6 +1,5 @@
 import { StyleSheet, View, Text, Button, ActivityIndicator, TextInput, FlatList, TouchableOpacity } from 'react-native';
 import { useState, useCallback } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { File, Paths } from 'expo-file-system';
 import { organizePdf, splitPdf, type OrganizeResult } from "@acajoo/giovanni-core";
@@ -21,7 +20,7 @@ const DEFAULT_ORGANIZE_SETTINGS = {
 };
 
 export default function OrganizeScreen() {
-  const [fileUri, setFileUri] = useState<string | null>(null);
+  const [pickedFile, setPickedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [isOrganizing, setIsOrganizing] = useState(false);
   const [result, setResult] = useState<OrganizeResult | null>(null);
@@ -31,21 +30,15 @@ export default function OrganizeScreen() {
 
   const pickDocument = useCallback(async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf',
-        copyToCacheDirectory: true,
-      });
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        setFileUri(asset.uri);
-        setFileName(asset.name || 'document.pdf');
+      const picked = await File.pickFileAsync({ mimeTypes: 'application/pdf' });
+      if (!picked.canceled) {
+        setPickedFile(picked.result);
+        setFileName(decodeURIComponent(picked.result.uri.split('/').pop() ?? 'document.pdf'));
         setResult(null);
-        setPages([]); // Reset pages
+        setPages([]);
         setStatusMessage('Loading PDF...');
 
-        // Split PDF to get pages
-        const bytes = await new File(asset.uri).bytes();
-
+        const bytes = await picked.result.bytes();
         const splitResult = await splitPdf(bytes);
         setPages(Array.from({ length: splitResult.pageCount }, (_, i) => i));
         setStatusMessage('');
@@ -57,7 +50,7 @@ export default function OrganizeScreen() {
   }, []);
 
   const organizeDocument = useCallback(async () => {
-    if (!fileUri || pages.length === 0) {
+    if (!pickedFile || pages.length === 0) {
       setStatusMessage('Please select a PDF file first');
       return;
     }
@@ -66,7 +59,7 @@ export default function OrganizeScreen() {
     setStatusMessage('Organizing PDF...');
 
     try {
-      const bytes = await new File(fileUri).bytes();
+      const bytes = await pickedFile.bytes();
 
       const organizeResult = await organizePdf(bytes, { pages });
       setResult(organizeResult);
@@ -77,7 +70,7 @@ export default function OrganizeScreen() {
     } finally {
       setIsOrganizing(false);
     }
-  }, [fileUri, pages]);
+  }, [pickedFile, pages]);
 
   const shareResult = useCallback(async () => {
     if (!result) return;
@@ -112,7 +105,7 @@ export default function OrganizeScreen() {
     setPages(newPages);
   };
 
-  if (!fileUri) {
+  if (!pickedFile) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>PDF Organizer</Text>

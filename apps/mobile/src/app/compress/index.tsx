@@ -1,6 +1,5 @@
 import { Platform, StyleSheet, View, Text, Button, Switch, ActivityIndicator } from 'react-native';
 import { useState, useCallback } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { File, Paths } from 'expo-file-system';
 import { compressPdf, type CompressionEngine, type CompressResult } from "@acajoo/giovanni-core";
@@ -43,7 +42,7 @@ const DEFAULT_GHOSTSCRIPT_SETTINGS = {
 };
 
 export default function CompressScreen() {
-  const [fileUri, setFileUri] = useState<string | null>(null);
+  const [pickedFile, setPickedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [isCompressing, setIsCompressing] = useState(false);
   const [result, setResult] = useState<CompressResult | null>(null);
@@ -54,14 +53,10 @@ export default function CompressScreen() {
 
   const pickDocument = useCallback(async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf',
-        copyToCacheDirectory: true,
-      });
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        setFileUri(asset.uri);
-        setFileName(asset.name || 'document.pdf');
+      const picked = await File.pickFileAsync({ mimeTypes: 'application/pdf' });
+      if (!picked.canceled) {
+        setPickedFile(picked.result);
+        setFileName(decodeURIComponent(picked.result.uri.split('/').pop() ?? 'document.pdf'));
         setResult(null);
         setStatusMessage('');
       }
@@ -72,31 +67,27 @@ export default function CompressScreen() {
   }, []);
 
   const compressDocument = useCallback(async () => {
-    if (!fileUri) return;
+    if (!pickedFile) return;
 
     setIsCompressing(true);
     setStatusMessage('Compressing...');
 
     try {
-      const bytes = await new File(fileUri).bytes();
+      const bytes = await pickedFile.bytes();
 
       // Build compression options based on engine and preset
       let compressOptions: any = {};
       if (engine === 'qpdf') {
         compressOptions = {
           engine: 'qpdf',
-          qpdf: {
-            ...DEFAULT_QPDF_SETTINGS,
-            preset: qpdfPreset,
-          },
+          ...DEFAULT_QPDF_SETTINGS,
+          preset: qpdfPreset,
         };
       } else if (engine === 'ghostscript') {
         compressOptions = {
           engine: 'ghostscript',
-          ghostscript: {
-            ...DEFAULT_GHOSTSCRIPT_SETTINGS,
-            preset: ghostscriptPreset,
-          },
+          ...DEFAULT_GHOSTSCRIPT_SETTINGS,
+          preset: ghostscriptPreset,
         };
       } else if (engine === 'combined') {
         compressOptions = {
@@ -117,11 +108,13 @@ export default function CompressScreen() {
       setStatusMessage(`Compression complete! Saved ${formatBytesSimple(compressResult.savedBytes)} (${compressResult.percentageSaved.toFixed(1)}%)`);
     } catch (error) {
       console.error('Compression error:', error);
-      setStatusMessage('Compression failed: ' + (error instanceof Error ? error.message : String(error)));
+      const cause = error instanceof Error ? (error as any).cause : null;
+      const msg = (cause instanceof Error ? cause.message : null) ?? (error instanceof Error ? error.message : String(error));
+      setStatusMessage('Compression failed: ' + msg);
     } finally {
       setIsCompressing(false);
     }
-  }, [fileUri, engine, qpdfPreset, ghostscriptPreset]);
+  }, [pickedFile, engine, qpdfPreset, ghostscriptPreset]);
 
   const shareDocument = useCallback(async () => {
     if (!result) return;
@@ -140,7 +133,7 @@ export default function CompressScreen() {
     }
   }, [result]);
 
-  if (!fileUri) {
+  if (!pickedFile) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>PDF Compressor</Text>

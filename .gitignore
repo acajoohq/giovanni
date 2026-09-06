@@ -56,3 +56,4 @@ packages/core/test-report/
 dogfood-output/
 .tmp/
 __pycache__
+emsdk/

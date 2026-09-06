@@ -4,9 +4,8 @@
  * Call `setupGiovanni()` once at app startup (e.g. in index.js before the app
  * renders) to swap the default WASM bindings for the native JSI bindings.
  *
- * The native module must already be linked -- the giovanni TurboModule calls
- * giovanni::jsi::install(rt) during its initialization, which populates
- * globalThis.giovanni before any JS runs.
+ * The native module must already be linked -- GiovanniModule calls
+ * pdfly::jsi::install(rt) and exposes it as globalThis.giovanni.
  *
  * @example
  * ```typescript
@@ -20,12 +19,10 @@
  * ```
  */
 
-import { setQpdfBinding, setGhostscriptBinding } from "@acajoo/giovanni-core/bindings";
-import { qpdfJsiBinding, ghostscriptJsiBinding } from "@acajoo/giovanni-core/bindings/jsi";
+import { setQpdfBinding } from "@acajoo/giovanni-core/bindings";
+import { qpdfJsiBinding } from "@acajoo/giovanni-core/bindings/jsi";
 
+// Ghostscript JSI is not yet built; only qpdf is registered here.
 export function setupGiovanni(): void {
     setQpdfBinding(qpdfJsiBinding);
-    setGhostscriptBinding(ghostscriptJsiBinding);
 }
-
-export { qpdfJsiBinding, ghostscriptJsiBinding };

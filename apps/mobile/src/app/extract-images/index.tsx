@@ -1,6 +1,5 @@
 import { StyleSheet, View, Text, Button, ActivityIndicator, TextInput, Switch } from 'react-native';
 import { useState, useCallback } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { File, Paths } from 'expo-file-system';
 import { extractImages, type ExtractedImage, type ExtractImagesResult } from "@acajoo/giovanni-core";
@@ -14,7 +13,7 @@ const DEFAULT_EXTRACT_IMAGES_SETTINGS = {
 };
 
 export default function ExtractImagesScreen() {
-  const [fileUri, setFileUri] = useState<string | null>(null);
+  const [pickedFile, setPickedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [isExtracting, setIsExtracting] = useState(false);
   const [result, setResult] = useState<ExtractImagesResult | null>(null);
@@ -24,14 +23,10 @@ export default function ExtractImagesScreen() {
 
   const pickDocument = useCallback(async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf',
-        copyToCacheDirectory: true,
-      });
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        setFileUri(asset.uri);
-        setFileName(asset.name || 'document.pdf');
+      const picked = await File.pickFileAsync({ mimeTypes: 'application/pdf' });
+      if (!picked.canceled) {
+        setPickedFile(picked.result);
+        setFileName(decodeURIComponent(picked.result.uri.split('/').pop() ?? 'document.pdf'));
         setResult(null);
         setStatusMessage('');
       }
@@ -42,13 +37,13 @@ export default function ExtractImagesScreen() {
   }, []);
 
   const extractDocumentImages = useCallback(async () => {
-    if (!fileUri) return;
+    if (!pickedFile) return;
 
     setIsExtracting(true);
     setStatusMessage('Extracting images...');
 
     try {
-      const bytes = await new File(fileUri).bytes();
+      const bytes = await pickedFile.bytes();
 
       const extractResult = await extractImages(bytes);
       setResult(extractResult);
@@ -59,7 +54,7 @@ export default function ExtractImagesScreen() {
     } finally {
       setIsExtracting(false);
     }
-  }, [fileUri, includeRawStreams]);
+  }, [pickedFile, includeRawStreams]);
 
   const shareResult = useCallback(async () => {
     if (!result || result.images.length === 0) return;
@@ -84,7 +79,7 @@ export default function ExtractImagesScreen() {
     }
   }, [result]);
 
-  if (!fileUri) {
+  if (!pickedFile) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Extract Images</Text>

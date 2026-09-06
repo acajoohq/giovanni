@@ -1,31 +1,22 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.18)
 project(giovanni-react-native)
-
 set(CMAKE_CXX_STANDARD 20)
 
-set(GIOVANNI_NATIVE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../packages/core/native")
-set(JSI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../node_modules/react-native/ReactCommon")
+set(RN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../node_modules/react-native")
+# Pre-built JSI library produced by pnpm build:jsi
+set(JSI_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../build/jsi")
 
-add_library(giovanni-react-native SHARED
-    GiovanniModule.cpp
-    ${GIOVANNI_NATIVE_ROOT}/targets/jsi/qpdf/qpdf_jsi.cpp
-    ${GIOVANNI_NATIVE_ROOT}/impl/qpdf/qpdf_engine.cc
-)
+add_library(pdfly_jsi SHARED IMPORTED)
+set_target_properties(pdfly_jsi PROPERTIES
+    IMPORTED_LOCATION ${JSI_BUILD_DIR}/libpdfly_jsi.so)
+
+add_library(giovanni-react-native SHARED GiovanniModule.cpp)
 
 target_include_directories(giovanni-react-native PRIVATE
-    ${JSI_INCLUDE_DIR}
-    ${GIOVANNI_NATIVE_ROOT}/interface/include
-    ${GIOVANNI_NATIVE_ROOT}/impl/qpdf
-    ${GIOVANNI_NATIVE_ROOT}/targets/jsi/qpdf
+    ${RN_DIR}/ReactCommon/jsi
+    ${RN_DIR}/ReactCommon
+    ${JSI_BUILD_DIR}
 )
-
-target_compile_definitions(giovanni-react-native PRIVATE GIOVANNI_JSI_ENABLED=1)
 
 find_package(fbjni REQUIRED CONFIG)
-find_library(LOG_LIB log)
-
-target_link_libraries(giovanni-react-native
-    fbjni::fbjni
-    ${LOG_LIB}
-    android
-)
+target_link_libraries(giovanni-react-native fbjni::fbjni pdfly_jsi android log)

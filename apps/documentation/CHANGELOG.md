@@ -1,5 +1,11 @@
 # docs
 
+## 0.3.1
+
+### Patch Changes
+
+- [#62](https://github.com/acajoohq/giovanni/pull/62) [`a170634`](https://github.com/acajoohq/giovanni/commit/a170634b99ddba758ab62d2ea00eb6a5d2f10c30) Thanks [@P4tt4te](https://github.com/P4tt4te)! - Add Examples section
+
 ## 0.3.0
 
 ### Minor Changes
